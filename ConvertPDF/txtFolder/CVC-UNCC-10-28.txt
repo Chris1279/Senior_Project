@@ -1,0 +1,342 @@
+Touch2Annotate - Generating Better 
+Annotations with Less Human Effort 
+on Multi-touch Interfaces 
+Abstract
+Annotation is essential for effective visual sense 
+making. For multidimensional data, most existing 
+annotation approaches require users to manually type 
+notes to record the semantic meaning of their findings. 
+They require high effort from multi-touch interface 
+users since these users often experience low typing 
+speeds and high typing errors. To lower the typing 
+effort and improve the quality of the generated 
+annotations, we propose a new approach that semi-
+automatically generates annotations with rich semantic 
+meanings on multidimensional visualizations. A working 
+prototype of this approach, named Touch2Annotate, 
+has been implemented and used on a tabletop. We 
+present a scenario of using Touch2Annotate to 
+demonstrate its effectiveness.   
+Keywords
+Annotation, Information visualization, Multi-touch 
+interface, Taxonomy
+ACM Classification Keywords
+H5.2. Information interfaces and presentation: User 
+Interfaces. I3.6. 
+General Terms
+Design
+Copyright is held by the author/owner(s).
+CHI 2010, April 10–15, 2010, Atlanta, Georgia, USA.
+ACM  978-1-60558-930-5/10/04.
+Yang Chen
+University of North Carolina at 
+Charlotte 
+9201 University City Blvd 
+Charlotte, NC 28223 USA
+ychen61@uncc.edu
+Jing Yang
+University of North Carolina at 
+Charlotte 
+9201 University City Blvd 
+Charlotte, NC 28223 USA
+jyang13@uncc.edu
+Scott Barlowe
+University of North Carolina at 
+Charlotte 
+9201 University City Blvd 
+Charlotte, NC 28223 USA
+sabarlow@uncc.edu
+Dong H. Jeong
+University of North Carolina at 
+Charlotte 
+9201 University City Blvd 
+Charlotte, NC 28223 USA
+dhjeong@uncc.edu
+Introduction
+There is a burst of interest in designing and developing 
+information visualization applications on multi-touch 
+systems, such as tabletops [7] and small portable 
+devices [3]. These applications offer great opportunities 
+for supporting effective visual analytics by providing 
+possibilities such as face-to-face collaborative analysis 
+and direct touch interactions.
+When users visually explore data on multi-touch 
+interfaces, new interactions that are different from 
+traditional ones are often desired. In this paper, we 
+focus on a new annotation approach for 
+multidimensional visualizations. Annotation refers to 
+the process that users externalize their findings, such 
+as clusters, outliers, or correlation, on top of the 
+visualization. By annotating the findings users attach 
+semantic meanings to them so that they can be 
+analyzed, evaluated, reused, and exchanged for visual 
+sense making. In existing approaches, users are usually 
+required to manually input notes to record the semantic 
+meaning of a finding about multidimensional data [6]. 
+This proposes a challenge to multi-touch interface users 
+since they often experience low typing speeds and high 
+typing errors [4]. The tremendous typing needs for 
+annotation distract multi-touch interface users from the 
+visual exploration process being conducted. 
+We argue that to effectively make sense of 
+multidimensional data on multi-touch systems, 
+annotation approaches must mitigate the typing 
+interactions to lower the overall effort required. 
+Meanwhile, the annotations generated should have 
+intuitive semantic meanings to enable effective 
+evidence evaluation, exchange, and reuse. 
+Toward this goal, we propose a novel “typing-free” 
+annotation approach that semi-automatically generates 
+annotations with rich semantic meanings on 
+multidimensional visualizations. The core components 
+of this approach are annotation templates which can be 
+either pre-defined for the most popular types of 
+findings, or interactively created by users. During the 
+annotation process, users simply highlight data to be 
+annotated and select an annotation template according 
+to the type of the finding to be annotated. The system 
+will then automatically fetch information to generate a 
+descriptive annotation for the finding using the 
+template. A fully working prototype of the proposed 
+approach, named Touch2Annotate, has been 
+implemented. A scenario is provided to demonstrate 
+the usage of Touch2Annotate on a tabletop system.      
+Basic Ideas
+To address the challenge of automatic annotation, we 
+need to better understand how people manually 
+generate annotations for their findings. Toward this 
+goal, we interviewed 16 domain experts from a variety 
+of research fields [2]. In the interviews, we asked the 
+experts to provide specific findings they discovered 
+from the multidimensional data in their domain 
+applications and describe the essential information they 
+used to annotate those findings. We analyzed the 
+interview results and distilled two key observations. 
+First, we observed that several types of findings were 
+repeatedly reported by the participants although they 
+used different visualization tools and were from 
+different research domains. For example, experts in 
+GIS, biologic, and financial analysis all claimed that 
+they were interested in detecting and recording outliers 
+in their data. It seemed that findings could be 
+Data item orientedDimension oriented
+Correlation
+Distribution
+Cluster
+Outlier
+Rank
+Difference
+Trend
+Atomic findings
+ 
+Figure 1. Frequently used atomic finding categories.
+categorized. A user study we conducted with more 
+finding samples and users (see [2] for more details) 
+confirmed that the majority of findings from 
+multidimensional data fall into less than 12 categories 
+despite the application domains and visualization tools 
+used. In addition, our experiment [2] showed that 
+people could reach common sense on the 
+categorization and perform the classification efficiently.
+Our second observation was that the same set of 
+information is often used to annotate the same type of 
+findings. For example, the dataset name, the average 
+value of the data items, and a quality indicator such as 
+the radius of the cluster, were used to annotate clusters 
+by multiple experts. We divide the information into two 
+groups: (1) context information (such as the dataset 
+name); and (2) content information (such as the type 
+name “cluster” in the example, the average values, the 
+quality indicators, and subjective evaluations). It 
+seemed that well-descriptive annotations can be 
+automatically generated for a type of findings once we 
+know what context and content information needs to be 
+recorded for this type of findings.
+Based on above observations, we propose a semi-
+automatic annotation approach for multi-touch 
+systems. The core components of the approach are 
+annotation templates constructed based on a taxonomy 
+that categorizes findings and characterizes their context 
+and content information. An annotation template is 
+associated with a category of findings in the taxonomy 
+or a user defined category. It notifies the system which 
+context and content information needs to be retrieved 
+from the data and how to generate a semantic rich 
+descriptive annotation when annotating this type of 
+findings. When users find a pattern of interest, they 
+simply select the data of interest and pick an 
+annotation template. The system will then 
+automatically fetch necessary information to generate a 
+descriptive annotation according to the template.
+The finding taxonomy we use is a variation of the 
+taxonomy in our previous work [2]. Findings are first 
+classified into atomic findings and compound findings. 
+Atomic findings directly respond to low-level analytics 
+tasks [1]. For annotation convenience, we divide them 
+into two groups, namely data item-oriented findings 
+and dimension-oriented findings. Data item-oriented 
+findings, such as data item clusters, outliers, and ranks, 
+are patterns about data items. Dimension-oriented 
+findings refer to patterns about dimensions, such as 
+dimension correlations and data distribution in 
+dimensions. We pre-define annotation templates for 
+seven categories (see Figure 1) that were the most 
+frequently posted [2] on Many-eyes [8]. Please refer to 
+[2] for their content and context information. A 
+compound finding is a finding including other findings, 
+such as a comparison of two clusters. It consists of 
+pointers to the related findings and user typed 
+comments. The annotations for atomic findings can be 
+automatically generated while users need to manually 
+type notes for compound findings. If the pre-defined 
+annotation templates do not fulfill the needs of the 
+users, they can interactively modify an existing 
+template or create a new template to define their own 
+way to describe a certain category of findings. 
+Figure 2. An analyst is using Touch2Annotate on a tabletop.
+Touch2Annotate
+A fully working prototype of the proposed annotation 
+approach, named Touch2Annotate, has been 
+implemented and used on a multiple-touch interface. 
+Touch2Annotate provides multiple coordinated 
+multidimensional visualizations and allows users to 
+interactively explore the data for finding and annotating 
+patterns of interest. It was developed with Flash AS3 
+for a multi-touch tabletop designed at the Renaissance 
+Computing Institute (RENCI) [5] with a 62” diagonal 
+work surface (42 x 46). Figure 2 shows that an analyst 
+is using Touch2Annotate on the tabletop.
+System Interface
+Touch2Annotate provides several visualizations, 
+including scatterplots and parallel coordinates, for 
+visualizing multidimensional data. Multidimensional 
+brushes and dimension selection tools are provided on 
+these visualizations so that users can interactively 
+select data items and dimensions of interest. On the 
+top of the visualizations, there is a list of touchable 
+buttons for activating annotation templates. Each 
+button corresponds to a template and can be 
+interactively added or removed from the list. Users can 
+customize the list so that it only contains the buttons 
+they need. To generate an annotation, a user selects 
+the data of interest and touches the button of the 
+desired template. The annotation will be automatically 
+generated and an annotation window will be popped up 
+in which the user can examine and modify the 
+automatically generated annotation (Figure 3). The 
+annotation contains a title, a thumbnail, and a set of 
+sentences. The title is automatically generated and 
+indicates the type of the finding. It can be modified by 
+the user. The thumbnail captures the screenshot of the 
+visualization at the moment when the finding is 
+annotated to help the user recall the finding. The 
+sentences describe the context and content information 
+of the finding using natural language. The keywords in 
+the sentence, such as the dataset name, are 
+automatically highlighted and hyperlinked so that users 
+can easily access related findings sharing the same 
+keywords.
+When users are not satisfied with the automatically 
+generated annotations, they can customize the 
+annotations through two approaches. First, they can 
+interactively modify existing templates or create new 
+templates through a template editing window (see 
+Figure 4 for an example). In the template editing 
+window, a list of content/context information is 
+provided. Users can use touch-drag-drop interactions to 
+add items in the list to a template or to remove 
+information from the template. Second, users can 
+directly modify generated annotations. Figure 3 (c) 
+shows that a user is dragging some statistical 
+information of the dataset from an information window 
+to add it into the annotation.   
+Scenario
+Figure 3 shows a scenario where a user annotates an 
+outlier using Touch2Annotate. First, the user visualizes 
+the scatterplot of two dimensions and finds an outlier 
+(Figure 3(a)). She selects the outlier by drawing a 
+rectangular boundary on it using her hands (Figure 3 
+(a-1)). Second, she touches the button labeled 
+"Outlier" (Figure 3 (b-2)) to generate an annotation 
+(Figure 3 (b-3)). After reviewing the generated 
+descriptive annotation, the user wants to add the 
+average value of the dimension “Health behavior” to 
+the annotation. To do this, she opens the information 
+window (Figure 3 (c-4)), and drags that item into the 
+annotation (Figure 3 (c-5)). Now, the average value of 
+the dimension is in the annotation. The final annotation 
+is shown in Figure 3 (d).
+Discussion
+This scenario shows that with Touch2Annotate, users 
+can generate annotations with little human effort on a 
+multi-touch interface. This is achieved due to two 
+reasons: First, our approach generates the annotation 
+without requiring users to type words or sentences. 
+Users only need to perform some simple touching 
+interactions that are easy to be performed on multi-
+touch interfaces. Second, our approach allows users to 
+customize annotation templates and modify annotations 
+with simple drag and drop interactions, without text 
+typing. 
+(1)
+(2)
+(3)
+(4)
+(5)
+(a) (b) (c) (d)
+ 
+Figure 3. To annotate an outlier with Touch2Annotate involves three steps: (a) to select dimensions and data items of the outlier; (b) to select the 
+“outlier” template. The annotation is automatically generated by the system according to the template and the selected dimensions and data items; and 
+(c) to review the annotation and interactively modify it based on annotation needs. The generated descriptive annotation is shown in (d). 
+Meanwhile, the pre-defined templates constructed 
+based on the taxonomy and the fact that users can 
+interactively modify the templates ensure that the 
+generated annotations can be semantic-rich, formal, 
+and well-descriptive, without missing important context 
+and content information. 
+(1)
+(2)(3)
+(4)
+Figure 4. Editing a template.  To add information to the 
+template, users can touch an item in the information list (1), 
+and drag and drop it to the selected list (2). The preview of 
+the descriptive annotation is shown in (3). Users can click the 
+“edit” button (4) to trigger a window where the way to 
+describe the selected information can be customized.
+Conclusion and Future Work
+In this paper, we proposed a “typing free” annotation 
+approach for multi-touch systems. Our approach 
+generates high quality annotations with reduced typing 
+effort on multidimensional visualizations. In the future, 
+we plan to conduct formal user studies to 
+systematically evaluate the effectiveness and efficiency 
+of our approach. We will also develop other finding 
+management approaches, such as finding retrieval and 
+browsing functions for multi-touch systems.  
+Reference
+[1] Amar, R., and Stasko, J. Low-level components of 
+analytic activity in information visualization. In proc. of 
+IEEE InfoVis, 2004, 141-147.
+[2] Chen, Y., Yang, J., and Ribarsky, W. Toward effective 
+insight management in visual analytics systems. In 
+proc. of IEEE PacificVis, 2009, 49-56.
+[3] Hao, J., and Zhang, K. A mobile interface for 
+hierarchical information visualization and navigation. 
+In proc. of IEEE ISCE, 2007, 1-7.
+[4] Hirche, J., Bomark, P., Bauer, M., and Solyga P. 
+Adaptive interface for text input on large-scale 
+interactive surfaces. In proc. of TABLETOP, 2006, 153-
+156.
+[5] Renaissance computing institute, 2009. 
+http://www.renci.org
+[6] Shrinivasan, Y., and Van Wijk, J. Support the 
+analytical reasoning process in information 
+visualization.  In proc. of ACM CHI, 2008, 1237-1246.
+[7] Tobiasz, M., Isenberg, P., and Carpendale, S. Lark: 
+coordinating co-located collaboration with information 
+visualization. In proc. of IEEE InfoVis, 2009, 1065-
+1072.
+[8] Viegas, F., Wattenberg, M., Van Ham, F., and Kriss, 
+J. Many eyes: a site for visualization at internet scale. 
+In proc. of IEEE InfoVis, 2007, 1121-1128.
+

@@ -1,0 +1,214 @@
+Defining Insight for Visual Analytics 
+Remco Chang 
+Caroline Ziemkiewicz 
+Tera Marie Green 
+William Ribarsky 
+ 
+UNC Charlotte 
+Viscenter 
+ 
+1 INTRODUCTION 
+Many have argued that providing insight is the main goal of information visualization. Card, Mackinlay, 
+and Shneiderman declare that “the purpose of visualization is insight [3],” while Thomas and Cook 
+propose in Illuminating the Path that the purpose of visual analytics is to enable and discover insight 
+[10]. The idea that visualization should lead to insight seems logical, but researchers in the community 
+have been slow to build on the concept because it is difficult to define what insight is [7, 8, 9, 11]. As Yi 
+et al. point out [11], although a few definitions of insight exist, no commonly accepted definition has 
+emerged in the community. 
+Interestingly, the visualization community is not the only one investigating insight. For the past two 
+decades, researchers in cognitive neuroscience have been studying their own version of insight by 
+examining neural activity. In their discipline, insight is a less ambiguous term. It specifically refers to 
+what is commonly called an “a?ha” or “eureka” moment [5]. In fact, it is now possible to observe and 
+identify when someone is having such a moment by examining their neural activity. 
+It is clear that the scope of definitions of insight in the visualization community differs from that of the 
+cognitive community.  It appears that the visualization definitions of insight are generally broader but 
+more vague than those in cognitive science. For example, North categorizes insight to be “complex, 
+deep, qualitative, unexpected, and relevant” [7], which overlaps with the neurological definition. 
+However, he also defines insight as “an individual observation about the data by the participant, a unit 
+of discovery” [9], which does not bear any clear relation to the strict “a?ha moment” of cognitive 
+science. Instead, it implies a focus on knowledge?building not found in the cognitive definition. 
+We suggest that what the visualization community defines as insight actually has two parallel meanings: 
+(1) a term equivalent to the cognitive science definition of insight as a moment of enlightenment, and 
+(2) a broader term to mean an advance in knowledge or a piece of information. We argue that for 
+information visualization and visual analytics to provide and enable insight, both definitions need to be 
+considered. But we must clarify and distinguish these definitions in order to develop methods to 
+measure insight and evaluate visualizations. 
+2 INSIGHT IN COGNITIVE SCIENCE 
+In cognitive science, the term insight has been used “to name the process by which a problem solver 
+suddenly moves from a state of not knowing how to solve a problem to a state of knowing how to solve 
+it” [6]. (To distinguish this insight from the other type of insight described by visualization researchers, 
+we will call it spontaneous insight). In this tradition, spontaneous insight is a type of problem?solving, 
+and differs from normal problem?solving in several key ways. First of all, unlike normal problem?solving, 
+spontaneous insight does not appear to be facilitated by gradual learning heuristics such as bottom?up 
+inductive reasoning. In fact, it has been observed that focused effort on normal problem?solving often 
+inhibits spontaneous insight. It is usually when a person is in a relaxed state that a spontaneous insight 
+takes place [4] (like taking a shower in the morning). Secondly, while gradual problem?solving requires 
+no special inducement other than presenting someone with a problem, what precipitates spontaneous 
+insight is still being discussed.  One commonly?held theory is that spontaneous insight often occurs 
+when a person tries to solve the problem in a habitual way, fails, momentarily becomes frustrated 
+(perhaps due to incorrect assumptions or some other cognitive fixedness), then mentally reorganizes 
+the pieces of the puzzle (perhaps by breaking through a failed thought paradigm), and “suddenly” sees 
+the solution [6].  Finally, in normal problem?solving the path taken to the solution is conscious and 
+logically clear to the problem?solver; however, participants who experience a spontaneous insight are 
+often unable to describe the thought process that led to it [2], indicating that this insight occurs on a 
+subconscious level and is not a process that can be directly controlled, manipulated, or repeated. 
+In real?world situations, it is difficult to predict when spontaneous insight will be used instead of 
+traditional problem?solving.  For this reason, much of the spontaneous insight research in cognitive 
+science has utilized carefully crafted laboratory problems that are more likely to be solved with a sudden 
+breakthrough. One such problem is the “nine dot problem,” which asks the participant to use four lines 
+to connect 9 dots that are arranged in a 3x3 matrix, without pulling the pen off the paper (Figure 1 left). 
+Participants often fail at first by assuming their lines cannot extend outside the boundaries of the matrix 
+[6]. They seem to succeed when they relax their paradigms and try a different heuristic. 
+ 
+                    
+                                      (left)                                                                                    (right) 
+Figure 1: Left: an example of the nine dot problem. To solve the problem, participants must relax their 
+paradigms and allow lines to extend outside the boundaries of the matrix. Right: an example of the 
+compound remote associate (CRA) problem. In this example, the participant finds that the word “camp” 
+can either precede or follow each of the stimulus words. 
+Similarly, Bowden and Jung?Beeman [2] have developed a set of “compound remote associate,” or CRA, 
+problems for use in studies of spontaneous insight. These present a list of three words to a participant, 
+who then has to come up with another word that makes a compound phrase when placed at either the 
+beginning or end of each of the stimulus words. For example, the problem words boot, summer, and 
+ground lead to the solution camp (Figure 1 right). This kind of problem can be solved through normal 
+trial?and?error problem solving, by systematically coming up with potential solutions that work for one 
+of the problem words and testing them against the other two. However, about 50% of the time, 
+participants report that they identify the solution in a flash after several failed attempts [4].   
+With the help of electroencephalogram (EEG) and functional magnetic resonance imaging (fMRI), 
+researchers can now observe the neural activities of the participants during experiments such as the 
+nine?dot or the CRA problems [2]. Two distinct patterns are observed that correspond to the two modes 
+of problem solving, normal and insight?based. In both cases, frontal lobes, which are associated with 
+working memory and executive processes, and temporal lobes, which hold long?term memory and 
+semantic information, both show a high amount of activity. 
+However, in normal problem solving, the activity in the temporal lobe is continuous and mostly localized 
+in the left hemisphere, which is thought to encode more detailed information in tightly related semantic 
+networks. This indicates that normal problem solving involves a narrow but continuous focus on 
+information that is highly relevant to the problem at hand. In contrast, when participants solve a 
+problem with spontaneous insight, the right temporal lobe shows a sharp burst of activity, specifically in 
+an area known as the superior temporal gyrus [2]. Unlike the left temporal lobe, the right temporal lobe 
+is thought to encode information in coarse, loosely associated semantic networks. This suggests that 
+spontaneous insight occurs through sudden activation of less clearly relevant information through weak 
+semantic networks, which corresponds to a participant’s paradigm shift following an impasse.   
+These findings suggest that spontaneous insight is qualitatively different from everyday problem?solving. 
+It involves a unique pattern of neural activity that corresponds with the unique sensation of the “a?ha 
+moment” that participants report. However, while cognitive scientists have successfully identified the 
+neural patterns of the spontaneous insight phenomenon and can now observe and measure the insight 
+process, there has been little success in understanding why spontaneous insight occurs in normal 
+situations. More importantly, aside from laboratory experiments using artificially designed simple 
+problems, cognitive scientists do not understand how to promote spontaneous insight for solving 
+complex real?world problems like the ones the visualization community encounters on a regular basis. 
+3 INSIGHT AS KNOWLEDGE AND INFORMATION 
+In a recent visualization publication, Yi et al. [11] provide a comprehensive survey of literature in 
+information visualization that have considered insight as a goal or a measurement. Yi et al.  base their 
+hypothesis on sensemaking theories and conclude that according to the literature, there are four 
+distinct but intertwined processes in interaction with a visualization that can lead to insight, which they 
+identify as Provide overview, Adjust, Detect patterns, and Match mental model. While these processes 
+can in some cases result in an “a?ha moment,” it is clear that in the work by Yi et al. as well as the 
+literature used in their survey, insight is considered to be more or less units of knowledge. (For the 
+purposes of this discussion, we call this type of knowledge?building or model?confirming insight as, 
+simply, insight.) 
+For example, one of the surveyed papers is a case study on visualizing evolutionary trees by Amenta and 
+Klingner, which states that “our tool allows the biologists to interactively visualize and explore the whole 
+set of trees, providing insight into the overall distribution and possible conflicting hypothesis. [1]” In this 
+context, insight refers to knowledge about the overall distribution. Switching the word insight with 
+knowledge does not effectively alter the meaning of the statement. 
+Similarly, Gonzales and Kobsa report the result of their study on adopting an information visualization 
+system by administrative data analysts: “the analyst determined the answers to these questions, but also 
+came up with further insights that she shared with people from other administrative units. She used the 
+discovered information to advise other administrators of certain previously unknown relationships in 
+their data.” The two sentences mirror each other and indicate that the insight shared by the analyst is in 
+fact information of previously unknown relationships (or knowledge) in the data that she discovered. 
+These two examples are telling. Insight in information visualization and visual analytics not only has a 
+different sense than in cognitive science, but is considered entirely differently. In the visualization 
+community, researchers often talk about discovering insight, gaining insight, and providing insight. This 
+implies that insight is a kind of substance, and is similar to the way knowledge and information are 
+discussed. In the cognitive science community, on the other hand, the wording is more often 
+experiencing insight, having an insight, or a moment of insight. In this context, insight is an event. The 
+fact that the two definitions refer to entirely different kinds of concept is a major impetus to consider 
+them separately. 
+4 IS THE GOAL OF VISUALIZATION INSIGHT? 
+With a clearer definition of insight, the statement that the goal of visualization is insight needs to be 
+reexamined. Based on the cognitive definition of insight, this statement restricts visualization into only 
+considering a specific mode of problem?solving that produces results that, though measurable, are not 
+easy to track. On the other hand, when considering insight only as knowledge or information, the 
+statement limits the potential capability of visualization to structured knowledge building and 
+information display. 
+Intuitively, visualization ought to promote both types of insight.  However, the differences between the 
+two make this goal seemingly difficult. Spontaneous insight is a form of problem solving that is used to 
+find solutions to difficult and seemingly incomprehensible problems. Knowledge?building insight, on the 
+other hand, is a form learning that builds a relationally semantic knowledge base through a variety of 
+problem?solving and reasoning heuristics. Additionally, spontaneous insight seems to depend on the 
+desertion of applied paradigms and schematic structures, whereas knowledge?building insight generally 
+depends on schematic structures (such as a mental model) to find patterns as well as to infer. 
+While the goals of promoting spontaneous insight and knowledge?building insight appear disparate, we 
+propose that in fact they are related. As little as is known about the origin of spontaneous insight, it 
+does not arise out of thin air. If spontaneous insight comes from the unexpected reconfiguration of 
+semantic knowledge [2], then relevant knowledge about a problem must be necessary for spontaneous 
+insight to arise. This is evident in the nine?dot and CRA experiments during which participants are often 
+observed to experience spontaneous insight only after spending time attempting to solve the problem 
+using normal problem?solving methods. We also can see that this is true more generally and for deeper 
+insights: Einstein didn’t come up with the Theory of Relativity out of thin air but rather based it on 
+experiments inconsistent with existing theories and previous mathematical work. Conversely, the major 
+paradigm shifts associated with spontaneous insight can create new structures and relationships in a 
+user’s understanding of a problem, which can then serve as the schematic structures needed for 
+generating future knowledge?building insights. 
+We propose that a similar relationship between knowledge building and spontaneous insight can be 
+found in using visualization to solve complex problems. The existence of deep, complex knowledge 
+about a subject increases the likelihood that a novel connection can be made within that knowledge. 
+Likewise, each major spontaneous insight opens up the possibility of new directions for knowledge?
+building. Together, the two types of insight support each other in a loop that allows human learning to 
+be both flexible and scalable. Since we know more about designing systems for knowledge building than 
+for the more elusive goal of promoting spontaneous insight, we can focus on the former and rely upon 
+this proposed relationship to ultimately encourage both kinds of insight. 
+ 
+Figure 2: We hypothesize that there is a non?linear relationship between the amount of knowledge that 
+a user gains from using a visual analytics and the probability that the user might have a spontaneous 
+insight on the task at hand. 
+Figure 2 shows our hypothesis of how using an exploratory visual analytical tool to increase the user’s 
+knowledge could increase the probability of a spontaneous insight occurring. We posit that there is a 
+general positive correlation between the two, but the relationship is not linear. As shown in Figure 2, 
+when the user only has a limited amount of knowledge (0 to k1), spontaneous insight is not likely to 
+occur. As the amount of knowledge increases (k1 to k2), the probability of spontaneous insight increases 
+sharply. Finally, after a certain point (k2 to k3), further increase of knowledge only increases the 
+probability in a limited fashion until it is asymptotically close to a spontaneous insight occurring. On the 
+other hand, there is undoubtedly a slowing down or even reduction in the probability of gaining a 
+spontaneous insight, at least for a while, if the user is distracted from this freer knowledge associating.   
+Although this model is simple, we believe that it can provide a starting framework for more accurate 
+insight?based evaluation of visualizations. But whatever model is chosen, our main point here is that 
+spontaneous and knowledge?building insights should be considered as distinct because the best 
+approaches to gain one or the other are different. In the case of spontaneous insight, we can evaluate 
+exploratory, “pre?query” approaches that keep one “in the cognitive zone” or “in the flow”, and 
+quantitatively identify if a spontaneous insight occurs through the use of an EEG or an fMRI. For 
+knowledge?building insight, we can evaluate detailed, knowledge gathering methods and look to 
+appropriate user studies to measure the amount of knowledge a user gains. Using these combined 
+approaches, not only can we more accurately determine the effectiveness of visualization tools, we can 
+provide cognitive scientists with more complex problem?solving artifacts (they have few available) and 
+shed light onto how the two types of insight can be promoted through visualization tools to solve real?
+world problems. 
+REFERENCES 
+[1] N. Amenta and J. Klingner. Case study: visualizing sets of evolutionary trees. Information 
+Visualization, 2002. INFOVIS 2002. IEEE Symposium on, pages 71–74, 2002. 
+[2] E. M. Bowden, M. Jung?Beeman, J. Fleck, and J. Kounios. New approaches to demystifying insight. 
+Trends in Cognitive Sciences, 9(7):322–328, 2005. 
+[3] S. K. Card, J. D. Mackinlay, and B. Shneiderman. Readings in Information Visualization: Using Vision to 
+Think. Morgan Kaufmann, 1999. 
+[4] J. Kounios, J. L. Frymiare, E. M. Bowden, J. I. Fleck, K. Subramaniam, T. B. Parish, and M. Jung?
+Beeman. The prepared mind: Neural activity prior to problem presentation predicts subsequent solution 
+by sudden insight. Psychological Science, 17(10):882–890, 2006.   
+[5] J. Lehrer. The eureka hunt: Why do good ideas come to us when they do? The New Yorker, pages 40?
+45, July 28, 2008. 
+[6] X. Mai, J. Luo, J. Wu, and Y. Luo. “Aha!” effects in a guessing riddle task: an event?related potential 
+study. Human Brain Mapping, 22(4):261–270, 2004. 
+[7] C. North. Toward measuring visualization insight. IEEE Computer Graphics and Applications, 26(3):6–
+9, 2006. 
+[8] C. Plaisant, J.?D. Fekete, and G. Grinstein. Promoting insight based evaluation of visualizations: From 
+contest to benchmark repository.  IEEE Transactions on Visualization and Computer Graphics, 14(1):120–
+134, 2008. 
+[9] P. Saraiya, C. North, and K. Duca. An insight?based methodology for evaluating bioinformatics 
+visualizations. IEEE Transactions on Visualization and Computer Graphics, 11(4):443–456, 2005.   
+[10] J. Thomas and K. Cook. Illuminating the Path: The Research and Development Agenda for Visual 
+Analytics. National Visualization and Analytics Center, 2005. 
+[11] J. S. Yi, Y. ah Kang, J. T. Stasko, and J. A. Jacko. Understanding and characterizing insights: how do 
+people gain insights using information visualization? In BELIV ’08: Proceedings of the 2008 conference 
+on BEyond time and errors, pages 1–6, New York, NY, USA, 2008. ACM. 
+

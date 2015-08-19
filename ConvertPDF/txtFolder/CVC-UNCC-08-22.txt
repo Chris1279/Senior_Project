@@ -1,0 +1,776 @@
+Noname manuscript No.
+(will be inserted by the editor)
+Dong Hyun Jeong · Chang G. Song · Remco Chang · Larry Hodges
+User experimentation: An Evaluation of Velocity Control
+Techniques in Immersive Virtual Environments
+Received: date / Accepted: date
+Abstract An effective velocity control technique can en-
+hance sense of presence in an immersive virtual environ-
+ment (VE) and allow the user to navigate the VE more easily.
+While many of the existing velocity control techniques are
+well designed, the techniques are often application-specific,
+making it difficult to compare their effectiveness. In this pa-
+per, we evaluate five known velocity control techniques us-
+ing the same experimental settings. We compare the tech-
+niques based on the assumption that a good travel technique
+should be more “natural,” thus allowing the user to focus
+more on the task in the VE. In other words, a good travel
+technique should be easy to learn and easy to use, should
+cause the user to have few collisions with the VE, should
+allow the user to complete tasks faster, and should promote
+better recollection of the environment afterwards. In our ex-
+periments, we ask twenty users to use each velocity control
+technique to navigate through virtual corridors while per-
+forming information-gathering tasks. In all cases, the users
+use pointing to indicate the direction of travel. We then mea-
+sure the users’ ability to recollect the information they see
+in the VE, as well as how much time they spend in the VE
+and how often they collide with the virtual walls. After each
+test, we use questionnaires to evaluate the ease of learning
+and ease of use of the velocity control technique, and the
+users’ sense of presence in the environment. Each of the
+travel techniques is then evaluated based on the users’ per-
+formances in the VE and the results of their questionnaires.
+Keywords Virtual Reality · 3D Interaction · Velocity
+Control Technqiues
+Dong H. Jeong
+Dept of Computer Science, UNC Charlotte
+Tel.: +1-45-678910
+Fax: +1-45-678910
+E-mail: dhjeong@uncc.edu
+S. Author
+second address
+1 Introduction
+In a large-scale virtual environment, navigation techniques
+are commonly used to assist people in moving freely about
+the environment. Bowman et al.[5] classify navigation tasks
+into two sub-tasks: traveling and wayfinding. Traveling is
+regarded as the motor component of navigation and refers
+to the process of controlling the user’s viewpoint motion
+in a VE. Wayfinding is considered as the cognitive com-
+ponent that uses additional guides such as maps or com-
+passes to help the user find a path [11]. According to Bow-
+man’s classification [2] [5], traveling can further be broken
+down into three components: direction/target selection, ve-
+locity/acceleration selection, and input conditions. In this
+paper, we focus on velocity/acceleration selection, evaluat-
+ing the performance of five different velocity control tech-
+niques.
+Most VE applications only allow a user to travel at con-
+stant velocity. However, when traveling in a large-scale vir-
+tual environment, it is often useful to be able to change one’s
+velocity in order to explore the environment more efficiently.
+Although several techniques have been developed for effi-
+cient navigation of a large-scale VE while allowing varia-
+tions in the user’s velocity (for a survey of these techniques,
+see [20]), it is unclear how effective each velocity control
+technique is outside of its designed environment. In this pa-
+per, we evaluate five velocity control techniques (count-based,
+time-based, gesture-based, force-based, and speech-based tech-
+niques) in the same experimental environment. We test each
+velocity control technique in an immersive VE in which the
+user wears a tracked head-mounted display (HMD) and uses
+a 3D spatial input device (a flying mouse) for interaction. In
+all experiments, the flying mouse is used as a pointing device
+for indicating the direction of travel.
+To determine the usefulness and efficiency of the ve-
+locity control techniques, we follow the testbed evaluation
+method [3] [7] [22] in which each technique is measured
+quantitatively and qualitatively. As quantitative measurements,
+the user’s information-gathering ability, the number of times
+the user collides with the VE, and the amount of time the
+2user spends in the environment are measured. Qualitatively,
+we examine a few quality factors [5] regarding ease of learn-
+ing, ease of use, and presence [1].
+In the following sections, we review some related re-
+search and existing velocity control techniques, followed by
+discussion of our experimental environments. Finally, we
+present our findings and rate each of the five velocity control
+techniques.
+2 Prior Work
+As computers and graphics cards become faster, the poten-
+tial size of virtual environments also grows correspondingly.
+Traveling through these large virtual environments using con-
+ventional travel techniques that adopt constant velocity is
+becoming less and less feasible. Instead, researchers and de-
+signers are beginning to look toward using velocity control
+techniques to effectively traverse these large environments.
+However, controlling velocity in a 3D virtual environment
+is not simple [20] because most existing devices have been
+designed for use in 2D environments.
+From the taxonomy of virtual travel techniques [2] [5],
+we understand that velocity control is one of the key com-
+ponents in motion control (travel). Mine [20] classifies five
+different methods to specify the speed of motion (constant
+speed, constant acceleration, hand (gesture) controlled, phys-
+ical controls, and virtual controls) in order to understand the
+principles of velocity control techniques. Bowman et al. [5]
+list several velocity control metaphors in the taxonomy of
+virtual travel techniques.
+Many velocity control techniques have been developed.
+Brogan et al. [9] use stationary bicycles to control the user’s
+velocity. Couvillion et al. [10] create a pressure-sensitive
+mat and track the user’s footsteps. Although these two tech-
+niques are both based on the natural locomotion of the user,
+the cost of construction makes them unfeasible for many
+applications. Another device used to control the speed of
+travel, Bungee Bat [21], is a 3D passive force feedback de-
+vice, but it is restrictive in that the user has to use both hands
+and thus has not been used widely.
+In this paper, we examine five velocity control techniques
+that can be applied to a wide range of virtual environments.
+The gesture-based technique [20] is introduced in Mine’s
+1995 report on virtual environment interaction techniques.
+The simple terms of discrete and continuous range of selec-
+tion in velocity are used by Bowman et al. [6] in his taxon-
+omy of travel techniques. Jeong et al. [13] present the force-
+based technique using force sensing resistors and show its
+efficiency by comparing with other techniques. Lee’s speech-
+based technique [17] allows the user to control velocity us-
+ing voice commands.
+In virtual reality and HCI, subjective evaluation is a com-
+mon method to determine the efficiency of a designed tech-
+nique in comparison to others. For virtual environments, Bow-
+man summarized three evaluation methods: testbed evalu-
+ation, sequential evaluation, and a combined approach [7].
+Testbed evaluation [4] [7] is a method for evaluating inter-
+action techniques in a formal experiment environment called
+a testbed. As opposed to the testbed evaluation, sequential
+evaluation is a user-centered evaluation method involving a
+user task analysis, heuristic evaluation, formative evaluation,
+and summative comparative evaluation [12]. A combined
+approach is a method integrating the two different evaluation
+methods [7]. Since user-centered approaches require knowl-
+edge of application context, we follow the testbed evaluation
+technique in our experiment.
+3 Velocity Control Techniques
+We examine five velocity control techniques:
+– count-based (discrete selection [6]),
+– time-based (continuous range selection [6]),
+– gesture-based [20],
+– force-based [13],
+– speech-based [17].
+In all five scenarios, pointing is used to indicate the di-
+rection of travel through the use of a 3D mouse (see sec-
+tion 4). Pointing is chosen because it is the most efficient
+direction control technique [5]. In all cases, users are only
+allowed to move forward (user’s velocity ??v is always posi-
+tive).
+Count-based velocity control technique : Two buttons
+on the 3D mouse are used for increasing and decreasing the
+speed of travel. Initially the click count of each button (m
+and n) is set to zero. m and n are then incremented as the
+user clicks on their associated buttons. The velocity ??v is
+defined as:
+??v = (m?n)? where (m?n? 0) (1)
+We use a scale factor ? to represent the ratio between
+distances in the VE and the real world. In our experiments,
+? is empirically set to 0.015 because this allows the user
+to travel approximately 0.075 meters per frame after 5 but-
+ton clicks of speed increase. In our system where the frame
+rate is approximately 20 frames per second, 0.075 meters per
+frame translates to roughly 1.5 meters per second, which is
+the normal speed for people when walking in the real world
+[26].
+Time-based velocity control technique : Instead of count-
+ing the button clicks, time-based velocity control measures
+the duration of a button press. When the button is held down,
+the velocity is continuously increased, and when the button
+is released, the velocity slowly decreases until it reaches to
+zero.
+??v f =???v f?1±
+(
+? t
+?
+)
+? t : elapsed time (milliseconds) (2)
+3??v f and ???v f?1 are both greater than or equal to 0 and rep-
+resent the velocity of the current ( f ) and previous frame
+( f ? 1) respectively. ? t is the elapsed time between each
+rendered frame, and ? represents a scale factor. Depending
+on whether or not the button is held down, the velocity of
+each frame is incremented or decremented by ? t? from the
+previous frame’s velocity. In our experiments, we find that a
+value of 10 for ? gives the user a good balance between be-
+ing able to change velocity rapidly and retaining fine control
+of the velocity. By holding down the button for 1.5 seconds
+or so, the user can achieve the average walking speed in the
+real world of 1.5 meters per second.
+Gesture-based velocity control technique : This tech-
+nique allows the user to control the velocity based on the
+distance between the user’s hand and head. The two most
+commonly used gesture-based velocity control techniques
+are zone-based mapping and linear mapping [20]. In our
+experiments, we adopted the linear mapping because of its
+intuitiveness and ease of use over zone-based mapping [20].
+Near to the body
+Far from the body
+max speedstop min speed
+Fig. 1 Gesture-based velocity control technique using a linear map-
+ping
+In linear mapping, the user’s hand location is linearly
+mapped to the reachable space in front of the user, thus al-
+lowing the user to control the velocity based on the place-
+ment of the hand (Figure 1). For additional control, a “stop-
+ping zone” is added such that the user can instantly set the
+velocity to 0 by placing the hand close to the body.
+??v = (normalized(dtc))?
+dtc : distance from the head position to the user’s
+hand in tracking coordinates (3)
+Due to people’s different arm-reach lengths and body
+sizes, we normalize dtc to accommodate their physical dif-
+ferences. The value ? is then applied to change the scale of
+speed. In our experiment, ? is empirically set to 4.0 so that
+the maximum velocity for a user is 4 meters per second.
+Force-based velocity control technique : This technique
+allows the user to control velocity based on how hard the
+user pushes down on a button. The button is made with a
+force-sensing resistor (FSR), which has the electrical prop-
+erty of resistance to measure force (or pressure). In general,
+a FSR is made of resistive film and digitizing contacts like
+conductors. When greater force is applied to an FSR, a better
+connection is made between the contacts, resulting in better
+conductivity [25].
+In our experiment, an FSR is attached to a spatial mouse.
+To give the user the illusion of feedback, we add two layers
+of foam tape on top of the FSR to give it a “squishy” feel. By
+pressing down on the foam-padded FSR, the user increases
+the velocity of travel. Removing pressure from the FSR sets
+the user’s velocity back to 0.
+??v = Fs?
+Fs : known measured force (0? Fs ? 190) (4)
+? is empirically set to 0.001, which sets the maximum
+velocity of the user to 4 meters per second.
+Speech-based velocity control technique : In this tech-
+nique, the speed of travel is set discretely based on the recog-
+nition of different utterances. In our experiment, the user
+can choose from 6 different velocities by speaking the word
+“stop, ” “very slow,” “slow,” “go,” “fast,” or “very fast.” We
+use Microsoft SAPI 5.0 as the speech recognizer in conjunc-
+tion with context-based recognition for increased accuracy.
+To test the accuracy of the recognition, we ask 10 users to
+speak each word 20 times. We find that the user’s speech
+is correctly identified about 98.0% of the time (in average
+19.6±2.4 words are correct).
+??v = l?
+l : velocity step (l = 0 . . .5) (5)
+Each velocity step has pre-defined speed values (see fig-
+ure 2). In our experiment, ? is set to be 0.04, which allows
+the user to travel at 4 meters per second under the “very fast”
+mode.
+very slow
+slow
+fast
+very fast
+go
+stop
+step
+sp
+eed
+Fig. 2 Speech-based velocity steps
+4 Experimental Environment
+Since velocity control techniques are generally developed in
+different VE applications, it is important for our evaluation
+to be done as a testbed [3]. With each technique evaluated
+in the same experimental settings, we can then distinguish
+the differences among the techniques and find the strengths
+and weaknesses of each technique. This section describes
+our environmental settings including the devices used in the
+experiment.
+44.1 Hardware Environment
+A 3D spatial input device (a flying mouse) is used to indi-
+cate the direction of travel. The 3D mouse is created using
+a commercial joystick similar to the i3stick [8]. The pistol
+grip on the joystick is separated from the stationary base,
+and a magnetic tracker is attached to the bottom of the grip
+for tracking the position and orientation of the device in the
+virtual environments (Figure 3).
+(1)
+(2)
+Fig. 3 Spatial mouse with attached FSR (1) and receiver (2).
+The user wears a VFX-3D head mounted display (HMD)
+with a Polhemus Insidetrack tracker on top. This allows us
+to track the position and orientation of the user’s head.
+4.2 Virtual Environment
+A trial environment and five experimental environments are
+designed using the Simple Virtual Environment (SVE) toolkit
+[16], and rendered on a desktop computer. Since most re-
+searchers use virtual corridors or similar environments for
+testing travel techniques or finding important knowledge [2]
+[11] [15] [18], all environments in our experiment are de-
+signed as virtual corridors.
+Five virtual corridors are created. Each corridor (except
+for the trial corridor) contains 10 divided sections (Figure 4).
+In each section, a word is positioned randomly on either the
+left wall, right wall, ceiling, or floor (Figure 5). The corridors
+are designed to contain 10 words because most people can
+retain about five to nine pieces of information at one time
+[14] [19].
+The walls in the virtual corridors are not penetrable. When
+a user collides with a wall, the user is prevented from moving
+past it. Since collision is a factor in our quantitative analy-
+sis, and yet most users in a VE are not generally aware of
+the fact that they are colliding or in contact with a wall, we
+play a recorded message (‘You hit the wall”) when a colli-
+sion occurs.
+Fig. 4 Outline of a trial environment (top-left) and five different exper-
+imental environments. The dash-lines represent the virtually divided
+sections in the experimental environments.
+Fig. 5 Interior view of the virtual corridor and information (the word
+”stationary” in Korean) attached on the wall
+4.3 Words in the Environments
+All the words used in the virtual environments are chosen
+carefully. We start with 75 commonly used nouns such as
+“keyboard”, “stationary”, “refrigerator”, etc. and separate them
+into 5 groups of 15 words (one group for each virtual corri-
+dor). Ten volunteers are then asked to look at each group and
+memorize the 15 words within 10 seconds. After the volun-
+teers recite the words that they memorized, we discard the
+words that are the easiest or the most difficult to remember.
+Our original assumption is that everyday words are eas-
+ier to remember. However, we find that the volunteers are
+better at memorizing technical or infrequently used words.
+Furthermore, several subjects recited words that are synonyms
+of the original words (for example, “freezer” instead of “re-
+frigerator”). By filtering out these words using the memory
+test described above, we reduce the ambiguity when scoring
+the users’ information gathering ability in the VE.
+5 Experiment
+As mentioned previously, pointing is used because it is com-
+paratively advantageous to other wayfinding techniques, and
+it follows relative viewpoint motion control [5]. By combin-
+ing pointing and a velocity control technique, users can navi-
+5gate a VE by indicating the direction that they want to move
+toward while controlling the velocity at which they would
+travel.
+Twenty student volunteers (seventeen males and three fe-
+males) participate in the experiment. Each user tests all 5 ve-
+locity control techniques in a random order, and receives the
+five virtual corridors in random order as well. Prior to the
+experiment, the users are required to familiarize themselves
+with each velocity control technique in the trial corridor.
+The users are requested to use the randomly selected ve-
+locity control technique and navigate to the end of the vir-
+tual corridor within 180 seconds while memorizing words
+and the locations of the words as they appear in the corri-
+dors. Each user’s completion time and duration of collisions
+are recorded during their experiments. After an experiment
+is completed, the user is asked to write down the words seen
+in the virtual corridors as well as the corresponding section
+numbers and their positions (whether the word appeared on
+the left or right wall, ceiling, or floor). Steed-Usoh-Slater
+presence questionnaires [27] and abstract performance eval-
+uations [4] are also filled out by each user after each experi-
+ment in order to measure the qualitative aspect of the user’s
+performance.
+6 Quantitative Evaluation
+Three quantitative measurements are used in our experiment.
+First, we examine the time-to-completion for each user us-
+ing each velocity control technique. Second, we evaluate
+how much information people can gather in the environ-
+ment. Lastly, the number of the collisions and the duration
+of collisions (in frames) are examined.
+6.1 Time-to-Completion Analysis
+In the experiment, all subjects are requested to reach the end
+of the virtual corridors using each of the velocity control
+techniques. The maximum time spent has been set to 180
+seconds. We record the start and end time of each experi-
+ment and compute the average time spent in the VE. If the
+subject stays more than 180 seconds in the environment, the
+system will be terminated and total time spent in the exper-
+iment will be recorded as 180 seconds. On average, users
+spend approximately 131 seconds in the VE. Even though
+there is no statistically significant difference, Table 1 fur-
+ther shows that users spend the least time when using the
+force-based technique. Simply we think that the force-based
+technique requires the least amount of effort from the user to
+manipulate, thus allowing the user to navigate the corridors
+more easily.
+6.2 Information Gathering Ability Analysis
+After each experiment, the users are asked to answer ques-
+tions about which words they saw, in which sections the
+Table 1 Mean and Standard Deviations of time spent in seconds while
+using each technique
+Count- Time- Gesture- Force- Speech- Total
+based based based based based
+Mean 132.1 133.2 133.5 113.5 143.8 131.2
+Std 38.3 33.9 28.0 29.5 31.5 33.3
+words were, and on which surface (ceiling, floor, left or right
+wall) the words were placed. As mentioned above, no user
+is allowed to spend more than 180 seconds for each experi-
+ment because spending more time in the VE would increase
+the users’ information gathering ability.
+6.9
+9.8 9.7
+9.15
+7.25
+3.41
+4.73 4.57
+4.85
+3.15
+0
+2
+4
+6
+8
+10
+12
+14
+discrete time-based gesture-based force-based speech-based
+a
+b
+Fig. 6 Mean values of overall score without (a) and with (b) dividing
+by time spent in minutes
+The user’s ability is evaluated in terms of number of
+correct words, location accuracy, and surface accuracy. The
+overall score can be described as (3a+2b+c), where a = the
+number of correct combinations of word, location, and sur-
+face, b = the number of answers in which two variables
+are correct and c = the number of answers in which only
+one variable is correct [13]. Figure 6(a) shows the mean
+values of gathered information and the overall score. The
+result suggests that time-based and gesture-based velocity
+control techniques are superior to other techniques in infor-
+mation gathering. However, if we take the users’ completion
+time into consideration and change the scoring function to
+(3a+2b+c)/t where t = the amount of time spent in the VE
+[13] (Figure 6(b)), we see that force-based velocity control
+technique outperforms the others, and users spend more time
+relative to how much information they can gather when us-
+ing the time-based or gesture-based technique. It also shows
+that the amount of time a user spends in the VE has a direct
+affect on the user’s information gathering ability.
+By a standard single-factor ANOVA, we find that the
+differences between the velocity control techniques’ overall
+scores are significant (R2 = 0.14,F(1,5) = 4.08, p = 0.004)
+66.3 Collision Analysis
+A study by Profitt and Gilden [23] shows that people use
+only one dimension of information when making decisions
+in a dynamic environment. If more than one dimension of in-
+formation exists in the decision making process, people tend
+to make more mistakes. Our experiment presents the user
+with two dimensions of information - wayfinding and veloc-
+ity control - and we measure the number of collisions and
+the average duration of collisions as the “mistakes” made
+by the user in the dynamic VE. Based on the study by Profitt
+and Gilden, we hypothesize that the more natural and conve-
+nient the velocity control technique is, the fewer and shorter
+(in duration) the collisions would be; whereas if the velocity
+control technique is difficult to use, the user would have a
+harder time making correct judgements in the dynamic VE
+and cause more collisions.
+573
+400.5
+228.25
+300.7
+70.5
+6.5
+5.35
+5.3
+5.55
+4.8
+0
+100
+200
+300
+400
+500
+600
+700
+discrete time-based gesture-based force-based speech-based
+0
+1
+2
+3
+4
+5
+6
+7
+total duration of collisions Number of collisions
+Fig. 7 The number of collision counts and the total duration of colli-
+sions (in frames).
+Figure 7 shows the counted number of collisions and
+the average duration of collisions (in frames) using each ve-
+locity control technique. The number of collisions is incre-
+mented each time the subject hits the wall, and the dura-
+tion of the collision (in frames) is recorded while user falls
+into the state of collision. We find that there is no significant
+difference on the number of collisions. But, the difference
+between each technique in considering the duration of col-
+lisions is significant (p < 0.01) by a standard single-factor
+ANOVA analysis (R2 = 0.3,F(1,5) = 10.59, p = 0.0001).
+Based on figure 7, we see that force-based velocity con-
+trol technique is the most natural technique compared to
+the other four by a factor of three based on the duration
+of collisions. This is different from our original hypothe-
+sis that speech-based technique would be the most intuitive
+as it separates the task of traveling into hand manipulation
+and speech. The result suggests that such separation causes
+more distraction for the users as they divide their attention
+between different cognitive tasks.
+7 Qualitative Evaluation
+To evaluate qualitative performance of each velocity control
+technique, we examine sense of presence using the Steed-
+Usoh-Slater presence questionnaire [27]. Slater and Steed
+have demonstrated that the user’s sense of presence directly
+affects human-computer interaction in immersive VEs [24].
+We also extend the abstract performance evaluation proposed
+by Bowman and Hodges [4] to include the measurement of
+user concentration when evaluating the user’s ability to per-
+form tasks in a VE.
+Table 2 shows that, on average, there is no significant
+difference among the velocity control techniques. However,
+force-based and speech-based velocity control techniques
+have higher scores in SUS count indicating more people feel
+a deep sense of presence in the VE using these two tech-
+niques.
+Table 2 Mean and Standard Deviations of SUS Questionnaire Scores
+(1. Low sense of presence ... 7. High sense of presence)
+SUS Mean SUS Count
+Count-based 4.15±0.94 0.60±1.04
+Time-based 4.65±0.93 0.80±1.32
+Gesture-based 4.58±0.81 0.85±1.18
+Force-based 4.62±1.03 1.15±1.42
+Speech-based 4.53±0.95 1.20±1.32
+Total 4.51±0.93 0.92±1.26
+Abstract performance values are measured after a subject
+finishes all five experiments. The velocity control techniques
+are rated in order of preference (5=top choice, 4=second
+choice, etc.). Our abstract performance questionnaires not
+only measure ease of learning, ease of use, and user comfort
+as proposed by Bowman and Hodges [4], they also measure
+user concentration, which indicates how well the velocity
+control technique facilitates the user in concentrating on the
+information gathering task.
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4
+4.5
+5
+Ease of learning Ease of use User Comfort User Concentration
+Discrete
+Time-based
+Gesture-based
+Force-based
+Speech-based
+Fig. 8 Measuring abstract performance values. Highest number indi-
+cating the most efficient technqiue (5=top choice, 4=second choice,
+etc.)
+Figure 8 shows the results of the abstract performance
+questionnaires. The results indicate that the force-based ve-
+7locity control technique is better than the other techniques
+in all four measurements of the abstract performance values,
+while the time-based technique comes in as the second best
+option. The count-based technique appears to be the most
+difficult to learn, use, and concentrate on, and the gesture-
+based technique causes the most amount of user discomfort.
+8 Conclusion
+We summarize the results of our experiments in Table 3
+in which each technique is broken down into its interac-
+tion type (Mapping), the major complaints of the technique
+(Weakness), how natural it is to use (Naturalness), how a
+user would interact with the device (Mechanism), and how
+quickly a user can change velocity using the technique (Sen-
+sitivity). Through the experiments, we find that the force-
+based velocity control technique is in general more efficient
+than the other four techniques when considering time spent,
+information gathering ability, amount of collision, sense of
+presence, ease of learning, ease of use, user comfort, and
+user concentration. Although the force-based technique ap-
+pears to be efficient in all of our tests, we should note that
+the creation and construction of the force-sensing device is
+also the most time consuming.
+The mechanism of using a time-based technique is sim-
+ilar to using a force-based technique in that the user is re-
+quired to press and hold down a button to control velocity.
+Although the time-based technique receives high scores in
+information gathering tasks and all four of the quality fac-
+tors, results indicate that user performance is slightly worse
+than when using the force-based technique. The main com-
+plaints about the time-based technique include finger fatigue
+after prolonged use and a lack of visual feedback on how
+long a button has been held down. Nonetheless, the fact that
+the time-based technique is much easier to implement than
+the force-based technique makes it a commendable choice.
+The speech-based technique exhibits similar scores to
+the time-based technique in the qualitative evaluations, but
+receives a much lower score in time-to-completion and in-
+formation gathering. As many users commented, it is dif-
+ficult to recognize words in the VE while speaking com-
+mands to control velocity. The cognitive dissonance caused
+by performing two word-related tasks results in the overall
+low quantitative measurements on the users’ performance.
+Moreover, the fact that speech recognition is not perfectly
+accurate occasionally forces the user to repeat commands,
+which further prolongs the time spent in the VE. However,
+the high scores in qualitative measurements suggest that us-
+ing speech to control velocity is intuitive to the user, making
+this technique comfortable to use, easy to learn, and easy to
+use.
+Since the gesture-based technique follows a natural map-
+ping between velocity control and hand position, it is unex-
+pected to see that most subjects rate this technique as the
+least comfortable to use, and one of the most difficult to
+learn and to use. Although it receives good scores in the
+information gathering tasks and is rated highly in sensitiv-
+ity, all users complained of extreme arm fatigue after using
+the gesture-based technique in the VE, which drastically re-
+duces the usefulness of this technique in most applications.
+Arguably the least effective technique that we tested is
+the count-based technique. It receives low scores in all quan-
+titative and qualitative measurements. Although the use of
+the technique resembles using a desktop mouse and there-
+fore should be easy to learn, the users complained that while
+wearing a head-mounted display, they could not see where
+the two buttons are. Furthermore, the repeated clicking is te-
+dious, tiring, and slow. All users commented on the fact that
+stopping is difficult, and after the experiment, they experi-
+enced finger fatigue.
+9 Discussion and Future Work
+As computer systems and graphics cards have become faster,
+virtual environments have also grown larger. To support trav-
+eling these large virtual environments efficiently, velocity
+control techniques are often required to assist the users. Sev-
+eral different velocity control techniques have been proposed
+and designed, but most of them are domain or application
+specific. To design a more generic and efficient technique,
+those existing techniques have to be evaluated in the same
+experimental settings in order to find their strengths and weak-
+nesses. In this paper, five velocity control techniques (count-
+based, time-based, gesture-based, force-based, and speech-
+based) are tested in immersive virtual environments. To eval-
+uate the performance of each velocity control technique, quan-
+titative measurements such as time-to-completion, informa-
+tion gathering ability, and amount of collisions are taken into
+account, and qualitative measurements such as sense of pres-
+ence and performance factors are also considered.
+We originally hypothesized that if a velocity control tech-
+nique follows a natural mapping to human actions, the tech-
+nique will be intuitive to the user and therefore easy to use.
+However, from our experiments, we find that such natural
+mappings do not always result in good evaluations. The gesture-
+based technique suffers in the qualitative analysis in which
+users complained of arm fatigue. The speech-based tech-
+nique causes cognitive dissonance during information gath-
+ering, and therefore receives low quantitative scores. Although
+the two techniques do not share the same weaknesses, the ev-
+idence is adequate to suggest that only considering a natural
+mapping to human actions in designing an efficient velocity
+control technique is simply not sufficient.
+For future work, we would like to expand our experi-
+ments to include virtual environments other than virtual cor-
+ridors. Many virtual environments today are not restricted to
+indoor environments, and we would like to design additional
+tests to examine if the findings in this project can be gener-
+alized to VEs of all types. Furthermore, through evaluating
+various velocity control techniques, we would like to find
+ways to extract the good design elements in each technique
+8Table 3 Summary of each techniques. Mapping depicts the type of interaction required by the user. Weakness summarizes the major complaints
+of the technique. Naturalness denotes whether or not the technique mimics a natural mapping to human actions. Mechanism shows how each
+technique is used, and sensitivity indicates if the user can quickly change the velocity using each technique.
+Mapping Weakness Naturalness Mechanism Sensitivity
+Count-based Discrete Finger Fatigue No Pressing Low
+Time-based Linear Finger Fatigue No Pressing Low
+Gesture-based Linear Arm Fatigue Yes Gesturing High
+Force-based Approximately Linear [25] Difficult to Implement No Pressing High
+Speech-based Discrete Incorrect Recognition Yes Uttering Low
+and propose a more efficient and user-friendly technique of
+our own.
+Acknowledgements The authors wish to thank Caroline Ziemkiewicz
+for her help on constructing and revising the drafts.
+References
+1. W. Barfield, D. Zeltzer, T. Sheridan, M. Slater (1995) Presence and
+performance within virtual environments. In: Virtual Environments
+and Advanced Interface Design (W. Barfield and T. Furness, eds).
+Oxford University Press, Oxford.
+2. Bowman, D. A.: Maintaining Spatial Orientation during Travel in
+an Immersive Virtual Environment. Presence: Teleoperators and Vir-
+tual Environments, Vol. 8, No. 6. 618-631 (1999)
+3. Bowman, D. A: Testbed Evaluation of Virtual Environment Interac-
+tion Techniques. Presence: Teleoperators and Virtual Environments,
+Vol. 10, No. 1. (2001) 75-95
+4. Bowman, D. A. and Hoges, L.F.: Formalizing the Design, Evalua-
+tion, and Application of Interaction Techniques for Immersive Vir-
+tual Environments, The Journal of Visual Languages and Computing,
+Vol.10, No. 1. 37-53 (1999)
+5. Bowman, D.A., Koller, D., and Hodges, F.L.: Travel in Immersive
+Virtual Environments: An Evaluation of Viewpoint Motion Control
+Techniques. In: Proceedings of Virtual Reality Annual International
+Symposium, pp.45-52 (1997)
+6. Bowman, D.A., Koller, D., Hodges, L.F., ”A Methodology for the
+Evaluation of Travel Techniques for Immersive Virtual Environ-
+ments”. Virtual Reality: Research, Development, and Applications.
+3. 2. 1998. 120-131.
+7. Bowman, D.A., LaViola. J., Mine, M., and Poupyrev, I.: Advanced
+topics in 3d user interface design. In Course Notes - SIGGRAPH
+2001. (2001)
+8. Brederson, J.D. ”The I3Stick: An Inexpensive, Immersive, Interac-
+tion Device”. University of Utah Technical Report, UUCS-99-016,
+November 1999.
+9. Brogan, D. C., Metoyer, R. A., and Hodgins, J. K.: Dynami-
+cally Simulated Characters in Virtual Environments. IEEE Computer
+Graphics and Applications, Vol. 15, No. 5, (1998) 58-69
+10. Couvillion, W., Lopez, R., Ling, J.: The Pressure Mat: A New
+Device for Traversing Virtual Environments Using Natural Motion.
+Interservice / Industry Training Systems and Education Conferences.
+(2001)
+11. R. Darken and J. L. Siebert, ”Wayfinding strategies and behaviors
+in large virtual worlds,” in Proc. ACM CHI Conf. Human Factors
+Comput. Syst., Seattle, WA, Nov. 1996. 142-149
+12. Gabbard, J. L., Hix, D., Swan, E.J: User-Centered Design and
+Evaluation of Virtual Environments, IEEE Computer Graphics and
+Applications, 19(6), (1999) 51-59.
+13. Jeong, D. H., Jeong, Y. H., Kim, J. K., Sim, S. and Song, C. G.:
+Force-based velocity control technique in immersive v.e. In Graphite
+2004, (2004) 237-241.
+14. Jeong, D. H., Lee, C. S., Jeong, G. B, Song, C. G., Babu, S.,
+Hodges, L.: Differentiation on Information Gathering Ability in Real
+and Virtual World, Pacific Graphics 2005, (2005) 157 - 159.
+15. Kamphuis, A., Overmars., M. H.: Finding Paths for Coherent
+Groups using Clearance, Eurographics/ACM SIGGRAPH Sympo-
+sium on Computer Animation (2004) 19-28.
+16. Kessler, G.D., Bowman, D.A., and Hodges, L.F.: The Simple Vir-
+tual Environment Library: An Extensible Framework for Building
+VE Applications. Presence: Teleoperators and Virtual Environments,
+Vol. 9, No. 2. (2000) 187-208.
+17. Lee, C. S., Jeong, D. H., Kim, Y. R., Park, C. Y., Song, C. G.:
+Speech based velocity control in immersive v.e. In Proceedings of
+Korean Multimedia Society Spring Conference, (2005) 293-295.
+18. Marsh, T. and Smith, S. Guiding user navigation in virtual envi-
+ronments using awareness of virtual off-screen space, In Proceedings
+of Guiding Users through Interactive Experiences: Usability Centred
+Design and Evaluation of Virtual 3D Environments, (2001) 149-154.
+19. Miller, G. A.: The magical number seven, plus or minus two:
+Some limits on our capacity for processing information. Psycholog-
+ical Review, 63, (1956) 81-97.
+20. Mine, M.: Virtual environment interaction technique. UNC Chapel
+Hill, Computer Science Tech. Report TR95-018 (1995)
+21. Paton, Mark and Ware, Colin: Passive Force Feedback for velocity
+control. CHI94. (1994) 255-256
+22. Poupyrev, I., Wegorst, S. Billinghurst, M and Ichikawa, T: A
+Framework and Testbed for Studying Manipulation Techniques for
+Immersive VR. Proc. ACM Symposium on Virtual Reality Software
+and Technology. (1997) 21-28
+23. Profitt, D. and Gilden, D. 1989. Understanding natural dynamics.
+Journal of Experimental Psychology: Human Perception and Perfor-
+mance. 15, 2, 384-393.
+24. M. Slater and A. Steed. A virtual presence counter. Presence: Tele-
+operators and Virtual Environments, 9(5), (2000) 413-434.
+25. Smith, B.T.; Coiro, D.J.; Finson, R.; Betz, R.R.; McCarthy, J.:
+Evaluation of force-sensing resistors for gait event detection to trig-
+ger electrical stimulation to improve walking in the child with cere-
+bral palsy, IEEE Transactions on Neural Systems and Rehabilitation
+Engineering, vol.10, no.1pp. 22- 29, Mar 2002
+26. Tanawongsuwan, R., Bobick, A.: Modelling the effects of walking
+speed on appearance-based gait recognition, In CVPR 2004, volume
+2, (2004) 783-790.
+27. Usoh, M., Catena, E., Arman, S., Slater, M.: Using Presence Ques-
+tionnaires in Reality. Presence: Teleoperators and Virtual Environ-
+ments, Vol. 9, No. 5. (2000) 497-503.
+

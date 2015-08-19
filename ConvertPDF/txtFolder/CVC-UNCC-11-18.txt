@@ -1,0 +1,865 @@
+Temporal Volume Flow: An Approach to Tracking Failure
+Recovery
+Jianfei Liua and Kalpathi R. Subramanianb Terry S. Yooc
+a,bThe University of North Carolina at Charlotte
+Charlotte Visualization Center, Dept. of Computer Science,
+9201 University City Blvd, Charlotte, NC, 28223;
+cOffice of High Performance Computing and Communications,
+National Library of Medicine, National Institutes of Health,
+Bethesda, MD, 20892
+ABSTRACT
+The simultaneous use of pre-segmented CT colonoscopy images and optical colonoscopy images during routine
+endoscopic procedures provides useful clinical information to the gastroenterologist. Blurry images in the video
+stream can cause the tracking system to fail during the procedure, due to the endoscope touching the colon wall
+or a polyp. The ability to recover from such failures is necessary to continually track images, and goes towards
+building a robust tracking system. Identifying similar images before and after the blurry sequence is central to
+this task.
+In this work, we propose a Temporal Volume Flow(TVF) based approach to search for a similar image
+pair before and after blurry sequences in the optical colonoscopy video. TVF employs nonlinear intensity and
+gradient constancy models, as well as a discontinuity-preserving smoothness constraint to formulate an energy
+function; minimizing this function between two temporal volumes before and after the blurry sequence results
+in an estimate of TVF. A voting approach is then used to determine an image pair with the maximum number
+of point correspondences. Region flow algorithm10 is applied to the selected image pair to determine camera
+motion parameters.
+We applied our algorithm to three optical colonoscopy sequences. The first sequence had 235 images in
+the ascending colon, and 12 blurry images. The image pair selected by TVF decreases the rotation error of
+the tracking results using the region flow algorithm. Similar results were observed in the second patient in the
+descending colon, containing 535 images and 24 blurry images. The third sequence contained 580 images in the
+descending colon and 172 blurry images. Region flow method failed in this case due to improper image pair
+selection; using TVF to determine the image pair allowed the system to successfully recover from the blurry
+sequence.
+Keywords: colonoscopy tracking, temporal volume flow, egomotion
+1. INTRODUCTION
+The simultaneous use of pre-segmented CT colonoscopy images and optical colonoscopy images during routine
+endoscopic procedures provides useful clinical information to the gastroenterologist. Automatic tracking systems
+facilitate this capability, providing a clear and unambiguous spatial context to the location of the endoscope
+within the anatomical structure. However, as illustrated in Fig. 1, the appearance of blurry images that lack
+sufficient features in the optical video stream can cause tracking systems to fail. Blurry images are common in
+endoscopic sequences, for eg., endoscope touching the colon wall, fluid immersion, extreme brightness conditions,
+etc.
+Further author information: (Send correspondence to Kalpathi R. Subramanian)
+Jianfei Liu: E-mail: jliu1@uncc.edu, Telephone: 1 704 687 8641
+Kalpathi R. Subramanian: E-mail: krs@uncc.edu, Telephone: 1 704 687 8579
+Terry S. Yoo: E-mail:yoo@nlm.nih.gov, Telephone: 1 301 435 3268
+(a) (b) (c) (d) (e)
+Figure 1. Five different types of blurry images in optical colonoscopy video, (a) colonoscope immersed in fluid, (b)
+colonoscope touching colon wall, (c) colonoscope’s lens covered by the water, (d) extremely bright regions, and (e) dark
+areas.
+Although automatic tracking failure recovery is critical for endoscopy tracking systems, this issue is seldom
+investigated. Rai14 enumerated several types of bronchoscopy images that are hard to track using image reg-
+istration algorithms. However, no solutions were proposed to recover from these situations. Magnetic sensors
+have been used to assist tracking bronchoscopy images,2,12,13 which help predict the endoscope position during
+blurry image sequences; image registration algorithms were used to improve tracking accuracy. The problem is
+considerably harder with colonoscopy video, since the colon can deform. In our earlier work, we used a region flow
+based approach10 to recover motion parameters. In this method, region descriptors are used to model invariant
+structure information for matching, and are superior to point descriptors since the image pair bridging a blurry
+image sequence undergoes significant image motion. Region flow is computed to match all possible image regions
+between the image pair, and accurately identify sparse feature correspondences. However, the performance of the
+region flow based algorithm depends on the extent of the similarity of the selected pair. For instance, consider
+Fig. 2(a), that shows an image pair bridging a blurry sequence of 53 images used by region flow algorithm. The
+two images display the same fold, but with different intensity distributions and different scales.
+(a) (b)
+Figure 2. The comparison of the selected image pair used by region flow (a)) and temporal volume flow(b), respectively.
+The image pair selected by the region flow method differ in their intensity distribution as well as size of folds. On the
+contrary, the image pair selected by temporal volume flow is comparatively more similar.
+Temporal volume matching, the subject of this paper, is an efficient means to identify temporal coherence,
+that will be used in determining the most similar image pair that bridges a blurry sequence. Laptev7,8 extended
+the multi-scale Harris point detector9 to identify some interest points in the video stream, and developed a
+temporal feature descriptor for every point. Thus, temporal volumes can be matched by comparing temporal
+feature descriptors. There are many other temporal feature detectors.6,16,17 However, all these algorithms detect
+a set of sparse feature points, and are mainly used for identifying significant transition points or events in the
+video stream. Our Temporal Volume Flow(TVF) approach is to densely match temporal volumes. Estimating
+temporal volume flow results in a robust and intelligent selection of an image pair for maximizing point correspon-
+dences. Fig. 2(b) shows an image pair selected by TVF. Compared with Fig. 2(a), there are two improvements,
+(1) intensity distribution is more similar, and (2) reduced scale variation.
+2. METHODOLOGY
+2.1. Temporal Volume Flow Computation
+Assume there is a colonoscopy video stream I(x, y, t) with a blurry sequence in the interval, (t1, t2). The
+purpose of TVF computation is to search for an image pair from two video segments, ?1 = (t1 ? ?t, t1) and
+?2 = (t2, t2 +?t). Without loss of generality, we define ? as the segment time. A three-dimensional video stream
+is converted into a continuous four-dimensional temporal volume, V (x, y, t, ?). TVF computation is to densely
+match V (x, y, t, ?) at time ? = ?1 and ? = ?2.
+Let ??u = (ux, uy, ut, 1) be the flow vector at a point p = (x, y, t, ?). We start with intensity and gradient
+constancy models.1,5
+V (p +??u ) = V (p)
+?V (p +??u ) = ?V (p) (1)
+where ? = (?x, ?y, ?t)T. The linearized formulation of Eq. 1 is
+Vxux + Vyuy + Vtut + V? = 0
+Vxxux + Vxyuy + Vxtut + Vx? = 0
+Vxyux + Vyyuy + Vytut + Vy? = 0
+Vxtux + Vytuy + Vttut + Vt? = 0
+(2)
+In conjunction with smoothness constraint, we can formulate an energy function to estimate TVF.
+E(ux, uy, ut) =
+??
+?(|V (p +??u )? V (p)|2 + ?|?V (p +??u )??V (p)|2)
++ ??(|?ux|2 + |?uy|2 + |?ut|2)dxdydt
+(3)
+where ?(s2) =
+?
+s2 + 2,  = 0.001 is a modified L1 norm. ? and ? are two constants to balance different
+components in Eq. 3. The Euler-Lagrange equations of Eq. 3 are
+??(V 2? + ?(V
+2
+x? + V
+2
+y? + V
+2
+t? ))(VxV? + ?(VxxVx? + VxyVy? + VxtVt? ))
+? ?div (??(|?ux|2 + |?uy|2 + |?ut|2)?ux) = 0
+??(V 2? + ?(V
+2
+x? + V
+2
+y? + V
+2
+t? ))(VyV? + ?(VxyVx? + VyyVy? + VytVt? ))
+? ?div (??(|?ux|2 + |?uy|2 + |?ut|2)?uy) = 0
+??(V 2? + ?(V
+2
+x? + V
+2
+y? + V
+2
+t? ))(VtV? + ?(VxtVx? + VytVy? + VttVt? ))
+? ?div (??(|?ux|2 + |?uy|2 + |?ut|2)?ut) = 0
+(4)
+where the derivatives related to V?? are defined as the temporal difference.
+V? = V (p +??u )? V (p) Vx? = Vx(p +??u )? Vx(p)
+Vy? = Vy(p +??u )? Vy(p) Vt? = Vt(p +??u )? Vt(p)
+However, it is non-trival to compute Eq. 4 because it is a non-convex and nonlinear function. Two strategies
+are exploited to handle this issue.
+1. Multi-resolution scheme: A coarse-to-fine temporal volume pyramid is built to initialize the minimiza-
+tion process near the actual minima with the sampling rate equal to 0.75. Let ??u k = (ukx, uky , ukt , 1) be the
+TVF vector at the pyramid level k and ??u 0 = (0, 0, 0, 1). The minimization process starts from the coarsest
+level and is gradually propagated towards the finest level.
+2. Sequential linearization strategy: We employed two nested fixed point iterations1 to remove non-
+linearity in Eqn. 4. Let l denote the outer iteration index, and the x-component of Eq. 4 can be rewritten
+as
+??((V k,l+1? )
+2 + ?((V k,l+1x? )
+2 + (V k,l+1y? )
+2 + (V k,l+1t? )
+2))(V k,lx V
+k,l+1
+?
++ ?(V k,lxx V
+k,l+1
+x? + V
+k,l
+xy V
+k,l+1
+y? + V
+k,l
+xt V
+k,l+1
+t? ))
+? ?div
+(
+??(|?uk,l+1x |2 + |?uk,l+1y |2 + |?uk,l+1t |2)?uk,l+1x
+)
+= 0
+(5)
+At iteration l + 1, we can approximate
+V k,l+1? ? V k,l? + V k,lx duk,lx + V k,ly duk,ly + V k,lt duk,lt
+V k,l+1x? ? V k,lx? + V k,lxx duk,lx + V k,lxy duk,ly + V k,lxt duk,lt
+V k,l+1y? ? V k,ly? + V k,lxy duk,lx + V k,lyy duk,ly + V k,lyt duk,lt
+V k,k+1t? ? V k,lt? + V k,lxt duk,lx + V k,lyt duk,ly + V k,ltt duk,lt
+(6)
+through Taylor expansion. Here, uk,l+1x = u
+k,l
+x + du
+k,l
+x , u
+k,l+1
+y = u
+k,l
+y + du
+k,l
+y , and u
+k,l+1
+t = u
+k,l
+t + du
+k,l
+t . We
+define the following two terms to abbreviate the description in Eqs. 5,6.
+??k,lD = ?
+?((V k,l? + V
+k,l
+x du
+k,l
+x + V
+k,l
+y du
+k,l
+y + V
+k,l
+t du
+k,l
+t )
+2 + ?((V k,lx? + V
+k,l
+xx du
+k,l
+x + V
+k,l
+xy du
+k,l
+y + V
+k,l
+xt du
+k,l
+t )
+2
++ (V k,ly? + V
+k,l
+xy du
+k,l
+x + V
+k,l
+yy du
+k,l
+y + V
+k,l
+yt du
+k,l
+t )
+2 + (V k,lt? + V
+k,l
+xt du
+k,l
+x + V
+k,l
+yt du
+k,l
+y + V
+k,l
+tt du
+k,l
+t )
+2))
+??k,lS = ?
+?(|?(uk,lx + duk,lx )|2 + |?(uk,ly + duk,ly )|2 + |?(uk,lt + duk,lt )|2)
+(7)
+So Eq. 5 becomes
+??k,lD (V
+k,l
+x (V
+k,l
+? + V
+k,l
+x du
+k,l
+x + V
+k,l
+y du
+k,l
+y + V
+k,l
+t du
+k,l
+t ) + ?(V
+k,l
+xx (V
+k,l
+x? + V
+k,l
+xx du
+k,l
+x + V
+k,l
+xy du
+k,l
+y + V
+k,l
+xt du
+k,l
+t )
++ V k,lxy (V
+k,l
+y? + V
+k,l
+xy du
+k,l
+x + V
+k,l
+yy du
+k,l
+y + V
+k,l
+yt du
+k,l
+t ) + V
+k,l
+xt (V
+k,l
+t? + V
+k,l
+xt du
+k,l
+x + V
+k,l
+yt du
+k,l
+y + V
+k,l
+tt du
+k,l
+t )))
+? ?div
+(
+??k,lS ?(uk,lx + duk,lx )
+)
+= 0
+(8)
+Another inner iteration is introduced to remove non-linearity in ??D and ?
+?
+S . Let m be the iteration index,
+Eq. 8 can be linearized as
+??k,l,mD (V
+k,l
+x (V
+k,l
+? + V
+k,l
+x du
+k,l,m+1
+x + V
+k,l
+y du
+k,l,m+1
+y + V
+k,l
+t du
+k,l,m+1
+t )
++ ?(V k,lxx (V
+k,l
+x? + V
+k,l
+xx du
+k,l,m+1
+x + V
+k,l
+xy du
+k,l,m+1
+y + V
+k,l
+xt du
+k,l,m+1
+t )
++ V k,lxy (V
+k,l
+y? + V
+k,l
+xy du
+k,l,m+1
+x + V
+k,l
+yy du
+k,l,m+1
+y + V
+k,l
+yt du
+k,l,m+1
+t )
++ V k,lxt (V
+k,l
+t? + V
+k,l
+xt du
+k,l,m+1
+x + V
+k,l
+yt du
+k,l,m+1
+y + V
+k,l
+tt du
+k,l,m+1
+t )))
+? ?div
+(
+??k,l,mS ?(uk,lx + duk,l,m+1x )
+)
+= 0
+(9)
+where (duk,l,0x , du
+k,l,0
+y , du
+k,l,0
+t ) = (0, 0, 0). Following the same procedure, we can derive equations corre-
+sponding to y and t components. Thus, each voxel has three linear equations, which leads to a massive
+sparse linear system to compute TVF. The system is solved by using the successive over-relaxation(SOR)
+method18 in the innermost iteration. Let n indicate the index for this iteration.
+(dux)k,l,m,n+1p = (1? ?)(dux)k,l,m,np + ?[
+?
+q?N+(p)
+(??S)
+k,l,m
+p?q
+(
+(ux)k,lq + (dux)
+k,l,m,n
+q
+)
++
+?
+q?N?(p)
+(??S)
+k,l,m
+p?q
+(
+(ux)k,lq + (dux)
+k,l,m,n+1
+q
+)? ?
+q?N (p)
+(??S)
+k,l,m
+p?q (ux)
+k,l
+p
+? 1
+?
+(??D)
+k,l,m
+p
+(
+(V k,lx )p
+(
+(V k,ly )p(duy)
+k,l,m,n
+p + (V
+k,l
+t )p(dut)
+k,l,m,n
+p + (V
+k,l
+? )p
+)
++ ?(V k,lxx )p
+(
+(V k,lxy )p(duy)
+k,l,m,n
+p + (V
+k,l
+xt )p(dut)
+k,l,m,n
+p + (V
+k,l
+x? )p
+)
++ ?(V k,lxy )p
+(
+(V k,lyy )p(duy)
+k,l,m,n
+p + (V
+k,l
+yt )p(dut)
+k,l,m,n
+p + (V
+k,l
+y? )p
+)
++?(V k,lxt )p
+(
+(V k,lyt )p(duy)
+k,l,m,n
+p + (V
+k,l
+tt )p(dut)
+k,l,m,n
+p + (V
+k,l
+t? )p
+))
+]
+/[
+?
+q?N (p)
+(??S)
+k,l,m
+p?q +
+1
+?
+(??D)
+k,l,m
+p
+(
+(V k,lx )
+2
+p + ?
+(
+(V k,lxx )
+2
+p + (V
+k,l
+xy )
+2
+p + (V
+k,l
+xt )
+2
+p
+))
+]
+(duy)k,l,m,n+1p = (1? ?)(duy)k,l,m,np + ?[
+?
+q?N+(p)
+(??S)
+k,l,m
+p?q
+(
+(uy)k,lq + (duy)
+k,l,m,n
+q
+)
++
+?
+q?N?(p)
+(??S)
+k,l,m
+p?q
+(
+(uy)k,lq + (duy)
+k,l,m,n+1
+q
+)? ?
+q?N (p)
+(??S)
+k,l,m
+p?q (uy)
+k,l
+p
+? 1
+?
+(??D)
+k,l,m
+p
+(
+(V k,ly )p
+(
+(V k,lx )p(dux)
+k,l,m,n+1
+p + (V
+k,l
+t )p(dut)
+k,l,m,n
+p + (V
+k,l
+? )p
+)
++ ?(V k,lxy )p
+(
+(V k,lxx )p(dux)
+k,l,m,n+1
+p + (V
+k,l
+xt )p(dut)
+k,l,m,n
+p + (V
+k,l
+x? )p
+)
++ ?(V k,lyy )p
+(
+(V k,lxy )p(dux)
+k,l,m,n+1
+p + (V
+k,l
+yt )p(dut)
+k,l,m,n
+p + (V
+k,l
+y? )p
+)
++?(V k,lyt )p
+(
+(V k,lxt )p(dux)
+k,l,m,n+1
+p + (V
+k,l
+tt )p(dut)
+k,l,m,n
+p + (V
+k,l
+t? )p
+))
+]
+/[
+?
+q?N (p)
+(??S)
+k,l,m
+p?q +
+1
+?
+(??D)
+k,l,m
+p
+(
+(V k,ly )
+2
+p + ?
+(
+(V k,lxy )
+2
+p + (V
+k,l
+yy )
+2
+p + (V
+k,l
+yt )
+2
+p
+))
+]
+(dut)k,l,m,n+1p = (1? ?)(dut)k,l,m,np + ?[
+?
+q?N+(p)
+(??S)
+k,l,m
+p?q
+(
+(ut)k,lq + (dut)
+k,l,m,n
+q
+)
++
+?
+q?N?(p)
+(??S)
+k,l,m
+p?q
+(
+(ut)k,lq + (dut)
+k,l,m,n+1
+q
+)? ?
+q?N (p)
+(??S)
+k,l,m
+p?q (ut)
+k,l
+p
+? 1
+?
+(??D)
+k,l,m
+p
+(
+(V k,lt )p
+(
+(V k,lx )p(dux)
+k,l,m,n+1
+p + (V
+k,l
+y )p(duy)
+k,l,m,n+1
+p + (V
+k,l
+? )p
+)
++ ?(V k,lxt )p
+(
+(V k,lxx )p(dux)
+k,l,m,n+1
+p + (V
+k,l
+xy )p(duy)
+k,l,m,n+1
+p + (V
+k,l
+x? )p
+)
++ ?(V k,lyt )p
+(
+(V k,lxy )p(dux)
+k,l,m,n+1
+p + (V
+k,l
+yy )p(duy)
+k,l,m,n+1
+p + (V
+k,l
+y? )p
+)
++?(V k,ltt )p
+(
+(V k,lxt )p(dux)
+k,l,m,n+1
+p + (V
+k,l
+yt )p(duy)
+k,l,m,n+1
+p + (V
+k,l
+t? )p
+))
+]
+/[
+?
+q?N (p)
+(??S)
+k,l,m
+p?q +
+1
+?
+(??D)
+k,l,m
+p
+(
+(V k,lt )
+2
+p + ?
+(
+(V k,lxt )
+2
+p + (V
+k,l
+yt )
+2
+p + (V
+k,l
+tt )
+2
+p
+))
+] (10)
+Here, N (p) is the 6-neighborhood15 of p. N+(p) denotes the neighbors q of p with the indices of q larger
+than that of p, and N?(p) with the indices of q is smaller than that of p. ? ? (0, 2) is the relaxation
+parameter that affects the convergence of the linear system. As suggested by Young,18 values close to 2
+gives the best performance. We use ? = 1.99 in our implementation.
+The TVF computation is summarized in Algorithm 1, and the left image of Fig. 3 illustrates the results of TVF.
+Note the movement of the bottom right fold between two volumes; all flow vectors capture this main motion.
+2.2. Tracking Failure Recovery
+The computed volume flow between the two temporal volumes describes voxel correspondences between images
+in the two volumes. Thus, if there are m and n images respectively in the two volumes, there are mn pairs of
+images that will be considered. We select the image pair that has the largest number of voxel correspondences.
+Algorithm 1: Temporal Volume Flow Computation
+Data: V (x, y, t, ?) at ?1 and ?2
+Result: TVF field ??u (x, y, t).
+Build K level temporal volume pyramids for V (x, y, t, ?1) and V (x, y, t, ?2);1
+for k ? 1 to K do2
+Initialize k-th level TVF field;3
+for l? 1 to L do4
+Compute derivatives V k,l? , V
+k,l
+x? , V
+k,l
+y? and V
+k,l
+t? through bilinear interpolation;5
+for m? 1 to M do6
+Compute diffusion terms ??k,l,mD and ?
+?k,l,m
+S ;7
+Initialize increment TVF vector d??u k,l,m = 0;8
+for n? 1 to N do9
+Update increment TVF vector d??u k,l,m,n in Eq. 10 at every voxel through SOR method;10
+Update TVF field ??u k,l,m = ??u k,l,m + d??u k,l,m;11
+Figure 3. The temporal volume flow between two image sequences; left and right images are before and after a blurry
+sequence. Corresponding folds are highlighted by green circles.The fold in the left image moves to the bottom right corner
+in the right image. Clearly, computed flow vectors follow this main motion.
+Next, the region flow algorithm10 is used to recover the camera motion parameters. In this method, we compute
+the normalized cross-correlation metric on all 5 × 5 sized image regions between the two images. Max-product
+loop belief propagation algorithm3 is employed to minimize the resulting graph energy. The minimization results
+in a set of region flow vectors that provide a good estimate of the image motion. SIFT detector11 is used to
+detect two sets of feature points in the image pair, and these are matched by using region flow vectors to guide
+and limit the search space. The camera motion parameters are computed by identifying the the visual angle
+changes between any two SIFT features.19
+3. EXPERIMENTAL RESULTS
+We have tested our method on three optical colonoscopy sequences, from three patients.
+Sequence 1: Ascending Colon. This sequence contained 235 images in the ascending colon and had 12 blurry
+images between 77 and 88. Region flow method chose frames 73 and 89 to compute motion parameters, while
+TVF selected 68 and 109. Both region flow and temporal volume flow are able to continue tracking, because
+corresponding folds appear in OC and VC images, as seen in the yellow lines in Fig. 4. However, the region flow
+method resulted in a large rotation error, in contrast to the TVF method, as illustrated in Figs. 4(a) and 4(b).
+Sequence 2: Descending Colon. Similar results are observed in a 535 image sequence with a rounded polyp
+in the descending colon, as shown in Fig. 5. This sequence contains 24 blurry images(caused by fluid) from frame
+130 to 153. The colon also undergoes contraction as well as expansion in this sequence. Both methods continue
+(a) (b)
+Figure 4. Comparison of tracking results using region flow vs. temporal volume flow in the ascending colon. (a) Region
+flow image pair (73 and 89), (b) TVF image pair (68 and 109). Corresponding folds are connected by yellow lines in OC
+and VC images. There is significant rotation error in the left image, in contrast to the right image.
+to successfully track after the blurry sequence. At frame 535, although the polyp is visible in both OC and VC
+images, TVF had decreased error, since the polyp in the VC image is more similar to that in the OC image in
+Fig. 5(f).
+Sequence 3: Descending Colon. Fig. 6 illustrates a 580 image sequence in the descending colon after polyp
+removal. There is a long blurry image sequence from 82 to 353. The locations of the polyp are highlighted by red
+rectangles in Fig. 6(a). Region flow fails to recover the motion parameters because there are insufficient feature
+correspondences from the selected frames, 30 and 356. On the contrary, TVF successfully continues to track
+(selecting frames 30 and 374), as seen in Fig. 6(c). Note the same folds inside the rectangles appear in both OC
+and VC images.
+4. CONCLUSION AND FUTURE WORK
+In this work, we have proposed a temporal volume flow approach to continually track colonoscopy video sequences
+that encounter blurry image sequences. Our method employs nonlinear intensity and gradient constancy models,
+which are combined into an energy function. The energy function is minimized through coarse-to-fine and
+sequential linearization schemes. The image pair with the most similar features before and after a blurry sequence
+is identified and used to compute motion parameters.
+Three clinical sequences were chosen to test the TVF algorithm. The first two clinical sequences showed
+that accuracy can be improved through the TVF algorithm. The third sequence demonstrated that an improper
+choice of image pair can cause tracking to fail, as was the case with the region flow approach. On the contrary,
+the image pair chosen by TVF contained sufficient corresponding features, and the system continued to track
+images till the end of the sequence.
+Future work will involve looking into improving the performance of the temporal volume flow computation, as
+ultimately real-time performance will be required for application in clinical practice. Comparison of our method
+to image registration approaches4 also needs to be investigated, to better understand the benefits of exploiting
+temporal coherence.
+(a) (b) (c)
+(d) (e) (f)
+Figure 5. Comparison of the tracking results using region flow(top row, a-c) and temporal volume flow(bottom row, d-f)
+in the descending colon with a rounded polyp. (a,b) Tracking results of the selected image pair at frames 128 and 164, (c)
+Tracking results at frame 535, polyp highlighted by red circle in OC and VC images, (d,e) Frames 116 and 173 selected
+by volume flow, (f) Tracking results at frame 535. Tracking accuracy is improved since polyp is close to the bottom of
+image.
+(a) (b) (c)
+Figure 6. Comparison of the tracking results using region flow and temporal volume flow in the descending colon after
+polyp removal. (a) OC and VC images at frame 30 before a blurry sequence; Red rectangles indicate polyp locations,
+(b) Region flow fails to track after the blurry sequence, selecting frame 356 to match frame 30, (c)Temporal volume flow
+chooses frame 374 to successfully continue tracking, because the same folds (red rectangles) appear in both OC and VC
+images.
+REFERENCES
+1. T. Brox, A. Bruhn, N. Papenberg, and J. Weickert. High accuracy optical flow estimation based on a theory
+for warping. In Proceedings of ECCV, pages 25–36, 2004.
+2. F. Deligianni, A. J. Chung, and G.Z. Yang. Non-rigid 2d-3d registration with catheter tip em tracking for
+patient specific bronchoscope simulation. In Proc. of MICCAI, pages 281–288, 2006.
+3. P. F. Felzenszwalb and D. P. Huttenlocher. Efficient belief propagation for early vision. International
+Journal of Computer Vision, 70(1):41–54, 2006.
+4. J. P. Helferty, A. J. Sherbondy, A. P. Kiraly, and W. E. Higgins. System for live virtual-endoscopic guidance
+of bronchoscopy. In Proceedings of IEEE Conference on Computer Vision and Pattern Recognition, pages
+68–75, 2005.
+5. B.K.P. Horn and B.G. Schunck. Determining optical flow. Artificial Intelligence, 17(3):185–203, 1981.
+6. Yan Ke, Rahul Sukthankar, and Martial Hebert. Efficient visual event detection using volumetric features.
+In Proceedings of the IEEE International Conference on Computer Vision, pages 166–173, 2005.
+7. I. Laptev. On space-time interest points. International Journal of Computer Vision, 64(2):107–123, 2005.
+8. I. Laptev and T. Lindeberg. Space-time interest points. In Proceedings of the Ninth IEEE International
+Conference on Computer Vision, pages 432–439, 2003.
+9. T. Lindeberg. Feature detection with automatic scale selection. International Journal of Computer Vision,
+30(2):77–116, 1998.
+10. Jianfei Liu, K.R. Subramanian, and T.S. Yoo. Region flow: A multi-stage method for colonoscopy tracking.
+In Proc. of MICCAI, 2010. September 20-24, Beijing, China.
+11. D. Lowe. Distinctive image features from scale-invariant keypoints. International Journal of Computer
+Vision, 60(2):91–110, 2004.
+12. K. Mori, D. Deguchi, K. Aklyama, K. Kitasaka, CR. Jr Maurer, Y. Suenaga, H. Takabatake, M. Mori, and
+H. Natori. Hybrid bronchoscope tracking using a magnetic tracking sensor and image registration. In Proc.
+of MICCAI, pages 543–550, 2005.
+13. K. Mori, D. Deguchi, K. Ishitani, T. Kitasaka, Y. Suenaga, Y. Hasegawa, K. Imaizumi, and H. Takabatake.
+Bronchoscope tracking without fiducial markers using ultra-tiny electromagnetic tracking system and its
+evaluation in different environments. In Proc. of MICCAI, pages 644–651, 2007.
+14. Lav Rai, James Helferty, and William Higgins. Combined video tracking and image-video registration for
+continuous bronchoscopic guidance. International Journal of Computer Assisted Radiology and Surgery,
+3(3-4):315–329, 2008.
+15. Azriel Rosenfeld. Three-dimensional digital topology. Information and Control, 50(2):119–127, 1981.
+16. Paul Scovanner, Saad Ali, and Mubarak Shah. A 3-dimensional sift descriptor and its application to action
+recognition. In Proceedings of the 15th international conference on Multimedia, pages 357–360, 2007.
+17. Geert Willems, Tinne Tuytelaars, and Luc Van Gool. An efficient dense and scale-invariant spatio-temporal
+interest point detector. In Proceedings of the 10th European Conference on Computer Vision, pages 650–663,
+2008.
+18. David M. Young. Iterative Solution of Large Linear Systems (Computer Science and Applied Mathematics).
+Academic Pr, 1rd edition, 1971.
+19. John Zhang. Computing Camera Heading: A Study. PhD thesis, Sanford University, 1999.
+

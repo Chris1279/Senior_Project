@@ -1,0 +1,888 @@
+Punctuated Simplification of Man-Made Objects 
+Justin Jang, Peter Wonka, William Ribarsky, and Christopher D. Shaw 
+GVU Center, Georgia Institute of Technology and Charlotte Visualization Center, UNC Charlotte 
+ 
+Abstract 
+We present a simplification algorithm for manifold polygonal meshes of plane-dominant models. Models of this type are likely to 
+appear in man-made environments. While traditional simplification algorithms focus on generality and smooth meshes, the 
+approach presented here considers a specific class of man-made models. By detecting and classifying edge loops on the mesh and 
+providing a guided series of binary mesh partitions, the approach generates a series of simplified models, each of which better 
+respects the semantic feel of these kinds of models than conventional approaches. A guiding principle is to eliminate simplifications 
+that do not make sense in constructed environments. This, coupled with the concept of “punctuated simplification”, leads to an 
+approach that has both efficiency and high visual quality. Comparative results are given. 
+ 
+1. Introduction 
+ 
+A great deal of current modeling and visualization effort is 
+directed towards triangle meshes. Models produced often 
+have a high amount of geometric detail. To maintain high 
+frame rates during interactive visualization, it is a common 
+strategy to create different levels of simplification for one 
+object and switch between these representations during 
+runtime. The levels of simplifications are also called levels 
+of detail (or LODs) of the model. 
+Simplification algorithms are often demonstrated on 
+models from the Stanford scanning repository [Sta04], 
+which includes the well-known models of a bunny, a 
+Buddha statue and Michelangelo’s David. These models 
+can be iteratively simplified where each new level of 
+simplification has one vertex less than the previous one 
+[Gar97] [Hop96]. 
+Although impressive results can be achieved for these 
+models, there is still the lingering problem that current 
+automatic simplification algorithms perform poorly on a 
+large class of objects, man-made objects. Often designers 
+still have to create simplified versions along with the 
+original versions for these models. 
+In contrast to the previously mentioned models, which 
+are dominated by smooth differential surfaces, man-made 
+objects are usually dominated by features. These models 
+contain many sharp edges and for large parts of the model 
+the triangular mesh is not an approximation to a smooth 
+differential surface. Instead, the mesh represents the actual 
+piece-wise linear surface. Examples include furniture, 
+machine parts, electronic devices and buildings (Figure 1). 
+ 
+Figure 1: Models with differential (left) and non-
+differential (right) surfaces. 
+If we apply current simplification methods to man-made 
+models, various incongruities may occur and result in 
+simplifications that deviate from the ideal. The following 
+are weaknesses of per-vertex simplification schemes: 
+- Small features are merged into new larger ones. This is 
+illustrated in Figure 2a. Here, the larger features have 
+characteristics not present in the smaller features. In this 
+case, new face orientations are introduced. 
+- Many intermediate steps of the calculated simplifications 
+are intuitively not correct (see Figure 2b). The 
+simplification of a wheel in Figure 3 illustrates this 
+problem. The simplification shown on the right has a low 
+visual quality (in this case due to violation of symmetry 
+(also see Figure 2c)) and is not very useful for most 
+applications. 
+- It is not clear which intermediate simplification steps are 
+meaningful. 
+ 
+Figure 2: Problems with successive vertex merging. Small 
+features merge into larger ones (a). In the window with 
+frame (b) and the circle (c), some intermediate steps are 
+intuitively not correct. 
+In this paper we take a different approach to the 
+simplification of man-made objects. Our approach seeks to 
+identify features in a model and removes them in a 
+consistent manner. Note that our approach to handle 
+features is different than previous approaches [Kho03, 
+Poj03]. In previous work it was the main goal to mark 
+certain important parts of the model (features) and try to 
+retain them as long as possible during simplification. 
+However, the actual simplification of these features is again 
+a triangle-by-triangle simplification similar to the original 
+algorithm. In contrast, our approach tries to identify 
+(a) (b) 
+(c)
+features as clusters of triangles and removes a whole cluster 
+at once in a consistent manner. 
+ 
+Figure 3: A model of a wheel (left). The simplification on 
+the right has low visual quality. 
+Our algorithm draws from ideas of the computer-aided 
+manufacturing community, where designs have to be 
+decomposed into meaningful semantic parts before they can 
+be manufactured by a machine. We employ a loop-based 
+feature detection algorithm to create a hierarchical tree that 
+structures the model. To obtain different levels of detail, we 
+remove several features of similar or correlated geometric 
+importance together, rather than in a more continuous LOD 
+fashion. We call this approach punctuated simplification. In 
+this paper we show that punctuated simplification typically 
+leads to relatively few steps between the full and the 
+simplest model. Further, the intermediate models have 
+better visual quality than per-vertex intermediate models of 
+similar complexity. The simplification tree can be used to 
+extract a large number of possibly view-depended levels of 
+detail. These LODs can be precalculated or generated 
+during runtime. 
+We believe that the idea of punctuated simplification is a 
+fundamentally new contribution to the world of 
+simplification and will help to extend the applicability of 
+automatic simplification algorithms to applications like 
+CAD, computer games, urban and architectural simulation. 
+ 
+2. Related Work 
+ 
+Simplification: There is an extensive literature on the 
+simplification of polygonal models. We will not try to 
+cover this broad literature but will rather focus on 
+representative work most relevant to our approach. We 
+refer the reader to recent surveys for a comprehensive 
+discussion of simplification methods [Lue01]. 
+A variety of per-vertex algorithms have been developed 
+for mesh simplification. These include algorithms that 
+perform vertex merges [Gar97], edge collapses [Hop96], or 
+vertex removals [Lin96]. Some algorithms require manifold 
+topology [Hop96] while others are “topologically-tolerant” 
+[Gar97], but all work one vertex at a time. In addition there 
+are per-vertex algorithms that attempt to preserve 
+appearance by considering not only errors in surface 
+position caused by the simplification, but also errors due to 
+changes in surface color and curvature [Coh98, Gar98]. 
+Although in principle a simplification algorithm could be 
+constructed that considers all these aspects of appearance, 
+in practice this is hard to do in an efficient and balanced 
+way [Jan03]. In practice either geometric or color/texture 
+aspects dominate. 
+There are also more general vertex merge algorithms 
+based on various multi-vertex clustering mechanisms 
+[Ros93, Low97]. These are rather insensitive to topology 
+and in the most general case do not require mesh 
+connectivity at all. The algorithms are fast, work well on 
+large out-of-core meshes, and can produce drastic 
+simplifications. However, it is difficult to specify the output 
+in terms of number of polygons for the algorithm, and the 
+results are not usually as visually pleasing as with per-
+vertex algorithms. 
+In general, the vertex merge, removal or clustering 
+operations in all these approaches can be encoded in a tree, 
+which can then be traversed in any order. This gives rise to 
+view-dependent approaches where on-the-fly simplification 
+occurs based on the current user viewpoint [Lin96, Hop97]. 
+Perspective and distance are taken into account so that 
+nearby geometry facing the viewer will have more detail 
+than distant or oblique geometry. 
+Several extensions to the quadric-error approach [Gar97, 
+Coo01,Poj03, Kho03] allow a user to specify important 
+parts of the model. In these extensions the simplification 
+process simultaneously considers the quadric error and the 
+user specified importance to select candidates for 
+simplification. However, these approaches do not address 
+the problem of how to identify and consistently remove 
+features, but rather determine the simplification order and 
+thereby answer the question of when to remove features. A 
+user-specified importance is an orthogonal contribution to 
+our method and could also be incorporated in our 
+framework. 
+El-Sana and Varshney [Els98] present a topology-
+simplifying approach based on the concept of alpha-hulls. 
+The approach is able to eliminate small holes and 
+protuberances which can hinder and restrict extreme 
+simplification. However, the approach can only deal with 
+relatively small holes and protuberances with small gaps 
+and ignores the size of the protuberances themselves. 
+Our approach provides a set of simplifications and an 
+order to follow through them, but it does not do this as a 
+sequence of per-vertex simplifications. Alternatively, we do 
+not follow a clustering approach that uses some distance 
+criterion for determining which vertices to merge. Rather, 
+our punctuated simplification approach preserves planes, 
+edges, and orientations until they are deemed candidates for 
+removal, at which point they are removed all at once. 
+ 
+ 
+Figure 4: Three cases of mesh features. a) Smooth 
+surfaces: normals per vertex; the mesh is only seen as an 
+approximation to the actual (smooth) surface; differential 
+geometry applies. b) smooth surfaces with features: these 
+are smooth surfaces that have sharp edges and corners. 
+The edges and corners are called features. c) plane-
+dominant objects: the mesh is the actual geometry; normals 
+are per polygon and not per vertex. A feature is a larger 
+connected part of the mesh. 
+Feature Detection: Feature detection starts with defining 
+what is meant by the word “feature”. The definition usually 
+depends on the context of the application and is given only 
+very broadly, as for example “a region of interest on the 
+surface of a part” [Pra85] (see Figure 4). For the actual 
+implementation of a feature detector, a more precise 
+definition is necessary. A common solution is to give an list 
+of features. As a consequence most feature detectors are 
+rule-based and each rule is able to detect a certain type of 
+feature. For a survey of feature detection see [Wu96]. 
+Feature detectors can be based on convex decomposition 
+[Woo82, Kim92], topology of a dual face-edge graph 
+[Flo89], topology of a face-edge graph in combination with 
+geometric tests [Gav90, Mar90, Rib01] or loop detection on 
+the geometry of the model [Gad99][Lu99]. 
+Our approach is most closely related to loop-based 
+feature detection [Lu99, Gad99]. The idea is to couple the 
+detection of edge loops that potentially contain a feature 
+together with geometric tests to verify its existence. (Note 
+that what we call the feature here is not the edges in the 
+loop but the mesh partition bounded by the loop.) We use 
+an adaptation of these loop-based feature detectors in our 
+implementation. 
+ 
+3. Overview 
+ 
+Preliminaries: As input to our algorithm we consider 
+triangle meshes that represent a topological 2-manifold with 
+boundary. Given a model that contains non-triangular 
+polygonal faces, the model can be triangulated first and 
+then processed by our algorithm. 
+Our algorithm accepts models with holes and multiple 
+non-connected parts, but we do not alter the topology of the 
+model during simplification, so the simplification 
+procedure preserves holes and keeps unconnected parts 
+separate. Our algorithm accepts models with self-
+intersections, but our goal is not to repair erroneous input 
+models. Self-intersections and other errors in the input 
+model can result in unwanted results during simplification. 
+We do not attempt here to deal with large models. While 
+a lot of simplification research has been devoted to 
+handling large meshes, applications such as games and 
+urban visualization often call for a large number of simple 
+meshes as opposed to a few complex ones. In certain 
+situations, it may be necessary to display drastically 
+simplified meshes with visible approximation error. Thus, it 
+is important to ensure the quality of the coarser 
+approximations. Furthermore, man-made objects, especially 
+constructed objects like buildings and furniture, generally 
+contain more planar or near planar surfaces than organic 
+forms. In approximating a shape, flat regions require much 
+fewer linear facets than curved regions. Therefore, plane-
+dominant models normally contain many fewer polygons 
+than those with an abundance of smooth or curvy regions. 
+ 
+Algorithm Overview: The algorithm has three major parts. 
+We will briefly describe these parts and then give more 
+details about these parts in the next section. 
+1. Feature extraction – we employ a rule-based loop-finding 
+method to detect the boundaries of a feature on the surface 
+of the model. This feature induces a partition of the mesh in 
+two parts. 
+2. Hierarchical partitioning – Using the feature extraction 
+method we organize the features (mesh partitions) 
+hierarchically. 
+3. Simplification – we use the hierarchy to simplify the 
+model. 
+ 
+These three steps are demonstrated on a simple example in 
+Figure 5, Figure 6, and Figure 7. Note that for illustrative 
+purposes the convex loops are ignored in these examples. 
+ 
+ 
+Figure 5: A simple model (left) and two detected loops on 
+the surface of the model shown in yellow (right). 
+ 
+ 
+Figure 6: This figure illustrates the partitioning of the 
+model from the previous figure in a hierarchical tree. 
+ 
+Figure 7: Two possible simplifications extracted from the 
+tree. 
+4. Feature Extraction 
+ 
+Our approach can be considered a general framework for 
+simplification. This framework incorporates explicit feature 
+identification and treatment into a system for generating 
+simplified meshes. A feature is any subset of the mesh that 
+can be detected by a set of rules or procedures. (The loop-
+finding method described here is just one procedure that 
+could be used.) Thus, a feature can be arbitrarily complex. 
+For each feature, there is a corresponding simplification 
+operation. This operation can be fairly general in behavior, 
+so we prefer to call it a simplification treatment. Thus, both 
+the identification and treatment of features are defined 
+procedurally in the framework. The framework is flexible 
+since it can fall back on a traditional simplification 
+algorithm where features are not present. 
+Loop-based feature detection is based on finding closed 
+poly-lines on the surface of a model (a loop). The segments 
+of the polyline are typically edges of the triangulation. In 
+this section we propose a taxonomy for loop detectors. We 
+classify detectors according to a) the type of edges they 
+detect, b) how many planes are involved in defining the 
+feature, c) the tolerance to noise, and d) the number of 
+loops specifying a feature (ability to detect topological 
+features). 
+Edge type: Edges can be concave, convex, planar, or 
+virtual. A concave edge is an edge of the triangulation 
+where the adjacent faces form an angle of less than 180 
+degrees. A convex edge is an edge of the triangulation 
+where the adjacent faces form an angle of more than 180 
+degrees. A planar edge is an edge of the triangulation where 
+the two adjacent faces are coplanar. A virtual edge is a line 
+segment that crosses a face of the triangulation. Virtual 
+edges are helpful to make the loop finder more independent 
+of the triangulation. Figure 8 illustrates the first 3 cases. 
+ 
+ 
+Figure 8: Three edge types highlighted in yellow. Left – 
+concave. Middle – convex. Right – planar. 
+Number of Planes: The number of planes involved in 
+defining a feature greatly contributes to the complexity of 
+the detector. Typically one plane means that the feature is 
+contained in a plane of the model. For two planes the 
+feature is located at an edge. For three planes the feature is 
+typically located at a corner. However,other configurations 
+are possible for features of three or more planes. Figure 9 
+illustrates two of these possibilities. 
+ 
+ 
+Figure 9: A feature on a plane (left) and a feature on an 
+edge (right). 
+Noise tolerance: The tolerance to noise defines the 
+robustness of the detector. Typically some tolerance is 
+required for all detectors to compensate for numerical 
+imprecision, but scanned data often has a significant level 
+of noise that requires different approaches. 
+Number of loops: Some feature detection algorithms are 
+also able to detect topological features, such as holes in the 
+model. To be able to detect these features, a single loop is 
+no longer sufficient. To classify these features we can use 
+the number of loops that are necessary to specify the 
+feature. 
+ 
+5. Algorithm Details 
+ 
+Loop Finding 
+We have implemented a greedy, recursive loop finder 
+that is able to detect planar loops. Although faster or more 
+robust algorithms might be found, the focus of the current 
+work was not to improve existing feature detectors. 
+The loop finder recursively traverses halfedges until a 
+loop is found. A halfedge is a directional edge with a head 
+and a tail vertex. (For details about the halfedge data 
+structure, see [Bot02].) We start by selecting a seed 
+halfedge. To add a halfedge to the loop the next halfedge 
+emanates from the tail of the last halfedge. We use the 
+following restrictions: 
+1. The first halfedge h1, cannot be a planar edge or 
+already belong to a loop. 
+2. The second halfedge h2 cannot be collinear with the 
+first halfedge. 
+3. A halfedge hi (i > 2) has to lie in the plane formed by 
+h1 and h2. This plane is called the loop plane. 
+4. A halfedge hi (i > 2) cannot have two adjacent faces 
+that are both coplanar with the loop plane. 
+5. A halfedge hi (i > 2) can only extend or close the loop. 
+It is not allowed to touch or cross the loop. 
+We need some geometric tests to verify the loop. For 
+example, we discard loops that bound a flat polygon. It 
+turns out that the branching factor for this constrained 
+search is pretty small and the loop detection only takes a 
+few seconds for the models we used for our tests. 
+ 
+Hierarchical Partitioning 
+In support of the subsequent simplification phase, our 
+algorithm generates a hierarchy of feature partitions. Given 
+a triangular mesh M as a set of triangles, any given loop L 
+induces a partitioning of M into two subsets, M1 and M2. 
+This binary partition forms the basis of the hierarchy, which 
+emerges as a binary tree of mesh partitions. 
+We need to answer the following questions to build the 
+tree: 
+1) Given two mesh partitions M1 and M2 we must 
+decide which mesh is considered to be the feature. This is 
+important, because the feature and the rest of the mesh are 
+treated differently during the simplification phase. We 
+employ a simple heuristic H for the decision. We compute 
+the extent, H(M) = max(d(p1, p2)), where d is the Euclidian 
+distance metric and p1, p2 are vertices of the mesh. The 
+mesh partition with the smallest non-zero extent is 
+considered the feature. We call this the interior partition. 
+Note that the other partition, called the exterior partition, 
+might be an empty mesh. 
+2) To build the tree we always select the partitioning 
+with the largest interior partition where the exterior 
+partition is not empty. We choose to use the extent of the 
+mesh as a heuristic. This heuristic ensures that the features 
+are properly nested. 
+We then construct the tree with a recursive procedure 
+(see Figure 10.) For the sake of discussion, we choose to 
+position the interior partition as the left child and the 
+exterior partition as the right child. An example tree is 
+given in Figure 6. For models with many nested features, 
+the tree may contain long runs of branching from the left 
+child node (the internal partition node). For models with 
+many identical features, the tree may contain long runs of 
+branching from the right child node (the external partition 
+node). 
+buildtree(M) 
+  L = findloops(M) 
+  For p in L 
+    [M1, M2] = partition(M, p) 
+    I = minextent(M1, M2) 
+    E = maxextent(M1, M2) 
+    If extent(I) > extent(bestI) then 
+      bestI = I 
+      bestE = E 
+    Endif 
+  Endfor 
+  M.left = buildtree(bestI) 
+  M.right = buildtree(bestE) 
+ 
+Figure 10: Simplified pseudocode of the recursive 
+procedure for constructing the hierarchy. 
+ 
+Simplification 
+The submesh tree can be used in more than one way to 
+guide simplification. For example, the tree can guide the 
+construction of a sequence of static level-of-detail (LOD) 
+representations. 
+We need the following three procedures to implement the 
+simplification:  
+1) Simplify(M, L): For a feature mesh M that is bound 
+by a loop L, we need a simplification treatment that 
+generates a simplified version of the mesh M. We call this 
+Simplify(M, L). The simplification treatment for a planar 
+feature is typically hole-filling [Kre00] (that is triangulation 
+of an arbitrary polygon), but more complex operations are 
+possible [Rib01].  
+2) Coalesce(M): We need a procedure to reduce the 
+number of coplanar triangles in a mesh. We call this 
+Coalesce(M). We choose to use the framework of Garland 
+and Heckbert [Gar97] for this task. By selecting an error 
+threshold close to zero and specifying relevant loops as 
+constraints, we can achieve the desired effect.  
+3) ST(M, L): We need a cost function to determine how 
+much error the simplification of a feature makes. We 
+choose to use a simple metric calculating the surface area of 
+the mesh M minus the surface area of the simplified version 
+of M, that is ST(M, L).  Depending on the amount of 
+semantic information available for the model, the cost 
+function can be made more interesting. Along with 
+geometric characteristics, factors such as importance, 
+semantic sensibility, and physical plausibility can be 
+incorporated into such a metric. 
+ 
+The process for generating static LODs is as follows. 
+1. Pick lowest cost feature (interior partition) node with 
+mesh M and loop L. 
+2. Calculate Simplify(M, L) and store the simplified 
+version with the node. 
+3. Collapse nodes. A node can be collapsed if the feature 
+child (the interior partition node) has been simplified 
+and the other child (the exterior partition node) does 
+not have any further children. To collapse a node we: 
+1) combine the meshes M1 and M2 of the 
+children to obtain M = M1 + M2 
+2) call Coalesce(M) on the combined geometry 
+and store it with the node 
+4. Repeat steps 2-3. 
+At any time the union of all leaf nodes can be calculated 
+to obtain a valid level-of-detail of the model. To obtain a 
+discrete set of static LODs we propose the following 
+methods: (a) find the peaks in a histogram of [errors 
+incurred, faces simplified]; (b) find the zero crossings of 
+derivatives of [errors incurred, faces simplified]; (c) round 
+to logarithmic steps; or (d) use thresholds. For our results, 
+we used a moving threshold. That is, when the error passes 
+e + t, where e is the last error incurred by the last LOD 
+(initially zero) and t is the threshold, we grab the current 
+LOD and update e. Note that in general, applying any of 
+these methods to a traditional simplification sequence like a 
+quadric simplification will not produce the same results as 
+applying them to the hierarchically partitioned mesh, which 
+has eliminated meaningless or incorrect simplification 
+steps. 
+ 
+6. Results 
+ 
+In this section we demonstrate that the proposed method 
+gives good results and that the consideration of features is 
+in fact crucial to get meaningful simplifications for man-
+made objects. We demonstrate our results by comparing our 
+simplifications with the algorithms proposed by Garland 
+and Heckbert (quadrics/qslim) [Gar97] and Lindstrom and 
+Turk (memoryless simplification) [Lin98]. We did not try 
+to optimize our implementation for speed, but the 
+simplification times are still reasonable. To give a rough 
+estimate, the simplification time is under 5 seconds for the 
+models shown here. 
+The first model is the model of the wheel shown in 
+Figure 3. Figure 11 shows three LODs obtained using the 
+three simplification approaches. See the figure caption for a 
+description of the results. Figure 12 shows the image 
+differences for each of these LODs. 
+The second model used to illustrate our method is a 
+window, showing a sensible simplification sequence 
+(Figure 16). Finally, we present an armoire (Figure 18 and 
+Figure 17). We compare again against the original model. 
+Simplification of more complicated models, such as entire 
+buildings with significant detail around doors and windows, 
+is in progress. Preliminary results are good. 
+ 
+7. Discussion 
+ 
+Figure 13, Figure 14, and Figure 15 (last page) compare 
+the max, mean, and RMS errors of three approaches, 
+Qslim/quadric simplification (QS), memoryless 
+simplification (MS), and our punctuated simplification 
+approach (PS). Forward errors (original-to-simplified) and 
+backward errors (simplified-to-original) along with forward 
+plus backward errors are shown. Notice that for the models 
+tested, the visual quality of the simplifications is not fully 
+represented or revealed by the metrics. The difference 
+images seem to suggest that punctuated simplification is 
+better than the other approaches. However, the max, mean, 
+and RMS metrics give mixed results and even results 
+counter to what one gets from visual examination. This 
+confirms that different metrics, such as one based on 
+perception [Wil03], are sometimes necessary for evaluating 
+simplification quality, especially for constructed models 
+like these. Furthermore, even a straight-forward measure of 
+RMS image difference cannot account for qualitative 
+inaccuracies such as violation of symmetry (Figure 11) or 
+the creation of misrepresentative shapes (Figure 17). 
+ 
+ 
+Figure 11: 3 LODs obtained with Qslim (left), memoryless 
+simplification (center), and our algorithm (right). The 3 
+LODs contain 558 (top row), 318 (second row), and 76 
+(bottom row) triangles. Our algorithm automatically 
+extracts these LODs. In contrast to the other two methods, 
+both simplifications of our method make sense and have 
+good visual quality. Note that the LODs in the top row are 
+geometrically identical to the original (560 triangles). 
+ 
+Figure 12: Difference images (negative image) of the 
+second and third rows in Figure 11 with respect to the 
+original (i.e. top row). 
+ 
+8. Conclusions 
+In this paper we described the punctuated simplification 
+approach for simplifying man-made objects. We argued 
+that previous simplification algorithms are in fact mainly 
+applicable to models that are dominated by smooth surfaces 
+and that for another large class of objects (that we call man-
+made objects) they often fail to calculate meaningful 
+results. We demonstrated that the recognition and 
+consistent removal of features is essential to obtain good 
+perceptual quality for the simplified models. We presented 
+an initial algorithm to attack this problem and gave a visual 
+comparison to previous methods. 
+We believe the simplification of man-made objects is an 
+essential problem, because these models are at the heart of 
+many visualization applications. 
+For future research, we envision several ways to extend 
+the implementation of the basic algorithm. Similar to other 
+level-of-detail algorithms, we plan to handle texturing and 
+view-dependent levels of details. Additionally, we think 
+that integration with other traditional simplification 
+algorithms would be important to obtain a complete system 
+for simplification. The major drawback of the current 
+approach is that general and robust feature detection is still 
+a challenge. We expect to study this question in the future. 
+ 
+Acknowledgments 
+This work is supported by the Department of Defense's 
+MURI program, administered by the Army Research 
+Office. We would also like to acknowledge the support of 
+NSF and FWF grant number J2329-N04. 
+ 
+References 
+ 
+Bot02 M. Botsch, S. Steinberg, S. Bischoff, and L. Kobbelt. 
+OpenMesh -- a Generic and Efficient Polygon Mesh Data 
+Structure. OpenSG Symposium. 2002. 
+Coh98 Cohen, J., Olano, M., and Manocha, D. 1998. 
+Appearance-Preserving Simplification of Polygonal Models. 
+Proc. ACM SIGGRAPH 98, pp. 115-122. 1998. 
+Coo01 Volker Coors. Feature-Preserving Simplification in 
+Web-Based 3D-GIS. First International Symposium on Smart 
+Graphics, New York, 2001. 
+Els98 J. El-Sana and A. Varshney. Topology Simplification 
+for Polygonal Virtual Environments. IEEE Transactions on 
+Visualization and Computer Graphics v.4, n.2, April 1998, pp. 
+133-144. 
+Eri01 C. Erikson, D. Manocha, and W. V. Baxter III. HLODs 
+for Faster Display of Large Static and Dynamic Environments. 
+Symposium on Interactive 3D Graphics, pp. 111-120. 2001 
+Flo89 Leila De Floriani. Feature extraction from boundary 
+models of three-dimensional objects. IEEE Transaction on 
+Pattern Analysis and Machine Intelligence, 11(8), pp. 785-798, 
+August 1989. 
+FRU01 C. Früh and A. Zakhor. 3D Model Generation for Cities 
+Using Aerial Photographs and Ground Level Laser Scans. Proc. 
+IEEE Computer Vision and Pattern Recognition, pp. 31-38. 
+2001. 
+Gad99 R. Gadh, Y. Lu, and T. J. Tautges. Feature 
+decomposition for hexahedral meshing. ASME Design 
+Automation Conference. 1999. 
+GAR97 M. Garland and P. Heckbert. Surface Simplification 
+Using Quadric Error Metrics. Proc. ACM SIGGRAPH 97, pp. 
+209-216. 1997. 
+Gar98 M. Garland and P. Heckbert. Simplifying Surfaces with 
+Color and Texture using Quadric Error Metrics. Proc. IEEE 
+Visualization 98, pp. 263-269. 1998. 
+Gav90 P. Gavankar and M.R. Henderson. Graph-based 
+extraction of protrusions and depressions from boundary 
+representations. Computer-Aided Design, 22(7), pp. 442-450. 
+1990. 
+Hop96 H. Hoppe. Progressive Meshes. Proc. ACM SIGGRAPH 
+96, pp. 99-108. 1996. 
+Hop97 H. Hoppe. View-Dependent Refinement of Progressive 
+Meshes. Proc. SIGGRAPH 97, pp. 189-198. 1997. 
+JAN03 Justin Jang, William Ribarsky, Christopher Shaw, and 
+Peter Wonka. Appearance-Preserving View-Dependent 
+Visualization., IEEE Visualization 2003, pp. 473-480. 2003. 
+Max ( f orward)
+0
+0.02
+0.04
+0.06
+Mean ( f orward)
+0
+0.002
+0.004
+0.006
+0.008
+0.01
+RMS (f orward)
+0
+0.005
+0.01
+0.015
+Max (backward)
+0.036
+0.038
+0.04
+0.042
+0.044
+Mean (backward)
+0
+0.001
+0.002
+0.003
+0.004
+0.005
+RMS (backward)
+0
+0.002
+0.004
+0.006
+0.008
+0.01
+Max ( f +b)
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+QS MS PS
+Mean ( f +b)
+0
+0.005
+0.01
+0.015
+QS MS PS
+RMS (f +b)
+0
+0.005
+0.01
+0.015
+0.02
+0.025
+QS MS PS
+QS MS PS QS MS PS QS MS PS
+QS MS PS QS MS PS QS MS PS
+JEP96 Jepson, W., Liggett, R., and Friedman, S. Virtual 
+Modeling of Urban Environments. Presence, 5, 1, 72-86. 1996. 
+Kho03 Y. Kho and M. Garland. User-Guided Simplification. 
+Symposium on interactive 3D Graphics 2003. pp. 123-126. 
+2003. 
+Kim92 Y. S. Kim. Recognition of form features using convex 
+decomposition. Computer Aided Design, 24(9), pp. 461-476. 
+1992. 
+Kre00 Marc Van Kreveld, Mark Overmars, Otfried 
+Schwarzkopf, Mark de Berg, and M. Van Kreveld. 
+Computational Geometry. Springer Verlag. 2000. 
+LIN96 P. Lindstrom, D. Koller, W. Ribarsky, L. F. Hodges, N. 
+Faust, and G. A. Turner. Real-Time, Continuous Level of Detail 
+Rendering of Height Fields. Proc. ACM SIGGRAPH 96, pp. 
+109-118. 1996. 
+LIN98 P. Lindstrom and G. Turk. Fast and Memory Efficient 
+Polygonal Simplification. Proc. IEEE Visualization '98, pp. 279-
+286. 1998. 
+Lev02 J. Levenberg. Fast View-Dependent Level of Detail 
+Rendering using Cached Geometry. Proc. IEEE Visualization 
+2002, pp. 259-265. 2002. 
+Low97 K-L. Low and T.S. Tan. Model Simplification using 
+Vertex Clustering. Proc. ACM Symp. Interactive 3D Graphics, 
+pp. 75-82, 1997. 
+Lu99 Y. Lu, R. Gadh, and T. Tautges. Volume 
+Decomposition and Feature Recognition for Hexahedral Mesh 
+Generation. 8th International Meshing Roundtable, SAND99-
+2288, Sandia National Laboratories, pp.269-280. 1999. 
+Lue01 David Luebke. A Developer’s Survey of Polygonal 
+Simplification Algorithms. IEEE Computer Graphics & 
+Applications, pp. 24-35, May/June. 2001. 
+Mar90 M. Marefat and R. L. Kashyap. Geometric reasoning for 
+recognition of three-dimensional object features. IEEE 
+Transactions on Pattern Analysis and Machine Intelligence, 
+12(10), pp. 949-965. 1990. 
+Par01 Y. Parish, and P. Mueller. Procedural modeling of 
+cities. Proc. ACM SIGGRAPH 2001, pp. 301–308. 2001. 
+Poj03 Erik Pojar, Dieter Schmalstieg. User-controlled creation 
+of multiresoltion meshes. Symposium on Interactive 3D 
+Graphics 2003. pp. 127-130. 2003. 
+Pra85 M. Pratt and P. R. Wilson. Requirements for support of 
+form features in a solid modeling system. Technical Report R-
+85-ASPP-01, CAM-I Inc., Arlington Texas, June 1985. 
+Rib01 J. Ribelles, P. Heckbert, M. Garland, T, Stahovich, and 
+V. Srivastava. Finding and Removing features from polyhedra. 
+ASME Design Engineering Technical Conferences. 2001. 
+Ros93 J. Rossignac and P. Borrel. Multi-resolution 3D 
+Approximations for Rendering Complex Scenes. Geometric 
+Modeling in Computer Graphics, pp. 455-465. 1993. 
+Sta04 The Stanford 3D Scanning Repository. 
+http://graphics.stanford.edu/data/3Dscanrep/ . 2004. 
+Wil03 N. Williams, D. Luebke, J. Cohen, M. Kelley, and B. 
+Schubert. Perceptually Guided Simplification of Lit, Textured 
+Meshes. Proc. 2003 ACM SIGGRAPH Symposium on 
+Interactive 3D Graphics, Monterey, CA, pp.113-121. 2003. 
+Won03 Peter Wonka, Michael Wimmer, Francois Sillion, and 
+William Ribarsky. Instant Architecture, Proc. ACM SIGGRAPH 
+2003, pp. 669-678. 2003. 
+Woo82 T. Woo. Feature extraction by volume decomposition. 
+CAD / CAM Technology in Mechanical Engineering. 1982. 
+Wu96 M. C. Wu, C. R. Liu. Analysis on machined feature 
+recognition techniques based on B-rep. Computer-Aided 
+Design, 28(8), pp. 603-616. 1996. 
+ 
+Figure 13: Max, mean, and RMS error values for the wheel 
+model simplifications of 318 triangles. Forward (original-
+to-simplified), backward (simplified-to-original), and 
+forward plus backward errors are shown for qslim (QS - 
+left), memoryless simplification (MS - middle), and our 
+method (PS - right).  
+Max ( f orward)
+0
+0.05
+0.1
+0.15
+0.2
+Mean ( f orward)
+0
+0.02
+0.04
+0.06
+RMS (f orward)
+0
+0.02
+0.04
+0.06
+0.08
+Max (backward)
+0
+0.05
+0.1
+0.15
+Mean (backward)
+0
+0.005
+0.01
+0.015
+0.02
+RMS (backward)
+0
+0.005
+0.01
+0.015
+0.02
+0.025
+Max ( f +b)
+0
+0.1
+0.2
+0.3
+QS MS PS
+Mean ( f +b)
+0
+0.02
+0.04
+0.06
+QS MS PS
+RMS (f +b)
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+QS MS PS
+QS MS PS QS MS PS QS MS PS
+QS MS PS QS MS PS QS MS PS
+ 
+Figure 14: Max, mean, and RMS errors for the wheel 
+model simplifications of 76 triangles. Forward, backward, 
+and forward plus backward errors are shown for (QS), 
+(MS), and our method (PS). 
+ Max ( f orward)
+0
+0.05
+0.1
+0.15
+0.2
+Mean ( f orward)
+0
+0.005
+0.01
+0.015
+0.02
+RMS (f orward)
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+Max (backward)
+0
+0.05
+0.1
+0.15
+0.2
+Mean (backward)
+0.0015
+0.0016
+0.0017
+0.0018
+0.0019
+0.002
+RMS (backward)
+0
+0.005
+0.01
+Max ( f +b)
+0
+0.05
+0.1
+0.15
+0.2
+0.25
+QS MS PS
+Mean ( f +b)
+0
+0.005
+0.01
+0.015
+0.02
+QS MS PS
+RMS (f +b)
+0
+0.02
+0.04
+0.06
+QS MS PS
+QS MS PS QS MS PS QS MS PS
+QS MS PS QS MS PS QS MS PS
+Figure 16: A sequence of simplifications of a window 
+model is automatically extracted with our algorithm. Entire 
+features are removed per step, while the rest of the model is 
+retained. 
+ 
+ 
+Figure 15: Max, mean, and RMS errors for the armoire 
+simplifications of 94 triangles (from lod 5 of 10). Forward, 
+backward, and forward plus backward errors are shown 
+for (QS), (MS), and our method (PS). 
+ 
+ 
+Figure 18: Top left: The original armoire model with 476 polygons. Bottom left: Wireframe of original. Top row: Selected 
+simplifications using our algorithm (94 triangles), Qslim (94 triangles), memoryless simplification (94 triangles), and Maya
+(96 triangles). Bottom row: Corresponding difference images (negative image) of the simplifications to the original. 
+Figure 17: Close-up of armoire. All images correspond to those in Figure 18. Notice that triangle-shaped artifacts appear on 
+the Qslim, memoryless, and Maya results. Also notice the difference in size and angle of the bevel on the armoire doors. 
+

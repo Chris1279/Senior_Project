@@ -1,0 +1,796 @@
+Defining and Applying Knowledge Conversion Processes to a Visual Analytics System
+Xiaoyu Wang, Dong Hyun Jeong, Wenwen Dou, Seok-won Lee, William Ribarsky and Remco Chang
+Abstract
+Knowledge-assisted visualization has been a fast growing field because it directly integrates and utilizes domain knowledge to
+produce effective data visualization. However, most existing knowledge-assisted visualization applications focus on integrating
+domain knowledge that are tailored only for specific analytical tasks. This reflects not only the different understandings of what
+“knowledge” is in visualization, but also the difficulties in generalizing and reapplying knowledge to new problems or domains.
+In this paper, we differentiate knowledge into two types, tacit and explicit, and suggest four conversion processes between them
+(internalization, externalization, collaboration, and combination) that could be included in knowledge-assisted visualizations. We
+demonstrate the applications of these four processes in a bridge visual analytical system for the US Department of Transportation
+and discuss their roles and utilities in a real-life scenarios.
+Key words:
+1. Introduction
+The incorporation of knowledge into the process of solving
+analytical tasks is a fast emerging area in visualization. With the
+insights and reasoning artifacts that knowledge-assisted visu-
+alization provides, the experts are more capable of performing
+complex analytical processes. Currently, there are some notable
+research focused on this new area that demonstrate the value
+of integrating domain knowledge into visual analytics systems.
+Xiao et al. [1] presented a traffic analysis system to analyze
+network traffic using knowledge representation. Also Chang
+et al. [2] provided the city planning experts’ insights through
+integrating the knowledge of urban legibility into geospatial vi-
+sualization. Although these works have significance in helping
+reasoning and visualization, with few exceptions, the process
+of knowledge integration utilized in these systems is often spe-
+cific to the analytical tasks or the domain, making it difficult to
+generalize to new problem areas.
+From a theoretical perspective, the main cause of this wide
+range of applications is the lack of a unified definition of knowl-
+edge. Burkhard used the term “knowledge” in visualization
+when defining the term “Knowledge” Visualization as “the use
+of visual representations to improve the transfer of knowledge
+between at least two persons or group of persons” [3]. While
+this definition is valid, we propose that it is too narrow and re-
+strictive of how knowledge could be applied in visualizations.
+Our definition of knowledge is therefore different. We believe
+that knowledge is a deterministic process that encapsulates a
+collection of information [4]. Throughout the rest of the pa-
+per, we will be using the later definition when using the term
+“knowledge.” Our approach focuses on representing knowl-
+edge rather than data or information by determining the values
+of knowledge through understanding the data or information.
+Although finding and understanding important knowledge are
+extremely difficult, we begin with understanding the definition
+of knowledge and the user’s analytical procedures. Specifically,
+we differentiate knowledge into tacit knowledge (personal, con-
+text specific, hard to formalize and communicate) and explicit
+knowledge (transmittable in a formal, systematic language) [5].
+With this differentiation, we can formulate four knowledge con-
+version processes in knowledge-assisted vitalization: internal-
+ization, externalization, collaboration, and combination. A de-
+tailed explanation about each process is provided in section 3.
+Based on the definition of knowledge and four knowledge
+conversion processes, we present a visual analytical system for
+bridge management for the US Department of Transportation.
+This system is visual in that it presents four important perspec-
+tives through visual representations: geospatial, temporal, re-
+lational and per-bridge detail. More importantly, it is directly
+connected to an ontological knowledge source and supports in-
+teractive data analysis to relate the user’s domain knowledge
+to the ontology. We demonstrate that the four knowledge con-
+version processes of building (internalizing), generalizing (ex-
+ternalizing), sharing (collaborating), and merging (combining)
+knowledge help the analysis of bridge data by showing their
+utilities in two real-life scenarios.
+The paper is arranged as the following. First we pro-
+vide a detailed explanation of different definitions of knowl-
+edge (section 2). Based on our understanding of knowl-
+edge, we present the four knowledge conversion processes for
+knowledge-assisted visualization in section 3. In section 4, we
+demonstrate an example how these processes could be incor-
+porated in a visual analytical system. Finally we conclude this
+paper following a brief discussion.
+2. Definition of Knowledge
+To develop four knowledge conversion processes in
+knowledge-assisted visualization [6], we must first know what
+Preprint submitted to Computers & Graphics April 16, 2009
+knowledge is. In knowledge management literature, it has been
+established that distinguishing between data, information, and
+knowledge is important to designing knowledge management
+programs [7]. Work by Syed and Shah [4] reviews various
+definitions and explanations of the DIKW (data, information,
+knowledge, wisdom) hierarchy and focuses on presenting a
+model that explicates the relationship between data, informa-
+tion, and knowledge. In Syed and Shah’s model, knowledge
+is defined as the range of one’s information. However, Dav-
+enport and Prusak [8] state that “knowledge derives from in-
+formation as information derives from data” and further define
+knowledge as “a fluid mix of framed experience, contextual in-
+formation, values and expert insight that provides a framework
+for evaluating and incorporating new experiences and informa-
+tion.” In Davenport and Prusak’s perspective, knowledge is the
+refined information in which human cognition has added value.
+In other words, information becomes knowledge through cog-
+nitive effort. Based on this definition, we think that knowl-
+edge can only result from human cognitive process that in-
+cludes perceiving, recognizing, conceiving judging, reasoning,
+and imagining [9]. It also shows that knowledge fundamentally
+involves relationships either among information or other pieces
+of knowledge.
+Nonaka and Takeuchi [5] differentiate knowledge as tacit
+knowledge and explicit knowledge to understand how knowl-
+edge is shaped and how knowledge can be applied. In their
+definition, explicit knowledge can be processed by a computer,
+transmitted electronically, or stored in a database. On the other
+hand, tacit knowledge is personal and specialized and can only
+be extracted by human. We extend Nonaka and Takeuchi’s con-
+cept on knowledge conversion modes and apply them to visu-
+alization. We believe that through the use of interactive visu-
+alization tools, analysts can experience the interaction between
+tacit and explicit knowledge. To further delineate tacit and ex-
+plicit knowledge in knowledge-assisted visualizations, we pro-
+pose that:
+• Explicit knowledge is different from data or information.
+• Tacit knowledge can only result from human cognitive
+processing (reasoning).
+• Explicit knowledge exists in data, and is independent from
+the user or his tacit knowledge.
+• Explicit and tacit knowledge are related and can be con-
+nected through the use of interactive visualization tools.
+Explicit knowledge, extracted from data or information, is
+represented as a visualization, which is received both percep-
+tually and cognitively by the user via an image. The cognitive
+processing leads to an understanding and an increase of user
+tacit knowledge which recursively affects subsequent percep-
+tion and cognition. Tacit knowledge guides the user’s interac-
+tion and exploration so that the visualization changes over time.
+Based on the analytical expression of visualization proposed by
+van Wijk [10], tacit and explicit knowledge can be expressed as
+a set of equations:
+Ke = f (D); I(t) = V(Ke, S , t);
+dKt
+dt
+= P(I,Kt) (1)
+where explicit knowledge Ke is a function and an extraction
+of data f (D). Using explicit knowledge Ke, specifications S ,
+an image at time t, I(t), can be generated by the visualization
+system V . van Wijk [10] provides a detailed explanation about
+how the user interactively gains knowledge in using a visual-
+ization; the image I is perceived by P and understood by the
+user, resulting in an increase of the user’s knowledge. We be-
+lieve that the user’s gained knowledge is tacit Kt and depends
+on the image I and the current knowledge state Kt of the user.
+Since the amount of explicit knowledge Ke that exists in a com-
+plex dataset D could be nearly infinite, Kt can be expressed and
+stored in a knowledge database (KB) as a collection of smaller
+knowledge artifacts (Ke1 to Ken ). The challenge of creating a
+visualization therefore becomes the determination of the most
+relevant and valuable collection of knowledge to display to the
+user. Figure 1 shows a graphical representation of how explicit
+knowledge can be represented and where tacit knowledge might
+be located.
+Figure 1: A graphical representation showing four entities: data, knowledge
+database, visualization, and user. Once explicit knowledge is extracted from
+the data. It is stored in a knowledge database (KB) and used in visualization to
+represent it to a user. The user continuously perceives the image and gains tacit
+knowledge.
+3. Knowledge Conversion Processes in Knowledge-assisted
+Visualization
+Based on the proposed definitions of tacit and explicit knowl-
+edge, we provide four knowledge conversion processes in
+knowledge-assisted visualization: Internalization, Collabora-
+tion, Externalization, and Combination. These four knowledge
+conversions are first introduced by Nonaka and Takeuchi [5] in
+which they focus on how knowledge can be processed and con-
+verted from one to another in business models. For knowledge-
+assisted visualizations, we propose that the four processes are
+also applicable because the functions of an analysts in percep-
+tually and cognitively understanding represented information to
+create concrete knowledge using a visualization is similar to
+that of analysts in business practices. Here we present the four
+conversion processes as applied to visualizations.
+3.1. Internalization
+In psychology, internalization is defined as the process of ac-
+cepting the established set of norms, which are influential to
+2
+the individual [11]. It is regarded as a cognitive process of
+acquiring skill and knowledge. In knowledge-assisted visual-
+ization, we propose that visually representing explicit knowl-
+edge would support analysts in understanding and transform-
+ing the explicit knowledge into tacit (internal) knowledge. As
+proposed by Nonaka and Takeuchi [5] the internalization pro-
+cess starts with a user discovering what the explicit knowledge
+is, followed by a series of steps in understanding why the ex-
+plicit knowledge is of value or why it makes sense, until finally
+the user accepts the knowledge as their own viewpoint or in-
+ternal knowledge (Figure 2). From a visualization perspective,
+this process parallels the concept of “insight discovery” that has
+been noted as the goal of visualization [12]. Since discovering
+insight is strongly related to building a user’s tacit knowledge
+based on explicit knowledge in the data, the internalization pro-
+cess can be thought of as the primary goal and process of using
+a traditional (not knowledge-assisted) visualization.
+Figure 2: Internalization process (indicated by the red arrows). It explains that
+the user continuously builds tacit (internal) knowledge based on perceptually,
+cognitively, and interactively incorporating the represented explicit knowledge
+in a knowledge-assisted visualization.
+3.2. Externalization
+Externalization is the process of articulating tacit knowl-
+edge into explicit concepts [5]. It is a generic knowledge cre-
+ation process through which tacit knowledge becomes explicit
+based on the user’s finding (insights), concepts, hypotheses,
+and models. In the visualization community, there have been
+a few applications that specifically focus on the the external-
+ization of one’s tacit knowledge. Garg et al. [14] presented
+a model-driven approach to extract Logic Programming (LP)
+rules through a user’s interactions and reused the rules in further
+analysis processes. Xiao et al. [1] studied how the knowledge-
+base could be used to improve understanding of complex net-
+work traffic data. They found that about 80% of network traffic
+could be classified correctly based on previously extracted ex-
+perts’ knowledge-base. Chen et al. [6] showed an example in
+which the user’s insights can be externalized into a knowledge
+database. These applications have shown that not only is exter-
+nalization in a visualization possible, it is in fact a very powerful
+method for storing and reusing knowledge.
+Figure 3 shows how tacit knowledge can be externalized into
+explicit knowledge. In this figure, explicit knowledge is stored
+in a knowledge database and used to create visual representa-
+tions. Because of the complex nature of explicit knowledge,
+Nonaka and Takeuchi suggest that externalization is the process
+of concept creation and is triggered by dialogue or collective re-
+flection [5]. They further explain that the concept creation pro-
+cess can be expressed by applying analytical and non-analytical
+methods alike. The analytical methods are deduction and in-
+duction through which appropriate concept can be deduced and
+induced based on unorganized concepts. However, if applying
+analytical methods is not feasible, non-analytical methods such
+as metaphors and/or analogies could also be used. In visualiza-
+tion, we propose that both analytical and non-anlytical methods
+should be considered for expressing explicit knowledge that can
+in turn be stored into a knowledge database [1, 14].
+Figure 3: Externalization process (indicated by the red arrow). It shows that the
+internally created tacit knowledge can be extracted and saved into the knowl-
+edge database. The explicit knowledge can later be reused to create further
+visual representations.
+3.3. Collaboration
+Collaboration is the process of sharing tacit knowledge be-
+tween people. In knowledge management literature, it is de-
+fined as socialization [5]. Although both collaboration and so-
+cialization represent learning from others, we use the term col-
+laboration because it is commonly used in computer science
+and has a history of implying sharing knowledge, learning, and
+building consensus through the use of computers. In visual-
+ization, building collaborative visualization environments also
+has a long history [15, 16]. Johnson [16] defined that collab-
+orative visualization is a subset of computer-supported cooper-
+ative work (CSCW) in which control over parameters or prod-
+ucts of the scientific visualization process is shared. Prior to
+that, Coleman et al. [15] provided generalizable reasons why
+collaborative visualization is compelling: (1) experts’ knowl-
+edge could be available any time and at any place. (2) The
+expertise is transferred to others, improving the local level of
+knowledge. (3) Based on the supported accessibility, visual-
+ization products can be reviewed and modified as they are pro-
+duced, reducing turn-around time. (4) The remote accessibility
+also helps to avoid relocating the expertise physically. More
+recently, Burkhard proposed a collaboration process of trans-
+ferring knowledge between at least two persons or group of
+persons [3]. Similarly, Ma [17] noted that sharing visualiza-
+tion resources will provide the eventual support for a collabora-
+tive workspace. He discussed existing web-based collaborative
+workspaces in terms of sharing high-performance visualization
+facilities and visualizations and findings. He also showed sev-
+eral existing collaborative workspaces such as TeraGrid [18],
+Many Eyes [19], etc (see [17] for detail).
+Figure 4 shows how two visualization users could collabo-
+rate and share their tacit knowledge with each other. In this dia-
+gram, we show that the collaboration process can occur through
+the use of collaborated visual environments. However, the most
+natural method for sharing knowledge is still direct commu-
+nication between the users (via phone, email, instant messages,
+3
+etc.). In either case, the users are actively sharing their discover-
+ies and tacit knowledge and incorporating each other’s domain
+expertise into their own.
+Figure 4: Collaboration process (indicated by the red arrows). Collaboration
+is a process of sharing tacit knowledge through the use of a visualization or
+through direct communication.
+3.4. Combination
+Combination is the process of systemizing explicit concepts
+into explicit knowledge system [5]. Since explicit knowledge
+exists everywhere in books, research papers, and communica-
+tion networks (user groups), etc., the process of combining dif-
+ferent bodies of explicit knowledge is important. For instance,
+genomic data have been used in many different research areas:
+biology, bioinformatics, computer science (including visualiza-
+tion), health & medical science, etc., and depending on the do-
+main, researchers have derived different, yet equally important
+findings. In order to fully comprehend the knowledge associ-
+ated with such genomic data, it is necessary to combine findings
+from different domains and integrate them into a cohesive set of
+explicit knowledge.
+Figure 5 shows a simple model of combining explicit knowl-
+edge into an existing knowledge-base. Behind this simple dia-
+gram, however, additional considerations need to be addressed
+in order to maintain the quality and integrity of the knowledge-
+base when combining new explicit knowledge with an existing
+source. If unrelated or incorrect knowledge is combined with
+the existing explicit knowledge, it could degrade the overall
+trustworthiness of the knowledge-base as well as the benefits
+of representing knowledge in a visualization. While we are not
+aware of any known visualizations that support the verification
+and validation process when combining explicit knowledge,
+in Knowledge Engineering literature, researchers have long
+been studying how to verify and validate underlying knowledge
+when developing a knowledge-based system [20]. The specifics
+of knowledge management and engineering is outside the scope
+of this section, but will be discussed it further in the future work
+section (section 5).
+Figure 5: Combination process (indicated by the red arrow). Explicit knowl-
+edge can be combined with existing explicit knowledge in a knowledge
+database to further enhance a user’s visual analysis process.
+3.5. Associating Knowledge Conversion Processes
+We define the four processes described above based on un-
+derstanding of the existing knowledge conversion modes [5].
+We believe that these four knowledge conversion processes are
+also important for knowledge-assisted visualization in that they
+can be utilized to creating more effective visual analytical sys-
+tems. Internalization is the process of gaining tacit knowl-
+edge from continuous interactive analysis and is exemplified
+by the human’s reasoning process of finding insights in visual-
+ization. Externalization is the process of generalizing the found
+insights, concepts, hypotheses, and models during the use of a
+visualization into externalized forms. Both analytical and non-
+analytical methods can be used to express the findings. Col-
+laboration occurs when users share discovered knowledge from
+analyzing data in visualization, and it represents an important
+facet of knowledge visualization in which a user’s finding is
+directly benefiting others. Finally, the users’ findings should
+be generalized and integrated into existing knowlege-bases for
+future use through the combining process. To the best of our
+knowledge, there does not exist any visualization that incorpo-
+rates all four knowledge conversion processes, but we believe
+that each process represents an important area of knowledge-
+assisted visualization and should be considered together in a
+holistic way.
+4. Applying Knowledge Conversion Processes into Visual-
+ization
+As shown in Figure 1, a well-designed knowledge database
+plays an important role in supporting the knowledge internal-
+ization, externalization, collaboration, and combination pro-
+cesses. We believe that in order to design a useful visual an-
+alytics system that incorporates knowledge, a tightly integrated
+and well-designed knowledge database is essential.
+There is, however, no definitive way to construct a knowl-
+edge database. Many research have focused on designing
+and developing different forms of such databases that could
+represent domain knowledge. The differences between these
+database are not only reflected in their capacities, but also in
+their structural complexities. As shown in work by Garg et
+al. [14], a knowledge database could be as simple as a textual
+structure that contains inductive logic programming equations.
+On the other hand, it could also be described by extensive de-
+cision models, such as Markov decision process (MPD) in the
+Artificial Intelligent field. In our example, we choose to apply
+an ontology for storing and retrieving domain specific knowl-
+edge.
+The ontological knowledge structure is a conceptualization
+of domain knowledge which includes concepts, properties and
+their relationships. This conceptualization process aims to
+transfer both human tacit knowledge and explicit knowledge
+into computer-understandable formats. These concepts can be
+further utilized to facilitate other users’ problem-solving pro-
+cesses. More specifically, a Problem Domain Ontology (PDO)
+enables solving a complex problem where the underlying do-
+main concepts have high interdependencies by building up a
+4
+problem scenario based on concepts, properties and features in
+the ontological knowledge structure.
+Although research on ontological knowledge structure have
+advanced in the recent years, integrating such structure with
+visual analytics system is still an open research area. In the fol-
+lowing subsections, we first describe our understanding about
+how to integrate these two components, and further present our
+prototype of a knowledge-assisted visual analytics system.
+4.1. System Overview
+(a) (b)
+Figure 6: (a) the Venn Diagram that suggests the complementary relationship
+between visualization and ontology. (b) the knowledge window provides up-
+dated knowledge rules inside the ontological knowledge structure.
+4.1.1. The Relationship between Visualization and Ontology
+In order to integrate a visualization with an ontological
+knowledge structure, we need to understand what their rela-
+tionship is and why the integration is meaningful. By exam-
+ining visualization and ontological structure separately, we dis-
+cover a complementary functional relationship between these
+two components when represented as a Venn diagram (Figure
+6). As shown in the overlapping region of the Venn diagram,
+both visualization and ontological structure share similar func-
+tions that could provide specific information in the forms of
+visual selections and data queries respectively. Due to the dif-
+ferent foci and strengths of the two approaches, the functions
+of the visualization and the ontological knowledge structure are
+not always the same. Visualization, on one hand, usually allows
+the user to interactively explore patterns of the underlying data
+from various perspectives; the ontological knowledge structure,
+on the other hand, focuses more on representing the conceptual-
+ization of domain knowledge and the interdependencies among
+the concepts.
+A further analysis of this complementary relationship sug-
+gests that the integration of these two could be beneficial. If
+reasonably integrated, users could discover new concepts and
+knowledge through exploring the visualization and external-
+ize such knowledge into the ontological knowledge structure
+for future references. Users could also directly access the
+knowledge structure to acquire predefined domain concepts and
+rules to guide them through visual explorations and assist their
+decision-making processes.
+Thus we hypothesize that through integrating visualization
+and ontological structure we could form a useful knowledge-
+assisted visual analytics environment. To validate our hypothe-
+sis, we present our bridge management system which utilizes
+encapsulated knowledge from a domain specific ontological
+knowledge structure.
+4.1.2. System Implementation
+Figure 7: The overview of the knowledge-assisted visualization system. Top
+Left: the Knowledge Window. Middle left: the meta data window. Middle:
+The Geospatial View. Top Right: the Parallel Coordinate View. Bottom Right:
+the Scatter Plot View.
+With support from the US Department of Transporta-
+tion(USDOT), we implemented a prototype of knowledge-
+integrated visual analytics bridge management system. Our
+system is consisted of two major components, a visualization
+interface that provides interactive data exploration, and an on-
+tological knowledge structure that is customized to store and
+provide bridge management domain concepts and knowledge.
+Through cyclic communications between these two compo-
+nents, our system provides bridge managers comprehensive
+understanding about their bridge assets and facilitates their
+decision-making processes.
+Visualization Interface. As shown in Figure 7, our system uti-
+lizes a highly interactive visualization interface to help depict
+bridge data from three aspects: geospatial, temporal, and re-
+lational. Utilizing the rich geo-information provided by Mi-
+crosoft Virtual Earth [23], our system provides an interactive
+geospatial view for the bridge managers to examine the distri-
+bution of bridges as well as their surrounding environments. To
+enable temporal analysis, we designed a Treemap-based [21]
+small multiples [22] view to represent the temporal trends of
+individual bridges with a spatial layout generated based on user-
+chosen dimensions. Last but not least, the Parallel Coordi-
+nate [24] and Scatter Plot views are dedicated to assist bridge
+managers in depicting the relational information among bridges
+and their attributes. By tightly coordinating these views to-
+gether, our system provides the bridge managers an interactive
+data exploration environment that could help them comprehend
+complex bridge information from multiple perspectives simul-
+taneously.
+5
+The Ontological Knowledge Structure. In addition, an ontolog-
+ical knowledge structure is integrated in our system to provide
+domain concepts and information. Using an ontology-driven
+modeling approach [25, 26], this ontological knowledge struc-
+ture contains bridge domain concepts, such as bridge struc-
+tural types and locations. These individual bridge concepts are
+further connected through their interdependent relationships,
+which is modeled based on the experience of bridge managers
+and other domain users. By connecting concepts in such a man-
+ner, additional domain rules can be identified and created. For
+example, a rule can be described as: if a bridge’s sufficiency
+rating is below 50 and its super-structure rating is less than 5,
+this bridge has potentially undergone severe structural damage.
+This rule is then stored in the knowledge structure and can be
+executed upon request. Utilizing such a rule-based ontological
+knowledge structure allows for great flexibility for our system
+to support precise examination of bridges and enables the sys-
+tem to better facilitate bridge management processes.
+Communication between components. Through a server-client
+web interface, our system tightly coordinates the visualization
+interface with the ontological knowledge structure. Since these
+two components share the same underlying bridge ID number,
+the message passing becomes clear and feasible. For example,
+any results from the executed rules in the ontological knowl-
+edge structure will be immediately updated in each visualiza-
+tion window. Thus, exploring within visualization could lead
+to new concepts that can be further added into the ontological
+structure; while the knowledge stored in the ontology could as-
+sist decision-making during the visual exploration.
+To assisting bridge managers in executing the domain rules,
+our system presents an interactive knowledge window (Fig-
+ure 6(b)) which is automatically synchronized with rules within
+the ontological knowledge structure. With these two compo-
+nents tightly integrated together, the users always have access
+to the most up-to-date rules and concepts. The users simply
+have to execute the relevant rules, and they can see and interact
+with the bridges in further detail immediately in the visualiza-
+tion environment.
+Furthermore, our system enables the bridge managers to di-
+rectly modify the knowledge structure. This function provides
+bridge managers an important interface to update the external-
+ized knowledge and maintain its accuracy. Based on their dis-
+coveries during their interactions with the visualization, bridge
+managers could create new concepts or rules and directly in-
+sert them into the ontological knowledge structure. For exam-
+ple, through their interaction with visualization, bridge mangers
+may find that the combination of low ratings (less then 4) on
+both “supporting structure” and “water adequacy” suggests wa-
+ter erosion and flood damage. The bridge managers could then
+insert this new discovery into the ontological knowledge struc-
+ture and further re-apply it to check how many bridges have
+been affected by water-erosion or damage.
+Embedded Knowledge Processes. Since this bridge manage-
+ment system is designed based on our definition of knowledge
+and its corresponding conversion processes, we can clearly
+identify the four different knowledge conversion processes - in-
+ternalization, externalization, collaboration, and combination in
+its functions:
+• The Internalization process embodies the transfer of
+knowledge from a computer to a user through the inter-
+actions with a visualization. In our system, this process
+mainly happens through the user’s interaction with the co-
+ordinated visual analytics views. These views help the
+users inspect the data from different perspectives and as-
+sist the potential discovery of unexpected data patterns and
+trends that could become new domain knowledge.
+• The Externalization process happens upon the user’s ac-
+quisition of new domain knowledge or information that
+does not already exist in the ontological knowledge struc-
+ture. This knowledge could come from both discoveries
+from interacting with the visualization system or from col-
+laborating with other co-workers. Once acquired, user
+could directly insert this new knowledge into the on-
+tological knowledge structure to augment its knowledge
+database. The ontology will then store this knowledge and
+re-apply it during a user’s future investigations.
+• The Collaboration process takes place when a user inter-
+acts with our integrated system that incorporates domain
+knowledge of multiple experts. Through our integrated
+knowledge interface, each bridge managers connects to the
+same ontological knowledge structure. New knowledge or
+domain rules created by one manager would immediately
+be reflected in another bridge manager’s visualization sys-
+tem. In this manner, through the use of the ontology as
+a central repository of knowledge, our system facilitates
+collaboration between multiple bridge managers.
+• The Combination process occurs when inserting new
+knowledge into the existing knowledge structure. The new
+knowledge could come from a new set of domain data,
+new perspectives or regulations on bridge inspections, etc.
+Since bridge inspection rules vary for different inspection
+cycles due to new federal bridge inspection guidelines or
+regulations, the Combination process is particularly im-
+portant in ensuring that each bridge manager is inspecting
+their data with the most suitable domain knowledge. For
+example, to handle changes in the standards of water ad-
+equacy, our system combines different sets of that criteria
+and applies them accordingly to different inspection cy-
+cles.
+4.2. Scenarios
+We performed a qualitative (expert-based) evaluation of our
+system with bridge managers from North Carolina and City of
+Charlotte Department of Transportation and identified the fol-
+lowing scenarios that demonstrate how our knowledge-assisted
+visualization system could assist bridge managers’ daily jobs of
+examining bridges and making maintenance decisions.
+6
+Figure 8: Close examination of the geospatial view shows that although these
+three bridges are on the same river stream, their conditions are different. The
+bridge over the upper stream is currently under repair and reconstruction.
+4.2.1. Augmenting Visualization through the use of an Ontol-
+ogy
+According to bridge experts, water erosion and flooding can
+cause severe damages to bridges. The pattern for this type of
+deterioration is in general typical along river streams. In this
+scenario, we demonstrate how our system could help bridge
+managers to quickly identify the cause of unexpected bridge
+deteriorations through the knowledge internalization process.
+This scenario is identified together with city of Charlotte bridge
+management team during their examination of causes of water
+damage.
+Since the criterion for “bridge above water” has already been
+externalized in our ontological knowledge structure, the bridge
+managers can easily highlight all these bridges in the geospa-
+tial view and examine them individually. Through quick ex-
+amination on the geospatial view, the bridge managers imme-
+diately noticed an interesting pattern in South Charlotte. Al-
+though located over the same river, as shown in Figure 8, the
+three bridges over that river showed different “present condi-
+tions”. The one over the upper stream has already been filed
+for replacement and has been under construction. However, the
+other two are still in good condition. This pattern is interesting
+because if there was a flood, all three bridge should share sim-
+ilar deterioration patterns; or at least, they should deteriorate at
+a similar pace. Even though temporal information suggest that
+these bridges were built at similar times, the changes in their
+conditions are drastically different. This inconsistency raised
+the bridge managers’ interests.
+After a detailed examination of these bridges in the geospa-
+tial view, the bridge managers realized that the cause of this
+inconsistency was due to the different turns of the river. Ac-
+cording to one of the bridge managers, although there was flood
+in both the upper and lower parts of this river, the bridge over
+the upper stream received the most impact since there were no
+bends in the river before the water hit it. On the other hand, due
+to the slow down of the river’s speed when the water passed
+the second and third bridges, these two bridges received much
+less impact. Based on this observation, the bridge management
+team was able to quickly identify and internalize this pattern
+and re-use it for future reference.
+In this scenario, the bridge managers gained insightful
+knowledge from interacting with our visualization system and
+incorporated it into their tacit knowledge (internalization).
+4.2.2. Updating and Sharing Knowledge through Visualization
+Since managing bridges is a complex process that often re-
+quires precise analysis, it is important for a bridge analyst to
+quickly determine the most relevant information to focus on
+during an investigation. In this scenario, we demonstrate how
+our system facilitates bridge experts through the externalization
+of their discoveries and sharing of the findings (collaboration)
+to filter out unnecessary data and focus on analyzing the most
+relevant information.
+A local bridge expert was using our visualization system to
+explore the bridge distributions around the Charlotte region.
+After a quick examination of the temporal view, the expert no-
+ticed that a large group of bridges did not have any ratings infor-
+mation (Figure 9(a)). Based on this bridge expert’s experience,
+this situation was most likely caused by two reasons: one, it
+could be caused by a loss of data or errors during the data en-
+try process. Two, these bridges could be outside of the bridge
+management team’s jurisdiction. As shown in the coordinated
+visualization views (Figure 9(b)), the bridge experts identified
+that these bridges were all railroad bridges, which fell into the
+second category.
+Since the city bridge management team is not responsible for
+maintaining these bridges, showing them together with other
+bridges can be confusing. In order to reduce this confusion, the
+bridge manager created new rules in the ontological knowledge
+structure to identify and filter out these railroad bridges. Other
+bridge managers of the same team will then be able to reuse
+these rules to reduce the irrelevant information and concentrate
+on the relevant bridges.
+This scenario shows how a user could gather information dur-
+ing visual exploration and further update (externalization) and
+share his knowledge discoveries with other co-workers (collab-
+oration).
+5. Future Work and Discussion
+Although the four knowledge processes are shown to be ef-
+fective in transferring and storing knowledge between multiple
+users in our bridge visualization system, there are still several
+remaining issues that need to be solved, including one funda-
+mental challenge on how to verify and validate newly inserted
+knowledge. This challenge, through our discussion with do-
+main experts, has its significance in determining the usefulness
+of a knowledge-assisted visualization system.
+7
+(a) (b)
+Figure 9: (a) A large group of unknown data is shown in the temporal view, which lead to the search of its cause. (b) Visualization views indicating that these are
+Railroad bridges.
+As mentioned in the Combination process, if new knowl-
+edge is not carefully validated, inserting unrelated or incorrect
+knowledge could potentially degrade the value of the ontolog-
+ical knowledge structure. However, verifying and validating
+diverse human knowledge is difficult in nature. Due to individ-
+ual experiences and understanding, different experts have their
+own ways of representing and describing knowledge. In gen-
+eral, there are three potential issues in inserting newly created
+knowledge into an existing knowledge database: duplicated,
+partial-overlapped and conflicted knowledge.
+• Duplicated knowledge is often created when different ex-
+perts share the same discoveries without realizing that one
+already exists. For example, bridge managers often ap-
+ply the rule that regulates bridges with sufficiency-rating
+value below 50 and super-structure rating below 6 in order
+to quickly decide which bridges require further examina-
+tion. However, depending on the size of the knowledge
+database, an expert user might not know that this rule al-
+ready exists and creates an identical one (but perhaps rep-
+resented slightly differently using a different grammar or
+language).
+• Partially overlapped knowledge in the knowledge database
+represents rules that are mostly similar but contains sub-
+tle yet important differences. As in the previous example,
+some bridge managers may like to add the substructure
+value into consideration. Since it is not simple to decide if
+the newly added rules should be inserted or merged with
+the existing one, verifying this type of relationship is diffi-
+cult. One conservative approach could be to provide multi-
+ple copies of the overlapped rules and group them together
+for individual users to choose from.
+• Conflicted knowledge occurs when existing knowledge
+differs from newly created knowledge due to perhaps new
+protocols or regulations. Unfortunately, without the su-
+pervision of domain experts, most systems cannot effec-
+tively identify and resolve such conflicts. This is particu-
+larly challenging when the existing knowledge is still valid
+(and should be kept in the knowledge-base) for decisions
+made in the past or under specialized circumstances (e.g.,
+a drastic change in the budget). Due to the multiple pos-
+sible causes of conflicted knowledge, organizing them is
+arguably the most difficult and least understood.
+Understanding each of these relationships is imperative for
+maintaining the validity and integrity of a knowledge database
+that is used in real decision-making environments. At present
+time, all three scenarios are handled by domain experts man-
+ually. However, in Knowledge Engineering literature, re-
+searchers proposed and designed several verification and val-
+idation (V&V) techniques and tools [20]. Some of them sup-
+port the ability to automatically verifying and validating un-
+derlying knowledge. But without a clear understanding of do-
+main knowledge, most automatic techniques and tools are not
+always reliable. In knowledge-assisted visualization, it remains
+an open research area for us to create a semi-automated knowl-
+edge management system for organizing and storing diverse
+knowledge and rules in the same knowledge database.
+6. Conclusion
+In this paper, we first propose our definition of knowledge in
+the context of visual analytics and further differentiate knowl-
+edge into two types, tacit and explicit. With the differentiation,
+we then formulated four knowledge conversion processes in
+knowledge-assisted visualization: internalization, externaliza-
+tion, collaboration, and combination. Based on the definition
+of knowledge and the four knowledge processes, we designed
+a visual analytics system for bridge management with the sup-
+port from US Department of Transportation. By connecting
+to an ontological knowledge source, our visual analytics sys-
+tem allows users to interactively analyze the data with access to
+the expert’s domain knowledge. We demonstrate through this
+bridge management visualization system that the four knowl-
+edge conversion processes are feasible and applicable to visual-
+ization systems and should be considered together when design-
+ing knowledge-assisted visualizations that incorporate domain
+expert knowledge.
+8
+References
+[1] Xiao L, Gerth J, Hanrahan P. Enhancing Visual Analysis of Network Traf-
+fic Using a Knowledge Representation. In: Proceedings of Visual Analyt-
+ics Science And Technology 2006. IEEE. p.107-114.
+[2] Chang R, Butkiewicz T, Ziemkiewicz C, Wartell Z, Ribarsky W, Pollard
+N. Legible Simplification of Textured Urban Models. IEEE Computer
+Graphics and Applications 2008;28(3):27-36.
+[3] Burkhard RA. Learning from architects: the difference between knowl-
+edge visualization and information visualization. In: Proceedings of the
+8th International Conference on Information Visualization 2004. IEEE.
+p.519-524.
+[4] Syed A, Shah A. Data, information, knowledge, wisdom: A doubly linked
+chain? In: Proceedings of the 101In International Conference on Infor-
+mation and Knowledge Engineering, pages 270-278, 2006.
+[5] Nonaka I, Takeuchi H. The Knowledge Creating Company. Oxford Uni-
+versity Press; 1995.
+[6] Chen M, Ebert D, Hagen H, Laramee RS, van Liere R, Ma K, Ribarsky
+W, Scheuermann G, Silver D. Data. Information, and Knowledge in Visu-
+alization. IEEE Computer Graphics and Applications 2009;29(1):12-19.
+[7] Jurisica I, Wigle D. Knowledge Discovery in Proteomics. 2nd ed. CRC
+Press; 2005.
+[8] Davenport TH, Prusak L. Working Knowledge: How Organizations Man-
+age What They Know. Harvard Business School Press; 1998.
+[9] The American Heritage Medical Dictionary 2007.
+[10] vanWijk JJ. The value of visualization. In: Proceedings of IEEE Visual-
+ization 2005. p.79-86.
+[11] Meissner WW. Internalization in Psychoanalysis. New York: Interna-
+tional Universities Press; 1981.
+[12] Chang R, Ziemkiewicz C, Green TM, Ribarsky W. Defining In-
+sight for Visual Analytics. IEEE Computer Graphics and Applications
+2009;29(2):14-17.
+[13] Yi JS, Kang Y, Stasko JT, Jacko JA. Understanding and characterizing
+insights: how do people gain insights using information visualization?.
+In: Proceedings of the 2008 Conference on Beyond Time and Errors:
+Novel Evaluation Methods For information Visualization, Florence, Italy,
+April 2008.
+[14] Garg S, Nam JE, Ramakrishnan IV, Mueller K. Model-driven Visual Ana-
+lytics. In: Proceedings of Visual Analytics Science and Technology 2008.
+Oct. 19-26. p.19-26.
+[15] Coleman J, Goettsch A, Savchenko A, Kollmann H, Wang K, Klement
+E, Bono P. TeleInViVoTM : Towards collaborative volume visualization
+environments. Computer & Graphics 1996;20(6):801-811.
+[16] Johnson G. Collaborative visualization 101. Computer Graphics
+1998;32(2):8-11.
+[17] Ma K. Creating a collaborative space to share data, visualization, and
+knowledge. SIGGRAPH Comput. Graph. 2007;41(4).
+[18] Binns J, DiCarlo J, Insley JA, Leggett T, Lueninghoener C, Navarro
+J-P, Papka ME. Enabling community access to TeraGrid visualiza-
+tion resources. Concurrency and Computation: Practice and Experience
+2007;19(6):783-794.
+[19] Many Eyes, http://manyeyes.alphaworks.ibm.com/manyeyes.
+[20] Tsai W, Vishnuvajjala R, Zhang D. Verification and Validation of
+Knowledge-Based Systems. IEEE Trans. on Knowl. and Data Eng.
+1999;11(1):202-212.
+[21] Bruls M, Huizing K, Van Wijk JJ. Squarified Treemaps. In: Proceedings
+of the Joint Eurographics and IEEE TCVG Symposium on Visualization
+2000, Eindhoven University of Technology p.33-42.
+[22] Tufte ER. Envisioning Information. Graphics Press; 1990.
+[23] Microsoft Corporation, http://www.microsoft.com/virtualearth.
+[24] Inselberg A. The plane with parallel coordinates. The Visual Computer
+1985;1(4):69-91.
+[25] Lee SW, Gandhi RA. Ontology-based Active Requirements Engineering
+Framework. In: Proceedings of the 12th Asia-Pacific Soft. Engg Confer-
+ence 2005, IEEE CS, p.481-490.
+[26] Lee SW, Muthurajan D, Gandhi RA, et al. Building decision support prob-
+lem domain ontology from natural language requirements for software
+assurance. International Journal on Software Engineering and Knowledge
+Engineering 2006;16(6):1-34.
+9
+

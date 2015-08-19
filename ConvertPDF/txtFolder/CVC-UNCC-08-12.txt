@@ -1,0 +1,505 @@
+SEEKING THE CITY378
+1 INTRODUCTION 
+Our work encompasses subjects of urban planning, 
+urban design, urban morphology, and the link 
+between geographical information systems (GIS) 
+and urban visualization. Our area of research 
+focuses on the way people conceptualize the 
+urban environment. The visualization technique 
+discussed in this paper is an attempt to provide 
+users with a tool to create their own sense of urban 
+legibility, which allows them to gain an intuitive 
+and deep understanding of the urban model and 
+its social, cultural, and economic relationships. 
+Although people interpret the city differently, it 
+is agreed upon that all people understand the 
+city through its physical elements. The concept 
+of urban legibility, made famous by Kevin Lynch 
+in the 1960s, recognizes that people intuitively 
+categorize a city’s physical elements 11. Instead of 
+visualizing the urban environment as a collection of 
+random physical elements, Lynch makes apparent 
+that people aggregate the city into identifi able 
+components. For example, he says the city can 
+be defi ned by paths, edges, districts, nodes, and 
+landmarks. This cognitive mapping approach to 
+understanding the urban environment depicts 
+Lynch’s elements through a simplifi cation method, 
+and is the methodological base of our system. 
+Our visualization tool, Urban Vis, provides a 
+way to view the spatial layout of a city and the 
+characteristics of areas through demographic 
+information. What is the relationship of low 
+income areas to downtown? Do schools service 
+a suffi cient number of homes? Will rezoning an 
+area affect a nearby neighborhood? Is an older 
+neighborhood built upon a unique fi gure ground 
+pattern? Questions about the physical and social 
+infrastructure of the city can be analyzed using 
+our tool. 
+In comparison to existing GIS systems, our 
+tool offers a new way to understand the urban 
+environment through a clustering algorithm 
+allowing for various levels of abstraction to occur. 
+The clusters represent various spatial boundaries, 
+which contribute to the user’s geographic 
+perspective. This multi-resolution technique is a 
+new geometric and form based way to explore the 
+underlying foundation of a city.
+In order to validate the effectiveness of our tool, 
+we surveyed fourteen experts who regularly 
+Visualizing GIS: Urban Form and Data Structure
+GINETTE WESSEL 
+University of North Carolina at Charlotte
+REMCO CHANG
+University of North Carolina at Charlotte
+ERIC SAUDA
+University of North Carolina at Charlotte
+379
+investigate urban environments. The examinees’ 
+occupations ranged from geographic information 
+experts to school district planners to real estate 
+developers. After demonstrating our tool, the 
+experts were able to visualize the urban form and 
+data into a cohesive image while retaining their 
+sense of urban legibility. Collectively the experts 
+expressed that our visualization tool offers new 
+techniques to help them perform their daily tasks.
+The collaborative efforts of the College of 
+Architecture and the Visualization Center at UNCC 
+have developed a rich approach to understanding 
+complex urban environments. These efforts 
+have also lead to technical discussions of this 
+work at the 2007 IEEE Information Visualization 
+Symposium17.
+2 CONCEPTS IN URBAN LEGIBILITY 
+For purposes of this research, there is a need to 
+differentiate between urban planning and urban 
+design. Urban planning focuses largely on the use 
+of social, economic, and political factors when 
+evaluating urban growth and development7. Most 
+of these factors are important to our understanding 
+of the city, but for our research, they do not 
+focus enough attention on the geometric forms 
+of the city. Typically, urban planning explores the 
+connection of social and political factors to urban 
+form and is visualized on a local scale rather than 
+a city or regional scale9. For our investigation, it is 
+important to examine how economic factors affect 
+the city at various scales. Urban design allows us 
+to focus more attention on the form and geometry 
+of the city. Traditionally, simple geometric models 
+of the city have been the basis of discussion and 
+design, either in planimetric view13, in sequential 
+perspective view4, or using cognitive mapping11. 
+We introduce a view of the city unlike prior models 
+that can convey information to the user through 
+multiple perspectives.
+In the 1970s, Robert Venturi introduced a new 
+perspective of the urban environment. Learning
+form Las Vegas, by Venturi and et al., examined 
+how people understood the city through signs, 
+symbols, space, and speed. They recognize that 
+the city is not just a place of architecture and 
+economic interaction, but it communicates a new 
+urban understanding through iconology and the 
+city’s changing geometric form18. More recent 
+work by Rem Koolhass at Harvard has begun to 
+examine the urban environment with relation to 
+technological impacts. He seeks to weave economic, 
+political, and social factors explicitly into the 
+development of urban form while understanding 
+that the linkage is not methodologically the same 
+as before but impacted through digital networks 
+19. Bill Mitchell, in his book City of Bits 12, wrote 
+about the emergence of urban forms that changes 
+ideas of  xed space. He believes digital and spatial 
+networks contribute to a new sense of urban 
+understanding. 
+Our investigation covers urban concepts that 
+offer a perspective of reading the city in modern 
+day context. By using basic principles of urban 
+legibility, we can then apply them to visualization 
+techniques. The result of this work will improve 
+user’s legible construct of the complex urban 
+environment.
+3 EXISTING GIS SYSTEMS
+Often geographical information systems can limit 
+a user’s ability to understand a 2D or 3D urban 
+model environment. The perspective from which 
+the user navigates the environment is important 
+to his interpretation of its spatial layout. In most 
+existing systems, the method by which a user 
+navigates data may limit their perspective. These 
+GIS systems commonly offer a zoom tool that 
+allows the user to drag a bounding box over an area 
+of focus. This method of navigating a scene may 
+lose the user’s sense of spatial relationships with 
+the surrounding context. Furthermore, accurately 
+representing complex environments requires 
+multiple layers of data. Existing systems either 
+represent these layers by using multiple colors 
+thus limiting a user’s ability to decipher between 
+data, or they require procedural methods to 
+analyze data, which may cost extensive amounts 
+of time to perform.  
+In designing our tool, we incorporate highly 
+interactive techniques for navigating and examining 
+the urban environment as well as state of the art 
+information visualization methods to correlate 
+disparate layers of data. This unique combination 
+allows the user to quickly gain intuitive and deep 
+understanding of both urban form and data.      
+VISUALIZING GIS
+SEEKING THE CITY380
+4 HOW THE SYSTEM WORKS
+Urban Vis uses two views (Fig. 1): a 3D model 
+view and a multi-dimensional data view. The two 
+views are displayed on two separate screens or 
+monitors providing ef cient window management. 
+Both views allow user interaction, and link the de-
+mographic data and the physical geometric ob-
+jects. The 3D model view shows clusters of build-
+ings based on urban legibility elements in order 
+to provide persistent spatial awareness within the 
+urban environment. The data view displays infor-
+mation of the clusters shown in the 3D model view 
+adding an extra perspective for understanding the 
+city. Together, the views allow the user to explore 
+the urban model from both the geographical and 
+the informational angles. 
+4.1 3D Model View 
+The 3D model view (Fig. 1) allows the user to rec-
+ognize a sense of placement within the urban en-
+vironment through geometric forms. It also pro-
+vides an instant understanding of the basic frame-
+work of the urban environment. More importantly, 
+it serves as an exploratory tool in which the user 
+can interactively navigate the city using either a 
+mouse or keyboard while viewing the environment 
+at any distance or angle. 
+The user controls the point of focus through a yel-
+low sphere connected to the ground plane with 
+a line (Fig. 2a). The user can move the sphere 
+around the map and also up and down to change 
+the level of clustering. For example, when the 
+sphere is high above the ground, the cluster sizes 
+are larger, allowing the user to see overviews of 
+the entire area. Likewise, when the sphere is low-
+er to the ground, cluster sizes under the sphere 
+are  ner, allowing the user to inspect a speci c 
+local region (Fig. 2b). To the user’s advantage, the 
+focus region is not a  xed area or diameter but 
+varies with distance from the focus point directly 
+under the sphere. For a clear depiction of the area 
+being studied, a color gradient from red to blue is 
+displayed on the point focus. These colors provide 
+a link between the two views and indicate to the 
+user how narrow or wide the focus currently is.
+Double-clicking on a cluster highlights it (Fig. 1) 
+Fig. 1: UrbanVis overview. The data view on the left displays demographic data of the areas around the focus point 
+(focus in the middle). The model view on the right shows the clustered building models. The color gradient indicates the 
+distance from the focus point and provides a visual link between the two different data views (matrix view and parallel 
+coordinates) and the model view. The data shown is the 2000 census data for the city of Charlotte in Mecklenburg County, 
+North Carolina.
+381VISUALIZING GIS
+along with its data properties in the data view 
+(Fig. 1). Also the 3D model view allows the user 
+to view another perspective of the urban model 
+seen as individual buildings rather than clusters 
+for a closer inspection (Fig. 2d).
+4.2 Data View 
+The data view (Fig. 1) consists of two parts that 
+display the same information in different ways 
+through a matrix panel and a parallel coordinates 
+panel17. The panels show data for a building or 
+building cluster relative to where the focal point 
+is located. The data used in this paper is demo-
+graphic data of Charlotte, North Carolina, from 
+the 2000 Census, but any type of geographically 
+referenced data (e.g., employment statistics, traf-
+ c statistics, crime rates, etc.) could be shown. 
+The matrix panel (top portion of the data view) 
+has the option of switching between bar charts, 
+line charts, or gradient charts to accommodate 
+the user’s preference (Fig. 3). The panel is orga-
+nized in columns that are each linked to a cluster. 
+To clearly understand the linkage between views, 
+the columns are labeled with colors that corre-
+spond to cluster colors in the model view. The col-
+umns change as the user moves the focus around 
+the city. 
+Each row of the bar/line/gradient charts shows a 
+speci c dimension of the represented data. The 
+graphs are color-coded to show groupings of re-
+lated categories, making quick identi cation and 
+orientation easier. In Figure 1, left, there are 
+14 categories of data, separated into 6 different 
+groups (ethnicity, citizenship, job status, etc.). 
+The bottom section of the data view shows the 
+same demographic data, but using the parallel 
+coordinates technique (Fig. 4)8. Like the matrix 
+panel, the lines in the parallel coordinates panel 
+are color-coded to match the cluster colors, and 
+they correspond to the colors of the rows in the 
+matrix view. This parallel coordinates panel adds 
+another perspective to visualizing relationships 
+between dimensions of the data. For example, in 
+Figure 4 notice the positive correlation between 
+                  (a)                                     (b)                                    (c)                                      (d)
+Fig. 2: Changing the zoom level of the focal point (shown as a yellow sphere and a line connecting it to the ground). The 
+color gradient from red to blue shows the proximity of the clusters to the focus. (a) When the sphere is far away from the 
+ground, the region of interest is larger, and the user can see an overview of the area at a glance; (b) when the sphere is 
+closer to the ground, the region of interest and clusters are smaller, thus allowing a more detailed inspection. (c) The user 
+selects and highlights a cluster in the model (shown as white); (d) at any time, the user can change the view to look at 
+individual buildings instead of clusters. 
+Fig. 3: Matrix panel can show different displays of the 
+same data; (top) bar charts; (middle) line charts; (bot-
+tom) gradient grid charts. When sorting columns, the 
+closer the clusters are to the focal point, the closer the 
+column is to the middle of the screen (and more red in 
+color).
+SEEKING THE CITY382
+the Hispanic population, the percentage of for-
+eigners, and the percentage of residents who rent 
+their housing in these selected areas.
+Although the two views depict the same data, we 
+ nd that the different presentations of the data 
+give the user different types of understanding18. 
+The top matrix view shows the relationship be-
+tween clusters of buildings that are close to each 
+other. For example, the user can quickly see the 
+homogeneity of the neighborhoods around the fo-
+cal point. On the other hand, the parallel coor-
+dinates view cannot give insight to spatial rela-
+tionships, but it can quickly reveal relationships 
+between data dimensions, allowing the user to 
+easily identify positive or negative correlations 
+between categories. 
+4.3 Category Slider 
+This visualization system also offers a slider tool, 
+which allows for closer investigation of speci c 
+data (Fig. 5). As the user moves the slider left to 
+right, the model and data views update interac-
+tively, highlighting the clusters that ful ll the cri-
+terion. The clusters that do not meet the speci ed 
+criteria are still visible in a darker shade on order 
+to maintain the user’s spatial awareness.  
+5 USER EVALUATIONS 
+To effectively evaluate our system, we asked ex-
+perts who study the urban environment to give 
+their input about the usefulness of the system. 
+The experts have various backgrounds ranging 
+from independent real estate development, the 
+Center for Real Estate at UNC Charlotte, the UNC 
+Charlotte Urban Institute, Charlotte Mecklenburg 
+County Geographic Information Systems Of ce, 
+Planning Department, and School System. To 
+begin the evaluation, we gave the participants a 
+questionnaire which asked questions about their 
+knowledge skills with GIS systems. This enabled 
+us to better understand the backgrounds of the 
+sample population. Next we introduced the par-
+ticipants to our system by demonstrating its fea-
+tures and capabilities. After brie ng the partici-
+pants about the system, we then asked them to 
+give feedback on the usefulness of the system as 
+well as any suggestions for future improvements. 
+With their consent, the users were tape-recorded 
+during these sessions. Furthermore, all experts 
+agreed to have their comments, names, and af li-
+ations appear in this publication.
+Most of the participants felt choosing their area 
+of focus was bene cial in their exploration of the 
+urban data. They commented that moving to dif-
+Fig. 4: User example: Finding neighborhoods with high Hispanic population near the downtown area: (right) the user starts 
+by putting the focal point over the downtown region; (left) using brushing in the parallel coordinates window, the user 
+highlights the regions that have high Hispanic population. Notice the positive correlation between the Hispanic population, 
+the percentage of foreigners, and the percentage of residents who rent their housing in these selected areas.
+Fig. 5: The category slider locates buildings that  t 
+a speci c criterion. In this example, only buildings in 
+Charlotte that are built after 1985 are shown. 
+383VISUALIZING GIS
+ferent regions in the environment maintained 
+their spatial awareness of the surrounding areas. 
+Therefore, they were able to visualize the data not 
+only for the area of focus but also the data for the 
+outlying areas. The planning specialist of Charlotte 
+Mecklenburg School System commented that us-
+ing this technique would allow her to focus on the 
+potential sites of a new school, and still show the 
+“projections of future student populations based 
+on surrounding new housing developments.” 
+Another advantage commented upon is the ability 
+of the system to adjust spatial boundaries. As the 
+level of abstraction changes so do the boundar-
+ies allowing the user to de ne their own speci ed 
+area of detail. Some of the participants found the 
+ease of adjustable boundaries to provide a way to 
+project the impact of locating new developments. 
+The one user who did not  nd this technique use-
+ful commented that most projects he worked on 
+had strict boundary requirements. With these re-
+strictions, it had never been necessary for him to 
+examine surrounding areas. 
+The use of two integrated displays, the 3D view 
+and the data view, also proved useful to the ex-
+perts who handle large amounts of data. They felt 
+working with a sizable amount of data is easier to 
+organize and access through dual display systems. 
+They also commented that the displays increase 
+user production rates because they are integrated 
+cohesively. Still further, another expert mentioned 
+that the display allows the user to  nd where he 
+wants to study, and then it immediately tells him 
+the data for that location on the data view without 
+having to use tools to  nd it.
+A majority of experts felt the multiple ways to view 
+data made it easier to see relationships between 
+areas in the urban environment. A user comment-
+ed, “Sometimes users have to sort through a lot 
+of different sources of data or run statistical anal-
+ysis to  nd relationships. Your tool is providing 
+an on-the- y, interactive way of instantly noticing 
+nearby statistical data and their relationships.” 
+One expert noted the strengths of our system elo-
+quently. “Essentially what you are providing with 
+this tool is a spatially sensitive graphic display. 
+The strength of this tool is the dynamic table that 
+displays areas in a spatially understandable way. 
+In other software systems, the user is required to 
+scan the tabular listed rows of a GIS database, 
+which gives no indication of the rows’ geospatial 
+locations or their relationships between one an-
+other. Another strong aspect is the fact that your 
+focus area and peripheral areas are cohesively 
+orientated. When that aspect is combined with 
+the ability to change the level of detail through 
+clustering, the user gains a new dimension [of un-
+derstanding]. Changing the level of detail in other 
+software programs becomes cumbersome from 
+running [multiple repetitive] queries.”
+Our evaluation demonstrated that the system is 
+set aside from existing GIS systems in that it al-
+lows the user to maintain a clear understanding of 
+the area of focus and the peripheral areas at once. 
+The system cohesively integrates the 3D Model 
+View and the Data View allowing the user to see 
+the relationships between the geospatial informa-
+tion of the urban model and related demographic 
+information at the same time. This technique of 
+viewing data allows for easy identi cation of cor-
+relations between the categories. The experts in 
+our user study collectively found our system to 
+contain features that fundamentally change the 
+way users would interact with urban data, en-
+hancing their ability to better understand the ur-
+ban model. 
+6 CONCLUSIONS
+Our research applies the combination of data 
+with geometric modeling to transform the man-
+ner in which we read the city. If the city was once 
+convincingly represented by its geometric limits 
+and cohesion (e.g. the city gate), it is now repre-
+sented by a loose weave of objects, paths, data, 
+and connections. Our implementation of UrbanVis 
+captures this experience. 
+Although one’s sense of urban legibility is inher-
+ently subjective and changes depending on one’s 
+perspective of the city, the success of UrbanVis 
+has demonstrated that maintaining the user’s 
+sense of legibility, however dif cult, is the  rst 
+step in helping the user to understand the urban 
+environment. While each user’s sense of legibility 
+is different, we have found that there exists some 
+commonality between identi able elements such 
+as the ones suggested by Lynch. As long as the 
+legibility is preserved, the user can freely navi-
+gate and explore the urban model without losing 
+SEEKING THE CITY384
+his spatial awareness or understanding of the en-
+vironment.
+However, the most important step in understand-
+ing an urban environment, as shown by our evalu-
+ation of UrbanVis, is the combination of the old 
+sense of legibility with the new concepts intro-
+duced by Venturi, Koolhaas, and Mitchell. Lynch’s 
+principals in urban legibility provide a user with 
+the spatial understanding of an urban model, but 
+it is with the newer concepts that the user under-
+stands the complex social, cultural, and economic 
+relationships within a city. By integrating the two 
+sets of theories as demonstrated by UrbanVis, the 
+user gets a richer, deeper understanding of a city 
+both geographically and conceptually. 
+ACKNOWLEDGEMENTS
+The authors wish to thank Steve Ott, Jeff Michael, 
+Victoria Bott, Charlynn Burd, Kurt Olmsted, Todd 
+Wilson, Tobin Bradley. Andy Goretti, Paul Martin, 
+Lori Quinn, Christine Hamlett, Jennifer Dean, Ed 
+Harris, and David Stewart for their time, invalu-
+able feedback and suggestions; to Dale Loberger 
+and Paul Gallimore of ESRI for their encourage-
+ment and comments.
+ENDNOTES
+1. Remco Chang and others, Hierarchical simpli ca-
+tion of city models to maintain urban legibility, sketch, 
+2006, SIGGRAPH ‘06: ACM SIGGRAPH 2006 Sketches, 
+ACM Press: New York, NY. p 130.
+2. Remco Chang and others, “Hierarchical simpli cation 
+of city models to maintain urban legibility,” Technical 
+Report CVC-UNCC-06-01, Visualization Center, Univer-
+sity of North Carolina at Charlotte, (2006). 
+3. Chuihua J. Chung, Jeffrey Inaba, and Rem Koolhaas, 
+ed., Great Leap Forward (Köln: Taschen Publishers, 
+2001). 
+4. Gordon Cullen, The Concise Townscape (New York: 
+Van Nostrand Reinhold Company, 1975).
+5. Mark Gahegan and others, “Introducing GeoVIS-
+TAStudio: an integrated suite of visualization and com-
+putational methods for exploration and knowledge con-
+struction in geography,” Computers, Environment and 
+Urban Systems 26, no. 4 (2002): 267-292. 
+6.  Michael Garland and Yuan Zhou. “Quadric-based 
+simpli cation in any dimension,” ACM Transaction on 
+Graphics 24, no. 2 (2005): 209-239.
+7. Alexander Garvin, The American City: What Works 
+and What Doesn’t (New York: Mc-Graw Hill, 2002).
+8. Alfred Inselberg and Bernard Dimsdale. “Parallel 
+coordinates: A tool for visualizing multi-dimensional 
+geometry,” IEEE Visualization Proceedings of the 1st 
+conference on Visualization ‘90, (1990): 361-378. 
+9.  Henri Lefebvre, The Production of Space (Oxford: 
+Blackwell Publishers Ltd, 1991). 
+10. Mark Livingston and others, “An augmented reality 
+system for military operations in urban terrain,” Pro-
+ceedings of the Interservice / Industry Training, Simu-
+lation, and Education Conference, (2002): 89. 
+11. Kevin Lynch, The Image of the City (Cambridge: 
+MIT Press, 1960). 
+12. William J. Mitchell, City of Bits: Space, Place, and 
+the Infobahn (Cambridge: MIT Press, 1996). 
+13. Colin Rowe and Fred Koetter, Collage City (Cam-
+bridge: MIT Press, 1978). 
+14. Poonam Shanbhag, Penny Rheingans, and Marie 
+desJardins, “Temporal Visualization of Planning Poly-
+gons for Ef cient Partitioning of Geo-Spatial Data,” Pro-
+ceedings of the 2005 IEEE Symposium on Information 
+Visualization, (2005): 28. 
+15. U.S. Census Bureau [database online], (United 
+States 2000 Census); available from http://www.cen-
+sus.gov; Internet. 
+16. Peter Wonka and others, “Guided visibility sam-
+pling,” Proceedings of ACM SIGGRAPH 2006, (2006): 
+494-502.
+17. Remco Chang and others, “Legible Cities: Focus-
+Dependent Multi-Resolution Visualization of Urban Re-
+lationships,” Proceedings of the 2007 IEEE Symposium 
+on Information Visualization, (2007).
+18. Robert Venturi, Denise S. Brown, and Steven 
+Izenour, Learning from Las Vegas: The Forgotten 
+Symbolism of Architectural Form (Cambridge: MIT 
+Press, 1977).
+19. Rem Koolhaas and others, Mutations: Harvard Proj-
+ect on the City (Barcelona: ACTAR, 2000).
+

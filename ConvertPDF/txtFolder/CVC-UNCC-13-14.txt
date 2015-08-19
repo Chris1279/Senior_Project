@@ -1,0 +1,320 @@
+DEFORMABLE ALIGNMENT USING RANDOM PROJECTIONS OF LANDMARK IMAGES
+Hui Wu?, Dustin M. Bowers?, Toan T. Huynh†, and Richard Souvenir?
+?Department of Computer Science, University of North Carolina at Charlotte
+†Department of General Surgery, Carolinas Medical Center
+ABSTRACT
+This paper presents a method for rigid alignment of objects
+undergoing deformation. Automated algorithms can be af-
+fected by auxiliary motion, such as image motion caused
+by transducer movement in echocardiography. Unlike de-
+formable registration methods, the goal of this work is align-
+ment without introducing additional distortion. Our method,
+based on random projection theory, incorporates motion
+metadata for phase-aware alignment and outperforms rigid
+alignment approaches on synthetic data. We demonstrate
+the benefit of this as a pre-processing step to two common
+biomedical image analysis tasks: object segmentation and
+video denoising.
+Index Terms— echocardiography, alignment
+1. INTRODUCTION
+Biomedical video analysis is often complicated by the move-
+ment of the object of interest within the image plane. Whether
+the motion is internal (e.g., patient breathing) or external (e.g.,
+transducer motion in ultrasound), it is often an impediment
+to later analysis (e.g., recognition, segmentation, shape esti-
+mation). Often the motion is “small enough” that it can be
+approximated as 2D rigid or affine motion.
+Another complication is introduced when this auxiliary
+motion is accompanied by an uncorrelated motion, especially
+deformable motion. This is common in echocardiograms
+obtained from a critical care setting (Figure 1). The heart
+undergoes cyclic deformable motion while uncorrelated ap-
+proximately rigid motion is introduced by the motion of the
+transducer and/or the patient breathing. The presence of
+deformable motion suggests that methods for non-rigid and
+deformable registration (e.g., [1]) would suffice; however,
+this is not the case. The deformable motion is typically the
+motion pattern of interest, so image warps applied to this data
+may affect inferences made on the motion patterns. In this
+paper, we present a method for rigid alignment of deformable
+objects that takes advantage of phase-correlated metadata
+commonly collected with medical images. We demonstrate
+how this approach, when used as a pre-processing step, im-
+proves biomedical image analysis tasks, such as segmentation
+and echocardiograms denoising.
+Fig. 1. Each row shows two echocardiogram frames and ar-
+rows indicating image motion. The top images vary due to
+sensor motion (rigid), while the bottom vary due to heart mo-
+tion (deformable). Our algorithm aligns objects that undergo
+both types of motion simultaneously.
+2. RELATEDWORK
+Registration is a widely-studied problem, and the litera-
+ture is vast. Aligning an object of interest is a common
+pre-processing step for higher-level analysis, such as denois-
+ing [2], atlas construction [3], or segmentation [4].
+Classic registration algorithms apply pairwise alignment
+through transforms of pairs of images in order to maximize
+some similarity measure. This general approach can be ap-
+plied to both rigid (e.g., [5]) and non-rigid deformations
+(e.g., [1]). Recently, there has been increasing interest in
+group-wise image alignment [6]. Similar to our work, these
+methods assume that a single reference image is insufficient
+for alignment; most update the reference iteratively until con-
+vergence. Recent work makes use of the manifold relation
+among images in a set. In [7], all of the images are registered
+to the image with the closest geodesic distances to all other
+points. While this work applies the manifold assumption, it
+is used to register the images to a single reference.
+In terms of methodology, the method most similar to our
+work is [8], where the manifold property of natural image
+sets is exploited to quickly align images of objects undergoing
+rigid transformation. We extend this method to incorporate
+the phase information of objects undergoing simultaneously
+uncorrelated deformable motion.
+time 
+ph
+as
+e 
+time 
+ph
+as
+e 
+time 
+ph
+as
+e 
+4 
+1 3 
+2 
+Fig. 2. Overview of landmark selection. (left) Each point represents an input frame plotted by time (x-axis) and phase (y-axis).
+(middle) Images that are close in time or phase are candidates for reference targets and are connected by an edge. (right)
+Landmark images are selected using a greedy approach.
+3. APPROACH
+Under the brightness constancy constraint, the image registra-
+tion problem is commonly formulated as:
+min
+?
+? (IR, I(f(?))) (1)
+where IR is a reference image, f is an image transforma-
+tion with parameters ?, and ? is a dissimilarity measure (e.g.,
+SSD). When extended to video, I = [I1, . . . , IN ], the refer-
+ence image, IR is often selected from the set, and temporal
+smoothing is commonly added to prevent large changes in
+alignment parameters for consecutive frames.
+For our problem, we are provided with real-valued meta-
+data, S = [s1, ..., sN ], associated with the deformable mo-
+tion. We use this to impose a neighborhood constraint be-
+tween images with similar phase values (i.e., similar shape).
+Incorporating temporal smoothness and the neighborhood
+constraint leaves the following optimization:
+min
+?
+?
+i
+?
+j?Ni
+? (Ii(?i), Ij(f(?j))) + ?
+?
+i
+??????i?i
+???? (2)
+where ? = {?1, . . . , ?N} are the transformation parameters
+for the video frames, ? is a weight on the smoothing term,
+and Ni represents the set of images that are neighbors to im-
+age i. Even for simple transformation models and similarity
+metrics, this can be a nonlinear, non-convex optimization. In
+the remainder of this section, we describe our approximation
+algorithm for deformable object alignment, which relies on
+selecting a small subset of images, called landmarks to serve
+as reference images for alignment.
+3.1. Landmark Selection
+The goal of landmark selection is to find a set of images that
+could serve as references, so the whole video is aligned. Ide-
+ally, the set is small, yet spans the range of phase values. This
+can be framed as a graph problem where the neighborhood re-
+lation represents the pairwise suitability of images to serve as
+references for each other. That is, we construct a graph, with
+one vertex for each image, and an edge between vertices if
+they are neighbors. Starting from a reference image (vertex),
+on a connected graph, there exists a path, such that the ver-
+tices on that path are adjacent to all of the vertices in graph.
+That is, those vertices represent the set of landmark images
+that will serve as reference images for alignment. Figure 2
+demonstrates the landmark selection process.
+3.2. Image Alignment Using Random Projections
+The set of landmark images could be used to align the remain-
+ing images. For efficient alignment, we employ the theory
+of random projection, which has been previously used to im-
+prove the speed of image alignment algorithms [8]. Briefly,
+random projection is based on the theory that when high-
+dimensional data (e.g., images) are projected onto a random
+subspace (of sufficient dimensionality), the (dis)similarities
+between the data points are preserved. The benefit is that dis-
+tances can be computed more quickly in lower-dimensional
+spaces and data structures (e.g., kd-trees) which are inefficient
+for high-dimensional data, can be used. In the next section,
+we combine landmark selection and alignment via random
+projections for our deformable object alignment algorithm.
+3.3. Algorithm
+Given an input video, I = [I1, . . . , IN ], metadata, S =
+[s1, ..., sN ], and a neighborhood relation, Ni for each frame,
+our algorithm computes a set of corresponding rigid align-
+ment parameters, ? = {?1, . . . , ?N}, as follows:
+1. Construct a graph, G, with one vertex for each image,
+and an edge between vertices vi and vj if j ? Ni.
+2. Select a landmark image as the reference, IR. (Either
+randomly or defined as input.)
+3. Compute a random projection matrix, P .1
+4. Project each image, Ii, and apply temporal smoothing
+to the embedded coordinates
+5. Let IL be the current landmark image, initialized to IR.
+6. Until all the images are aligned:
+(a) Transform IL across the range of transformation
+parameters and maintain the projected coordi-
+nates of each transformed instance.
+1Due to space constraints, the details are omitted. However, a wide range
+of sparse random matrices will suffice.
+Fig. 3. Three synthetic video frames depicting the simultane-
+ous deformable and rigid motions.
+(b) For each image, Ij , adjacent to IL, find the clos-
+est transformed instance, I ?L. Set the alignment
+parameters of Ij to those of I ?L plus IL.
+(c) Update IL to be the already aligned image adja-
+cent to the most unaligned images.
+Compared to full pairwise alignment, this greedy algo-
+rithm is efficient and examines each image only a single time.
+The most expensive step is 6(a), where the current landmark
+is transformed and projected across the space of transforma-
+tions. This occurs once for each landmark image, and in Sec-
+tion 4, we demonstrate that the number of landmark images
+does not increase with the video length.
+4. RESULTS AND DISCUSSION
+Our evaluation consists of quantitative results on synthetic
+data and qualitative results on real-world data. For the syn-
+thetic data, we measure the alignment accuracy of our method
+compared to other approaches, and for the real-world data,
+we evaluated how much object segmentation and image de-
+noising are improved after our method is applied as a pre-
+processing step. For all experiments, the neighborhood crite-
+ria corresponds to a 10% maximum difference in phase value.
+4.1. Synthetic Data
+The synthetic video set was constructed by applying a para-
+metric non-rigid warp to an initial shape and translating the
+shape along an arbitrary path. Random Gaussian noise was
+then added to each frame. Figure 3 shows three sample frames
+from this data set. We compare the following approaches:
+• BASE: baseline where each frame is aligned to a refer-
+ence
+• RP: single reference random projection method [8]
+• LM: phase-aware landmark alignment (proposed)
+For all the methods, the reference image was randomly se-
+lected. For the baseline approach, sum of squares pixel dif-
+ferences (SSD) was minimized. For all methods, error is com-
+puted as the SSD between the returned alignment parameters
+and the ground truth. Table 1 shows the average results for re-
+peated experiments using all three methods. Error is reported
+as RMSE in pixel distances from the known ground truth lo-
+cation. For each trial, the motion patterns, noise level, and
+reference image were randomized. Overall, our method (LM)
+outperformed both methods.
+Method RMSE
+BASE 4.48 ± .96
+RP 3.71 ± .84
+LM 2.17 ± .96
+Table 1. RMSE results on synthetic video in pixel units.
+Fig. 4. Running time as a function of video length.
+We measured the runtime, by varying the length of the in-
+put video. Figure 4 shows the amount of time (in seconds) as
+the number of frames increases. Similar to [8], the runtime is
+dominated by transforming the landmark images. However,
+the number of landmarks is determined by the data distribu-
+tion and neighborhood criteria, not the number of frames.
+4.2. Applications to Echocardiography
+Even echocardiograms collected by trained technicians ex-
+hibit image motion due to transducer motion. These slight
+motions can be approximated by rigid image transformations.
+Here, we demonstrate how our method can be used to improve
+two common applications in echocardiography: segmenta-
+tion and denoising. The data for these experiments consists
+of parasternal short axis (PSAX) echocardiograms and phase
+parameters extracted from the synchronized ECG signal using
+an automated signal processing algorithm [9].
+4.2.1. Left Ventricle Segmentation
+Left ventricle segmentation is the most common application
+in cardiac image analysis. We applied a method [4] that uses
+an adaptive diffusion flow active-contour model to (1) the
+original data and (2) after it was aligned by our method and
+reordered by the phase parameter. Except for the first frame,
+the contour for each frame was initialized using the final con-
+tour from the previous frame. Figure 5 shows the segmen-
+tation results on three sample frames using the original (top)
+and aligned (bottom) data. In the unaligned case, there are
+noticable instances of boundary leakage; most occur shortly
+after larger than normal object motion in the image. Addition-
+ally, the aligned case required fewer iterations of the method
+to reach convergence.
+Fig. 5. Each column shows the boundary detected using an
+active contour method [4] on the original data (top) and after
+alignment with our method (bottom).
+Fig. 6. Each column shows (top) an echocardiogram frame
+after phase-aware denoising on the (middle) original data and
+(bottom) after alignment with our method .
+4.2.2. Video Denoising
+A recent phase-aware video denoising method [2] uses super-
+vised manifold learning to denoise biomedical video given
+associated phase-correlated metadata. By projecting the im-
+ages to a manifold correlated with the phase metadata, this
+approach discards uncorrelated motion information. We ap-
+plied this method to PSAX echocardiograms, and the results
+on three frames are shown in Figure 6. A visual comparison of
+the denoised output of the original data (middle) and aligned
+(bottom) shows significant differences. In the unaligned case,
+motion blur is visible in the denoised output and detail is lost.
+5. CONCLUSIONS AND FUTUREWORK
+We presented a method for phase-aware alignment of de-
+formable objects. Cases of simultaneous rigid and non-rigid
+are prevalent, especially in echocardiography. The ultrasound
+data used in Section 4.2 were collected by an expert tech-
+nician, yet it contained enough auxiliary motion to have an
+impact on automated processing algorithms. For future work,
+we plan to investigate better landmark selection schemes and
+methods for selective projection of transformed landmarks.
+6. REFERENCES
+[1] M. Holden, “A review of geometric transformations
+for nonrigid body registration,” Medical Imaging, IEEE
+Transactions on, vol. 27, no. 1, pp. 111–128, 2008.
+[2] H. Wu, D.M. Bowers, T.T. Huynh, and R. Souvenir,
+“Biomedical video denoising using supervised manifold
+learning,” in International Symposium on Biomedical
+Imaging, 2013, pp. 1244–1247.
+[3] A.F. Frangi, D. Rueckert, J.A. Schnabel, and W.J.
+Niessen, “Automatic construction of multiple-object
+three-dimensional statistical shape models: application to
+cardiac modeling,” Medical Imaging, IEEE Transactions
+on, vol. 21, no. 9, pp. 1151–1166, 2002.
+[4] Y. Wu, Y. Jia, and Y. Wang, “Adaptive diffusion flow for
+parametric active contours,” in Proc. International Con-
+ference on Pattern Recognition, 2010, pp. 2788–2791.
+[5] A. Roche, X. Pennec, G. Malandain, and N. Ayache,
+“Rigid registration of 3-d ultrasound with mr images: a
+new approach combining intensity and gradient informa-
+tion,” Medical Imaging, IEEE Transactions on, vol. 20,
+no. 10, pp. 1038–1049, 2001.
+[6] T.F. Cootes, C.J. Twining, V.S. Petrovic, K.O. Babalola,
+and C.J. Taylor, “Computing accurate correspondences
+across groups of images,” Pattern Analysis and Machine
+Intelligence, IEEE Transactions on, vol. 32, no. 11, pp.
+1994–2005, 2010.
+[7] S. Ying, G. Wu, Q. Wang, and D. Shen, “Groupwise reg-
+istration via graph shrinkage on the image manifold,” in
+Proc. IEEE Conference on Computer Vision and Pattern
+Recognition, 2013, pp. 2323–2330.
+[8] D.M. Healy and G.K. Rohde, “Fast global image registra-
+tion using random projections,” in International Sympo-
+sium on Biomedical Imaging. IEEE, 2007, pp. 476–479.
+[9] Q. Zhang, A.I. Manriquez, C. Medigue, Y. Papelier, and
+M. Sorine, “An algorithm for robust and efficient location
+of t-wave ends in electrocardiograms,” Biomedical Engi-
+neering, IEEE Trans on, vol. 53, no. 12, pp. 2544 –2552,
+Dec 2006.
+

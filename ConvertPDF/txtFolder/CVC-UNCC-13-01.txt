@@ -1,0 +1,759 @@
+Evaluation of the Exertion and Motivation Factors of
+a Virtual Reality Exercise Game for Children with Autism
+Samantha Finkelstein? Tiffany Barnes† Zachary Wartell‡ Evan A. Suma§
+?Carnegie Mellon University †North Carolina State University ‡UNC Charlotte §USC Institute for Creative Technologies
+ABSTRACT
+Children with autism experience significant positive behavioral and
+health benefits from exercise, though many of these children tend
+to lead sedentary lifestyles. Video games that incorporate physical
+activity, known as exergames, may help to motivate such children to
+engage in vigorous exercise, thus leading to more healthy lifestyles
+and reducing the likelihood of obesity. In this paper, we present
+a study of physical activity and motivation level for ten children
+with autism as they played an immersive virtual reality exergame
+that involved fast-paced full-body movement. Our results showed
+that most children, including non-verbal participants, were able to
+achieve vigorous activity levels, with several of them maintaining
+very high levels of exertion. Furthermore, the children reported
+high levels of enjoyment and indicated they would exercise more
+often if such games were routinely available. These encouraging
+findings suggest that exergames are a promising way to empower
+the families of children with autism with tools to help improve
+their child’s health and quality of life.
+Keywords: Virtual reality, serious games, exergames, autism
+Index Terms: H.5.1 [Information Interfaces and Presentation]:
+Multimedia Information Systems—Artificial, augmented, and vir-
+tual realities; J.3 [Life and Medical Sciences]—Health; K.8 [Per-
+sonal Computing]: General—Games
+1 INTRODUCTION
+Autism Spectrum Disorder (ASD) is a pervasive developmental dis-
+order that affects interpersonal communication, social interaction,
+and imaginative play [23]. ASD is a spectrum disorder, which
+means that children range from very low-functioning to extraordi-
+narily high-functioning, and may have drastically different experi-
+ences. Many children with autism also commonly engage in self-
+stimulatory behavior, such as hand-flapping, clapping, rocking, or
+repetitive vocalizations [18]. These sometimes chaotic behaviors
+interfere with the child’s ability to learn, engage in positive social
+behaviors [26, 4, 15] and make it difficult for the child to be inte-
+grated into a mainstream educational environment [27]. Children
+who engage in these behaviors may be hard to reach and oblivi-
+ous to external stimuli [18], making it difficult for them to learn
+and remain on task. The elimination or control of these behaviors
+may result in improvements in the child’s quality of life by allowing
+them to improve their learning, attention, and appropriate responses
+to their environment [17].
+Modern methods to address behavioral difficulties for children
+with autism include overcorrection of behavior [10] and altering
+?e-mail: slfink@cs.cmu.edu
+†e-mail: tmbarnes@ncsu.edu
+‡e-mail: zwartell@uncc.edu
+§e-mail: suma@ict.usc.edu
+Figure 1: A child with autism playing Astrojumper using a three-wall
+rear-projected immersive display.
+the child’s physical environment [8]. While these methods have
+been shown to be useful in reducing troublesome behavior, they re-
+quire a great deal of active parental involvement, and may result
+in a significant amount of stress for the child. Fortunately, more
+recently, studies have shown that engaging in physical activity is
+a highly promising method of reducing self-stimulatory behaviors
+[22, 28, 21]. Aerobic exercise, such as jogging, is particularly ef-
+fective, and can decrease self-stimulation and improve appropri-
+ate play and contingent responses[15]. However, it is important to
+note that mild exercise provides little to no improvements in self-
+stimulation, while vigorous activity is substantially effective at re-
+ducing these behaviors [14, 6, 17].
+Unfortunately, many children with autism have a high risk of in-
+activity due to both these self-stimulatory actions as well as other
+behavioral and social deficits. Problems understanding social cues,
+making eye contact, engaging reciprocal conversation, and diffi-
+culty making friends means that children are likely to have fewer
+opportunities to engage in team physical activities [20]. Reduced
+motor control and abnormal movement patterns may also reduce
+opportunities for these children to participate in many athletic ac-
+tivities. The sedentary lifestyle of these children increases the like-
+lihood of obesity compared with the general population, with 19%
+of children with autism overweight (BMI ? 95th percentile) and
+another 35% at risk for becoming overweight (BMI ? 85th per-
+centile) [7]. Obesity leads to a number of serious medical issues,
+making it particularly important to motivate children with autism to
+engage in vigorous physical activity.
+While exercise is certainly valuable for all children, given the
+unique social challenges of autism and the increased likelihood of
+obesity among this population, it is vitally important to motivate
+those that may be prone towards leading sedentary lifestyles. The
+marriage of physical exercise with video games, also known as ex-
+ergaming, is a promising approach that has been increasing in at-
+tention and popularity in recent years [24]. Additionally, the re-
+cent release of motion sensing devices for home video game sys-
+tems, most notably the Microsoft Kinect, Sony Playstation Move,
+and Nintendo Wii remote and balance board, has resulted in a large
+number of games that use body motion as a game mechanic. There
+is a great deal of anecdotal evidence from parents of children with
+autism saying that exergames are effective motivators for engaging
+in physical activity; however, to our knowledge, such behavior has
+not been formally evaluated for this specific population.
+In this paper, we report a study of physical activity and motiva-
+tion level for ten children with autism as they played Astrojumper,
+an immersive virtual reality exercise game requiring rapid body
+movements to dodge obstacles, collect bonuses, and fight battles
+(see Figure 1). This particular game has been previously studied
+with neurotypical children and adults, where it was shown to be an
+effective exercise motivator [9]. Building on this previous work, we
+sought to explore the application of immersive exergames for chil-
+dren with autism in terms of both motivational and physiological
+effectiveness. To the authors’ knowledge, this is the first full-body
+exercise game that has been formally evaluated with children with
+autism. Our results demonstrate that exergames are a promising
+method for engaging children with autism, and we argue that lever-
+aging video game technology as an intervention has the potential to
+address many behavioral and health problems commonly associated
+with this population.
+2 PREVIOUS WORK
+The introduction of motion sensing hardware to popular video game
+platforms has resulted in numerous commercial titles that use phys-
+ical activity as a game mechanic (e.g. Wii Sports, Kinect Sports).
+However, most commercially developed motion-based video games
+are designed primarily for entertainment purposes, and thus it is of-
+ten possible for users to “game the system.” For example, while
+the Nintendo Wii allows players to engage in realistic motions such
+as swinging a tennis racket, it does not require accurate and real-
+istic behavior, as frustrated players observe when they are beaten
+by an opponent who was sitting on the couch flicking their wrist.
+There is evidence that exergames can get neurotypical users to en-
+gage in more physical activity than they would with a typical video
+game; however, these users only barely reach moderate exercise
+levels during gameplay and generally don’t approach the vigorous
+activity levels needed for exercise to be effective [11, 12]. Sev-
+eral commercial titles have been introduced specifically to promote
+weight loss and fitness (e.g. Wii Fit, The Biggest Loser Ultimate
+Workout), but these are typically designed for adults, and it is un-
+clear whether they would be able to successfully engage children,
+especially those with developmental disorders.
+Exergames require carefully designed game mechanics that bal-
+ance the psychological flow of gameplay (entertainment) with the
+physiological flow of exercise (exertion) [24]. Successfully balanc-
+ing these two considerations is challenging, a fact that is supported
+by previous evaluations of commercial exergame interfaces from
+the literature. For example, Luke et al. analyzed energy expenditure
+in a variety of exergames using the Sony EyeToy, and found that
+users largely engaged in only small bursts of exercise followed by
+long pauses, preventing their heart rate from building [19]. Smith
+noted similar problems during a personal analysis of three video
+game extertion interfaces, finding large variability in exertion be-
+tween games and difficulty maintaining an elevated heart rate due
+pauses caused by load times [25]. While playing commercial ex-
+ergames is surely better than engaging in no physical activity at all,
+these findings suggest that such games that are designed primarily
+for entertainment value may not be effective at inducing the exer-
+tion levels required for a vigorous workout.
+Several exergames have been developed by the research commu-
+nity to specifically engage children in physical activity. One such
+application is Bug-Smasher, which uses a tiled grid interface with
+randomly-appearing colored lights that engage the child to jump
+around and “smash bugs” [29]. Interestingly, the authors found that
+children who projected their fantasies into the game world reported
+higher levels of enjoyment. In an attempt to leverage such imagi-
+native fantasies in real world play, Bekker et al. presented two case
+studies with interactive physical props that stimulated open-ended
+gameplay requiring body motion [5]. One example of an interac-
+tive video game to engage children in physical activity is QuiQui,
+which was developed to gather data on the intuitive body motions
+that children employed when attempting to control a game charac-
+ter [13]. Performing user tests with a Wizard of Oz approach as well
+as a functional vision-based prototype, they found that patterns in
+children’s intuitive motions could be used to improve vision algo-
+rithms and avatar animations for exergames. Additionally, noting
+that game development tends to focus on the upper body due to
+technical constraints, they suggest that future game designs should
+aim to provide more holistic full-body motions such as running and
+jumping. However, none of these games included evaluations of the
+physical exertion levels that children attained during gameplay.
+3 STUDY DESIGN
+While Astrojumper has been shown to be effective in engaging neu-
+rotypical children and adults in vigorous, full-body exercise [9], it
+is unclear whether it would also be effective in motivating children
+with autism. Since we could not find any published work that pre-
+sented exergame design considerations for children with develop-
+mental disorders, we sought to evaluate how well the game moti-
+vates such children to engage in physical activity at the exertion
+level and duration recommended by exercise experts.
+3.1 Participants
+We recruited ten participants primarily through interactions with
+local chapters of autism groups such as Autism Speaks and The
+Autism Society of North Carolina. The participants were invited to
+come to our lab with their parent for two separate sessions about
+a week apart. Participants ranged from ages 8 - 20, (M=12.60,
+SD=4.09), with the majority of participants between 8 and 13. Two
+of our participants were older (ages 18 and 20) and were also non-
+verbal, meaning that they were able to understand and follow direc-
+tions, but were not able to communicate through verbal language.
+These two participants also were not able to type, so they did not fill
+out the post-experiment questionnaire. Their parents filled out the
+objective information that they knew on the pre-experiment ques-
+tionnaire. Participants ranged from moderately low-functioning to
+very high-functioning, with two diagnosed with Asperger’s Syn-
+drome. This is a type of autism where affected individuals are
+usually quite high-functioning with either average or above-average
+intelligence and none of language delays as a young child that are
+characteristic of most children with autism.
+3.2 System Overview
+When playing Astrojumper, the user flies through an outer space
+environment with a first-person perspective, avoiding planets by
+dodging, ducking, and jumping. Points are accumulated automat-
+ically over time so long as the user avoids colliding with an ob-
+stacle. A base rate of one point per second is added, though this
+rate can be increased by collecting golden suns to add bonus score
+multipliers. In the event of a collision with any part of the player’s
+body, the score is temporarily frozen, and any previously collected
+bonus score multipliers are reset. The game also features periodic
+UFO battles, where an alien ship appears and begins shooting red
+laser beams at the player. To defeat the UFO, the user must dodge
+these beams while shooting green lasers through strong throwing or
+punching motions.
+Following the American College of Sports Medicine’s guide-
+lines for exercise [2], Astrojumper’s gameplay is divided into three
+phases: (1) a warm-up phase with gradual increases in speed, (2) an
+exertion phase requiring continuous vigorous physical activity, and
+(3) a cool-down phase that allows a gradual decrese in effort. To
+balance entertainment with physical exertion, the difficulty of the
+game is dynamically adjusted based on the player’s performance.
+This adaptation ensures that gameplay will not become trivially
+easy or impossibly difficult for different players with varying levels
+of physical fitness. More details on Astrojumper’s design philoso-
+phy and characteristics can be found in the previous work [9].
+We deployed Astrojumper on an immersive surround-screen dis-
+play system comprising three 2.44m x 1.83m rear-projected stereo-
+scopic screens, each of which used two Barco Gemini projectors to
+display the images for each eye. Circularly polarized glasses were
+worn on the user’s head, with a Polhemus Fastrak electromagnetic
+sensor attached to the rim of the glasses. Two more trackers were
+enclosed in sweatbands on the user’s wrist, and a fourth tracker
+was attached to the bottom of a small backpack to track the waist.
+All cables were routed through the backpack to allow the user to
+move freely without getting tangled. Physiological data was col-
+lected during gameplay using a BodyMedia SenseWear armband.
+The game software was run on a quad core Intel Core i7 3.33GHz
+PC with 12GB of RAM, and a total of three NVIDIA GTX 260
+graphics cards provided output for all six projectors.
+3.3 Procedure
+Participants were invited to come to the laboratory for two separate
+sessions spaced about a week apart, each of which took approxi-
+mately 45 minutes to complete. In one session, participants played
+the game in a three-screen surround configuration. In the other ses-
+sion, only the front screen of the immersive display was used, and
+the two side screens remained off. The order of presentation for the
+sessions was counterbalanced across the study.
+On the first visit, participants and their parents were given in-
+formed consent sheets, and the experimenter spoke directly to the
+child about what they would be doing in the study and the fam-
+ilies were given the opportunity to ask questions. In addition to
+obtaining consent from the parents, assent was also obtained from
+the child, with communication assistance from the parents when
+needed. Following that, the child and their parent completed a de-
+mographic survey, and the child’s height and weight were collected
+for computation of physiological measures. The child was then fit-
+ted with the tracking equipment and exercise armband, and the rules
+of the game were explained. We initially displayed a static virtual
+world on the projection screens until the child was comfortable,
+followed by a two minute practice game that remained relatively
+slow and easy. After the practice ended, we encouraged the child
+to ask questions and offered gameplay advice if we noticed that the
+child seemed to be not fully understanding. The child then played a
+15 minute game session including the warm-up, exertion, and cool
+down phases. After completing the game, participants completed a
+post-experiment questionnaire, and the session concluded. On the
+second visit to the lab, the experimenter pointed out that the system
+was a little different from the last time, having either two more or
+two less screens than the previous session. The child then followed
+the same procedure as the first session, followed by a short final
+survey to compare both versions of the game display (three screen
+vs. single screen).
+3.4 Measures
+Demographic survey The demographic survey collected in-
+formation on the child’s age, ethnicity, video game habits, and type
+of Autism Spectrum Disorder the child was diagnosed with. It also
+collected information on the child’s movement patterns using the
+Body Use index from the Behavior-Disturbed Children (Autism)
+Questionnaire, identifying whether or not the child engages in “age
+appropriate body use”, “mildly abnormal body use”, “moderately
+abnormal body use”, “severely abnormal body use,” or somewhere
+between any two of these categories [1]. The parents of our two
+non-verbal participants filled out as much of the survey as the could
+for their children, however, subjective responses that these parents
+could not accurately report were not included in our analysis.
+Physiological Measures The BodyMedia SenseWear arm-
+band recorded the participants’ metabaloic equivalent (MET) dur-
+ing gameplay, which is defined as the amount of oxygen consumed
+while sitting at rest. The MET concept represents a simple, practi-
+cal, and easily understood procedure for expressing the energy cost
+of physical activities as a multiple of the resting metabolic rate. For
+our analyses, we used the standard breakdown for classifying ac-
+tivity levels: activity under 4 METs was considered light-intensity,
+activity between 4 and 6 METs was considered moderate-intensity,
+and anything 6 METs or above was considered high-intensity or
+vigorous activity [16]. While we were initially concerned that chil-
+dren with autism would have issues wearing the armband, none of
+our participants complained or indicated discomfort as a result of
+the device. The armband reported the following measures: (1) the
+participant’s average MET level throughout the gameplay session,
+(2) the number of calories burned, (3) and the number of minutes
+spent in vigorous exercise. Because research indicates that vigor-
+ous exercise is most successful at reducing self-stimulatory behav-
+ior in children with autism, we were very interested in observing
+the amount of time that participants spent exercising at or above 6
+METs while playing Astrojumper.
+Post-experiment questionnaire Participants filled out a
+questionnaire at the end of both of their gameplay sessions, which
+included ratings on a 7-point scale regarding enjoyment, replaya-
+bilty, and amount of exercise. We also collected ratings on what as-
+pects of Astrojumper were most fun for the participants (1=“much
+less fun,” 4=“same amount of fun,” 7=“much more fun”). Specifi-
+cally, they were asked to consider the following: (1) if Astrojumper
+wasn’t in stereoscopic 3D, (2) if they didn’t need to run around to
+play, (3) if they needed to hold controllers, and (4) if they were
+playing on a smaller screen. After their second exposure, they were
+also asked to rate whether they preferred the one-screen or three-
+screen version of the game in terms of fun, motivation, and amount
+of exercise (1=“strongly one-screen” to 7=“strongly three-screen”).
+4 RESULTS
+4.1 Demographic information
+Most participants did not have very severe body movement impair-
+ments, with all participants’ parents marking that their child was
+between a “1” (completely age-appropriate body control, child has
+the same ease, agility, and coordination of a neurotypical child) and
+“3” (moderately abnormal body use, including strange finger move-
+ments, peculiar body posturing, self-directed aggression, rocking,
+spinning, finger-wiggling, or toe-walking), (M = 2.00, SD = 0.82).
+Participants universally rated that they enjoyed video games a great
+deal, with no one selecting lower than a 6 out of 7 (M = 6.83, SD
+= 0.33). We had one outlier, our lowest-functioning participant,
+whose parent reported that he played video games approximately
+60 hours per week. The remaining participants reported that they
+played video games between 3 and 15 hours per week, (M = 9.67,
+SD = 4.44).
+Participant responses (1-7) on questions pertaining to exercise
+enjoyment did not indicate preferences towards physical activity ,
+such as“I engage in physical activity whenever I can” and “I feel
+uneasy when it comes to doing strenuous physical exercise” (re-
+versed), (M = 4.43, SD = 1.53). We found similar results on ques-
+tions about perceived exercise competence, including “I’m better at
+sports than other kids my age” and “I don’t do too well at outside
+games” (reversed), (M = 4.20, SD = 1.81). We found a positive
+Vigorous Activity Results
+Participant
+10987654321
+M
+in
+u
+te
+s 
+Sp
+en
+t i
+n
+ 
+Vi
+go
+ro
+u
+s 
+A
+ct
+iv
+ity
+12
+10
+8
+6
+4
+2
+0
+9.00
+11.50
+3.50
+2.50
+4.00
+1.50
+11.00
+12.0011.50
+Page 1
+Figure 2: The amount of time spent in vigorous activity (MET level of
+6 or greater) for each participant. Since the warm-up and cool-down
+phases each lasted 2.5 minutes, 11-12 minutes of vigorous exercise
+is about the maximum possible time one could have reasonably spent
+vigorously exercising during the 15 minute session.
+correlation between participants’ ratings of exercise enjoyment and
+perceived competence, r(10) = +.86, p < .01.
+4.2 Physiological measures
+Participants’ physiological measures were calculated by the
+Sensewear armband that took the participant’s age, height, and
+weight into consideration. We found no significant differences be-
+tween the screen conditions or first/second exposure to the game,
+so we averaged the physiological data across the two sessions.
+Participants spent an average of 6.65 minutes (SD = 4.77) out of
+the 15 minute game session engaging in vigorous exercise (i.e. at
+MET levels of 6 or greater). However, as demonstrated in Figure 2,
+there was a large amount of variance in the amount of time between
+participants, with the children roughly falling into two groups. Half
+of the participants spent the majority of the game session in the
+vigorous zone, with four of them spending 11 minutes or more.
+This is especially encouraging because the warm-up and cool-down
+phases each lasted 2.5 minutes, meaning that 11-12 minutes of vig-
+orous exercise is about the maximum possible time one would have
+reasonably spent vigorously exercising out of the 15 minute ses-
+sion. However, the other five participants spent less four or less
+minutes in the vigorous zone, with one participant never peaking
+above moderate activity.
+Participants’ average MET levels over the entire gameplay ses-
+sion were at moderate levels (M = 5.07, SD = 1.24). However, this is
+not the most informative measurement, because that included time
+spent in the warm-up and cool-down phases, when they would not
+be expected to be exercising vigorously. It is more useful to observe
+the total calories estimated to have been burned during a game ses-
+sion (M = 90.39, SD = 35.62). We observed a large amount of
+variation in caloric expenditure between individuals, but this is to
+be expected since it is highly dependent on the participant’s physi-
+cal fitness. However, as shown in Figure 3, all the participants that
+spent less time in the vigorous zone managed to burn upwards of
+60 calories during the 15 minute session.
+4.3 Post-experiment questionnaire
+Participants filled out this survey at the conclusion of both their
+first and second exposure to Astrojumper. Again, we found no sig-
+nificant differences between the screen conditions or first/second
+Calorie Results
+Participant
+10987654321
+Es
+tim
+at
+ed
+ 
+Ca
+lo
+rie
+s 
+B
+u
+rn
+ed
+200
+150
+100
+50
+0
+128
+556562
+69
+135
+70 67
+151
+104
+Page 1
+Figure 3: The total estimated calories burned by participants.
+exposure to the game, so we analyzed the average of each partic-
+ipant’s ratings (1-7) across the two sessions. Our post-experiment
+survey results were very positive, with participants reporting that
+they greatly enjoyed playing Astrojumper (M = 6.63, SD = 1.06)
+and that they would exercise more often if they could play Astro-
+jumper whenever they wanted (M = 6.00, SD = 1.00). Participants
+also reported moderately high scores when asked if they got a good
+workout (M = 5.38, SD = 1.16), though this self-perception was not
+correlated with the amount of time the player actually spent engag-
+ing in vigorous activity. Astrojumper was rated as slightly more
+exercise than they would usually get (M = 4.94, SD = 1.15).
+We received very encouraging results regarding replayability,
+as this aspect is very important in maintaining long-term exercise
+goals with video games. Participants reported that they would be
+very likely to play Astrojumper once a week or more if they could,
+(M = 6.38, SD = 0.88). Additionally, we found extremely low re-
+ports regarding both whether the participants thought Astrojumper
+was boring (M = 1.38, SD = 1.06) and how likely it would be that
+they got bored of Astrojumper eventually (M = 2.18, SD = 1.65).
+Participants also indicated that they would be interested in coming
+back to the lab to play Astrojumper a third time, even if it wouldn’t
+be part of the study (M = 6.19, SD = 1.19.)
+Participants also generally indicated that the immersive, full-
+body aspects of the game contribution to their enjoyment (1=“much
+less fun” to 7=“much more fun”). Participants indicated that play-
+ing on a smaller screen would most strongly make the game less
+fun (M = 1.25, SD = .378) and as would removing the stereoscopic
+3D effect (M = 1.69, SD = 1.03). Participants also indicated that
+the game would be less fun if they didn’t need to move around to
+play (M = 2.00, SD = 1.20). When asked their preference regarding
+the single-screen vs. the three-screen setup, all but one participant
+indicated that they preferred playing with three screens. The one
+player who selected the single screen condition stated that he found
+the side screens distracting.
+4.4 Qualitative feedback and observations
+As some of our participants were more low-functioning, our quali-
+tative observations may be more indicative than their responses on
+questionnaires. Many of the subjects seemed to be projecting fan-
+tasies during gameplay. This included expressions such as “Alert!
+Alert! We have the aliens on the loose! They will get me, they will
+get me!”, and “I have lasers, magical - magical lasers and they will
+- and I’m gonna, and I’m gonna punch those aliens out of here, oh
+yeah!” Two participants excitedly told their parents and the experi-
+menters that they felt like comic book characters, and described (in
+great detail) how they could use their powers from Astrojumper to
+“destroy bad guys.” All but one of the participants laughed as they
+threw their lasers, and most cheered when they beat the UFO.
+While seven of our participants exhibited only slightly impaired
+movement patterns, three engaged in constant self-stimulatory be-
+havior, including hand-flapping and rocking, as well as other char-
+acteristic behaviors such as toe-walking. These three participants
+in particular had difficulty making the punching motion necessary
+to shoot the laser. We intentionally designed it so that the laser was
+only triggered by a controlled forward throw. As we hoped, by their
+third exposure to the UFO on their first trial, these three participants
+began being able to consistently do this motion. By the end of the
+second session, these participants were able to make this motion al-
+most, if not as well as, other participants. We were particularly in-
+spired by our lowest-functioning non-verbal participants who were
+able to play the game very well, one of which even earning the top
+score out of all participants. One of the parents stated that she was
+moved to see her child so clearly engaged and excited by something
+new, and that she was very happy to see him exercising.
+The most common comment from participants was that they
+liked being able to control the game with their body. One child
+explained “I am the controller, so I need to move myself to get the
+game to work. If I’m lazy the game won’t work at all so I need to
+move around.” Participants also often described the sense of pres-
+ence they felt in the game. One child who was able to communicate,
+though not in full sentences, said multiple times that Astrojumper
+was beautiful and that he “could look at the stars [in the game]
+all day.” A few of the higher-functioning participants provided de-
+tailed descriptions of plot they would like in the game - in many
+cases, plot that their parents confirmed had something to do with
+their special interest. One child spent a great deal of time playing
+an outer space video game, and had clearly been projecting memo-
+ries and thoughts about this game into his Astrojumper experience.
+One child’s special interest was Marvel comics, and he spoke ex-
+tensively about all of the different superheroes he was pretending
+to be while he played. Another child spent most of his free time
+watching the Star Wars movies, and would hum / sing the tunes
+and call out to characters from the movies throughout gameplay.
+While these were the only three participants that we identified as
+integrating their special interest into the game, most other partici-
+pants frequently vocalized general cries of excitement (“Oh! Get
+him!” or “I got it!”). A few of others used the post-experiment
+questionnaire to describe how they would have liked to improve
+their game - often involving their special interest. For example,
+one participant who listed “cartoons” as his special interest recom-
+mended that Scooby and Shaggy from the cartoon series Scooby
+Doo should be included in future versions of Astrojumper. This is
+consistent among children who listed special interests - the child
+who loved Nascar recommended that the game include race cars,
+and the child who was very interested in zombie mythology said
+there should have been enemy zombies present in the game. The
+participants who either did not list a special interest or listed more
+general things like “reading” or “Wikipedia” did not recommend
+any changes to the game that altered content, instead commenting
+that “there should be more UFOs to shoot” and “I want to be able
+to shoot the planets with lasers too.”
+5 DISCUSSION
+While playing Astrojumper, all but one of our participants achieved
+vigorous physical activity for at least 1.5 minutes, half of our partic-
+ipants spent the majority of gameplay in vigorous activity, and a few
+even spent the maximum amount of time possible vigorously exer-
+cising, given the inclusion of warm-up and cool-down phases. Ad-
+ditionally, all participants, even the ones who spent smaller amounts
+of time in the vigorous zone, were estimated to have burned a de-
+cent number of calories during the 15 minute session. We found
+these results very encouraging, and were particularly motivated by
+the participants high ratings of their own enjoyment from the ex-
+ergame and their belief that they would exercise more if they could
+play games like Astrojumper whenever they wanted. It is impor-
+tant to note that the two non-verbal participants were not able to
+provide feedback, and some of the children received parental assis-
+tance in filling out questionnaires, so we should be cautious about
+over-generalizing the findings from the self-reported data. How-
+ever, our qualitative observations indicated that even the low func-
+tioning and non-verbal children seemed motivate to engage with
+the game physically. Since research indicates that vigorous exer-
+cise is the most effective way to reduce self-stimulatory behaviors
+in children with autism, we believe that further development and
+evaluation of exercise games is needed for this population.
+At the time we ran this study, the Microsoft Kinect had not
+yet been released, and participants made comments about how this
+game wouldn’t be as fun on the Wii because they couldn’t control
+the game using their body. Given that low-cost full-body tracking
+devices such as the Kinect are now commonly available for home
+video game consoles, we believe there is great potential for inte-
+grating exergames into the daily routines of children with autism,
+as well as neurotypical children. Additionally, while an immersive
+surround-screen environment is not a setup that people typically
+have in their homes, our results found that this level of immersion
+doesn’t increase the level of vigorous activity of our participants.
+Even so, large televisions, wall projectors, and even 3D stereo-
+scopic screens are becoming increasingly common. Such home
+equipment could allow for gameplay that approaches the immer-
+sion level achieved in our lab in our single-screen condition. As
+such, we have also created a version of Astrojumper that works
+with a Kinect on the user’s home PC, and we are planning to make
+it available for download in the near future. While we have not
+evaluated the Kinect version of this game formally on children with
+disabilities or neurotypical children, initial playtesting in our lab in-
+dicates that this version is just as engaging and promotes as much
+vigorous activity as the version we deployed on our VR system. In
+future work, we will conduct user studies to examine differences in
+motivation and vigorous exercise between our expensive VR system
+and more widely available low-cost systems such as the Kinect.
+Looking at the children’s interests in athletics, we found that the
+participants who felt they were not as good at sports as their peers
+tended to engage in more solitary activities such as swimming or
+bowling. However, those that had more confidence in their athletic
+competence participated in team sports. Additionally, we found
+a correlation between how confident the participants were in their
+athletic ability and how much they enjoyed exercise. While we do
+not have enough information to infer causation and we are dealing
+with a small sample size, we believe that making exercise fun might
+be a reasonable first step towards improving a child’s confidence
+in their physical ability. Based on the results from our study, we
+suggest that video games are a promising way to achieve this goal.
+Astrojumper was specifically designed with a space theme be-
+cause it is a common special interest cited by families of children
+with autism. One of our most notable observations was that the
+participants who had listed special interests that somehow paral-
+leled aspects of Astrojumper (Star Wars, super heroes, and a differ-
+ent space-themed video game) made vocalizations during gameplay
+that indicated the child was projecting parts of those interests into
+Astrojumper. Additionally, the children who listed concrete special
+interests entirely unrelated to Astrojumper, such as race cars, car-
+toons, and zombies, said that the game would have been more fun
+if it included those elements in the design. Children with autism
+typically have a great deal of perseverence with their special in-
+terest, and their particular interest can remain the driving force in
+the child’s life. There is a great deal of anecdotal evidence from
+teachers who recommend letting children with autism pick their
+own topic for their writing and learning assignments, harnessing
+the child’s interest to increase excitement about schoolwork. These
+numerous accounts have been corroborated by studies showing that
+children with autism improve their social behaviors when the play
+environment includes their special interest [3]. Therefore, we sug-
+gest that leveraging special interests may be a valuable design me-
+chanic for exergames that need to maintain the child’s interest even
+after repeated exposure. Given the variability in these interests, it
+is not practical to custom-build games tailored perfectly for each
+child’s particular interest. However, it may be possible to create a
+general game design that contains multiple content themes and im-
+age sets that the child can choose from, such as dinosaurs, trains,
+sharks, astrology, etc. Another very promising possibility would
+be creating an intuitive interface that would allow the child or the
+child’s family to upload some of his or her favorite images to cus-
+tomize the look and feel of the exergame.
+6 CONCLUSION AND FUTURE WORK
+In this paper, we presented a study of physical activity and motiva-
+tion level for ten children with autism as they played an immersive
+virtual reality exergame. Our results showed that most participants
+were able to achieve vigorous exercise, and many of them main-
+tained high levels of exertion for the majority of game time. Fur-
+thermore, feedback from participants was highly promising, with
+many children indicating that they would like to play the game
+again. In the future, we plan to conduct longitudinal studies of the
+long-term effectiveness of exergames in motivating children with
+autism to make lifestyle changes that incorporate vigorous physical
+exercise. Recent advancements in display and video game tracking
+technology make it feasible to consider deploying such full-body
+exergames in home scenarios, thus empowering families of chil-
+dren with autism or other developmental disorders with the tools to
+help them improve their child’s health and quality of life.
+REFERENCES
+[1] http://healthscienceresearch.com, Retrieved April 2011.
+[2] American College of Sports Medicine. ACSM’s Guidelines for Exer-
+cise Testing and Prescription. Lippincott Williams & Williams, Balti-
+more, MD, 6th edition, 2000.
+[3] M. J. Baker. Incorporating the thematic ritualistic behaviors of chil-
+dren with autism into games. Journal of Positive Behavior Interven-
+tions, 2(1):66–84, 2000.
+[4] C. K. Bass. Running can modify classroom behavior. Journal of
+Learning Disabilities, 18(1):160–161, 1985.
+[5] M. Bekker, E. van den Hoven, P. Peters, and B. k. Hemmink. Stim-
+ulating children’s physical play through interactive games: two ex-
+ploratory case studies. In IDC ’07: Proceedings of the 6th interna-
+tional conference on Interaction design and children, pages 163–164,
+New York, NY, USA, 2007. ACM.
+[6] D. Celiberti, H. Bobo, K. Kelly, S. Harris, and J. Handleman. The
+differential and temporal effects of antecedent exercise on the self-
+stimulatory behavior of a child with autism. Research in Developmen-
+tal Disabilities, 18(2):139–150, 1997.
+[7] C. Curtin, L. Bandini, E. Perrin, D. Tybor, and A. Must. Prevalence
+of overweight in children and adolescents with attention deficit hyper-
+activity disorder and autism spectrum disorders: a chart review. BMC
+Pediatrics, 5(1):48, 2005.
+[8] P. Duker and E. Rasing. Effects of re-designing the physical environ-
+ment on self-stimulation and on-task behavior in three autistic-type
+developmentally disabled individuals. Journal of Autism and Devel-
+opmental Disorders, 19(1):449–460, 1989.
+[9] S. Finkelstein, A. Nickel, Z. Lipps, T. Barnes, Z. Wartell, and E. A.
+Suma. Astrojumper : Motivating Exercise with an Immersive Vir-
+tual Reality Exergame. Presence: Teleoperators and Virtual Environ-
+ments, 20(1):78–92, 2011.
+[10] R. Foxx and N. Azrin. The elimination of autistic self-stimulation be-
+havior by over-correction. Journal of Applied Behavior and Analysis,
+6(1):1–14, 1978.
+[11] L. E. F. Graves, N. D. Ridgers, and G. Stratton. The contribution of up-
+per limb and total body movement to adolescents energy expenditure
+whilst playing nintendo wii. European Journal of Applied Physiology,
+104(4):617–623, 2008.
+[12] L. E. F. Graves, G. Stratton, N. D. Ridgers, and N. Cable. Comparison
+of energy expenditure in adolescents when playing new generation
+and sedentary computer games: cross sectional study. British Medical
+Journal, 335(7633), 2007.
+[13] J. Ho¨ysniemi, P. Ha¨ma¨la¨inen, L. Turkki, and T. Rouvi. Children’s intu-
+itive gestures in vision-based action games. Commun. ACM, 48(1):44–
+50, 2005.
+[14] L. Kern, R. Koegel, and G. Dunlap. The influence of vigorous versus
+mild exercise on autistic stereotyped behaviors. Journal of Autism and
+Developmental Disorders, 14(1):57–67, 1984.
+[15] L. Kern, R. L. Koegel, K. Dyer, P. A. Blew, and L. R. Fenton. The ef-
+fects of physical exercise on self-stimulation and appropriate respond-
+ing in autistic children. Journal of Autism and Developmental Disor-
+ders, 12(1):399–419, 1982.
+[16] M. Lee and R. Paffenbarger. Associations of light, moderate, and
+vigorous intensity physical activity with longevity. American Journal
+of Epidemiology, 151(3):293–299, 2000.
+[17] L. J. Levinson and G. Reid. The effects of exercise intensity on the
+stereotypic beheaviors of individuals with autism. Adapted Physical
+Activity Quarterly, 10(3):255–268, 1993.
+[18] L. Lovaas, C. Newsome, and C. Hickman. Brief report: The effects
+of exercise on the self-stimulatory behaviors and positive responding
+of adolescents with autism. Journal of Applied Behavior Analysis,
+20(1):45–68, 1987.
+[19] R. C. Luke, M. G. Coles, T. A. Anderson, and J. N. Gilbert. Oxy-
+gen cost and heart rate response during interactive whole body video
+gaming. Medicine and Science in Sports and Exercise, 37(5), 2005.
+[20] C.-Y. Pan and G. Frey. Physical activity patterns in youth with autism
+spectrum disorders. Journal of Autism and Developmental Disorders,
+36(1):597–606, 2006.
+[21] A. Prupas and G. Reid. Effects of exercise frequency on stertypic
+behaviors of children with developmental disabilities. Education
+and Training in Mental Retardation and Developmental Disabilities,
+36(2):196–206, 2001.
+[22] P. Reid, D. Factor, N. Freeman, and J. Sherman. The effects of phys-
+ical exercise on three autistic and developmentally disordered adoles-
+cents. Therapeutic Recreation Journal, 22(1):47–56, 1988.
+[23] C. Sicile-Kira. Autism Spectrum Disorders: the complete guide to un-
+derstandnig autism. The Berkley Publishing Group, New York, USA,
+2004.
+[24] J. Sinclair, P. Hingston, and M. Masek. Considerations for the design
+of exergames. In GRAPHITE ’07: Proceedings of the 5th interna-
+tional conference on Computer graphics and interactive techniques in
+Australia and Southeast Asia, pages 289–295, New York, NY, USA,
+2007. ACM.
+[25] B. K. Smith. Physical fitness in virtual worlds. Computer, 38:101–
+103, 2005.
+[26] G. Sugai and W. J. White. Effects of using object self-stimulation as a
+reinforcer on the prevocational work rates of an autistic child. Journal
+of Autism and Developmental Disorders, 16(1):459–471, 1986.
+[27] M. Van Bourgondien and G. Mesibov. Diagnosis and treatment of
+adolescents and adults with autism. The Berkley Publishing Group,
+New York: Guilford, autism: nature, diagnosis, and treatment edition,
+1989.
+[28] R. Watters and W. Watters. Decreasing self-stimulatory behavior with
+physical exercise in a group of autistic boys. Journal of Autism and
+Developmental disorders, 10(4):379–387, 1980.
+[29] G. N. Yannakakis, J. Hallam, and H. H. Lund. Comparative fun analy-
+sis in the innovative playware game platform. In 1st World Conference
+for Fun ’n Games, pages 64–70, 2006.
+

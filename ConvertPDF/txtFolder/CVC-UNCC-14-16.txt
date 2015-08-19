@@ -1,0 +1,892 @@
+An Integrated In-Situ Approach to Impacts from Natural Disasters
+on Critical Infrastructures
+Online ID 185
+Abstract—Natural disasters can have a devastating effect on critical infrastructures, especially in case of cascading effects among
+multiple infrastructures such as the electric power grid, the communication network, and the road network. While there exist detailed
+models for individual types of infrastructures such as electric power grids, these do not encompass the various interconnections and
+interdependencies to other networks. Cascading effects are hard to discover and often the root cause of problems remain unclear.
+In order to enable real-time situational awareness for operational risk management one needs to be aware of the broader context
+of events. In this paper, we present a unique visual analytics control room system that integrates the separate visualizations of the
+different network infrastructures with social media analysis and mobile in-situ analysis to help to monitor the critical infrastructures,
+detecting cascading effects, performing root cause analyses, and managing the crisis response. Both the social media analysis and
+the mobile in-situ analysis are important components for an effective understanding of the crisis and an efficient crisis response. Our
+system provides a mechanism for conjoining the available information of different infrastructures and social media as well as mobile
+in-situ analysis in order to provide unified views and analytical tools for monitoring, planning, and decision support. A realistic use
+case scenario based on real critical infrastructures as well as our qualitative study with crisis managers shows the potential of our
+approach.
+Index Terms—power simulation, visual analytics, critical infrastructure, mobile in-situ analytics, homeland security.
+1 INTRODUCTION
+Responding to the destructive impact of a volatile hurricane to a net-
+work of critical infrastructure is the central challenge for emergency
+responders. After witnessing the devastating destruction from Hurri-
+cane Sandy during 2012 and the flood disaster in Germany 2013 deci-
+sion makers are on high-alert for threats to their critical infrastructures
+such as power lines, food networks, shelters, etc., potentially caused
+by impact from another natural catastrophes. Important backbones
+of our society are electrical power networks since the electricity sup-
+ply has a strong impact on the fundamental societal structures such as
+life/health, environment, and economy. Especially, electric power sys-
+tems are increasingly dependent on information and communication
+technology (ICT) systems as new monitoring, control, and protection
+functions, especially in the currently emerging Smart Grid installa-
+tions. In order to deal with the increasing vulnerabilities of electric
+power systems, advanced ICTs, including network-based Supervisory
+Control and Data Acquisition (SCADA) systems or Wide Area Moni-
+toring Systems (WAMS) have been deployed by the power industry.
+Analyzing the vast amount of information from different domains
+is a complex analytical issue. The monitoring of the interconnections
+between power grids and digital networks requires the integration of
+several data sources. With an overview the crisis manager is able to
+understand and explore the crisis allowing her/him to project the future
+development and to make decisions. Situational awareness is impor-
+tant on all levels of crisis response that range from central command
+centers to site-commanders and boots-on-the-ground. All levels must
+be able to access the information of a crisis. Further, they need to
+communicate bottom-up or top-down since crisis managers typically
+rely on the aggregated information of the field and first responders lack
+context information.
+Novel public communication platforms like social media services
+and other Web 2.0 sources have established a completely new infor-
+mation channel that can help to improve situational awareness for the
+decision makers. Citizens affected by critical events often report vital
+situation related information directly to messaging services like Twit-
+ter or Facebook. They use mobile and sometimes even GPS-enabled
+communication devices like smartphones or tablet computers. Gather-
+ing useful information pieces from the vast amounts of random unre-
+Submitted to IEEE VAST 2014. Do not redistribute.
+lated chatter poses a completely new challenge for analysis and deci-
+sion support systems.
+Existing tools and systems do not support the integration of infor-
+mation over several critical infrastructures such as power grids and the
+ICT networks. The monitoring and understanding of the relationship
+of critical infrastructures and the coordinated management of their fail-
+ures is therefore one of the biggest challenges in critical infrastruc-
+ture protection and crisis response. In this paper, we present a system
+that supports all levels of command structures and enables situational
+awareness for crisis response. This system was developed within a
+nationwide interdisciplinary project [blinded for review] running for
+three years with an international research collaboration to a partner
+project [blinded for review].
+Our contribution: We present a visual analytics system that: 1)
+supports all levels of crisis response with specialized equipment and
+visualizations for control rooms and mobile devices; 2) combines mul-
+tiple critical infrastructures and social media by information abstrac-
+tion; 3) enables interactive simulation and visualization of the sub-
+sequent development of a crisis; 4) enables interdisciplinary and dis-
+tributed teams to understand and react on crisis situations.
+2 RELATED WORK
+Visual analytics provides technologies that support the decision maker
+to gain a precise overview of the current situation by (1) automatically
+filtering irrelevant information, (2) presenting relevant data visually
+to optimize understanding, (3) optimizing the communication process
+among the stakeholders, and (4) supporting the analysts formulate and
+assess alternative solutions. Visual analytics fulfills the task to bridge
+the gap between several networks, especially in vision of the analy-
+sis of cascading effects. The combination of automated data process-
+ing and interactive visualization techniques serves as a means to cope
+with the complexity of the selected task. For instance, the advantage
+of such tools has been illustrated in an analysis of the 2005 outbreak
+of the avian flu by combining different analysis capabilities [17]. This
+scenario shows the power of an analytic setting that supports the anal-
+ysis of complex, real-world scenarios. Also, first visual analytics tools
+in the area of crisis response were the result of SoKNOS [9]. This
+comprehensive environment requires integrated visual and traditional
+systematic analysis of massive data, including improved strategies for
+exploratory visual analysis, hypothesis testing and user-specific pre-
+sentation of relevant information as a basis for actionable decision
+making. Furthermore, visual analytics tools for analyzing syndromic
+hotspots are presented by Maciejewski et al. [12] and allow the analyst
+to perform real-time hypothesis testing and evaluation.
+Much prior research has focused on using simulation and predictive
+modeling to anticipate hurricane movement and suggest possible land-
+fall and impact locations [23, 16, 19, 5]. The challenge of understand-
+ing these modeling efforts and their predictive capabilities from large
+collections of sensing and simulation datasets is ubiquitous. However,
+for such computation driven practice it is detached from the human-
+decision making process. It is important to gain enough insights to
+actionable knowledge, but the development of models and analysis of
+modeling results usually requires that models be run many times [4].
+As part of the PSERC project, techniques are developed to visualize
+complex power systems and flows [15]. For the interactive analysis
+of network related data sources such as server logs or BGP protocol
+data, Fischer et al. developed a visual analytics expert system in [6].
+A detailed overview of cyber security and privacy issues in a smart
+grid context is presented in [10]. The control room is the central part
+of a system, where all information comes together. Notifications and
+alarms are collected and transferred to a central node. These events are
+typically evaluated by rule-based systems, where the rules are defined
+by domain experts. Rooney et al. gives an introduction to Root Cause
+Analysis (RCA) in [18]. There are also systems that use simpler fuzzy
+logic rules as a vehicle that allows engineers to incorporate human
+reasoning in the control algorithm [13].
+Social media, such as Twitter and Facebook, contain time-critical
+information that can enhance situational awareness. First approaches
+for building and improving decision making systems in this domain
+were introduced by Tomaszewski et al. [22]. MacEachren et al. [11]
+developed a visual analytics tool that allows for querying social media
+sources and depicting aggregated results on a geographical map. Thom
+et al. [20] present a novel cluster analysis approach to automatically
+detect spatiotemporal anomalies in Twitter messages.
+Evacuation of large urban structures, such as campus buildings, are-
+nas, or stadiums, is of prime interest to emergency responders and
+planners. Although there is a large body of work on evacuation al-
+gorithms and their application, most of these methods are impractical
+to use in real-world scenarios (non real-time, for instance) or have
+difficulty handling scenarios with dynamically changing conditions.
+Visual analytics involves effectively combining interactive visual dis-
+plays with computational transformation, processing, and filtering of
+large data [21]. One focus of visual analytics is real-world problems
+involving situationally aware decision support. Andrienko et al.[1] de-
+scribed the sequence of tasks that are fundamental to exploratory visu-
+alization of spatio-temporal data. They incorporate these ideas into ef-
+fectively demonstrating the movement of storks across a geographical
+area. Campbell and Weaver[3] investigate situational awareness dur-
+ing emergencies using two different tools: RimSim Response! (RSR)
+and RimSim Visualization (RSV). The work of Kim et al. [8] focused
+on the use of mobile devices for situationally aware emergency re-
+sponse and training, and thus, their approach is similar to our work.
+They demonstrated their system with an evacuation simulation of the
+Rhode Island club fire of 2003.
+The discussed approaches and systems focus on a specific domain
+and do not combine various external data sources. Integrate sensor
+data (electricity, weather, supply), social media and in-situ analysis
+is a challenging task. Furthermore, most of the current systems are
+intended for domain expert users, although crisis management teams
+may consist of interdisciplinary members. Enabling interdisciplinary
+teams to analyze and understand interdependent data leads to efficient
+crisis response.
+3 DESIGN FRAMEWORK: TARGET USERS & REQUIREMENTS
+Large scale emergency response has a command structure as illus-
+trated in Figure 1. A large police or fire response, for example, will
+have a site commander who deploys first responders. If the emergency
+is larger and more wide-spread, there will be a command center with
+oversight over multiple site commanders. A similar structure applies
+to breakdown of the electrical grid or other critical infrastructure. The
+deeper one goes into the command structure, the more mobile the re-
+sponders are; they are focused on the locales, tasks, and decisions at
+hand and traditionally don’t have contextual understanding or situa-
+tional awareness. Typically, site commanders also don’t have situa-
+tional awareness (in terms of the deployment of their personnel and
+what they are doing or seeing, for example) nor do they have the con-
+text to make the most effective decisions. To make decisions, the first
+responder will want to know what is happening in the locale, what is
+about to hit where and when. The site commander will want to know
+similar things over a wider locale and must in addition organize and
+manage a group of responders. Aspects of all this should flow up to
+the command center for overall decision-making.
+Networked mobile visual analytics can be an essential part of this
+contextual and situational awareness. When we have developed and
+deployed networked mobiles systems for emergency response in ur-
+ban areas, worn or carried by first responders, police and emergency
+managers have immediately seen the power and usefulness of such
+systems. It is in this spirit that we have developed the networked mo-
+bile visual analytics interface as part of crisis response. It connects the
+responders with the command center so that everyone resides in the
+same context. However, even if they lose the network connection, they
+can carry enough of the context on their mobile devices and can take
+effective action. Further, any feedback and updates they provide will
+be transmitted to the central system. Detailed location, movement, and
+action updates can be placed in the appropriate spatio-temporal context
+so that commanders can see, in unprecedented detail and without am-
+biguity, what is going on (and responders can see, minute-by-minute
+where there fellow responders are and what they are doing). Specifi-
+cally, our system is designed to accommodate the three essential per-
+sonnel in a crisis respond scenario:
+Fig. 1. Overview of the Users that our system is designed to facilitate.
+Crisis Manger: Crisis Managers are a group of domain experts
+who oversees the entire emergence response process. This group is
+typically formed by interdisciplinary members from various analytical
+domains, such as grid operators from power companies, city-state offi-
+cials, evacuation experts, and people from federal departments. Their
+objective is to understand and assess the severity of the crisis situ-
+ation, select corresponding Site-Commanders with appropriate First
+Responders, and provide Just-In-Time decisions making based on in-
+puts from social media and in-field communications. The natural of
+the heterogeneous data inputs for the Crisis Managers determined that
+they will benefit from a control room setup, where they will be pro-
+vided with a combined overview of the crisis situation. As detailed
+in section 5, our setup supports distributed as well as collaborative
+analysis, provides overviews of the development of the ongoing cri-
+sis, and it further enables the Crisis Managers to interactively deploy
+and arrange response effort, and receive the communications from site
+commanders and real-time situation updates.
+Site Commanders: With the advanced mobile technology (e.g.,
+mobile emergency response vehicles), site managers are the critical
+link between Crisis-Manager at control center and First Responders in
+Fig. 2. Overview of the power, mobile, and road grid. Transformer stations (rectangles) are connected via power lines and are also connected to the
+communication infrastructure (triangles), which transfers the information to the central control room. The transmission range of the mobile stations
+is visualized as concentric circles. While gray indicates normal operation mode, the yellow elements on the screen reveal a severe situation. High
+deviations in voltage cascaded from the energy grid into the mobile grid due to failures of the power supply. Now, the operator must intervene
+immediately. With malfunctions in the mobile grid, the crisis response commands from the control room won’t reach the field, which then would
+result in a black out. Further, roads are blocked and hinder the response team to reach the target area, which is visible in the command center after
+the first responders update the street status. The dynamic routing adapts to these constraints and calculates a different route.
+the field. Based on our previous collaboration with local emergency
+responders, Site Commander (e.g., Police Chief) are often stationed
+near the crisis center where first responders were deployed to conduct
+on-site instructions and in-situ communications. At the mean time,
+they are relying on the mobility of the technologies to maintain an
+open communication channel with control center for further situation
+assessment and updates. Site Commanders act differently from Crisis
+Managers in a way that they have a more focused missions in a spe-
+cific area that is assigned to them (e.g., a specific substation or a street
+blocks) and are in charge of provide real-time response as the crisis
+unfolds in the field.
+First Responders: First Responders are the group that fights the
+diseases right in the center of where crisis occurs. These teams consist
+of various professionals, such as policeman, fire fighter, and power
+grid responders. These interdisciplinary group mainly conduct re-
+sponse effort in the field with instructions from Site Commanders.
+Their extreme needs of mobility determined that we need to provide
+them with a mobile-device based visual analytics system. Key func-
+tions in this system, as detailed in section 4.4, includes instructions that
+informs them about the areas that they need to focus their attentions,
+interactive methods to depict areas to prioritize their tasks, and finally
+communication methods to provide updates and situation reports to
+their Site Managers. All this information need to be shared through
+wireless networks that directly feedback to the Site Commanders and
+further to Crisis Managers.
+4 SYSTEM COMPONENTS
+4.1 Simulation of Critical Infrastructures
+Large scale natural disaster, a cyber-attack, or other wide spread crisis
+may affect multiple infrastructures. To capture these complex, multi-
+farious, and dynamic effects, we utilize a simulation model [blinded
+for review] that takes into account the interrelationships among criti-
+cal infrastructures. The simulation is built within a rule-based frame-
+work for integrating multiple infrastructure components at a high level.
+The interlaced critical infrastructures are captures in a set of networks
+with each node having a set of properties according to its category
+and the edges providing a dependency rule according to the cate-
+gory and state of the two connected nodes. This results in a depen-
+dency/interdependency ontology (e.g., as illustrated in Figure 2(a) mo-
+bile transmitters are connected to transformer stations). Thus, for ex-
+ample, a breakdown of a power substation would immediately cascade
+to power loss at points on its distribution network. If a school were a
+node in the distribution network, it would be switched to backup power
+that, after a given time, would also shut down. Likewise, telecommuni-
+cation nodes would switch to backup power that might also shut down
+after its prescribed duration. Thus, the simulation also takes cascading
+events into account.
+In some natural catastrophes some roads may be affected and res-
+cue or response teams, especially with heavy gear, are not able to pass
+them. This has to be considered in the evacuation and logistic man-
+agement at all three levels: E.g., the crisis managers must plan the
+logistics of gear and troops; the site-commander sends in first respon-
+ders on different routes to the crisis and first responders will update
+the status of streets if they are not passable. Our system supports dy-
+namic routing with the state-of-the-art algorithms such as Dijkstra’s
+algorithm that consider to the current status of streets.
+4.2 Visualization of Interdependent Infrastructures
+A smart grid (energy network) typically consists of power lines at dif-
+ferent voltage levels connected by transformer stations. These sta-
+tions distribute the power over regions and supply streets, households,
+and industrial facilities. In our scenario, a mobile communication grid
+transfers information and control commands from the central control
+room to the electrical grid. The mobile transmitters itself are power-
+supplied by common transformer stations and thus, the infrastructures
+are tightly interconnected.
+4.2.1 Information Abstraction & Visual Encoding
+The complex and vast amount of information of each infrastructure is
+abstracted and reduced. This enables the decision maker to understand
+the full crisis in its context and to detect potential cascading effects.
+Every infrastructure is abstracted to an undirected graph. Its nodes
+are represented by symbols, such as rectangles for transformer sta-
+tions and triangles for mobile transmission stations. The graph edges
+represent the domain dependent connection between infrastructure el-
+ements, such as power lines and mobile communication connections
+(see Figure 3(b) and Figure 2).
+The status of each element is estimated by a state-evaluator model
+that is defined for each infrastructure. These models concern the actual
+information of the field, such as utilization and durability (see Figure
+3(a)). We use a prediction module for our power grid that predicts
+the consumption and production at each transformer station accord-
+ing to weather forecasts and past data based on Monte Carlo simula-
+Fig. 3. (a) Station state evaluators consider the incoming measurements and the comparison to the expected behavior, which reveals anomalies.
+A set of rules maps this input to color that expresses the status of the element. (b) Domain details are added to the symbols such as power
+consumption and production (red and blue bars), as well as producer types (photovoltaic or biogas) for transformer stations.
+tion. This information is sent to the simulation server that simulates
+the subsequent development. This “expected” behavior is compared
+to the actual measurements. Thus, anomalies are detected, which may
+reveal damaged or harmed devices. Further, the subsequent develop-
+ment can be visualized as small multiples (see Figure 4) in addition to
+the monitoring views (see Figure 2).
+Fig. 4. Subsequent Development: If there is any emerging problem in
+the future, the prediction view will show the future status of the network
+by small multiples, which highlights the remaining time and the elements
+that are affected.
+A set of rules maps the input of the field and anomaly detector to
+color. Saturated and intense yellow, red, and violet represent warnings
+and alarms. Less saturated colors stand for less serious events, such as
+gray for normal (uninteresting) status. Some rules provide continues
+values in addition to ordinal signals. For these rules we use a contin-
+uous color scale that varies over saturation and lightness from gray to
+yellow and over hue from yellow to red. Thus, severe events are per-
+ceptually highlighted on the dark background whereas less important
+events do have less visual impact [24]. The size of elements represents
+the topological importance of infrastructure elements. We consider
+central elements (and their dependencies) more important, since their
+failures are more acute than failures of border elements. Thus, the size
+of important elements is increased, which also highlights dangers or
+failures of central elements. We also add domain details into the sym-
+bols such as the current power production and consumption as well as
+the producer type for transformer stations (see Figure 3(b)).
+4.2.2 Zoom, Focus & Details on Demand
+Two major problems arise when graphs are visualized: the over plot-
+ting of nodes and intersection of edges. The over plotting of nodes
+can be compensated by stacking the overlapping nodes and visualiz-
+ing them at their average location. They are sorted by their current
+status. The domain details (e.g., power consumption and producer
+type) are aggregated and visualized in the foreground element. For
+the intersection of mobile communications, we omit the painting of
+connections that are working properly and use edge bundling in or-
+der to avoid intersections. These aggregation techniques enhance the
+readability of the visualization, however, at the cost of hiding or divert
+some information. The user is therefore able to zoom into areas of
+interest. If enough space is available, the system will visualize the el-
+ements in their normal layout and will provide additional information
+(see Figure 5).
+Fig. 5. Semantic zooming reveals more details on each zoom level as
+soon as enough space is available.
+The user can further interact with the field via control panels, e.g.,
+disabling powerlines or deactivating producers at a transformer sta-
+tion (see Figure 6). The user is further enabled to adjust the expected
+production and consumption for simulating alternatives and thus, can
+create several alternatives for decision making.
+4.3 Accessing Human Sensor Information
+With the rise of community driven content services, such as Twit-
+ter and Facebook, a new information channel for situation awareness
+has been established in the Web. In contrast to more traditional data
+sources, like structured sensor data or detailed reports from emergency
+responders, these new information channels pose novel requirements
+Fig. 6. Control panels visualize the actual measurement data (a). (b)
+Controls enable the operator to switch elements on and off. With (c) the
+operator can simulate or control the amount of energy consumption and
+production at a transformer station. (d) Charts visualize the develop-
+ment over the past hour / day.
+for data filtering, ranking and aggregation. The relevant information
+has to be separated from general chatter and organized according to
+different topic categories. Large amounts of repetitive reports have to
+be integrated into a consistent and scalable situation overview. In our
+approach we propose novel methods to address these challenges in or-
+der to incorporate social media services as external community driven
+sensors within the command center environment.
+4.3.1 Overview and exploration based on automated event
+identification
+The complexity of events and the velocity of streaming data often
+hinders straightforward situation awareness during critical situations.
+Means for automated detection and display of possibly relevant clues
+can be a key factor in successfully mastering crisis management. In
+case of social media data, it is particularly important to detect possible
+first-hand accounts (e.g. eyewitness information) of on-going situa-
+tion between large quantities of irrelevant information and to provide
+visual representations of the discussed topics and observations.
+As in [20], we rely on the presumption that messages addressing
+local events are often of related content and structure and that they
+are furthermore located in a spatial and temporal neighborhood. This
+ultimately leads to spatiotemporal clusters of messages reporting on
+the same situation related topics and keywords. Based on a cluster
+analysis approach, adapted to the specifics of real-time data, we auto-
+matically detect such spatiotemporal anomalies in the continuous data
+stream. Once a timeframe and geographic region is interactively se-
+lected by the analyst, the system generates a map of detected anoma-
+lies within that region and timeframe by finding frequent keywords
+in the message clusters and place them as labels at the corresponding
+cluster locations on the map. In order to avoid overlapping labels and
+at the same time show the analyst as much information as possible, we
+apply a collision avoidance technique that allows overlapping labels to
+move small distances from their designated locations. Ultimately, the
+label is not shown on the selected zoom level, if a certain maximum
+distance for that zoom level has been exceeded.
+Our technique provides a broad overview of all events that occur
+in a given geographic region and, more importantly, an indication of
+keywords and topics that might be a good starting point for further
+investigations (see Figure 8). This is particularly helpful if the analyst
+does not know in advance what to search for or to initially inform
+him of an unknown ongoing situation. By zooming into the map, our
+layout technique automatically provides more labels for the given area,
+as more screen space becomes available for the given region. The
+analyst thus receives more detailed indication of possible sub-events
+connected to a larger event and can use this as a basis to extend his
+investigation with traditional textual search, content analysis and focus
+and context visualizations.
+Fig. 7. SVM classifiers are trained based on existing social media data
+to enable detection of messages related to specific information needs.
+A visual tool supports the analyst by exploring the content and meta-
+data of historic messages in order to find good training samples. The
+SVM classifier is trained by selecting and labeling sets of positive and
+negative samples. The outcome and performance of the classifier and
+the progress of the training are continuously visualized on the map and
+associated statistics. Bottom: Classification and filtering of crisis related
+messages. Based on his specific information needs the analyst can load
+and combine modules from a library of the pre-trained classifiers using
+set operations. The occurrence of all new messages is shown in real-
+time. The analyst can associate the modules in the filter combination
+with specific labels, colors and symbols that are then used to display
+messages detected by that module
+4.3.2 Detection of highly relevant information items based on
+user-steered classification
+Besides the need to be informed about unknown or unexpected events,
+analysts usually also have a distinct domain and area of responsibility
+and are thus able to define information types that are clearly relevant
+to their tasks. For example, police officers will always be interested in
+information about the use of firearms or other acts of violence in their
+precinct. However, plain keyword-based approaches to find messages
+fitting to the given information need are often not powerful enough, as
+the complexity and specifics of language use in social media data can
+often not be properly reflected.
+Especially in real-time analysis scenarios analysts need means to
+quickly build highly customized filters based on their information
+needs, their knowledge structure and the specifics of the situation. In
+our approach we propose a two-step process where a library of Support
+Vector Machine (SVM) classifiers customized to the specific informa-
+tion needs is trained first, which can then be adjusted and combined
+with each other and with more simple keyword-, spatial, temporal-,
+spam- and other filters based on interactive visual set operations (see
+Figure 7). This idea has already been introduced in [2].
+Fig. 8. Overview visualization of crisis related topics based on automated anomaly identification. The image shows the social media component
+with activated anomaly visualization during a large earthquake that happened in August 2011 near Washington DC. The observation of earthquake
+related events lead to several larger ”earthquake”-clusters in many cities along the east coast. Zooming into the map shows more tags in the
+respective area and also reveals smaller sub-events that were connected to the larger event. For example, several buildings in Washington were
+evacuated which resulted in the prominent topics ”building” and ”evacuate” in the area. Also, the Washington monument experienced damage from
+the vibrations, which was also observed and reported by several eyewitnesses, leading to the topics ”monument” and ”damaged” being shown on
+the map.
+4.3.3 Classifier Training
+Based on historic data of previous, well understood events, an ana-
+lyst can explore social media messages to label positive and negative
+examples for a given event type. This is supported by a range of ex-
+ploration and analysis tools. First, the analyst can use an integrated
+textual search engine in order to establish an initial exploration context
+of social media messages related to the event type. E.g., the analyst
+can use keywords like “power”, “outage”, “breakdown”, “damage”,
+etc. within a recorded dataset where a known larger crisis like a storm
+or earthquake has happened. Next, the analyst can use an exploration
+lens, a movable focus and context tool, which shows the most promi-
+nent terms in the region underneath it, in order to find hotspots of the
+given event. Once the analyst has identified a sufficiently large set
+of example messages related (positive) and unrelated (negative) to the
+event type, the analyst can label them as such to iteratively progress the
+semi-automated training process. The training examples are especially
+useful if they are near the SVM-classifiers decision border, i.e. they
+have a high probability of being relevant to the topic in terms of key-
+words, and just the specific combination of terms renders them related
+or unrelated (e.g. “This morning the power went down.” vs. “This
+morning I have no power to get out of bed”). In contrast to traditional
+active learning approaches, the progress of the training is constantly
+presented to the analyst by color coding of all messages and by visual-
+izing the decision boundary in a spatial representation. By iteratively
+exploring and investigating the message set based on these visualiza-
+tions the analyst can understand the effects of his training and assess
+the current performance of the classifier.
+4.3.4 Real-Time Monitoring
+With repeated classifier training analysts can create a comprehensive
+library of annotated classifier modules for different event and message
+types relevant to their domain. In a real-time analysis scenario they
+would usually load and configure a range of classifiers and filters at
+the beginning of the monitoring period. The classifier modules are ar-
+ranged in a graph visualization and can be combined with each other
+and with ad-hoc defined keyword, spatiotemporal- and general pur-
+pose spam-filters using Boolean operations (AND, OR, Sym. Diff.,
+etc.). Furthermore they can be modified by increasing the precision or
+recall of the detection using interactive controls and the most relevant
+classifiers can be tagged with custom selected colors and symbols in
+order to highlight corresponding messages if they have been detected.
+If an unusual situation unfolds, the analyst can also apply the filter-
+and classifier management to reflect and validate quantitative hypoth-
+esis using message volume indicators provided for each module.
+4.4 High Mobility Visualizations & Visual Communication
+Fig. 9. Overview Mobile Concept for First Responders.
+Mobility for the First Responder is a crucial aspect in their field of
+work. The absolute necessity of providing mobile system to campus
+police and first responders was observed during previous evacuation
+exercises [7]. First Responders are no longer satisfied with office-
+based work stations, but are demanding interactive mobile analysis
+techniques to carry out in the field. This doesn’t strictly refer to mobile
+devices, but includes movable equipments in general.
+Therefore, we designed a network visual analytics system that uti-
+lizes the advancement of mobile devices (e.g., iPad). Our mobile in-
+terface aims to provide an interactive environment where the First Re-
+sponders would be able to receive detailed information in addition to
+commands from Site Commanders and Crisis Managers, examine the
+crisis scenario around them, conduct search and research with clear
+routine information, and finally provide feedback information to the
+Fig. 10. Our control room setup consists of three high resolution dis-
+plays for the visualizations and a touch table for the steering of clients.
+At any time it is possible to add further clients.
+managers. They have access to the visualizations and information of
+the command center, which can be focused to their particular location
+and interest. Section 5 discusses details of our implemented architec-
+ture to support these functions.
+To help users quickly select and focus on a geospatial region, we
+developed probing gestures, as shown in Figure 9 (B). This is an ex-
+tremely important analysis feature because it allows the user to drive
+the analysis and focus on what is important to their needs on the go.
+A First Responder can, with their touch enabled glove, directly draw
+onto the map with his or her finger by drawing a bounding area around
+a region or mark specific points. The system samples the gestures and
+computes the convex hull or straight line with linear regression, if de-
+manded. Thus, rapid and noisy drawings are smoothed (see Figure
+9(c)). They can further annotate in the selections with real-time up-
+dates, as shown in Figure 9 (c), and share the information back to their
+commanders and other responders, through a fast wireless or satellite
+connection.
+5 CONTROL ROOM
+The different components are combined in a control room setup that
+synchronizes all views and clients on demand and allows the integra-
+tion of mobile devices.
+5.1 Concepts
+Crisis managers, often consist of several experts from different do-
+mains. A common way to analyze crisis scenarios is the subsequent
+analysis of incidents. Typically infrastructures build large graphs and
+therefore, it is not possible to limit the analysis to a single screen.
+Hence, we setup a control room (see Figure 9) that supports a dis-
+tributed and collaborative analysis among several experts. Our setup
+consists of three high-resolution displays and one touch table.
+We see four advantages in this setup: First, single experts use this
+setup to explore and explain incidents with the aid of different views
+and visualizations on the crisis scenario as illustrated in Figure 2; these
+are displayed on the three high resolution displays. Second, the setup
+can be used to illustrate alternative solutions for decision making:
+Multiple alternatives and their subsequent development can be visual-
+ized simultaneously, which supports experts to draw decisions. Third,
+if several experts synchronously use this setup, the work can be parti-
+tioned on the three displays as well as on the touch table. Every expert
+receives his own interaction device, for instance a cordless air mouse,
+which is applied to his own workspace. In case an expert needs to ex-
+change information or enhance visualizations, we offer the possibility
+to synchronize the clients. Fourth, this setup easily enables a possi-
+ble combination of the previously named social media component and
+critical infrastructures.
+Fig. 11. Client-server architecture for the synchronization of different
+views and simulations results on multiple clients.
+5.2 Architecture
+In order to enable this vision of a distributed and collaborative environ-
+ment, there is need for a supportive system architecture. In a collab-
+orative working environment, multiple views and information have to
+be synchronized. We therefore set up a client-server architecture that
+supports synchronization across different clients. Our central server
+manages all connections to the clients and distributes information. Ev-
+ery interaction that needs to be synchronized is first sent to the server.
+However, the clients do not necessarily need to be synchronized and
+can also work independently if requested. In addition, the server also
+handles all connections to the external simulation servers and the local
+data sources (power grid, mobile grid, weather, and geography). The
+system requirements include hardware and system independence. In
+this distributed environment every client running a JAVA VM is able
+to connect to the server.
+Protocols: The communication is established by web sockets and
+REST interfaces. The web sockets are permanent connections via TCP
+protocol, whereas the REST-services are based on explicit HTTP re-
+quests. Each client contains multiple sockets that will inform the client
+if some parameters, views or synchronization are changed. In this case
+the clients uses the REST interfaces to request explicit updates from
+the server. If a user requests different configurations or sends informa-
+tion, the client uses the REST interfaces to update the server, which
+then will update other clients if necessary. This keeps all connected
+clients synchronized and minimizes the traffic to and from the server,
+since only packages that are currently needed in the particular view of
+the client are transmitted.
+Mobile Devices: Although overall function goals are straightfor-
+ward, creating a way to visualize large amounts of infrastructure events
+while also providing interactive analytics is still a complex challenge.
+Largely this challenge is due to the number of infrastructure elements
+we need to consider versus the inherent hardware limitations of mobile
+devices. To accommodate the essential functions, our mobile design is
+heavily built around network optimization and scalability. We utilize
+a low-level graphics engine specifically built for rendering the graphs
+and provide interactive selection and drawing. It enables the device to
+render vast data sets very quickly. The graphics engine uses a scene
+graph style data structure for storing elements. It also utilizes graph-
+ics techniques like double buffering and constructing texture atlases
+on the fly for improved rendering. In addition, we utilize the multi-
+core architecture built in the modern mobile devices to maximize its
+computing power. We utilize parallelism for all our REST requests to
+create asynchronous data pulls. We also load all data from the CPU to
+the GPU through a background processes. We purposely leave the user
+interface to its own separate process in order to not lock that thread.
+While mobile OS incorporates mapping services, they are not
+specifically designed for displaying large data sets or any complex 2D
+drawing. Our customized tile map system, as shown in Figure 9 (A),
+bears the similarity with commercial mapping system, but also provide
+additional functionalities that fits our visual analytics needs. Since the
+map tiles are stored in the cloud and the visualization components are
+implemented as layers that can be stacked onto the map, our mobile
+interface remain lightweight. This approach also enables a smooth
+Fig. 12. (a) The north-eastern part is flooded, which results in partial blackout (violet stations) and endangered power grid. The first responders
+update the in-situ information about flooded areas and casualties (“Gefahr! U¨berflutung!”, “Verletzte”). (b) The social media analysis early reveals
+messages about high water levels (“hochwasser”) and detects destruction events in real time.
+transition of updates from Control Room to First Responders in near
+real time.
+Hardware issues: We further support devices that are too weak
+to render our applications. Depending on their hardware, clients are
+classified into complete or minimal clients. Complete clients contain
+enough resources for standalone applications that renders the com-
+ponents by themselves. Therefore, the server needs to transfer data
+and information, used for synchronization, to these clients. Minimal
+clients do not have enough resources for the whole application and
+therefore, the server pre-renders the current view of the client accord-
+ing to the device, which is then send and visualized as image. Basic
+controls are also available in the minimal clients such that the image
+contains the location and type of controls. Thus, minimal clients are
+not updated in real time, however, they have access to the full crisis
+scenario.
+6 SCENARIOS
+Three scenarios were designed to highlight the need for such systems.
+Therefore, we designed multiple catastrophes that affect critical in-
+frastructures, such as a mass disease, a cyber attack, as well as a flood-
+scenario that is presented here. The flood disaster is caused by heavy
+rain and thunderstorms in a region of Germany. The region was al-
+ready flooded in 1987 and the scenario is inspired from these events.
+The region is employed with a (model) smart grid by one of the project
+partners.
+The scenario starts with heavy rain and thunderstorms. Especially
+the high grounds of the scenario region are soaked and the soil already
+begins to be unstable. A thunderstorm in the early morning hours
+increased the danger for this area, which alarms the command center
+and site-commanders of the power grid domain. Due to the social
+media analysis, which detected messages about unusual water levels,
+the site-commander sends a power grid technician (first responder) to
+the region for on-site information. Figure 12 b) shows the detected
+messages of amblers about high water levels (“hochwasser”). Also
+the command center reacts with alarming the regional response teams;
+in this case regional fire-fighters that are equipped with specialized
+mobile analysis devices.
+A debris avalanche hits a small village in the suburban region.
+Many homes are flooded and separated from the center of the region.
+The debris avalanche also hits a bridge and the flood is jammed. Trans-
+former stations in the eastern parts are immediately destroyed and the
+blackout cascades from the east to the south (violet stations). The
+remaining power circuit in the west and north is suffering from this
+immediate loss of consumption, which raises the voltage levels (see
+yellow stations in Figure 12). The fire-fighters cannot reach the casu-
+alties since streets and fields are not passable. They update the flood-
+endangered areas and the status of streets and casualties (see Figure
+12 (a): “Gefahr! U¨berflutung!”, “Verletzte”). They request the con-
+text information, which is enriched by the technician who supports
+additional information from his location. Both teams update the in-
+formation, which is synchronized between their clients and the central
+control room. The endangered areas and evacuation routes are coor-
+dinated by the command center and send to site-commanders and first
+responders. The fire-fighters begin to evacuate people to the south.
+The water level still raises and reaches over the bridge. The endan-
+gered area where one team of fire-fighters is located is flooded. Evac-
+uation routes and endangered areas are dynamically updated by first
+responders and command center. Also the whole region is now suffer-
+ing under a regional blackout since the central transformer station is
+hit. The response teams need to inform the civilians about evacuation
+routes.
+After the situation stabilizes, the power grid site-commander and
+the technician coordinate how to ensure that most of the region can be
+power supplied. Therefore, the technician updates the status of trans-
+former stations and informs the site-commander, which station can be
+switched on. Further, the repair and response teams need to organize,
+which streets and transformer stations have to be repaired. Updating
+the on-site information to the command center and site-commanders
+enables their situational awareness and allows directing forces where
+they are needed. They can consider local incidents in their decision
+making, which would be ineffective without our system.
+7 QUALITATIVE EVALUATION
+Field studies for crisis management systems are hard to conduct. Re-
+alistic crisis data is often not available or classified. Therefore, the
+project partners decided to simulate realistic scenarios, which are then
+analyzed by target users with our system. We conducted a qualitative
+study based on expert feedback rounds and interviews. The first eval-
+uation round was a main objective in the project and was conducted
+within ten staff months. The process and results are discussed in the
+following.
+7.1 Process
+Evaluation Teams: We formed four teams within the nationwide
+interdisciplinary project (blinded for review): 1) Data team consists
+of two members of the Federal Office of Civil Protection and Disas-
+ter Assistance of Germany (henceforth, BBK), as well as four repre-
+sentatives of power suppliers, and further two simulation experts for
+smart grid technology and social media. They designed the scenarios
+mentioned in the section above and provided the data. 2) The visual
+design team (represented by the authors) consists of eight visual an-
+alytics experts who designed the system based on the scenarios and
+data. 3) An interview team of two persons with backgrounds in visual
+design conducted the qualitative interviews with domain experts. 4)
+An external experts team consisting of two members of the BBK with
+experience in crisis response and ten power grid operators of different
+regional power grids in Germany. We selected these different but re-
+lated domains since they can be considered as the future target users.
+The crisis managers are part of the command center level, whereas the
+operators can be considered as site-commanders that are focusing on
+one particular region and domain affected by the crisis.
+Interviews: The interview team was involved in the creation of
+the scenarios but not in the design process and is therefore considered
+independent of the design decisions. However, this team was trained
+by the design team on the system components and supported with doc-
+umentations. Further, they prepared questionnaires for the qualitative
+interviews. The interview team visited seven control rooms of regional
+power grid suppliers in Germany and also interviewed experienced cri-
+sis managers of the BBK. This expert team did not know the system
+and scenarios. The interviews were conducted in concrete steps: First,
+the interview team presented the single components of the system. Af-
+ter the experts were familiar with the system the interview team pre-
+sented one scenario as a use case. The scenario was stopped at critical
+events and the experts were asked to analyze the crisis and to draw
+decisions with the help of the system. Then interviews according to
+the questionnaires were conducted. The interview team analyzed the
+results and summarized the findings, which were reported back to the
+design team, who carefully analyzed the findings and improved the
+system for a second iteration, which is still future work.
+7.2 Results & Discussion
+We found two major facts in the interviews with the target users:
+1) Domain experts reported that such systems are needed
+for crisis response: The experts reported that there is an urge for
+information of the crisis site, because in most cases the command cen-
+ters are blind and wait for phone calls to update their status: “The
+social media analysis is great. In most cases, first responders are too
+busy to update the crisis center. Direct access to Twitter messages that
+are linked to the crisis would give us a clearer and faster overview of
+the crisis.”, “We want a direct visual communication with first respon-
+ders”. We found that they are not only interested in the information of
+first responders about the crisis but also how the affected civilians are
+describing their status: “Some people may just feel to be forgotten by
+the government and we could respond with sending in some teams to
+show our presence”. Further, we found that first responders do have an
+urge for the context and development of the crisis, because they do not
+know what may hit them within the next minutes. They highlighted
+that in-situ and social media analysis can improve to narrow down
+root causes on-site and also to effectively steer first responders:“The
+control center does not even know, which transformer station can be
+reached by repair teams. We would need information about the status
+of streets and areas around stations. If we could use these tools to-
+day, we could directly send the teams where they really could make a
+difference”. The interview team found that the tools were efficiently
+understood by the expert team, however, they highlighted that a target
+user of such systems would require a significant amount of training.
+They conclude that the concepts of our system are sound, however,
+will require further investigations to integrate this in future crisis re-
+sponse centers.
+2) Crisis-Managers and Site-Commanders disagreed on the
+level of detail: All experts agreed that social media and linked com-
+munication with first responders is important and that our system could
+be used in crisis scenarios. We found that power grid operators and cri-
+sis managers disagreed on the level of details of such visualizations.
+The crisis managers wanted to perceive the crisis and simulate differ-
+ent alternatives in abstract manner. Thus, they were satisfied with our
+components. However, the power grid operators requested more do-
+main details and domain standards in the overviews. They reported
+that the whole system is interesting, however, the visualizations do not
+meet the requirements of power grid monitoring. We conclude that vi-
+sualizations have to adapt to the level of command structure and may
+be adapted to special domains.
+7.3 Discussion, Limitations & Future Work
+We found that the target users were convinced of the system and its ap-
+plicability. However, we see that the system does not fulfill all require-
+ments to be an operational system for power grid control. In these do-
+mains, research has evolved over decades to develop customized solu-
+tions for this particular infrastructure. Interestingly, the operators that
+were involved in the flood disaster that hit Germany in 2013 said that
+they were almost blind after the water destroyed the first transformer
+stations. Therefore, they highlighted an urge for on-site information
+and social media analysis. In the future scenario of interconnected
+infrastructures such as smart grid technology, we see a higher com-
+plexity as in todays power grids. Command centers must overlook and
+perceive the full context of a crisis. Therefore, abstract visualizations
+are needed, which was approved by our crisis managers. We argue that
+our system exemplifies a means for future central crisis managements
+to integrate different critical infrastructures, social media and in-situ
+analysis. It will however be interesting to discover the correct level of
+detail to satisfy each role in the command structure. For this, we plan
+to conduct direct user assessments to improve our components to the
+needs of particular site-commanders.
+Our scenarios are limited to the available resources within the
+project and thus, to the region that is employed with a smart grid. This
+might cause that our scenarios overlook large scale effects. Further, in
+our study the effects of time pressure was not considered, which may
+have significant influence on decision makers.
+Another issue is security. The architecture might be vulnerable
+although we encrypt the communication between clients and server.
+Further, the issue of infeeding wrong information with, for example,
+a stolen device or misleading Twitter messages was raised in our in-
+terviews. Therefore, we see an urge to include security protocols into
+this architecture.
+8 CONCLUSIONS
+In this paper, we present a visual analytics system that combines mul-
+tiple critical infrastructures, social media and in-situ analysis to sup-
+port the different levels of command structure in crisis response. We
+present specialized equipment and visualizations for control rooms
+and mobile devices. Further, we discuss means for interactive simula-
+tion and visualization of the subsequent development of a crisis. This
+enables an interdisciplinary and distributed teams to understand and
+respond to crisis situations. Our system was applied in realistic sce-
+narios and presented to real crisis managers, who conclude that there
+is an urge for such systems for crisis response.
+REFERENCES
+[1] N. V. Andrienko and G. L. Andrienko. A visual analytics framework for
+spatio-temporal analysis and modelling. Data Mining and Knowledge
+Discovery, 27(1):55–83, 2013.
+[2] H. Bosch, D. Thom, F. Heimerl, E. Puttmann, S. Koch, R. Kruger,
+M. Worner, and T. Ertl. ScatterBlogs2: real-time monitoring of microblog
+messages through user-guided filtering. IEEE Transactions on Visualiza-
+tion and Computer Graphics, 19(12):2022–2031, 2013.
+[3] B. Campbell and C. Weaver. Rimsim response hospital evacuation: Im-
+proving situation awareness and insight through serious games play and
+analysis. IJISCRAM, (3):1–15.
+[4] J. Dietrich, C. Trahan, M. Howard, J. Fleming, R. Weaver, S. Tanaka,
+L. Yu, R. L. Jr., C.N, J. Dawson, Westerink, G. Wells, A. Lu, K. Vega,
+A. Kubach, K. Dresback, R. Kolar, C. Kaiser, and R. Twilley. Surface
+trajectories of oil transport along the northern coastline of the gulf of
+mexico. In Continental Shelf Research, 2012.
+[5] H. Edelsbrunner and E. P. Mu¨cke. Simulation of simplicity: A technique
+to cope with degenerate cases in geometric algorithms. ACM Transac-
+tions on Graphics, 9:66–104, 1990.
+[6] F. Fischer, J. Fuchs, P.-A. Vervier, F. Mansmann, and O. Thonnard. Vis-
+Tracer: a visual analytics tool to investigate routing anomalies in tracer-
+outes. pages 80–87. ACM, 2012.
+[7] J. Guest, T. Eaglin, K. Subramanian, and W. Ribarsky. Visual analysis of
+situationally aware building evacuations, 2013.
+[8] S. Kim, Y. Jang, A. Mellema, D. Ebert, and T. Collins. Visual analytics
+on mobile devices for emergency response. In Visual Analytics Science
+and Technology, 2007. VAST 2007. IEEE Symposium on, pages 35–42,
+Oct 2007.
+[9] J. Kohlhammer, T. May, and M. Hoffmann. Visual analytics for the strate-
+gic decision making process. In GeoSpatial Visual Analytics, pages 299–
+310. Springer, 2009.
+[10] J. Liu, Y. Xiao, S. Li, W. Liang, and C. L. Chen. Cyber security and
+privacy issues in smart grids. IEEE Communications Surveys & Tutorials,
+14(4):981–997, 2012.
+[11] A. M. MacEachren, A. Jaiswal, A. C. Robinson, S. Pezanowski, A. Save-
+lyev, P. Mitra, X. Zhang, and J. Blanford. Senseplace2: Geotwitter ana-
+lytics support for situational awareness. pages 181–190. IEEE, 2011.
+[12] R. Maciejewski, S. Rudolph, R. Hafen, A. Abusalah, M. Yakout, M. Ouz-
+zani, W. S. Cleveland, S. J. Grannis, M. Wade, and D. S. Ebert. Under-
+standing syndromic hotspots-a visual analytics approach. pages 35–42.
+IEEE, 2008.
+[13] A. B. Marques, G. N. Taranto, and D. M. Falco. A knowledge-based sys-
+tem for supervision and control of regional voltage profile and security.
+IEEE Transactions on Power Systems, 20(1):400–407, 2005.
+[14] S. Mittelsta¨dt, D. Spretke, D. Sacha, D. A. Keim, B. Heyder, and J. Kopp.
+Visual analytics for critical infrastructures. pages 1–8. VDE, 2013.
+[15] T. J. Overbye and J. D. Weber. New methods for the visualization of
+electric power system information. pages 131–16c. IEEE, 2000.
+[16] V. Pascucci, D. E. Laney, R. Frank, G. Scorzelli, L. Linsen, B. Hamann,
+and F. Gygi. Real-time monitoring of large scientific simulations. In
+Proceedings of the 18-th annual ACM Symposium on Applied Computing,
+pages 194–198, Melbourne, Florida, March 2003.
+[17] P. Proulx, S. Tandon, A. Bodnar, D. Schroh, R. Harper, and W. Wright.
+Avian flu case study with nSpace and GeoTime. pages 27–34. IEEE,
+2006.
+[18] J. J. Rooney and L. N. V. Heuvel. Root cause analysis for beginners.
+Quality progress, 37(7):45–56, 2004.
+[19] E. Santos, J. Freire, C. Silva, A. Khan, J. Tierny, B. Grimm, L. Lins,
+V. Pascucci, S. A. Klasky”, R. D. Barreto, and N. Podhorszki. Enabling
+advanced visualization tools in a simulation monitoring system. In Pro-
+ceedings of the 5th IEEE International Conference on e-Science, pages
+358–365. IEEE, December 2009.
+[20] D. Thom, H. Bosch, S. Koch, M. Worner, and T. Ertl. Spatiotempo-
+ral anomaly detection through visual analysis of geolocated twitter mes-
+sages. pages 41–48. IEEE, 2012.
+[21] J. J. Thomas and K. A. Cook. Illuminating the Path: The R&D Agenda
+for Visual Analytics. IEEE Press, 2005.
+[22] B. M. Tomaszewski, A. C. Robinson, C. Weaver, M. Stryker, and A. M.
+MacEachren. Geovisual analytics and crisis management. pages 173–
+179. Delft, the Netherlands, 2007.
+[23] L. Vincent and P. Soille. Watersheds in digital spaces: An efficient algo-
+rithm based on immersion simulations. IEEE Trans. Pattern Anal. Mach.
+Intell., 13(6):583–598, 1991.
+[24] L. Wang, J. Giesen, K. T. McDonnell, P. Zolliker, and K. Mueller. Color
+design for illustrative visualization. IEEE Transactions on Visualization
+and Computer Graphics, 14(6):1739–1754, 2008.
+

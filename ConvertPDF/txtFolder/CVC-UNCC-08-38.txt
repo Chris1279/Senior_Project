@@ -1,0 +1,962 @@
+Machine Vision and Applications
+DOI 10.1007/s00138-008-0168-5
+SHORT PAPER
+Human action detection via boosted local motion histograms
+Qingshan Luo · Xiaodong Kong · Guihua Zeng ·
+Jianping Fan
+Received: 3 December 2007 / Accepted: 8 September 2008
+© Springer-Verlag 2008
+Abstract This paper presents a novel learning method for
+human action detection in video sequences. The detecting
+problem is not limited in controlled settings like stationary
+background or invariant illumination, but studied in real
+scenarios. Spatio-temporal volume analysis for actions is
+adopted to solve the problem. To develop effective repre-
+sentation while remaining resistant to background motions,
+only motion information is exploited to define suitable des-
+criptors for action volumes. On the other hand, action models
+are learned by using boosting techniques to select discrimi-
+native features for efficient classification. This paper also
+shows how the proposed method enables learning efficient
+action detectors, and validates them on publicly available
+datasets.
+Keywords Action retrieving · Activity analysis ·
+Video understanding · Visual surveillance ·
+Local motion histograms
+1 Introduction
+Automatic human action detection, or called behavior
+recognition and localization, is becoming an increasingly
+important part in computer vision. For a video sequence, it
+will provide semantic annotations (such as “falling down”,
+Q. Luo (B) · X. Kong · G. Zeng
+Department of Electronic Engineering,
+Shanghai Jiaotong University,
+200240 Shanghai, China
+e-mail: qluo.cn@gmail.com
+J. Fan
+Department of Computer Science,
+University of North Carolina at Charlotte,
+Charlotte, NC 28223, USA
+“shaking hands”, “kissing”, and “drinking”) if a computer
+can automatically identify different activities. It is also use-
+ful for computer to be able tell what is happening in a moni-
+toring scene (such as “running”, “walking”, and “picking”).
+The potential applications of human action detection include
+film and television content analysis, video index and sum-
+marization, real-time active object monitoring for video sur-
+veillance, and on-line pedestrian detection for smart vehicles.
+However, human action detection remains a challenging
+problem. Firstly, appearance and body shape of active sub-
+jects cannot be preserved across different viewing angles,
+different observing subjects or different wearing apparels.
+Secondly, variant illumination, cluttered background,
+moving cameras or non-stationary backgrounds make the
+analysis harder. Thirdly, human actions never repeat in the
+same manner, and the same action from different subjects
+probably holds diverse magnitudes and diverse velocities.
+Finally, the problem is more difficult when there are multiple
+activities in a complex scene, where occlusions and disoc-
+clusions exist and the spatio-temporal relationship between
+subjects or between body parts is important. Some typical
+frames are shown in Fig. 1 to illustrate these difficulties.
+To realize a detecting system for actions, researchers in
+this area face two challenges. One is how to extract and cha-
+racterize behaviors from some video frames, including mul-
+tiple behaviors from multiple subjects. The other is how to
+learn an efficient classifier to recognize a given behavior in
+a new context. With respect to those mentioned difficulties,
+the main challenge is to find a set of features that characterize
+behaviors well and account for most of those scenarios.
+In this paper, we propose a general method based on
+spatio-temporal volume analysis to detect behaviors in origi-
+nal video streams. Our first contribution is to propose a novel
+descriptor set named local motion histograms for represen-
+tation of an action volume. Our second contribution is to
+123
+Q. Luo et al.
+Fig. 1 Sample frames from our
+behavior database (25 fps): three
+frames sampled by every six
+frames are used to characterize
+actions (walking). a A normal
+behavior of walking; b same
+person but with a diverse
+appearance; c a different person
+with a different velocity;
+d action captured from a
+different viewpoint; e moving
+cameras and dynamic
+backgrounds; f multiple active
+subjects with occlusions
+introduce “Gentle Adaboost” into our framework for
+histogram-based feature selection, and to learn models on the
+proposed three kinds of histograms. In turn, we use the stan-
+dard window scanning technique and apply the learned clas-
+sifiers onto the densely sampled rectangular sub-windows
+(i.e., cubic spatio-temporal volumes) within video sequences
+for the detection.
+The rest of this paper is organized as follows. Section 2
+summarizes the related work. Section 3 details feature design
+and representation for human actions using local motion
+histograms. Section 4 describes how we learn models on
+histogram-based features using a boosting framework. Sec-
+tion 5 illustrates our experimental settings and presents expe-
+rimental results on several video sequences. Section 6
+concludes this paper.
+2 Related work
+Recently, there has been significant interest in approaches
+that address human action detection. Many previous
+approaches for behavior recognition were based on tracking
+models [17,19,22], which apply tracked motion trajectories
+of body parts to action recognition. In this case, an accu-
+rate segmentation of subjects from backgrounds is assumed
+beforehand. Consequently, the robustness of the algorithm
+is highly dependent on the segmenting and tracking system.
+The authors in [5] have reviewed the previous work on acti-
+vity recognition, most of which involve tracking body parts
+segmented from the static background.
+Another class of approaches performs recognition by
+using sparsely detected spatio-temporal features. Schuldt
+et al. [11,18] devise spatio-temporal feature detectors on
+Harris corners in 3D case, and Dollár et al. [3] design the
+detectors from local maxima of the response function defined
+by separable linear filters. Although these approaches indi-
+cate good potentials, they pose a problem toward handling
+more challenging situations, i.e., it requires analyzing the
+spatio-temporal configuration between different cuboids in
+some cases, such as multiple actions recognition.
+An alternative method is to apply spatio-temporal volu-
+metric feature that efficiently scan video sequences in space
+and time domain [8,12]. In substance this approach extends
+the rectangle features used by Viola and Jones [20] into
+the spatio-temporal domain for video analysis, which shows
+promising results in human action recognition. Most clo-
+sely related to our work is that of [12], who apply similar
+action classifiers to test videos in all space–time windows
+with variable spatial size and temporal extent. Furthermore,
+they introduce a technique called “Keyframe Priming” that
+combine subject’s appearance with motion into retrieving
+actions. In spite of that, we argue that subject’s appearance is
+not a stable feature for behavior analysis due to its variance to
+different views, different persons and even different clothes.
+3 Local motion histograms
+We focus on spatio-temporal volume analysis for human
+action detection due to its simplicity and effectiveness. Thus
+the key problem is to characterize actions within volumes by
+some kinds of features.
+3.1 Feature design
+Feature design is a significant problem because informative
+features capture the essence of a behavior pattern which faci-
+litates our task of detection. Our idea for feature design is
+derived from three considerations:
+1. It is believed that most of the information salient to reco-
+gnizing action can be captured from the optical flow,
+and the appearance of object is less relevant [8], which
+includes colors and textures, etc.
+123
+Human action detection via boosted local motion histograms
+Fig. 2 Spatio-temporal unit:
+basic blocks
+2. Using histogram-based image descriptors has achieved a
+remarkable success in object detection on static images
+among the vast variety of existing approaches [1,10],
+and the Histogram of Oriented Gradient (HOG) has been
+proved effective to describe appearance.
+3. To simplify the problem, most existing work assumes
+that the camera and the background are essentially static
+[2]. In our case, we make efforts to design a detector that
+could analyze activities where the camera or the back-
+ground moves around in the scenes.
+Based on the above considerations, we make some
+attempts as follows:
+1. We do not combine any appearance descriptors directly
+into behavior representation, but focus on motion fea-
+tures and make full use of optical flow vectors as
+descriptors.
+2. Local histograms provide effective means to represent
+visual information. Besides strong descriptive power,
+invariant to noise or affine transformation and spatially
+unordered, they have a good property for densely sam-
+pled description that all histograms can be efficiently
+calculated by using an “integral histograms” technique
+[15]. We use the similar idea as HOG to define local
+motion histograms.
+3. It is noticeable that local motion histograms can be built
+up from both differentials of optical flow and absolute
+optical flow orientation. The former description tends to
+describe relative motion between different parts against
+moving backgrounds.
+To make behavior representation tractable, we define local
+motion histograms by means of optical flow for capturing
+motion independent of appearance. To reduce the compu-
+tational requirements of detection task, we iterate the cal-
+culation of integral histograms on the base of volumetric
+basic blocks rather than pixel points. The term of basic block
+refers to a spatio-temporal region at a spatio-temporal loca-
+tion (x, y, t) with a small size (dx, dy, dt), which is defined
+as an aggregate
+B={p|x?x (p)<x+dx, y?y(p)<y+dy, t?t (p)<t+dt} (1)
+where p denotes a pixel point at location (x (p), y(p), t (p)).
+As illustrated in Fig. 2, the consecutive optical flow fields
+are equally divided into grids of basic blocks, and marginal
+areas are truncated if existing.
+To explore the descriptive power of optical flow from
+each pair of successive video frames, we introduce three
+kinds of local motion histograms on basic blocks into dis-
+covering complementary information. These histograms are
+based upon magnitude function M(u, v) and discrete eight-
+orientation function O(u, v):
+M(u, v) = |(u, v)| (2)
+O(u, v) = arg max
+i?[0,7]
+(
+u cos
+(
+i?
+4
+)
++ v sin
+(
+i?
+4
+))
+(3)
+where (u, v) stands for a 2D vector, and O(u, v) optimizes
+the projection: cos(arctan(u, v) ? i?4 ) ? max.
+Intra-block absolute histogram (IAH). When cameras and
+backgrounds are largely stationary, the original optical flow
+is sufficient to describe those absolute motions caused by
+actions of subjects. Even when there exist some camera ope-
+rations (pan, tilt, or zoom), the original optical flow is still a
+good clue for discovering salient motions.
+In this case, we employ the magnitude and orientation
+of optical flow vector (U, V ) at each sample pixel in a basic
+block to represent its inside behavior. If magnitudes are taken
+as weights and orientations are used for angular voting, orien-
+tation histograms are created as a descriptor to characterize
+distributions of optical flow. As shown in Fig. 3a, each his-
+togram is arranged in eight discrete directions, whose bins
+denote the sum of all contributions along the current direc-
+tion, shown as the length of arrows. Since the eight-bin his-
+togram accumulates all absolute motions inside a block, we
+call the resulting descriptor as intra-block absolute histogram
+(IAH). IAH for a given basic block B is formulated as
+IAH?(i)=C?
+?
+p?B
+M(U (p), V (p))?[i ?O(U (p), V (p))] (4)
+with
+C? = 1?
+p?B M(U (p), V (p))
+(5)
+where i = 0, 1, . . . , 7 is the bin index and ? is the Kronecker
+delta function. The normalization constant C? is imposing
+the condition
+?7
+i=0 IAH?(i) = 1.
+123
+Q. Luo et al.
+Fig. 3 Local motion histograms of a plane inside basic blocks: a IAH
+is based on (U, V ); b NDH is based on (Ux , Uy) or (Vx , Vy); c IDH is
+based on (Ux , Vx ) or (Uy, Vy)
+Neighbor-point differential histogram (NDH). Obviously,
+local differential of optical flow cancels out most effects
+of camera motion, such as pan and tilt, which can even
+reduce the effects incurred by zoom and rotation. Usually,
+the differentials are maximal at motion boundaries between
+a stationary region and a motional one, or two motional
+regions, which coincide with limb and body edges for human
+subjects with a behavior of walking or running. In some
+sense, flow differentials possess some character like edge-
+based descriptors.
+We encode a type of local motion histogram to capture
+the local orientations of motion boundaries in a simple way.
+The two flow components U , V are regarded as independent
+features. Taking local gradients (Ux , Uy) and (Vx , Vy) sepa-
+rately and calculating the corresponding gradient magnitudes
+and orientations (see Fig. 3b), we obtain weighted votes into
+local orientation histograms, which results two channels of
+eight-bin histograms. This resulting descriptors are called as
+neighbor-point differential histogram (NDH). Similar to the
+above defined IAH, they are formulated as
+NDHU (i) = CU
+?
+p?B
+M(U (p)x , U
+(p)
+y )?[i ? O(U (p)x , U (p)y )]
+(6)
+NDHV (i) = CV
+?
+p?B
+M(V (p)x , V
+(p)
+y )?[i ? O(V (p)x , V (p)y )] (7)
+where CU and CV are both normalization constants.
+Inter-block differential histogram (IDH). The differentials
+mentioned in the above are calculated from neighboring
+points, which usually outstands motion boundaries. In order
+to capture the relative motion of body parts, we exploit
+inter-block flow differentials. This means we compute flow
+differentials across neighboring basic blocks. This type of
+differentials is naturally capable to compensate most effects
+of global motions caused by camera operations as well.
+Figure 3c depicts how the differentials are computed.
+Since the spatial displacements (dx, dy) between basic
+blocks are relatively large and dx is not essentially equal to
+dy, new histograms are encoded on (Ux , Vx ) and (Uy, Vy).
+They are respectively, taken as pairs for orientation calcu-
+lation and angular voting. The resulting descriptors consis-
+ting of two channels of eight-bin histograms are called as
+inter-block differential histogram (IDH). Similarly, they are
+formulated as
+IDHx (i)=Cx
+?
+p?B
+M(U (p)x , V
+(p)
+x )?[i ?O(U (p)x , V (p)x )] (8)
+IDHy(i)=C y
+?
+p?B
+M(U (p)y , V
+(p)
+y )?[i ?O(U (p)y , V (p)y )] (9)
+where Cx and C y are both normalization constants. It is worth
+noting that the gradients Ux , Uy , Vx , and Vy for IDH are
+computed in a different way from those for NDH although
+the same symbols are used.
+Our proposed local motion histograms bear some simi-
+larity to Dalal’s motion descriptors [2], where differentials
+of optical flow are employed. However, there exists some
+substantial distinct between them. Firstly, our proposed des-
+criptors are spatio-temporal volumetric features and the his-
+tograms are accumulated in the normalized action cuboids.
+Secondly, the defined IDH is simpler than Dalal’s internal
+motion histograms (IMH), which are calculated over basic
+blocks and only two neighboring blocks are involved rather
+than eight outer cells. Finally, both absolute values and diffe-
+rentials are used for behavior representation, and NDH and
+IDH are organized together as complementary features for
+IAH, not alternative features for each other.
+3.2 Behavior representation
+Using basic blocks as the elementary unit, we denote any
+behavior region by grouping adjacent basic blocks into a
+large spatio-temporal volume. To depict its inside action,
+the volume is divided into sub-regions with different sizes
+at different positions. Moreover, to reserve some spatial or
+123
+Human action detection via boosted local motion histograms
+Fig. 4 Four different arrangements of basic blocks
+temporal information within a sub-region, the histograms
+are calculated with different arrangements of basic blocks
+(see Fig. 4), and are respectively, concatenated into a single
+feature vector.
+The five-channel histograms (IAH×1, NDH×2, IDH×2)
+under four arrangements with different regional sizes at dif-
+ferent positions are calculated separately, then a dense repre-
+sentation for an action is built up. This representation leads to
+a histogram set with a huge size, which makes it impossible
+to be used for detecting directly. It is essential to filter the
+resulting descriptors and find those representative and dis-
+criminative features to characterize an action. Section 4 will
+discuss this in details.
+There are two pending problems. One is parameter tuning
+for calculation of histograms. Basic blocks are given the sizes
+of dx, dy = (4, 5, 6), dt = (3, 4, 5), and the normalized
+action volumes have different numbers of units dependent
+on action types. The other is optical flow estimation, which
+is important for building up descriptors. Since optical flow
+depends on the temporal and spatial resolution, it is computed
+on the original resolution and then scaled.
+However, dense optical flow between two consecutive
+frames is known as a coarse feature, which is noisy and unre-
+liable. Moreover, some methods are going together with local
+aperture effects. The local gradients (Ux , Uy, Vx , Vy) are
+used to accumulate the histograms, thus smooth and accurate
+flow are preferable for NDH and IDH. Based on these consi-
+derations, our initial efforts concentrated on some “global”
+methods, especially multi-scale non-linear diffusion based
+algorithm [16], and high-quality results are desired.
+Based on the later boosting framework, we compared the
+performance of this optical flow estimation with different
+methods on a dataset described later in this paper. Results
+are shown in Fig. 5. Almost a same conclusion is drawn as
+[2] that Proesmans’s flow does not provide improved per-
+formance while it is computationally expensive. It is over-
+smoothed which tends to blur the motion boundaries, and in
+turn, reduces the descriptive power of NDH and IDH.
+In contrast, Horn’s flow [7] is fast to be calculated and pre-
+serves the motion boundaries well, which keeps more number
+of selected features for NDH and IDH, but the final perfor-
+mance does not be promoted apparently. Our explanation is
+that Horn’s flow is noisy on some pixels (e.g., spatio-temporal
+corners), whose U and V get unexpected big values and make
+histograms unstable.
+Gennert’s flow [6] relaxes the brightness constant assump-
+tions, which sounds appropriate to our framework. In fact,
+Fig. 5 Comparison of detecting
+performance by histograms
+from various optical flow
+estimations on KTH dataset.
+a Precision–recall curves for
+detecting “walking” action (real
+mode); b number of selected
+features of a; c precision–recall
+curves for detecting “boxing”
+action (real mode); d number of
+selected features of c. In b and
+d the total number of features
+are both 50
+123
+Q. Luo et al.
+it obtains a stable flow field, but it naturally outstands the
+moving boundary and despises inner flow. As a result, it
+selects relatively less number of NDH and IDH. This method
+working with our framework leads to the worst performance.
+A saturated Horn’s flow (S-Horn) is introduced into com-
+puting motion descriptors, which originates from very simple
+idea: the magnitude of Horn’s motion vector is saturated by
+its neighbors, if M(u, v) > ?8
+?7
+i=0 Mi (u, v), where ? is
+a experiential factor (? = 3 is recommended). It is ama-
+zing that such a small modification enhances the performance
+apparently. This flow will be used to compute histograms in
+all the later experiments.
+4 Learning models for histogram-based features
+Given a video database involving human actions with labeled
+positive and negative samples, we are required to classify or
+detect behaviors in a novel sequence. As outlined above, we
+first construct local motion histograms for behavior repre-
+sentation.
+A naive, nevertheless simple method for classification is
+to find the best match to the querying motion descriptor,
+which can be performed in a KNN framework. In such a case,
+we must provide an appropriate similarity measure for our
+proposed motion descriptors. This is really difficult problem
+for our method because our descriptor set is composed of
+several types of histograms, and it is hard to give the weights
+for them. In addition, the dense representation leads to a
+large number of features, which makes the computational
+cost expensive.
+Learning discriminative action models for boosting clas-
+sifiers does not need any form of similarity measure, but does
+well in good feature selection. It is also a promising approach
+to handle the variation within an action category. However,
+most existing boosting frameworks have been employed to
+select one-dimensional features, such as Haar-like features,
+where an efficient classifier can be found by selecting an
+optimal decision threshold. Our histogram-based descriptors
+are multi-dimensional features with different types and dif-
+ferent arrangements, it is difficult to find a proper decision
+threshold.
+In this paper, linear projection technique is utilized to deal
+with histogram-based features. The classification task is not
+directly converted from a multi-dimensional problem to a
+one-dimensional one, but weak classifiers for boosting are
+learned on unprocessed histograms via this technique. During
+the learning process, Gentle AdaBoost will be employed as
+a strong learner to select the position, the size, the type, and
+the arrangement of our local descriptors in action volumes.
+The only criterion is to minimize the training error for the
+samples.
+4.1 Boosting framework
+Generally, boosting provides a simple way to approximate
+additive models of the form
+H(x) =
+M?
+m=1
+?mhm(x) (10)
+where H(x) is called as a strong learner, x is the input fea-
+ture vector with a class label y?(+1,?1), and M is the num-
+ber of boosting rounds. The functions hm(x), also written as
+b(x; ?m), are base classifiers which are usually simple func-
+tions of x . The expansion coefficients ?m and the parameters
+?m are jointly fit to training data in a forward “stage-wise”
+manner.
+All AdaBoost-based techniques can be considered as a
+greedy optimization method for minimizing exponential error
+function
+J [H(x)] = E(e?y·H(x)) (11)
+where the term y H(x) is related to the generalization error
+(out-of-sample error rate), and called as “margin”.
+For binary classification problems, there are two versions
+of the most commonly used AdaBoost procedures: One is
+“Discrete Adaboost”, where each hm(x) is a classifier pro-
+ducing values (+1,?1) and ?m are constants, the correspon-
+ding prediction is sign(H(x)). The other is “Real Adaboost”,
+where real-valued predictions hm(x) are combined with ?m
+and absorb ?m in Eq. (10) with a simpler form. The sign of
+each hm(x) gives the classification, and the value of each
+|hm(x)| is a measure of the “confidence” in the prediction.
+Gentle AdaBoost (GAB) is a more robust and stable ver-
+sion of real AdaBoost [4], which has ever been the most
+practically efficient boosting algorithm used in object detec-
+tor [13]. In this paper Gentle AdaBoost is used to select our
+histogram-based features.
+Gentle AdaBoost takes adaptive Newton steps to minimize
+error J [H(x) + hm(x)] by
+H(x)? H(x)+ E[e
+?y H(x)y|x]
+E[e?y H(x)|x] = H(x)+Ew(y|x). (12)
+Equivalently, the weak hypothesis is written as
+hm(x) = Ew(y|x). (13)
+Here Ew(.|x) refers to a weighted conditional expectation.
+The weight w(x, y) = e?y H(x) is updated by
+w(x, y) ? w(x, y)e?yhm (x). (14)
+To get optimized hm(x), we expand J [H(x) + hm(x)] to
+the second order about hm(x) = 0. Minimizing pointwise
+with respect to hm(x), there is
+h?m(x) = arg min
+hm
+(Ew[(y ? hm(x))2|x]) (15)
+123
+Human action detection via boosted local motion histograms
+which gives the way to select a trained base classifier hm(x)
+and produce a weak classification rule.
+4.2 Weak learner
+Although Adaboost doesn’t have strict requirement for the
+choice of weak learners, effective weak learners tends to
+enhance the performance of the final classifier. Available
+weak learners are usually Classification and Regression Trees
+(CART). Whereas, motivated by Laptev’s work [10], we use
+Weighted Fischer Linear Discriminant (WFLD) as a weak
+learner for multi-valued histogram features, where multi-
+dimensional features are projected onto a pre-defined set of
+one-dimensional manifolds using a fixed set of functions.
+The weak learner is defined as
+h(x) = wTx + b, with w = (S1 + S2)?1(µ1 ? µ2) (16)
+where µ1, µ2 stand for the weighted class means and S1,
+S2 for the weighted class covariance matrices, and b is the
+threshold obtained by projecting total means with a negative
+w. Given the weights {wi } corresponding to samples {xi },
+the matrices have the form
+µ = 1
+n · ?wi
+n?
+i
+wi f (zi ) (17)
+S = 1
+(n ? 1) · ?w2i
+n?
+i
+w2i ( f (zi ) ? µ) ( f (zi ) ? µ)T.
+(18)
+WFLD seeks for finding the optimized projecting direc-
+tions which are efficient for discrimination. The resulting
+linear projection transformation yields the maximum ratio
+of between-class scatter to within-class scatter for weigh-
+ted samples. In comparison with CART, each trained WFLD
+produces a more compact classification rule, which leads to
+a more efficient boosting classifier.
+4.3 Feature selection with GAB + WLFD
+As mentioned before, the proposed five-channel histograms
+(IAH×1, NDH×2, IDH×2) build up a dense representation
+for an action with a huge histogram set. Intuitively, each
+kind of feature delivers different data semantics for an “ato-
+mic” action. However, it keeps unknown whether they indeed
+carry a different amount of discriminative information for
+action classification. Using the GAB+WLFD algorithm, fea-
+ture selection is used to explore the useful histograms for our
+application.
+To understand the added value of these introduced des-
+criptors, results are reported separately for different features
+and in combination with each other. Tables 1 and 2 list the
+performance independently. From the two tables, the best
+Table 1 Accuracy (%) of different feature combinations for detecting
+“walking” (lite mode) on the KTH dataset
+Number of features 1 5 10 20 35 55 80
+IAH 27 45 51 50 54 57 57
+NDH 42 53 57 63 65 69 69
+IDH 40 52 59 67 69 71 71
+IAH + NDH 35 57 80 89 91 93 94
+NDH + IDH 44 65 76 87 90 95 95
+IAH + IDH 40 63 84 86 91 92 91
+IAH + NDH + IDH 51 69 88 90 92 96 97
+Table 2 Accuracy (%) of different feature combinations for detecting
+“boxing” (lite mode) on the KTH dataset
+Number of features 1 5 10 20 35 55 80
+IAH 18 35 42 39 44 44 43
+NDH 31 52 56 56 55 56 56
+IDH 37 54 65 67 67 67 67
+IAH + NDH 31 42 54 70 79 79 79
+NDH + IDH 39 62 72 85 91 91 92
+IAH + IDH 38 57 68 82 89 87 88
+IAH + NDH + IDH 39 65 77 87 91 95 95
+accuracies of detection are obtained by about 50 features. For
+each individual feature, it reaches the best accuracy within
+30 features.
+The two actions involving in these comparisons hold dif-
+ferent moving nature, “walking” action has a relatively stable
+moving region, and bears relative motions between body
+parts, while most “boxing” actions have a largely stationary
+region, the actions focus on the movement from hands. The
+results in the two tables coincide with our intuition that IDH
+shows great importance on catching motions between parts,
+and in most cases, NDH working with IDH achieves a satis-
+factory performance without need of IAH, especially when
+the moving region has a large size or with simple motions on
+the 2D plane.
+5 Experiments
+5.1 Datasets
+To evaluate the performance of the proposed method, we
+conducted experiments on three different datasets: Facial
+Expression dataset (FE) [3], KTH human activity dataset
+(KTH) [18], and Drinking and Smoking dataset (D&S) [12].
+They are all publicly available online, and some sample
+images from them are shown in Fig. 6.
+The face data in the FE dataset involves two subjects, each
+expressing six emotions under two lighting setups. Under
+123
+Q. Luo et al.
+Fig. 6 Sample images from
+some public datasets
+each lighting setup, each individual was asked to repeat six
+different expressions eight times. The expressions are anger,
+disgust, fear, joy, sadness and surprise. The subject always
+start with a neutral express, expresses an emotion, and returns
+to neutral, all in about 60 frames.
+The human action data from the KTH dataset contains 25
+individuals, each engaged in the following activities: wal-
+king, jogging, running, boxing, hand clapping, and hand
+waving. Each person repeats the six actions in each of four
+scenarios: outdoor, outdoor with camera zooming, outdoor
+123
+Human action detection via boosted local motion histograms
+wearing different clothes, indoor. And their durations are
+about 20 s.
+The D&S dataset consists of annotations for two action
+classes “Drinking” and “smoking” in the movies “Coffee
+and Cigarettes” (2003), “Sea of love” (1989) and in the “drin-
+king” sequence recorded by INRIA/Vista. In contrast to most
+existing datasets, the actions in this dataset are not recorded in
+controlled or simplified setting with simple backgrounds, but
+in comprehensive and realistic scenes with different subjects
+and from different view points. Although the two kinds of
+actions are “atomic” actions with a reasonable well-defined
+structure in time, the annotated samples possess large varia-
+bility of scales, locations, and surroundings.
+5.2 Training and testing settings
+When annotating all training samples for detection it is extre-
+mely important to align them in both spatial and temporal
+domains. Similar to the well-annotated D&S dataset, we dis-
+card those original coarse frame-based annotations for the
+KTH dataset, and manually segment their action instances
+to a fine degree for training. In the spatial domain, actions
+are labeled by rectangles or squares which keep the subject
+in the middle-center (boxing, hand clapping, etc.) or cover
+the active regions (walking, running, etc.). In the temporal
+domain, all sorts of actions are defined to start at the same
+phrase, and end at the same phrase as well (see Fig. 7),
+although acting in various ways with different durations.
+Even more, we split periodic actions in the KTH dataset into
+non-periodic actions (i.e., “atomic” actions), which conside-
+rably simplifies the annotation with temporal alignment.
+Besides alignment, normalization on all training samples
+is another key technique when training our detectors. In the
+spatial domain, each frame from a given action volume is
+resized into a preset size by interpolation on pixels. In most
+cases, redundant regions or blanks are added in order to main-
+tain aspect ratios. Furthermore, temporal interpolation is not
+utilized in our method because behavioral durations are good
+features for action description. In this way, the action volumes
+are normalized with same spatial size but different temporal
+lengths, and our detectors will learn to generalize the noisy
+durations of actions.
+The first set of experiments examines our method’s ability
+to classify actions in short segmented video clips. We expe-
+riment on the FE dataset whose samples for both training
+and testing are well labeled. Specially, training is done on a
+single subject under only one lighting setup. Finally we test
+the model on three testing sets: (1) the same subject under
+different illuminations; (2) different subjects under the same
+illumination; (3) different subjects under different illumina-
+tions.
+The second set of experiments evaluates our method’s per-
+formance in classifying actions in unsegmented testing video
+sequences by taking a detection measure. For the KTH data-
+set different actions tend to have distinct durations, such as
+“running” and “walking”, and testing our models on segmen-
+ted samples will greatly simplify the problem and make our
+results unable to be compared directly. Hence for a given
+testing sequence we run our resulting six detectors, respecti-
+vely, and summarize the detecting likelihoods to categorize
+the entire sequence with the highest likelihood. Particularly
+when the highest likelihood is below our threshold, we label
+the sequences as “unknown actions”.
+In our experiments, training and testing are done on extrac-
+ted about 1/4 length of original sequences in the KTH data-
+set with two modes. (1) Lite mode: Under two scenarios
+(outdoor, outdoor wearing different clothes), we use a light-
+weighted subset of the dataset which includes six subjects
+for training and six different subjects for testing; (2) Real
+Mode: We use the same training and testing sequences as in
+previous works [8,18]. Namely, under each of four scena-
+rios eight subjects in the training set and nine subjects in the
+testing set.
+The third set of experiments evaluates our method’s per-
+formance in detecting actions in long video sequences. We
+train a model for the class “drinking” on the D&S dataset.
+For comparison we use the same training set and testing set
+as in Laptev’s work [12]. Namely, for training we use 106
+Fig. 7 Frames from two “hand clapping” actions after spatial and temporal alignment: top frames from #0 to #24 (dt = 24) constitute an action
+volume; bottom frames from #54 to #90 (dt = 36) constitute an action volume
+123
+Q. Luo et al.
+Fig. 8 Results on the FE
+dataset: a compare with the best
+existing results; b confusion
+matrix for the same subject
+under different illuminations;
+c confusion matrix for different
+subjects under the same
+illumination; d confusion matrix
+for different subjects under
+different illuminations
+drinking samples selected from all the video clips as positive
+samples, and for testing we scan three episodes containing
+38 drinking actions. The training and the testing sets have no
+overlap in subjects or scenes.
+For the first set of experiments, we learn a multi-class
+model for the classifying problem on the FE dataset, and
+each action class has the same number of samples. On the
+other hand, we train binary classifiers for the detecting tasks
+in the later two sets of experiments. In addition, around the
+annotated positive samples we choose random durations of
+clips at random positions with random scales to generate
+negative samples for training binary classifiers.
+5.3 Results
+For the FE dataset, we compare the overall classification error
+rates with the best results of Dollár’s work [3] in Fig. 8a. It
+is obvious that our method performs better under changes of
+illuminations (case 2 and case 3). Furthermore, the confusion
+matrices on three testing sets are presented in Fig. 8b–d,
+which show large confusion between similar actions “anger”
+and “disgust”.
+For the KTH dataset we summarize the recognition rate
+through those detecting results, and give the confusion
+matrices for the two modes in Fig. 9c, d. It shows large
+confusion between “hand clapping” and “boxing”, as well as
+“running” and “jogging”. This is consistent with our intuition
+that those actions involve similar hand motions or similar leg
+motions. The results for the two modes depict that outdoor
+with camera zooming and indoor scenarios markedly dege-
+nerate our method’s performance. A reasonable explanation
+is that various resolutions and changes of illuminations cause
+a considerable side effect in calculating optical flow.
+Table 3 compares classifying accuracy with previous stu-
+dies on the same dataset KTH. Since the experimental setting
+of most existing studies are not the same as ours, the results
+cannot be compared directly and the listing accuracies do not
+123
+Human action detection via boosted local motion histograms
+Fig. 9 Results on the KTH
+dataset: a classification for
+“walking” actions, where the
+lighted boxes mark correct
+decisions by the “walking”
+detector and the darkened boxes
+mark false decision by
+“jogging” detector; b several
+detections obtained by the “hand
+waving” detector, where the last
+two darkened boxes mean false
+detections for “hand clapping”;
+c, d confusion matrices for two
+testing modes
+mean too much. For example, Kim’s method [9] has achieved
+an impressive accuracy at 95%, but space–time alignment of
+actions is manually done. In fact, a more challenging work
+is done in this paper, where the classifying problem is trea-
+ted as an automatic detecting problem of multiple actions
+from unsegmented testing sequences. Although our detec-
+ting method does not specifically aim for whole sequence
+classification, the accuracy obtained by our method is com-
+petitive.
+For the D&S dataset we detect human actions in rea-
+listic scenarios1 with variation in subjects and scenes, etc.
+In Fig. 10b precision–recall curves and average precision
+1 Demo video: http://ccs.sjtu.edu.cn/673/fld3mh.
+123
+Q. Luo et al.
+Table 3 Comparison of classifying accuracy on the KTH dataset
+Related studies Accuracy (%)
+Our method (IAH + NDH + IDH) 85.1
+Ke et al. [8] 63.0
+Schuldt et al. [18] 71.7
+Dollár et al. [3] 81.2
+Niebles et al. [14] 81.5
+Wong et al. [21] (pLSA-ISM) 83.9
+Wong et al. [21] (WX-SVM) 91.6
+Kim et al. [9] 95.3
+Fig. 10 Results on the D&S dataset: a the first nine detections on the
+testing set obtained by our “drinking” detector, where the second box
+in the first row and the first box in the second row are false detections;
+b comparison of precision–recall curves in “drinking” action detection
+task
+(AP) values illustrate the detecting performance on “drin-
+king” action. Our method outperforms Laptev’s best result
+[12] (OF5 with Keyframe priming) with a better average pre-
+cision, and our method tends to perform better in rejecting
+similar non-drinking actions.
+From all above experiments, we observe that the com-
+bination of different motion descriptors plays an important
+role in action recognition. It is found that without any expli-
+cit appearance of shape information, human actions under
+clutter background or moving background can also be well
+characterized by the local motion histograms. At the same
+time, Gentle AdaBoost is proved to be powerful enough to
+select parameters for classifiers.
+6 Conclusions
+In this paper we addressed human action detection in realis-
+tic scenarios. Our method shows great potentials in action
+representation within a spatio-temporal volume. The extra-
+cted histogram-based descriptors act as complementary
+information for each other. The Gentle Adaboost framework
+working with WFLD is proved to be able to select discrimi-
+native histogram-based features and learn robust and efficient
+detectors.
+Our method is tested in a number of experiments against
+well established algorithms, and all experimental tests show
+the satisfying results. Despite of different appearance, scale
+changes, clutter background or moving background, our
+results on classifying and detecting problems are comparable
+with the previous studies, or outperform the previous results.
+The experimental results not only validate the effective-
+ness of our method, but also prove that without the support
+of appearance and shape information, only motion informa-
+tion is capable of describing human actions well. However,
+since we have not combined any appearance or shape des-
+criptors with local motion histograms, it is unknown whether
+the combination will improve the performance. This is part
+of our future work.
+References
+1. Dalal, N., Triggs, B.: Histograms of oriented gradients for human
+detection. Comput. Vis. Pattern Recognit. 2, 886–893 (2005)
+2. Dalal, N., Triggs, B., Schmid, C.: Human detection using oriented
+histograms of flow and appearance. Eur. Conf. Comput. Vis. 2,
+428–441 (2006)
+3. Dollár, P., Rabaud, V., Cottrell, G., Belongie, S.: Behavior recogni-
+tion via sparse spatio-temporal features. In: VS-PETS, pp. 65–72
+(2005)
+4. Friedman, J., Hastie, T., Tibshirani, R.: Additive logistic regression:
+A statistical view of boosting. Ann. Stat. 38(2), 337–374 (2000)
+5. Gavrila, D.M.: The visual analysis of human movement: A sur-
+vey. Comput. Vis. Image Underst. 73(1), 82–98 (1999)
+6. Gennert, M.A., Negahdaripour, S.: Relaxing the brightness
+constancy assumption in computing optical flow. A.I. Memo,
+p. 975. MIT Press, Cambridge (1987)
+123
+Human action detection via boosted local motion histograms
+7. Horn, B.K., Schunck, B.G.: Determining optical flow. Artif. Intell.
+17, 185–203 (1981)
+8. Ke, Y., Sukthankar, R., Hebert, M.: Efficient visual event detection
+using volumetric features. IEEE Int. Conf. Comput. Vis. 1, 166–
+173 (2005)
+9. Kim, T.K., Wong, S.F., Cipolla, R.: Tensor canonical correlation
+analysis for action classification. In: CVPR (2007)
+10. Laptev, I.: Improvements of object detection using boosted histo-
+grams. In: BMVC, vol. 3, pp. 949–958 (2006)
+11. Laptev, I., Lindeberg, T.: Space-time interest points. IEEE Int.
+Conf. Comput. Vis. 1, 432–439 (2003)
+12. Laptev, I., Pérez, P.: Retrieving actions in movies. IEEE Int. Conf.
+Comput. Vis., pp. 432–439 (2007)
+13. Lienhart, R., Kuranov, A., Pisarevsky, V.: Empirical analysis of
+detection cascades of boosted classifiers for rapid object detection.
+MRL technical report (2002)
+14. Niebles, J.C., Wang, H., Li, F.F.: Unsupervised learning of human
+action categories using spatial-temporal words. In: BMVC (2006)
+15. Porikli, F.: Integral histogram: A fast way to extract histograms in
+cartesian spaces. Comput. Vis. Pattern Recognit. 1, 829–836 (2005)
+16. Proesmans, M., Gool, L.J.V., Pauwels, E.J., Oosterlinck, A.: Deter-
+mination of optical flow and its discontinuities using non-linear
+diffusion. In: European Conference on Computer Vision, pp. 295–
+304. Springer, London (1994)
+17. Ramanan, D., Forsyth, D.A.: Automatic annotation of everyday
+movements. In: Advances in Neural Information Processing Sys-
+tems, vol. 16. MIT Press, Cambridge (2004)
+18. Schuldt, C., Laptev, I., Caputo, B.: Recognizing human actions:
+A local svm approach. Int. Conf. Pattern Recognit. 3, 32–36
+(2004)
+19. Shah, M., Jain, R.: Motion-Based Recognition. Computational
+Imaging and Vision Series. Kluwer, Dordrecht (1997)
+20. Viola, P., Jones, M.: Rapid object detection using a boosted cas-
+cade of simple features. Comput. Vis. Pattern Recognit. 1, 511–518
+(2001)
+21. Wong, S.F., Kim, T.K., Cipolla, R.: Learning motion categories
+using both semantic and structural information. In: CVPR (2007)
+22. Yilmaz, A., Shah, M.: Recognizing human actions in videos acqui-
+red by uncalibrated moving cameras. IEEE Int. Conf. Comput. Vis.
+1, 150–157 (2005)
+Author biographies
+Q. Luo received the B.S. and
+M.E. degrees in ship engineering
+from Wuhan University of Techno-
+logy, China, in 2000 and 2003, res-
+pectively. Currently he is a Ph.D.
+candidate at the Department of
+Electronic Engineering in Shan-
+ghai Jiaotong University, China.
+His research interests include com-
+puter vision, video retrieval and
+video understanding. He is wor-
+king on projects involving video
+surveillance, activity analysis in
+intelligent video systems.
+X. Kong received the B.S.
+and M.E. degrees in compu-
+ter science and automation from
+Anhui University, China, in 2000
+and 2004, respectively. Cur-
+rently he is undertaking a Ph.D.
+degree at the Department of
+Electronic Engineering in Shan-
+ghai Jiaotong University, China.
+His research interests include
+content-based image retrieval,
+pattern recognition, image pro-
+cessing and intelligent video sur-
+veillance.
+G. Zeng received the B.S. and
+M.E. degrees in electronic enginee-
+ring from Xidian University, China,
+in 1988 and 1991, respectively, and
+Ph.D. degrees from Shanghai optic-
+machine center, in 1997. From 1997
+to 1999, he was a postdoctoral
+researcher at the State Key Labo-
+ratory of ISN in Xidian University,
+China. From 2001 to 2002, he was a
+research scientist in the University
+of Albert-Ludwigs Freiburg, Ger-
+many. Now he is a professor at the
+Department of Electronic Enginee-
+ring in Shanghai Jiaotong Univer-
+sity, China. His research interests include video content computing,
+indexing and security, quantum communication and quantum identity
+verification.
+J. Fan received the M.S. degree
+in theory physics from North-
+western University, Xian, China,
+in 1994 and the Ph.D. degree
+in optical storage and computer
+science from Shanghai Institute of
+Optics and Fine Mechanics, Chi-
+nese Academy of Sciences, Shan-
+ghai, China, in 1997. He was a
+Researcher at Fudan University,
+Shanghai, during 1998. From 1998
+to 1999, he was a Researcher
+with Japan Society of Promotion
+of Science (JSPS), Department of
+Information System Engineering,
+Osaka University, Osaka, Japan. From September 1999 to 2001, he
+was a Researcher in the Department of Computer Science, Purdue Uni-
+versity, West Lafayette, IN. In 2001, he joined the Department of Com-
+puter Science, University of North Carolina at Charlotte as an Assistant
+Professor and then became Associate Professor. His research interests
+include content-based image/video analysis, classification and retrieval,
+surveillance videos, and statistical machine learning.
+123
+

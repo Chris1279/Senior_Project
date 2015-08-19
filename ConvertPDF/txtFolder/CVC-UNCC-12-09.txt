@@ -1,0 +1,505 @@
+Supporting an Interval Training Program with  
+the Astrojumper Video Game 
+ 
+Andrea Nickel, Hugh Kinsey, Tiffany Barnes, Zachary Wartell 
+ 
+Cite this paper as: 
+ Andrea Nickel, Hugh Kinsey, Tiffany Barnes, Zachary Wartell. Supporting an Interval Training 
+Program with the Astrojumper Video Game. In electronic proceedings of Meaningful Play 2012. 
+October 18 - 20, East Lansing, MI, USA, 2012. 
+ 
+ Bibtex: 
+@INPROCEEDINGS{, 
+  author = {Andrea Nickel, Hugh Kinsey, Tiffany Barnes, Zachary Wartell}, 
+  title = {Supporting an Interval Training Program with the Astrojumper Video 
+ Game}, 
+  booktitle = {Meaningful Play 2012}, 
+  year = {2012}, 
+  address = {East Lansing, MI, USA}, 
+  month = {October 18 - 20},} 
+ 
+Running head: INTERVAL TRAINING WITH ASTROJUMPER  1 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Supporting an Interval Training Program with the Astrojumper Video Game 
+Andrea Nickel, Hugh Kinsey, Tiffany Barnes, Zachary Wartell 
+University of North Carolina at Charlotte 
+  
+INTERVAL TRAINING WITH ASTROJUMPER  2 
+ 
+Abstract 
+We have previously developed Astrojumper, an exercise video game with a space theme that 
+uses the Microsoft Kinect to support full-body exertion play. In this paper, we present the design 
+and evaluation of Astrojumper-Intervals, a new version of our Astrojumper exergame, that 
+explores methods of improving upon the previous game in both aspects of enjoyment and 
+exercise effectiveness. We also investigate how interval training, an established exercise 
+technique used to increase the efficiency of time spent exercising, may be incorporated within a 
+video game. A user study of 34 adult participants compared Astrojumper-Intervals with the 
+original Astrojumper game in terms of exercise effectiveness, measured using heart rate, energy 
+expenditure, and ratings of perceived exertion; and game enjoyment, measured with Likert scale 
+ratings and qualitative feedback. We found that Astrojumper-Intervals elicited statistically 
+significantly greater energy expenditure and heart rate increases than the original game. Also, 
+despite participants’ wide variety of exercise motivations and opinions of games as exercise 
+tools, the overall response to our game was very positive, with 27 of 34 participants preferring 
+the new Astrojumper-Intervals game. 
+ Keywords: exercise video games, exergame evaluation, interval training  
+INTERVAL TRAINING WITH ASTROJUMPER  3 
+Supporting an Interval Training Program  
+with the Astrojumper Video Game 
+Exercise video games, alternatively “exergames” or “active video games,” are designed 
+to elicit energy expenditure in players, using gaming technology and mechanics that support 
+various forms of physical activity. Current, commercially available motion-sensing devices and 
+gaming platforms, including the Nintendo Wii and Wii Fit balance board, dance pads, Sony’s 
+PlayStation Move and the Microsoft Kinect, have increasingly provided developers with the 
+tools to create games controlled by players’ physical movements. According to the 
+Entertainment Software Association’s 2012 data, the average household owns at least one 
+dedicated game console, PC or smartphone, and game players include people of all age, gender 
+and ethnic groups (ESA, 2012). Exergames can promote increased physical activity among this 
+wide audience through engaging and motivating play, which is especially important today given 
+that the prevalence of obesity among adolescents and adults in the U.S. is a recognized problem. 
+However, although exercise video games have great potential to address this problem, currently 
+existing or available games still struggle to balance enjoyable gameplay with effective exercise, 
+as Sinclair, Hingston and Masek described in their dual-flow model of attractiveness and 
+effectiveness: respectively, the psychological aspect of gameplay and the physiological aspect of 
+physical activity (Sinclair, 2007). We believe this issue can be addressed through the finding of 
+new ways to combine knowledge from health and exercise-related research fields with the 
+domain of video game design. 
+Background 
+Exercise video games have recognized potential to use engaging play to motivate 
+increased physical activity. For those without access to a gym or safe, practical outdoor 
+INTERVAL TRAINING WITH ASTROJUMPER  4 
+environments, exergames afford the opportunity to exercise within the home (Ahn, 2009). 
+Awareness of physical activity levels, which is an important element in behavioral change 
+adoption, can be greatly increased through exergame play (McLean, 2003); and exergames are 
+also able to provide feedback on players’ performance and progress and help to develop 
+individualized short- and long-term fitness goals. Exergames have also been effectively used for 
+rehabilitation (Betker, 2007; Kizony, 2003). However, the previously mentioned balance 
+between game attractiveness and exercise effectiveness discussed by Sinclair et al. (2007) 
+remains a significant challenge (Berkovsky, 2010; Hämäläinen, 2005). A number of recent 
+studies concerning the exercise effectiveness of active video games agree that these games are 
+able to elicit light to moderate intensity energy expenditure, equivalent to activities such as 
+walking or jogging. This is a level of energy expenditure sufficient to contribute to the 
+recommended amounts of daily physical activity described by the American Heart Association 
+and American College of Sports Medicine guidelines. These studies were conducted across age 
+groups: children (Maddison, 2011; 2007; Bailey, 2011; Graf, 2009; Lanningham-Foster, 2009), 
+adolescents (Graves, 2010; 2008), and adults (Miyachi, 2010; Lanningham-Foster, 2009). 
+Additional positive effects of exergaming have also been noted. One study showed that a six-
+month period of active exergame use resulted in a small but definite positive effect on body 
+composition in overweight and obese children (Maddison, 2011). Other studies have shown 
+higher adherence to exercise programs that use active video gaming, when compared to 
+programs using more traditional forms of exercise (Rhodes, 2009; Mellecker 2008). However, 
+there are studies that do not have similarly positive results. White, Schofield and Kilding (2011) 
+examined energy expenditure in boys age 11.4 +/- 0.8 years engaged in a range of activities, 
+including sedentary (resting, watching television, sedentary gaming), walking, running, and 
+INTERVAL TRAINING WITH ASTROJUMPER  5 
+playing active games (Wii Bowling, Boxing, Tennis, and Wii Fit Skiing and Step). They found 
+no significant difference in energy expenditure between active gaming and walking, and 
+concluded that the activity in these games was not intense enough to contribute to the current 
+daily activity recommendation for children (White, 2011). A different study of adolescents, 
+young adults and adults playing Wii Fit activities found that although moderate intensity activity 
+was elicited by the games for all age groups, heart rates were not raised to the point necessary 
+for maintaining cardiorespiratory fitness (Graves, 2010). 
+Astrojumper 
+We have previously designed and evaluated Astrojumper, an exercise game developed 
+for a Cave Automatic Virtual Environment (CAVE) virtual reality system, that used 
+electromagnetic trackers to detect player movements. Astrojumper was successful in both 
+attractiveness and effectiveness aspects, as measured by qualitative player feedback and a 
+significant increase in heart rate over a 15-minute play session (Finkelstein, 2011). We have also 
+previously developed a version of the Astrojumper game that utilizes the Microsoft Kinect for 
+player tracking. The Kinect technology is more accessible than the CAVE system, and we also 
+take advantage of the Kinect’s more accurate and higher-resolution body tracking abilities. We 
+have now developed a second version of the Astrojumper game: Astrojumper-Intervals, 
+introduced in Nickel (2012). Astrojumper-Intervals was designed to improve upon the original 
+game in two areas. First, the variety of game mechanics and physical movements used during 
+play was increased, in order to improve player enjoyment and the game’s ability to motivate 
+repeat play, with the aim of encouraging exercise that results in health benefits. Second, the 
+physical challenge of the game was increased through the inclusion of additional mechanics that 
+targeted specific regions of the body and types of exercise. Our approach to the design of this 
+INTERVAL TRAINING WITH ASTROJUMPER  6 
+game was also intended to investigate how game elements could be combined with established 
+exercise training practice; to this end we based the gameplay progression on an interval training 
+framework. This paper presents details of the design of Astrojumper-Intervals and the study 
+conducted to compare it with the Kinect version of the original Astrojumper game. 
+Interval Training 
+The gameplay of Astrojumper-Intervals is based upon an interval training schedule. 
+Interval training repeatedly alternates between periods of high-intensity exertion and recovery 
+periods of low-intensity or no exertion. Both aerobic and anaerobic fitness can be improved in a 
+shorter amount of time through interval training than through continuous training, as more work 
+is performed at a higher intensity in that time (Karp, 2011; Boutcher, 2011). Interval training is 
+an effective way for professional athletes to work on enhancing sports performance (Billat, 
+2001) but is also an option for exercisers who desire changes in their routines to avoid boredom, 
+or who want to improve their fitness level and the efficiency of time spent exercising (Babraj, 
+2009). Interval training schedules may vary the duration of each interval. In an interval workout, 
+the low-intensity and high-intensity time periods might remain constant (for example, one 
+minute of low-intensity activity followed by one minute of high-intensity activity, and so on), or 
+implement a pyramid structure where a minute of low-intensity activity is interspersed between 
+high-intensity periods that last for 30 seconds, then 45s, 60s, 90s, 60s, 45s, and 30s. 
+Astrojumper-Intervals follows this pyramid schedule, as described below. 
+Astrojumper-Intervals 
+Astrojumper-Intervals was developed for the PC, using the OpenSceneGraph graphics 
+engine and the Microsoft Kinect for full-body tracking, with position and orientation data from 
+INTERVAL TRAINING WITH ASTROJUMPER  7 
+the player skeleton detected using the Flexible Action and Articulated Skeleton Toolkit (FAAST) 
+(Suma, 2011). 
+Game Design 
+In the Kinect version of the original Astrojumper game (referred to from here on as 
+Astrojumper-Original), planets fly through space toward the player who must move from side to 
+side, jump, or crouch to dodge them. The player earns bonus points and score multipliers by 
+hitting bright gold planets that are mixed in with the obstacle planets. Also, at certain points 
+during the game, a UFO appears and attacks by shooting lasers at the player, who may dodge 
+them and make punching or throwing motions to shoot lasers back at the UFO and attempt to 
+destroy it. Collision with game objects (planets and lasers) is checked using 15 tracked points on 
+the player’s body, detected by the Kinect and FAAST software: the head, neck, torso, right and 
+left shoulder, elbow and hand, and right and left hip, knee, and foot. The game is structured to 
+include a beginning warm-up period, a main exercise period, and a final cool-down period in 
+accordance with the ACSM’s guidelines for workout phases (American College of Sports 
+Medicine, 2000). During the warm-up phase, planets initially move very slowly and gradually 
+speed up. This is reversed in the final cool-down phase. In the main exercise phase, in order to 
+provide a flexible level of challenge for players of different abilities and fitness levels, the game 
+uses a dynamic difficulty adjustment system. This system changes the speed of planets based on 
+player performance: if a player is doing well, i.e. dodging the majority of planets, the game will 
+gradually speed up to increase the challenge level. If the player is struggling and colliding with 
+more planets, the game will gradually slow down to let the player catch up. 
+In the interval training version of the game, Astrojumper-Intervals, the planet-dodging 
+gameplay is used as the main activity during the low-intensity exercise periods. In order to 
+INTERVAL TRAINING WITH ASTROJUMPER  8 
+support the higher intensity periods and improve upon gameplay variety, Astrojumper-Intervals 
+incorporates three new mini-games. Each of these mini-games focuses on one specific type of 
+exercise or region of the body, and is designed to provide a more intense physical challenge than 
+the planet-dodging game mechanic. Each mini-game also utilizes a slightly modified form of the 
+original difficulty adjustment system, where the speed of gameplay may be increased or 
+decreased based on the player’s success rate, but the difficulty of the mini-games is restricted 
+from falling below a defined level. This is done in order to allow the mini-games to maintain a 
+higher-intensity activity requirement. The gameplay of these three mini-games is described in the 
+following sections. 
+ 
+      
+(a)        (b) 
+ 
+(c) 
+Figure 1: Screenshots of the Astrojumper-Intervals mini-games. (a) Space Invaders, (b) Asteroid 
+Belt, and (c) Space Rock Band. 
+ 
+ 
+INTERVAL TRAINING WITH ASTROJUMPER  9 
+Space Invaders 
+In the Space Invaders mini-game, waves of approaching UFOs appear, and the player is 
+able to constantly fire lasers at them by punching rapidly. The player earns points during this 
+mini-game by hitting each UFO with lasers a certain number of times, finally destroying it. If the 
+player fails to destroy UFOs before they reach the player, points are deducted from the player’s 
+score. The rapid punching movements focus exertion on the upper body. (See Figure 1-a.) 
+Asteroid Belt 
+During the Asteroid Belt mini-game, horizontal rows of asteroids fly toward the player. 
+These rows are positioned so that players must either duck under high rows or jump over low 
+rows, and the positions (high or low) are randomly determined, presenting the player with an 
+unpredictable sequence of jumps and crouching movements. In order for the low asteroid rows to 
+be placed at a visible height and still allow the player to successfully jump over them, this mini-
+game implements a “super-jump” system, where changes in knee positions are used to detect 
+when the player is jumping, and allows the game to then augment the jump by raising the in-
+game player skeleton higher than the player is actually able to physically jump. This activity 
+targets the lower body, exercising muscle groups in the legs. Successfully avoiding the asteroids 
+will add to the player’s score, and colliding with the asteroids will deduct points. (See Figure 1-
+b.) 
+Space Rock Band 
+The Space Rock Band mini-game is designed to give players a more intense version of 
+the aerobic challenge presented by the planet-dodging mechanic. Inspired by the Rock Band 
+game mechanic in which players must correctly hit all of a series of glowing notes to succeed, 
+Space Rock Band sends waves of stars toward the player, whose goal is to hit all of them in 
+INTERVAL TRAINING WITH ASTROJUMPER  10 
+succession to play different sound effects and earn bonus points. Stars are positioned in a way 
+that makes players move around the entire play space in both the horizontal and vertical 
+directions, and in patterns that occasionally make players stretch to reach all of them at once. 
+Points can be earned by successfully hitting stars, and additional points are given for hitting all 
+possible stars. (See Figure 1-c.) 
+Game Progression 
+In Astrojumper-Original, a 15-minute play session includes: 3 minutes of warm-up, 9.5 
+minutes of exercise with four ‘UFO battles’ occurring throughout, and 2.5 minutes of cool-down. 
+Astrojumper-Intervals follows the same basic sequence, but implements a pyramid interval 
+training pattern during the 9.5-minute workout. For the high-intensity intervals, each minigame 
+is played twice: 30 seconds of Space Invaders, 45 seconds of Space Rock Band, and 60 seconds 
+of Asteroid Belt, followed by a second 60 seconds of Asteroid Belt, 45 seconds of Space Rock 
+Band, and 30 seconds of Space Invaders. Each of these intervals are followed by one minute of 
+dodging planets, for the lower-intensity exertion period. 
+Evaluation 
+In order to compare the intensity of the exercise provided by the Astrojumper-Original 
+and Astrojumper-Intervals games as well as players’ enjoyment of the gameplay, we conducted a 
+within-subjects study where participants played each game for 15 minutes, in a randomly 
+assigned order, for a total 30 minutes of play. Table 1 includes descriptive data on the 34 
+participants: the range, average, and standard deviation for age, height, weight, and Body Mass 
+Index. 
+ 
+ 
+INTERVAL TRAINING WITH ASTROJUMPER  11 
+ 
+Table 1 Participant age, height, weight and BMI. 
+Gender Age (years) Height (in.) Weight (lbs.) BMI 
+Male 
+N = 23 
+Range: 18 – 28 
+M = 20.83 
+SD = 2.84 
+Range: 60 – 73 
+M = 69.65 
+SD = 3.14 
+Range: 120 – 230 
+M = 166.74 
+SD = 33.38 
+Range: 18.47 – 33.9 
+M = 24.17 
+SD = 4.52 
+Female 
+N = 11 
+Range: 18 – 37 
+M = 23.55 
+SD = 6.73 
+Range: 60 – 68 
+M = 63.64 
+SD = 3.14 
+Range: 92 – 170 
+M = 134.64 
+SD = 24.93 
+Range: 17.97 – 31.17 
+M = 23.37 
+SD = 4.21 
+ 
+The Center for Disease Control and Prevention estimates Body Mass Index (BMI) as ??????????????? ????, with results in the following categories: underweight (below 18.5), normal (18.5 – 24.9), 
+overweight (25.0 – 29.9) and obese (30.0 and above). Although in cases where a person has high 
+muscle mass the BMI measurement will not be accurate, it still may be used as a general 
+heuristic for body fat percentage (CDC, www.cdc.gov/healthyweight/index.html). The average 
+BMI for both male and female participants falls within the normal range, and the average self-
+rating of lifestyle activity level was 4.74 on a 7-point scale (1 = “Not active at all”, 7 = 
+“Extremely active”), indicating that the participants were, on average, reasonably healthy and 
+active. 16 of 34 participants indicated they had previous experience with interval training. The 
+average participant self-rating of video gaming frequency (hours per week spent playing games) 
+was 1.36 (1 = low frequency, 1-3 hrs/week; 2 = medium frequency, 4-6 hrs/week) and 
+participants generally agreed with the statement “I think video games are fun,” with an average 
+rating of 5.85 on a 7-point Likert scale (1 = “Strongly disagree”, 7 = “Strongly agree”). 
+Procedure 
+Participants were invited into the research lab for individual 60-minute study sessions. 
+An initial demographic survey was administered, and the participant was given a BodyMedia 
+FIT armband to place around their upper left arm, which would measure energy expenditure 
+INTERVAL TRAINING WITH ASTROJUMPER  12 
+(METs) during play. The armband required several seconds to begin detecting physiological 
+input, after which it emitted an audible beep to signal the end of calibration. An initial resting 
+heart rate measurement was taken using a Sportline Solo 925 heart rate monitor, and then the 
+participant played 15 minutes of either Astrojumper-Original or Astrojumper-Intervals (assigned 
+randomly as the participant entered the lab). A second heart rate measurement was taken 
+immediately upon completion of the first 15 minutes of game play. The player was then asked to 
+sit and fill out a survey asking about their experience with the game, including a subjective rating 
+of perceived exertion (RPE), and time spent with the survey allowed players to rest and their 
+heart rate to slow. After completing the survey participants were given additional time to rest if 
+they wished before playing 15 minutes of the second game version (whichever version they did 
+not play first). Heart rate was similarly measured before and after the second game session, and 
+an identical short survey, asking about the participant’s experience with the second game, was 
+given. Finally participants filled out a short questionnaire asking them to compare the two 
+games, describe preferences, and include any additional comments. 
+Evaluation of Exercise Effectiveness 
+ Measures Three physiological measures were used to evaluate the level of exertion 
+intensity elicited by each game. A Sportline Solo 925 heart rate monitor was used to take 
+fingertip pulse heart rate measurements (beats per minute) before and after playing each game. A 
+BodyMedia FIT armband was used to collect average METs (metabolic equivalent of task) data 
+during each play session; this is a measure of energy expenditure during physical activities. 
+Following each game, an abbreviated version of the Borg (1970) Rating of Perceived Exertion 
+(RPE) scale was used to evaluate participants’ perceived level of exertion as ‘None’ (0), ‘Light’ 
+(1), ‘Moderate’ (2), ‘Hard’ (3), or ‘Very Hard’ (4). 
+INTERVAL TRAINING WITH ASTROJUMPER  13 
+Results Perceived exertion ratings did not significantly differ (p = 0.07) between game 
+versions: Astrojumper-Original (M = 2.03, SD = 0.83, Range = 0 to 3) and Astrojumper-Intervals 
+(M = 2.27, SD = 0.72, Range = 1 to 4). However, average energy expenditure was statistically 
+significantly greater (p = 0.042) during Astrojumper-Intervals than Astrojumper-Original: 
+Astrojumper-Original METs (M = 4.745, SD = 1.57); Astrojumper-Intervals METs (M = 5.03, 
+SD = 1.8). Further, average METs for both games are significantly greater than a METs value of 
+4 (Astrojumper-Original: p = 0.03; Astrojumper-Intervals: p = 0.003), which is useful to note as 
+the CDC defines moderate intensity energy expenditure as 3-6 METs (provided examples of 
+activities at this level include dancing, swimming, or biking on a level surface) 
+(http://www.cdc.gov/nccdphp/dnpa/physical/pdf/PA_Intensity_table_2_1.pdf). Also, a 2x2 
+mixed analysis of variance (ANOVA) testing the effects of gender and time (change in heart rate 
+as a result of play) showed a significant change in heart rate from pre-game to post-game 
+measurements for both games (p = 0.000), with Astrojumper-Intervals causing a statistically 
+significantly (p = 0.018) greater increase in heart rate: Astrojumper-Original pre-game HR (M = 
+90.42) and post-game HR (M = 113.55) compared with Astrojumper-Intervals pre-game HR (M 
+= 87.29) and post-game HR (M = 119.15). 
+Implications for Exercise Effectiveness These results indicate that the interval training 
+version of Astrojumper succeeds in eliciting greater exertion than the original game version 
+through a 15-minute play session, and it is interesting to note that despite this result, there was no 
+significant difference in rating of perceived exertion. It is possible that differences in game play, 
+and their effect on player engagement, could influence a subjective exertion rating: this would be 
+a positive conclusion, as one of the benefits of immersive play is the ability to distract from any 
+discomfort caused by exertion. However, clearer results could potentially be obtained using an 
+INTERVAL TRAINING WITH ASTROJUMPER  14 
+increased participant sample size, or with a sample population of less normally active 
+participants. 
+Additionally, it should be noted that post-game heart rate measurements most likely do 
+not reflect peak HR achieved by playing either game, as the post-game measurements were taken 
+after each game’s ending cool-down phase. In total, 29 of 33 players (87.9%) reached 50% or 
+above of their maximum heart rate (MHR), 15 of 33 (45.5%) reached 60% or above of their 
+MHR, and 5 of 33 (15.2%) reached 70% or above of their MHR (the CDC roughly calculates 
+MHR as 220 – age). The target heart rate “zones” necessary to improve cardiovascular fitness 
+vary by individual fitness level, for example, the ACSM recommends that a sedentary person 
+work out at 55-65% of their MHR, while more fit individuals need to work at 65-80% of MHR 
+to see improvement. In evaluating the effectiveness of a game’s exercise, it would be beneficial 
+to form a clearer picture of peak HR reached, and the length of time an increased heart rate is 
+maintained. Also, no correlation was found between players’ final scores and the amount of 
+effort expended as measured by HR or METs. Improvement in this area would allow better 
+estimates of a game’s exercise effectiveness, and be especially useful when offering accurate 
+performance or progress feedback to players. 
+Evaluation of Game Attractiveness 
+ Measures Primary measures of game enjoyment and motivation to engage in physical 
+activity were 7-point Likert scale items on the post-game surveys given to participants after each 
+play session, and on the questionnaire given at the end of the study. We asked players to rate 
+how much fun they had while playing, how easy or difficult it was to understand and play the 
+game, and what they thought of the game’s challenge level. We also asked which game they 
+preferred, if they would recommend the game to friends, and gathered qualitative feedback on 
+INTERVAL TRAINING WITH ASTROJUMPER  15 
+opinions of the game, the experience, and whether they thought video games could be effective 
+exercise tools. 
+ Results Of seven items included on the post-game surveys where participants rated 
+agreement with statements such as, “I found Astrojumper to be less stimulating than my usual 
+exercise routines,” and “I felt Astrojumper gave me a good challenge,” no significant differences 
+were found between the Astrojumper-Original and Astrojumper-Intervals responses. However, 
+responses to both games were generally positive. On the 7-point Likert scale (1 = “strongly 
+disagree”, 7 = “strongly agree”), average agreement with the statement “I found Astrojumper to 
+be a fun experience” was M = 5.35 for Astrojumper-Original and M = 5.36 for Astrojumper-
+Intervals; the statement “I felt Astrojumper gave me a good challenge” was M = 5.18 for 
+Astrojumper-Original and M = 5.35 for Astrojumper-Intervals. More interesting results were 
+found in the final game comparison questionnaire, in which 27 of 34  respondents (79.4%) stated 
+a preference for Astrojumper-Intervals. The reasons given for this preference centered around the 
+greater variety of both gameplay and types of movements used to play, which kept players more 
+entertained and focused through the entirety of the workout, presented a better challenge, and felt 
+more interactive. Four of the remaining participants preferred Astrojumper-Original for its level 
+of challenge, and the final three did not prefer either game over the other. It is also notable that 
+79.4% of respondents said they would be willing to recommend Astrojumper (their preferred 
+game version) to friends: a response that could indicate the game’s potential to motivate 
+increased adaptation and possibly adherence (repeated play), both of which would be desirable 
+for an effective exergame. 
+ 
+ 
+INTERVAL TRAINING WITH ASTROJUMPER  16 
+Discussion 
+Study participants stated a wide variety of motivations behind their exercise habits. Many 
+described exercise as an activity done to maintain health, increase positive attitude, and decrease 
+stress; other reasons included participation on sports teams, losing weight, or wanting to improve 
+appearance. One said it helped motivate them to quit smoking, and another cited simple 
+enjoyment. Given this diversity, it is encouraging that the majority of participants had such a 
+positive response to Astrojumper. A few valuable insights into exergame design can also be 
+taken from this study. The structure of Astrojumper-Intervals demonstrates how to incorporate a 
+traditional exercise program into a video game for the purpose of increasing the physical 
+challenge and potential physiological benefit of the game. We can also see how increased game 
+variety affects player enjoyment, and recognize that in an exercise game, variety can come not 
+only from game goals and mechanics, but also from types of physical movements that the player 
+is allowed to engage in while playing. 
+ Despite the positive response to Astrojumper, participants’ opinions on whether or not 
+video games in general can be effective and motivational exercise tools reflect awareness that the 
+state of currently available exergames, or at least their perception, is behind that of traditional 
+video games in terms of gameplay and utilization of technological capabilities, and even farther 
+behind traditional established exercise techniques in the ability to provide really effective 
+workouts. Opinion statements from the majority of participants seemed to follow a pattern in that 
+they were willing to believe exercise games could be enjoyable and effective, but only for certain 
+populations or under certain circumstances. Specifically, gamers, inactive people, and children 
+were mentioned as being the groups most likely to enjoy and benefit from exergames. The 
+following quotes illustrate some of these perceptions: “I think that [exergaming] is beneficial to 
+INTERVAL TRAINING WITH ASTROJUMPER  17 
+encourage gamers to actually get involved in physical activities. Sitting around eating and 
+pushing buttons… isn’t healthy, at least this way they enjoy what they’re doing and get a 
+positive effect from it,” or, “I think [exergames] are a great idea! As popular as gaming consoles 
+are and as lazy as people are this is a great way to get lazy folks to exercise,” and, “I think with 
+improvement of the kinect/wii this could be a huge increase in exercise activity. There are too 
+many glitches right now for it to be effective enough to get people into a fun work out routine.” 
+ As exergame research advances, developers will become more experienced with the 
+design requirements for enjoyable physical activity as well as enjoyable gameplay, and with 
+more sophisticated uses of commodity motion-sensing technology. We will be better able to 
+integrate the fields of game design and exercise science, to create active video games that appeal 
+to audiences of all ages, interests, and goals. The Astrojumper interval training game offers one 
+example of how this may be done, and future work will aim to make further improvements to the 
+incorporation of exercise techniques with established game design practice, as well as to the 
+methods used to evaluate exergames’ potential to help players reach long-term fitness goals. 
+ 
+  
+INTERVAL TRAINING WITH ASTROJUMPER  18 
+References 
+Ahn, M., Kwon, S., Park, B., Cho, K., Choe, S., Hwang, I., Jang, H., Park, J., Rhee, Y. & Song,  
+ J. (2009). Running or gaming. Proceedings of the international conference on advances  
+ in computer entertainment technology, 422, 345-348. 
+American College of Sports Medicine. (2000). ACSM’s guidelines for exercise testing and  
+ prescription (6th ed.). Baltimore, MD : Lippincott Williams & Williams. 
+Babraj, J., Vollaard, N., Keast, C., Guppy, F., Cottrell, G., & Timmons, J. (2009). Extremely  
+ short duration high intensity interval training substantially improves insulin action in  
+ young healthy males. BMC Endocrine Disorders, 9(3). 
+Bailey, B., & McInnis, K. (2011). Energy cost of exergaming: a comparison of the energy cost of  
+ 6 forms of exergaming. Archives of Pediatrics & Adolescent Medicine, 165(7), 597-602. 
+Berkovsky, S., Coombe, M., Freyne, J., Bhandari, D., & Baghaei, N. (2010). Physical activity  
+motivating games: virtual rewards for real activity. Proceedings of the 28th international  
+Conference on Human Factors in Computing Systems, 243-252. 
+Betker, A., Desai, A., Nett, C., Kapadia, N., & Szturm, T. (2007). Game-based exercises for  
+dynamic short-sitting balance rehabilitation of people with chronic spinal cord and  
+traumatic brain injuries. Physical Therapy, 87(10), 1389-1398. 
+Billat, L. (2001). Interval training for performance: a scientific and empirical practice: special  
+ recommendations for middle- and long-distance running. Part I: aerobic interval training.  
+ Sports Medicine, 31(1), 13-31. 
+Borg, G. (1970). Perceived exertion as an indicator of somatic stress. Scandinavian journal of  
+ rehabilitation medicine, 2(2), 92-98. 
+Boutcher, S. (2011). High-intensity intermittent exercise and fat loss. Journal of Obesity, 2011:  
+INTERVAL TRAINING WITH ASTROJUMPER  19 
+ 868305. 
+The Entertainment Software Association (2012). Essential Facts About the Computer and Video  
+ Game Industry – 2012 Sales, Demographic and Usage Data.  
+ http://www.theesa.com/facts/pdfs/ESA_EF_2012.pdf 
+Finkelstein, S., Nickel, A., Lipps, Z., Barnes, T., & Wartell, Z. (2011). Astrojumper: Motivating  
+ Exercise with an Immersive Virtual Reality Exergame. Presence: Teleoperators and  
+ Virtual Environments, 20(1), 78-92. 
+Graf, D., Pratt, L., Hester, C. & Short, K. (2009). Playing active video games increases energy  
+ expenditure in children. Pediatrics, 124(2), 534-540. 
+Graves, L., Ridgers, N., Stratton, G. (2008). The contribution of upper limb and total body  
+ movement to adolescents’ energy expenditure whilst playing Nintendo Wii. European  
+ Journal of Applied Physiology, 104(4), 617-623. 
+Graves, L., Ridgers, N., Williams, K., Stratton, G., Atkinson, G., & Cable, N. (2010). The  
+ physiological cost and enjoyment of Wii Fit in adolescents, young adults, and older  
+ adults. Journal of Physical Activity and Health, 7(3), 393-401. 
+Hämäläinen, P., Ilmonen, T., Höysniemi, J., Lindholm, M., & Nykänen, A. (2005). Martial arts  
+in artificial reality. CHI '05: Proceedings of the SIGCHI conference on human factors in  
+computing systems, 781-790. 
+Karp, J. (2011). Interval training: the new and better way to train your clients? IDEA Fitness  
+ Journal, 8(2), 31. 
+Kizony, R., Katz, N., & Weiss, P. (2003). Adapting an immersive virtual reality system for  
+rehabilitation. The Journal of Visualization and Computer Animation, 14, 261-268. 
+Lanningham-Foster, L., Foster, R., McCrady, S., Jensen, T., Mitre, N., & Levine, J. (2009).  
+INTERVAL TRAINING WITH ASTROJUMPER  20 
+ Activity-promoting video games and increased energy expenditure. Journal of Pediatrics,  
+ 154(6), 819-823. 
+Maddison, R., Foley, L., Mhurchu, C., Jiang, Y., Jull, A., Prapavessis, H., Hohepa, M., &  
+ Rodgers, A. (2011). Effects of active video games on body composition: a randomized  
+ controlled trial. The American Journal of Clinical Nutrition, 94(1). 
+Maddison, R., Mhurchu, C., Jull, A., Prapavessis, H., & Rodgers, A. (2007). Energy expended  
+ playing video console games: an opportunity to increase children’s physical activity?  
+ Pediatric Exercise Science, 19(3), 334-343. 
+McLean, N., Griffin, S., Toney, K., & Hardeman, W. (2003). Family involvement in weight  
+ control, weight maintenance and weightloss interventions: a systematic review of  
+ randomized trials. International Journal of Obesity, 27, 987-1005. 
+Mellecker, R., & McManus, A. (2008). Energy expenditure and cardiovascular responses to  
+ seated and active gaming in children. Archives of Pediatrics & Adolescent Medicine,  
+ 162(9), 886-891. 
+Miyachi, M., Yamamoto, K., Ohkawara, K. & Tanaka, S. (2010). METs in adults while playing  
+ active video games: a metabolic chamber study. Medicine and Science in Sports and  
+ Exercise, 42(6), 1149-1153. 
+Nickel, A., Kinsey, H., Haack, H., Pendergrass, M., & Barnes, T. (2012). Interval Training with  
+ Astrojumper. IEEE Virtual Reality, 161-162. 
+Rhodes, R., Warburton, D., & Bredin, S. (2009). Predicting the effect of interactive video bikes  
+ on exercise adherence: an efficacy trial. Psychology, Health and Medicine, 14(6), 631- 
+ 640. 
+Sinclair, J., Hingston, P., & Masek, M. (2007). Considerations for the design of exergames.  
+INTERVAL TRAINING WITH ASTROJUMPER  21 
+ Graphite ’07: Proceedings of the 5th international conference on computer graphics and  
+ interactive techniques in australia and southeast asia (pp. 289-295). New York, NY,  
+ USA : ACM. 
+Suma, E., Lange, B., Rizzo, A., Krum, D. & Bolas, M. (2011). FAAST: The Flexible Action and  
+ Articulated Skeleton Toolkit. Proceedings of IEEE Virtual Reality, (pp. 247-248). 
+White, K., Schofield, G., & Kilding, A. (2011). Energy expended by boys playing active video  
+ games. Journal of Sports Science and Medicine, 14(2), 130-134. 
+

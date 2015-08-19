@@ -1,0 +1,894 @@
+Mobile Situational Visualization: Collaboration in a Geospatial Environment 
+ 
+Tazama U. St. Julien 
+stjulien@cc.gatech.edu 
+ 
+William Ribarsky 
+ribarsky@uncc.edu 
+ 
+Christopher D. Shaw 
+cdshaw@cc.gatech.edu 
+ 
+Jonathan Gdalevich 
+gte310v@prism.gatech.edu 
+Joseph Scoccimaro 
+gte542u@prism.gatech.edu 
+ 
+Abstract 
+We present a wearable system, Mobile Sitvis, that 
+provides fast and informative collaboration between 
+multiple users in a virtual environment. Mobile Sitvis 
+allows users to navigate and annotate accurate 
+geographies while increasing awareness of events in the 
+real world by utilizing GPS and orientation tracking, an 
+infrastructure for collaboration among multiple users, and 
+real-time sharing of observations and activity within the 
+environment. We show that it is an effective tool for 
+sharing precise activity and location information with 
+other users and visualizing in the virtual environment 
+events and objects from the real world. 
+ 
+1. Introduction 
+The war on terrorism has created a multitude of new 
+communication needs where precise and up-to-the-minute 
+space-time information is essential, from informing 
+solders on an Iraqi road about possible ambush sites to 
+tracking suspected terrorists on New York streets. In this 
+paper, we present a wearable system, Mobile Sitvis, for 
+fast, efficient, and informative collaboration and 
+awareness-sharing between mobile clients that is valuable 
+for both military and civilian applications. The growing 
+ubiquity of mobile 3D graphics, GPS positioning, and 
+wireless networking has made new mobile computer 
+applications possible. Our system is useful for gaining 
+awareness about the surrounding environment by sharing 
+activity and location information with other users and 
+visualizing in the virtual environment events and objects 
+from the real world. 
+Our system is built on top of the Virtual Geographic 
+Information System (VGIS). VGIS is a large, multifaceted 
+virtual environment that allows navigation of and 
+interaction with very large and high resolution, 
+dynamically changing databases while retaining real-time 
+display and interaction [1, 2 & 8]. Mobile Sitvis allows 
+users to navigate accurate geographies (at a resolution of 1 
+foot or less where needed) with sustained frame rates of 
+15-20 frames per second. The user can not only see these 
+terrains from any viewing angle but also buildings, roads, 
+high resolution imagery draped on the terrain, and other 
+features. Mobile Sitvis adds GPS and orientation tracking, 
+an infrastructure for collaboration among multiple users, 
+and real-time sharing of observations and activity within 
+the environment. As a result, the user carries a virtual 
+environment that he navigates as he navigates the real 
+environment, where the virtual environment provides a 
+significantly enhanced awareness of important activity 
+around him. 
+Mobile users are equipped with a 1.8 GHz laptop with 
+nVIDIA GeForce 440 ToGo graphics. The laptop is 
+carried in a backpack and attached to it are a Micro-
+Optical head mounted display, a Garmin GPS receiver, an 
+InertiaCube2 orientation tracker, a radio, and a Wacom 
+touchpad for interaction (Figure 1). 
+ 
+ 
+Figure 1 - User with GPS Tracker, Orientation Sensor, Radio, Eye 
+Display, and Touchpad 
+Users can see their current location and a virtual 
+representation of their surrounding environment through 
+the display while interacting with the system by using a 
+stylus and touchpad. Users can annotate the environment 
+to indicate location, orientation, direction, and speed of 
+other objects such as enemy troops or a criminal fleeing a 
+crime scene. Through the wireless network, all users will 
+be able to see the annotations and locations of their 
+collaborators embedded accurately in the virtual 
+environment, permitting effective joint action and sharing 
+of information.  
+In this paper we show that Mobile Sitvis is a tool that 
+users can effectively employ as they move around a 
+changing environment and respond to unexpected activity. 
+In evaluations of command and control or surveillance 
+scenarios, Mobile Sitvis proves to be as good as or better 
+than traditional methods. In addition it provides important 
+new capabilities including significantly more accurate 
+location information than GPS alone, specific space-time 
+annotations that can be shared immediately, and other 
+capabilities. The evaluations suggest situations in which 
+Mobile Sitvis can best be used and design considerations 
+for improvements. Our most important result is to show 
+how visualization, accurate spatial models, and shared 
+space-time annotations can be brought together to create a 
+new and effective way for joint action. 
+ 
+2. Prior Work 
+There hasn’t been much work on collaborative mobile 
+virtual environments, especially with visualization as a 
+main component; however, researchers in the field of 
+Augmented Reality (AR) have done work on mobile 
+systems. In “Exploring Mars…” [6], Hollerer et al. present 
+an AR system that employs separate user interfaces to 
+allow indoor and outdoor users to manage and access 
+information that is spatially registered within the real 
+world. Outdoor users are equipped with a differential GPS 
+receiver, a laptop in a backpack, a head-tracked, see-
+through head mounted display, and a handheld computer. 
+They explore the outdoor environment and can 
+interactively gain information about buildings on campus. 
+Indoor users on a desktop can input paths for outdoor 
+users to follow, update building information, and view an 
+overview of the outdoor user’s activities. Their system has 
+some collaborative aspects, however, Hollerer did not 
+have the capability for mobile uses to be aware of each 
+others locations and their environment is limited to their 
+campus, where Mobile Sitvis is a world model, can be 
+used in any location, and has sharing of detailed 
+information among multiple mobile collaborators. Other 
+researchers have also created mobile AR systems. Feiner, 
+Gleue, and Reitmayr [3, 5 & 14] each present a mobile 
+AR system and the hardware and setup of that system. 
+However, these systems do not have annotation and 
+sharing capabilities within an accurate representation of 
+the real world, as Mobile Sitvis does.  
+In “The Design and Implementation of Pie Menus” [7], 
+Hopkins gives an overview of pie menus: a two-
+dimensional, circular menu system that is easier to use and 
+faster than conventional linear menus. He discusses the 
+advantages of pie menus over linear menus, the most 
+important being the learning curve of menu positions. 
+Kurtenbach and Buxton extend on the idea of “pie menus” 
+with “marking menus” in a series of papers [11, 12 & 13] 
+that present usability tests and design guidelines for 
+implementing marking menus. They suggest an even 
+number of menu items arranged along the compass 
+directions, mark trails to assist in marking, and a 1/3 
+second delay before displaying the menu. Tapia and 
+Kurtenbach [15] extend on the design principles of the 
+appearance and behavior of marking menus. Because the 
+current interface for Mobile Sitvis consists of a touchpad 
+and digital pen, marking menus were chosen to be the best 
+fit for our application. They were implemented using the 
+design guidelines presented in the papers above.  
+ 
+3. Server Architecture: 
+ 
+Figure 2 – Server Architecture 
+Our collaboration infrastructure (Figure 2) was built 
+using ideas presented by David Krum [9&10]. Krum 
+proposed a system of servers that can be used to share 
+information. We have implemented both a location and 
+annotation server, and have plans of adding more servers. 
+The location server collects location information about 
+connected users including their latitude and longitude 
+coordinates, orientation, location uncertainty, as well as 
+accurate offset information to increase location accuracy. 
+The annotation server collects annotations made by users 
+and distributes this data to all other connected users. 
+These annotations include location information as well as 
+heading, speed, uncertainty and object type. Annotations 
+can represent static objects of interest in the environment, 
+mobile objects, or even information and accurate location 
+updates from tracked users. This allows for visual tracking 
+of these objects (cars, people, etc.) that is precise in space 
+and time, and, most importantly, sharing of all of this 
+information in a timely manner.  
+At Georgia Tech we connect to the network using the 
+wireless local area network (WLAN); however, as with 
+any large wireless network, ours has limitations. Anyone 
+connected to the WLAN will automatically switch 
+between access points while traveling around the campus 
+and may sometimes need to cross areas without network 
+coverage. To alleviate the shortcomings of the WLAN, a 
+confirmation service using a Sliding Window Protocol [4] 
+was implemented on top of UDP, and a script was written 
+for automatically logging onto the network. Mobile Sitvis 
+can detect when the network connection has failed and 
+periodically executes the login script until the connection 
+is reestablished.  
+ 
+4. Mobile Interaction 
+Interaction with the system is performed using a 
+Wacom touchpad and pen (Figure 3). Three buttons are 
+used for navigation in the 3D virtual environment, while 
+the fourth button is used specifically for mobile 
+interactions, such as creating annotations and waypoints, 
+and setting offsets.  
+Interaction for mobile users is a difficult task because 
+of the inaccuracies and distractions present in a mobile 
+environment. Interactions must be fast, accurate, and be 
+able to be performed while mobile. In addition, the user 
+must interact with a 3D environment, which includes 
+selecting precise locations in 3D space. For these reasons, 
+we chose not to rely on typical wearable devices, such as 
+the twiddler, for mobile interaction. 
+ 
+ 
+Figure 3 – Pen used for interaction 
+Since our buttons are used mainly for navigation, we 
+need to perform other interaction tasks through a set of 
+marking menus. We want the system’s interaction to be as 
+easy as possible while mobile, and marking menus make 
+the selection task easier than if linear menus are used. A 
+linear menu requires the user to focus on the menu in 
+order to make a selection, and distracts that user from the 
+task at hand, while marking menus allow a user to select 
+an item by moving the cursor outward toward that menu 
+item. Since all items are equally distant from the 
+activation point, any item can be selected quickly with a 
+swift motion. Marking menus also allow a user to make a 
+selection without the menu being immediately displayed. 
+This allows expert users to make selections faster, while 
+still allowing novice users who are not familiar with the 
+menu to wait for the menu to pop up before making a 
+selection (Figure 4). After using a menu over time a user 
+will learn the motion to select a particular menu item and 
+will be able to select it without the menu being displayed. 
+Users can perform 3 types of mobile interactions: 
+navigation, system control tasks, and annotations. 
+  
+Figure 4 – Marking menu item selection for expert and novice users. 
+ 
+5. System Overview 
+For our current virtual environment, the Georgia Tech 
+campus and surrounding midtown area, VGIS contains 
+highly detailed terrain and satellite imagery of 1 meter 
+resolution and 3D, textured building models.  
+When starting the system, users must perform a set of 
+initialization steps using our marking menu interface, 
+including enabling networking and connecting to the 
+desired servers. They must then activate GPS tracking and 
+can optionally specify the system navigation mode to 
+freely navigate or constrain the view to stay over their 
+current location. Since GPS location information can be 
+inaccurate (10 – 20 meters or more), an offset feature has 
+been included to allow users to specify their true location. 
+ 
+ 
+Figure 5 - A view of the current user’s (blue) and other users’ (red & 
+green) location. 
+Mobile Sitvis uses a top down (exocentric) view of the 
+virtual environment. In the VE, users will see an icon 
+representing their current locations, and icons representing 
+other connected user’s locations. The user’s own location 
+is always blue, while other users are each assigned a 
+specific color (Figure 5). The system provides the user 
+with up-to-date system status information (i.e. network 
+connection status, current view, current interaction mode), 
+as well as a radar for quick relative location information 
+of other users (Figure 5). The status box and menu system 
+is color coded so the user can easily tell which menu 
+affects what status information. 
+ 
+Figure 6 – Annotation Icons 
+When out in the environment, users will want to mark 
+the location of other objects in the virtual representation. 
+For example, a user might want to convey to other users 
+that there is a tank driving across his field of view. That 
+user could annotate the current location of the tank with a 
+tank icon, and all other users would immediately see that 
+icon appear at the tank’s location. Currently, users can 
+annotate five types of objects: male person, female person, 
+car, truck, or tank (Figure 6). For each object annotation, 
+the location, uncertainty in location, direction, velocity, 
+and object type are collected. 3D locations on buildings 
+can also be annotated so, for example, a user can share 
+precisely where an observed person is in a window or on a 
+roof. Through testing we have found that each annotation 
+takes an average of four seconds to create; it is then sent 
+to the annotation server which immediately distributes it 
+to all connected users, within one second of completion. 
+Annotations are colored the same as the creating user’s 
+location icon so that it is easy to identify who made the 
+annotation.  
+Another type of annotation that can be made is a 
+waypoint. Waypoint mode is enabled through a marking 
+menu, and each represents a point in a connected path. 
+This mode is useful when giving other users direction or 
+for setting paths for users to follow. As each waypoint in 
+the path is made, it is immediately distributed to all users, 
+or directed to a specific user (Figure 7). 
+   
+6. Scenarios 
+To demonstrate the effectiveness of our system we 
+have developed a couple of collaborative mobile 
+scenarios. These scenarios were constructed for the GT 
+campus and surrounding midtown area, an urban 
+environment that has been accurately modeled within 
+VGIS. Our objective is to show that for each of these 
+scenarios, Mobile Sitvis performs as well as or better than 
+a typical traditional method for accomplishing the same 
+task. In the case of mobile collaboration, the traditional 
+method would be the use of a 2-way radio and a map. We 
+thus compared results for one set of users who used 
+Mobile Sitvis with another set who used maps. In both 
+cases, the users had 2-way radios. In all scenarios the 
+users of Mobile Sitvis has used the system often and could 
+be considered experienced users.  
+ 
+Figure 7 – Waypoint Annotations 
+ 
+6.1 Command and Control 
+Mobile Sitvis is effective for command and control 
+tasks such as monitoring and issuing orders to units in the 
+field. In this scenario, a commander is positioned at a 
+fixed location with a dependable network connection, 
+where he typically has no line of sight to the outdoor 
+users.  Three mobile users are located outdoors with 
+wireless network connections and the commander can 
+communicate with each user through a 2-way radio and 
+through Mobile Sitvis. The task of this scenario is to lay 
+out a set path and have the users follow this path. The 
+paths each had 10 turns, and took about 30 minutes to 
+complete at normal walking speed. Based on several trials, 
+we found our system to be very effective for path 
+following. Waypoints can be created by the commander 
+and transmitted to a selected user, or to all connected 
+users, who are then able to view and walk the entire path. 
+The display of a user’s location overlaid on the current 
+path gives immediate feedback to the user that he is 
+following the path correctly and provides real-time 
+feedback to the commander of all users’ current location 
+(Figure 8). We compared this with the alternative of using 
+a paper map and the commander’s verbal path 
+instructions. A user could follow this path, but not quite as 
+accurately; it also takes a larger cognitive effort to 
+translate verbal commands into real locations (as indicated 
+by the longer time needed to complete the path in this 
+case). Without Mobile Sitvis, the users had to try to 
+communicate back to the commander their current 
+locations and had no quick and precise way of knowing if 
+they were on the correct path. The ability for dynamic 
+path creation and editing in our system is a clear 
+advantage over the traditional method. Another important 
+advantage of Mobile Sitvis is that the commander can 
+oversee several user’s paths simultaneously and that 
+mobile users can also see paths of their collaborators (both 
+of which are not possible with the traditional system).  
+ 
+Figure 8 - A commander’s view of a user following a path. 
+Results from one of the trials illustrate several of the 
+above points. A commander sent two users out to follow 
+two separate and unfamiliar paths. The paths were of 
+equal length, started in the same area, diverged, and ended 
+at the same point. Each user walked each path once: one 
+path with only voice communication and a map (GPS 
+enabled for logging and analysis only), then the other path 
+with the Mobile Sitvis system.  
+After analyzing the logged data, we found that the 
+users were able to stay on the path better, and completed 
+the path faster when using Mobile Sitvis. When using 
+voice commands, one user missed 3 out of 12 waypoints 
+while the other missed 2 out of 12. When using our 
+system, only one of the 24 total waypoints was missed. 
+We believe the display of the path made it easier for users 
+to follow it, and resulted in no misunderstandings about 
+the location of a waypoint. When using the radios, there 
+were some miscommunications, which caused the user to 
+veer off the path and miss a waypoint. There were also 
+periods of time where communication was lost because a 
+user exceeded the range of the radios. This loss of 
+communication made that task take longer than when 
+using Mobile Sitvis resulting in a 2 minute increase in 
+completion time.  
+ 
+6.2 Surveillance and Reconnaissance  
+The Mobile Sitvis system is a tool well suited for 
+surveillance, reconnaissance, and tracking tasks. To show 
+the effectiveness of the system, we set up a few scenarios 
+consisting of three fully equipped and connected users and 
+one subject. Their job is to keep track of the subject 
+through collaboration by making annotations representing 
+his/her current position. The subject is given a map with a 
+path to follow and carries a GPS and laptop only to log his 
+location information for future analysis. The path for the 
+subject is drawn by a 3rd party, and the users do not know 
+it beforehand. Another scenario consists of the three users 
+carrying the same equipment, but not connected through 
+the system. They log their GPS positions for future 
+analysis, but only use a paper map and radios to 
+communicate. In both scenarios, the subject moved at 
+normal walking speed. Each scenario was rerun several 
+times with several different paths. Each path took about 
+30 minutes to complete and each was of the same length 
+had about the same number of turns.  
+Following are our general results. We found our system 
+to be effective for this task; at least two Mobile Sitvis 
+users could keep track of the subject at all times, even 
+though the subject turned unexpectedly and even though 
+they had to divert their attention to make annotations. 
+Although performance, in terms of keeping track of the 
+subject, was not any better (or worse) than tracking with 
+only a paper map and radio, we found that Mobile Sitvis 
+gave a clear additional advantage in terms of accurate 
+information about the location and movement of the 
+subject and of the tracking collaborators, which could 
+immediately be shared with the commander and others.  
+Using Mobile Sitvis for tracking is a very different 
+experience in comparison to using just a radio, map and a 
+pair of eyes. The biggest advantage gained during tracking 
+is quickly seeing the locations of other users, as well as 
+the tracked subject, who may not be in one’s line of sight. 
+In addition, since Mobile Sitvis has a properly 
+orthorectified and interactive representation of the urban 
+scene, a user can quickly determine where the subject is 
+by locating the latest annotation without having to find his 
+own location on a paper map. Furthermore, having the 
+ability to mark subjects and their direction of movement 
+gives more precise information than verbal 
+communication can.  
+On the other hand, using Mobile Sitvis has its 
+disadvantages in its present configuration. First, the entire 
+mobile set-up is heavy and uncomfortable to wear. 
+Because the user is mobile, the eye display is constantly in 
+motion making it sometimes difficult to focus. Moreover, 
+sunlight can interfere with the display, causing 
+uncomfortable glare. While this can be reduced by 
+covering the display with sunglasses or a patch, we are 
+hesitant to do this because it may limit the user’s view of 
+the real world and causes safety concerns. Furthermore, 
+while tracking, the user must pause a few seconds (taking 
+his eyes off the subject) to create an annotation. In 
+addition, infrequent technical problems such as a laptop 
+overheating can interfere with effective use of the system. 
+We are taking steps to alleviate these problems. Better 
+interaction techniques are in the works to enable the user 
+to annotate successfully while in motion. Also, we expect 
+that the laptop will soon be replaced with a much more 
+compact wearable computer that will be just as powerful 
+but will be lighter and produce less heat.  
+Unlike Mobile Sitvis, tracking with a paper map and a 
+radio requires no knowledge of any software or hardware, 
+and few technical difficulties. The subject location and 
+direction is conveyed through voice communication alone; 
+therefore, it is not necessary to stop moving as one must 
+when making an annotation. In addition, the lack of the 
+eyepiece allows trackers to blend into the environment 
+without generating notice from other pedestrians. 
+Nevertheless, the paper map and radio method has its 
+drawbacks. It is hard to accurately direct another user to a 
+specific location if that user is unfamiliar with the 
+environment, and verbal communication can deteriorate as 
+more users are added into the scenario. Verbal 
+communication is essentially a two-way (or broadcast) 
+medium and does not scale well to multiple collaborators.  
+In general Mobile Sitvis provides better location 
+information than either standard GPS or voice 
+communication. For example, one has the ability to 
+relocate oneself with other users if lost. To illustrate, 
+during one of our sessions, a user became separated from 
+the group. Even while remaining in contact with the rest 
+of the trackers, the user was temporarily unable to 
+determine where he was in relation to the subject. 
+However, by using the radar feature, which is 
+continuously updated with the other users positions, the 
+lost user was able to immediately tell in which direction 
+his collaborators were located.  In addition, the latest 
+position and direction of the tracked subject enabled the 
+lost user to intercept the subject by inferring his likely 
+future path. With a radio it would be difficult for his 
+collaborators to tell the lost user where to go if he is 
+unfamiliar with the area. This problem is heightened since 
+the collaborators are not sure where they are headed 
+either.  Finally, the time spent trying to get the lost user 
+back in position could detrimentally affect the quality of 
+tracking. When using Mobile Sitvis, it is only necessary 
+for one user at a time to keep the subject in sight. When 
+not actively tracking, the other users can use the system to 
+rejoin the tracking team or to coordinate in some other 
+way. 
+GPS Uncertainty Over Time
+0
+10
+20
+30
+40
+50
+60
+70
+  1
+6:1
+0:3
+5
+  1
+6:1
+1:4
+2
+  1
+6:1
+2:4
+9
+  1
+6:1
+3:5
+5
+  1
+6:1
+5:1
+  1
+6:1
+6:7
+  1
+6:1
+7:1
+3
+  1
+6:1
+8:1
+9
+  1
+6:1
+9:2
+5
+  1
+6:2
+0:3
+1
+  1
+6:2
+1:3
+7
+  1
+6:2
+2:4
+3
+  1
+6:2
+3:4
+9
+  1
+6:2
+4:5
+5
+  1
+6:2
+6:1
+  1
+6:2
+7:7
+  1
+6:2
+8:1
+3
+  1
+6:2
+9:1
+9
+  1
+6:3
+0:2
+5
+  1
+6:3
+1:3
+1
+  1
+6:3
+2:3
+7
+  1
+6:3
+3:4
+4
+  1
+6:3
+4:5
+0
+  1
+6:3
+5:5
+7
+  1
+6:3
+7:3
+  1
+6:3
+8:1
+0
+  1
+6:3
+9:1
+6
+  1
+6:7
+:32
+  1
+6:8
+:39
+  1
+6:9
+:45
+  1
+6:1
+0:5
+1
+  1
+6:1
+1:5
+7
+  1
+6:1
+3:3
+  1
+6:1
+4:9
+  1
+6:1
+5:1
+5
+Time
+M
+et
+er
+s
+User1 User2 User3 Trackee
+ 
+Figure 9 – GPS Uncertainty 
+Mobile Sitvis is also superior to GPS alone for 
+positional accuracy, as the following shows. With the 
+system, offsets can be set for a more accurate 
+representation of position, and annotations are also logged 
+for later analysis, adding to the quantity and quality of the 
+data that can be stored and shared. If the user has an 
+accurate high resolution virtual model of the urban 
+environment, these offsets are often easy to determine 
+because location relative to features in the real 
+environment (e.g., sidewalks, buildings, trees, etc.) can be 
+scaled to appropriate relative locations with respect to the 
+same features in the virtual environment. What’s more, 
+once the offset is made, the GPS positioning often remains 
+more accurate for a while. All this helps overcome the 
+inherent inaccuracies of GPS. The average uncertainty 
+when using a consumer GPS in an urban environment is 
+between 10 and 20 meters (Figure 9). (There are higher 
+accuracy GPS units, but they are bulkier or require 
+additional hardware and usually require much longer to 
+provide an accurate reading.) However, through the use of 
+offsets, a user’s estimated uncertainty can be much lower. 
+Thus an effective strategy within Mobile Sitvis is to use 
+GPS for general locating (e.g., for automatically choosing 
+the overview that contains the user’s approximate 
+position) and then to use offset annotations for accurate 
+locating. This strategy applies best to urban environments 
+because features are more readily identifiable and because 
+lower GPS accuracy and even occlusion of the signal by 
+tall buildings is more prevalent. The strategy would work 
+less well in open environments (e.g., a large field) with 
+fewer easily recognized features and less occlusion. 
+The following results illustrate the above points. Figure 
+10 shows the uncertainty of a user’s estimated location. 
+These values were collected as one user walked a random 
+path, setting his offset throughout the session. The user 
+was instructed to carefully and conservatively set his 
+offset and uncertainty, using landmarks he could see both 
+in the real world and in the virtual view. The actual 
+uncertainty is thus within the user-specified offset 
+uncertainty. Two other users tracked that user and marked 
+his location with annotations at the same time that he set 
+his offset. The GPS uncertainty estimate is collected from 
+the GPS receiver. The offset uncertainty averages about 2-
+3 meters and is typically 5-10 times smaller than the 
+collected GPS uncertainty. This may vary depending on 
+the location of the user and the proximity of visible 
+landmarks. This is reflected in the distance between the 
+offset and GPS positions, which are typically 10 or more 
+meters apart (Figure 11).   
+The two other users were on average about 50 meters 
+from the user, and their uncertainties are typically also 
+less than the GPS uncertainty. This varies depending upon 
+the distance between the tracker and subject, and the 
+viewing angle of the tracker. This gives a measure of 
+expected tracking uncertainty for a real world situation. 
+Because the offsets were set very carefully, the offset 
+distance represents the true uncertainty between GPS and 
+true position. As shown in Figure 11 the GPS uncertainty 
+and offset distance vary greatly in about half of the 
+samples. This shows that the GPS uncertainty is only an 
+estimate and is often unreliable. 
+05
+10
+15
+20
+25
+M
+et
+er
+s
+1 2 3 4 5 6 7 8 9 10 11 12 13
+Uncertainty Comparison
+Offset Uncertainty Annotation Uncertainty (1)
+Annotation Uncertainty (2) GPS Uncertainty
+ 
+Figure 10 – The estimated uncertainty is lower for users who specify 
+a GPS offset. 
+ 
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+M
+et
+er
+s
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+Comparison of User Defined Offset and GPS Uncertainty
+Offset Distance GPS Uncertainty
+ 
+Figure 11 – Distance between the offset and GPS position is typically 
+more than 10 meters 
+GPS inaccuracy can cause more misinformation than 
+just an incorrect location. For example, in our scenarios, 
+there were instances where the GPS position would be on 
+the wrong side of a building from the actual position of 
+the user. This is something that a user can easily see and 
+correct in the Mobile Sitvis display. Being on the correct 
+side of large, occluding obstacles such as buildings is, of 
+course, quite important for precise surveillance and 
+coordination among mobile users.  Figure 12 gives an 
+example. The red cubes fading out represent the GPS 
+positions of a user over 60 seconds. The annotations 
+represent where the user really went. A building separates 
+the real location from the GPS reported location. 
+ 
+7. Data Analysis 
+An advantage of Mobile Sitvis is its ability to record and 
+playback any session allowing for analysis of the way 
+tracking techniques were used, the quality of GPS, or just 
+to see who was where at what time, and who may have 
+gotten lost and why. This playback can also be quite 
+important to commanders who must plan or respond to 
+activity over time. We have implemented a post session 
+analysis tool into the system. When running a scenario 
+with Mobile Sitvis, all annotations and locations are 
+logged to files. These files can later be loaded into our 
+tool for closer analysis. Our tool is able to visualize the 
+track of users (or subjects) over time and display 
+annotations, uncertainty information, as well as perform 
+error calculations and output the data into MS Excel 
+format to enable easy creation of charts and graphs 
+(Figures 12 & 13).  
+ 
+ 
+Figure 12 – The GPS recorded path of a user is shown in red.  The 
+annotations represents the true path of the user. 
+ 
+ 
+Figure 13 – A Visualization of all user’s locations and annotations 
+over a 45 minute period. 
+ 
+8. Conclusion 
+In this work we have developed the Mobile Sitvis 
+system, which takes space-time annotations from multiple 
+users and sensors and shares them. Through evaluations, 
+we have shown that Mobile Sitvis is useful for command 
+and control, surveillance, and tracking applications. It 
+should also be useful for other applications where 
+collaborators share precise, dynamic annotations of their 
+surroundings and the entities therein.  
+We derive the following specific conclusions from this 
+work.  
+• Mobile Sitvis works in an environment where the user 
+must capture changing and unexpected information 
+while moving around. This is a significant result since 
+it was not clear how well it would work (given the 
+prototype interface), especially for tracking a subject. 
+• It does as well as the traditional method (radio + map) 
+for tracking a moving subject. 
+• It does better (in terms of accuracy and time for 
+completion) than the traditional method for command 
+and control, especially when multiple units are 
+directed. 
+• It provides important new capabilities. These include 
+significantly more accurate location information than 
+GPS, specific annotations in space-time that can be 
+shared immediately, overviews of several moving, 
+annotated entities that can be understood all at once, 
+and histories that can be used for tracking and 
+analysis. 
+• The evaluations offer specific design considerations. 
+The positioning annotations from Mobile Sitvis are 
+particularly useful in an urban environment with tall 
+buildings and other occluders. Here there are plenty 
+of landmarks that can be used for positioning and the 
+GPS signal can frequently be blocked. Thus in the 
+urban environment, it is best to use GPS as an 
+approximate locator for overviews and then use 
+annotations for specific locating. On the other hand, 
+GPS would be superior in an open environment with 
+few landmarks (such as an open plain). An 
+environment such as a heavily wooded forest would 
+be challenging for both methods of locating. 
+Of course more evaluations and some user studies 
+should be done. However, we do not expect these main 
+conclusions to change significantly. Also, this work 
+suggests new scenarios where Mobile Sitvis will have 
+even greater impact, as discussed in the next section.  
+ 
+9. Future Work 
+There is still much work to be done. Mobile Sitvis is an 
+initial prototype, but shows the possibilities of systems of 
+this kind. As technology advances, and mobile computing 
+devices get smaller and more powerful, situational 
+visualization applications will become more useful. We 
+are investigating using a much lighter wearable setup for 
+running the system. An eye piece with a higher resolution 
+and a brighter color display would be useful.  
+Difficulty interacting with our system while mobile is 
+one of the main problems to overcome. Making 
+annotations and performing complex interactions requires 
+the user to stop moving and can detrimentally affect the 
+experience. Replacing the touchpad/eye display with an 
+ultra light tablet PC could be one solution. PDA’s are also 
+becoming more and more powerful. A PDA sized device 
+with 3D graphics capabilities may be worth investigating. 
+The integration of a twiddler for text input and mode 
+switches could also be useful. If a twiddler is used, the 
+large touchpad currently being used would need to be 
+replaced with an alternative for precise cursor positioning.   
+We are also looking into speech annotations. Users 
+could record a message to accompany an annotation. This 
+message could be translated into text and transmitted to 
+other users. Others users could choose to listen to the 
+message or read it when more detailed information about 
+an annotation is needed.  
+Finally, we have begun work on decision support 
+capability, beginning with a path engine that determines 
+paths that avoid annotated risks inserted by mobile users. 
+We will report on the results of this work elsewhere. 
+ 
+10. References 
+[1] D. Davis, T.Y. Jiang, W. Ribarsky, and N. Faust. Intent, 
+Perception, and Out-of-Core Visualization Applied to 
+Terrain. IEEE Visualization ’98, pp. 455–458, Oct ‘98. 
+[2] D. Davis, W. Ribarsky, T.Y. Jiang, N. Faust, and Sean Ho. 
+Real-Time Visualization of Scalably Large Collections of 
+Heterogeneous Objects. IEEE Visualization ’99, pp. 437–
+440, October 1999. 
+[3] S. Feiner, B. MacIntyre, T. Höllerer, and T. Webster, A 
+touring machine: Prototyping 3D mobile augmented reality 
+systems for exploring the urban environment. Proc. ISWC 
+'97, Cambridge, MA.  
+[4] Leon-Garcia and Widjaja, Communication Networks. 2nd 
+edition, McGraw Hill, 2003 
+[5] T. Gleue, P. Daehne. Design and Implementation of a Mobile 
+Device for Outdoor Augmented Reality in the 
+ARCHEOGUIDE Project, VAST ‘01, Athens, Greece, 28-
+30 November 2001.  
+[6] T. Höllerer, S. Feiner, T. Terauchi, G. Rashid, D. Hallaway, 
+Exploring MARS: Developing Indoor and Outdoor User 
+Interfaces to a Mobile Augmented Reality System, 
+Computers and Graphics, 23(6), pp. 779-785 
+[7] Hopkins, Don, The design and implementation of pie menus, 
+Dr. Dobb's Journal, v.16 n.12, pp.16-26, Dec. ‘91 
+[8] David Koller, Peter Lindstrom, William Ribarsky, Larry 
+Hodges, Nick Faust, and Gregory Turner. Virtual GIS: A 
+Real-Time 3D Geographic Information System. Proc. 
+Visualization '95, pp. 94-100. 
+[9] D.M. Krum, W. Ribarsky, C.D. Shaw, L. Hodges, and N. 
+Faust. Situational Visualization. VRST ‘01, pages 143-150, 
+November 15-17. 
+[10] D.M. Krum, Challenges in Building a Whole Earth 3D 
+Information Space. Young Inv. Forum in VR, 2003. 
+[11] Kurtenbach, G. & Buxton, W. (1993). The limits of expert 
+performance using hierarchic marking menus. Proceedings 
+of InterCHI '93, 482-487. 
+[12] Kurtenbach, G., Sellen, A. & Buxton, W. (1993). An 
+empirical evaluation of some articulatory and cognitive 
+aspects of "marking menus". HCI, 8(1), 1-23. 
+[13] Kurtenbach, G. & Buxton, W. (1994). User learning and 
+performance with marking menus. CHI '94, 258-264.  
+[14] Reitmayr, G., Dieter, S, Location based applications for 
+mobile augmented reality. Proceedings of the Fourth 
+Australian user interface conference on User interfaces 
+2003 - Volume 18, pp. 65 - 73  
+[15] Tapia, Mark A. , Kurtenbach, Gordon, Some design 
+refinements and principles on the appearance and behavior 
+of marking menus, UIST ‘95, p.189-195, November 15-17, 
+Pittsburgh, Pennsylvania 
+ 
+

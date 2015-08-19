@@ -1,0 +1,1564 @@
+IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 17, NO. 3, MARCH 2008 407
+Integrating Concept Ontology and Multitask Learning
+to Achieve More Effective Classifier Training
+for Multilevel Image Annotation
+Jianping Fan, Yuli Gao, and Hangzai Luo
+Abstract—In this paper, we have developed a new scheme
+for achieving multilevel annotations of large-scale images auto-
+matically. To achieve more sufficient representation of various
+visual properties of the images, both the global visual features
+and the local visual features are extracted for image content
+representation. To tackle the problem of huge intraconcept visual
+diversity, multiple types of kernels are integrated to characterize
+the diverse visual similarity relationships between the images
+more precisely, and a multiple kernel learning algorithm is devel-
+oped for SVM image classifier training. To address the problem
+of huge interconcept visua similarity, a novel multitask learning
+algorithm is developed to learn the correlated classifiers for the
+sibling image concepts under the same parent concept and en-
+hance their discrimination and adaptation power significantly.
+To tackle the problem of huge intraconcept visual diversity for
+the image concepts at the higher levels of the concept ontology, a
+novel hierarchical boosting algorithm is developed to learn their
+ensemble classifiers hierarchically. In order to assist users on
+selecting more effective hypotheses for image classifier training,
+we have developed a novel hyperbolic framework for large-scale
+image visualization and interactive hypotheses assessment. Our
+experiments on large-scale image collections have also obtained
+very positive results.
+Index Terms—Concept ontology, hierarchical boosting, in-
+teractive hypotheses assessment, interconcept visual similarity,
+intraconcept visual diversity, multiple kernel learning, multitask
+learning.
+I. INTRODUCTION
+AS DIGITAL cameras become more affordable and wide-spread, digital images are growing exponentially on the
+Internet. Semantic classification becomes increasely important
+and necessary to support automatic image annotation, so that
+searching the images from large-scale collections can be made
+more intuitively by using the adequate keywords for image se-
+mantics interpretation [1]–[5]. Unfortunately, the performance
+Manuscript received July 18, 2007; revised December 19, 2007. This work
+was supported by the National Science Foundation under Grants 0601542-IIS
+and 0208539-IIS. The associate editor coordinating the review of this manu-
+script and approving it for publication was Prof. Dan Schonfeld.
+J. Fan is with the Department of Computer Science, University of North Car-
+olina, Charlotte, NC 28223 USA (e-mail: jfan@uncc.edu).
+Y. Gao was with the Department of Computer Science, University of North
+Carolina, Charlotte, NC 28223 USA. He is now with HP Labs, Palo Alto, CA
+94304 USA (e-mail: yuli.gao@hp.com).
+H. Luo was with the Department of Computer Science, University of North
+Carolina, Charlotte, NC 28223 USA. He is now with East China Normal Uni-
+versity, Shanghai 200062, China (e-mail: hluo@sei.ecnu.edu.cn).
+Color versions of one or more of the figures in this paper are available online
+at http://ieeexplore.ieee.org.
+Digital Object Identifier 10.1109/TIP.2008.916999
+of image classifiers largely depends on three inter-related is-
+sues: 1) representative visual features for characterizing various
+visual properties of the images; 2) suitable similarity functions
+for image similarity characterization; 3) effective algorithms for
+image classifier training.
+To address the first issue, the underlying visual features
+should be able to represent both the global visual properties and
+the local visual propertiess of the images effectively [19]–[23].
+To address the second issue, the underlying similarity functions
+should be able to characterize the diverse visual similarity
+relationships between the images more precisely. To address
+the third issue, robust techniques are needed for bridging the
+semantic gap successfully by learning more reliable mapping
+functions (i.e., image classifiers) between the low-level visual
+features and the high-level human interpretation of image
+semantics. In addition, one single image may contain multiple
+levels of semantics [6]–[10], thus supporting hierarchical
+image classification plays an important role on achieving more
+sufficient image annotations for retrieval purposes.
+When large-scale image collections come into view, large
+amount of image classifiers should be learned for automatic
+image classification and annotation. Thus, new algorithms for
+image classifier training are strongly expected to address the fol-
+lowing issues more effectively.
+a) How to exploit the interconcept correlations for reducing
+the computational cost for learning large amount of
+image classifiers. The image concepts are dependent
+and such dependencies (interconcept correlations) can
+be exploited for improving image classifier training and
+reducing the computational cost [23], [38]. However, if
+such interconcept correlations are simply exploited for
+hierarchical image classifier training, the classification
+errors will be propagated among the relevant image
+classifiers (i.e., interconcept error propagation) [27].
+b) How to handle the problem of huge intraconcept visual
+diversity effectively. One challenging problem for image
+classification is that the semantically-similar images (i.e.,
+images belong to the same image concept) may have huge
+diversity on their visual properties. One promising solu-
+tion for the problem of huge intraconcept visual diver-
+sity is to use high-dimensional multimodal visual features
+for approximating various visual properties of the images
+more precisely. Thus, large amount of images should be
+labeled to achieve reliable classifier training and the com-
+putational cost may also increase exponentially (i.e., curse
+of dimensionality). By using multiple Gaussian mixture
+1057-7149/$20.00 © 2008 IEEE
+408 IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 17, NO. 3, MARCH 2008
+components to approximate various visual properties of
+the images, Gaussian mixture models (GMMs) are widely
+used to tackle the problem of huge intraconcept visual
+diversity [18]. Unfortunately, GMMs may contain hun-
+dreds of parameters in a high-dimensional feature space,
+and, thus, they may seriously suffer from the problem of
+curse of dimensionality. By maximizing the margins be-
+tween the positive images and the negative images, sup-
+port vector machines (SVMs) are known by their smaller
+generalization error rate in the high-dimensional feature
+space [45], [46]. Unfortunately, most existing SVM-based
+algorithms implicitly assume that the statistical properties
+of the images are homogeneous in the high-dimensional
+multimodal feature space and one single type of kernel
+is used for image similarity characterization. However,
+the statistical properties of the images are heterogeneous
+in the high-dimensional multimodal feature space, which
+cannot be approximated precisely by using one single type
+of kernel. Thus, most existing algorithms for image classi-
+fier training cannot handle the problem of huge intracon-
+cept visual diversity effectively.
+c) How to address the problem of huge interconcept visual
+similarity effectively. The image concepts are dependent
+and may share some common visual properties [59],
+especially when they are the sibling children concepts
+under the same parent concept. For example, “garden,”
+“beach,” “sunset,” “flower view,” “mountain view,”
+“ocean view,” share some common visual properties and
+they can be treated as the sibling children concepts for the
+high-level image concept “nature scene.” Isolating such
+correlated image concepts and learning their classifiers
+independently may seriously affect the discrimination
+and adaptation power of the image classifiers.
+There are two well-known approaches for exploiting the
+interconcept correlations to enhance image classifier training:
+hierarchical approach [24]–[29] and multitask learning
+[30]–[37]. The major problem for the hierarchical approach
+is that the classification errors will be propagated among the
+classifiers for the relevant image concepts (i.e., interconcept
+error propagation) [27]. Some pioneer work have recently
+been proposed to exploit the interconcept correlations for
+image classifier training by using simple pairwise concept
+combinations [32]. Unfortunately, such pairwise concept com-
+bination approach may be too cost-sensitive and combining the
+irrelevant image concepts for multitask learning may decrease
+the performance rather than improvement [34]–[36]. Thus,
+most existing techniques for image classifier training cannot
+handle the problem of huge interconcept visual similarity
+effectively.
+In this paper, we have developed a new scheme to achieve
+multilevel annotations of large-scale images automatically. The
+major contributions of our new scheme include the following.
+1) To capture various visual properties of the images more pre-
+cisely, both the local visual features and the global visual fea-
+tures are extracted for image content representation. To avoid
+the pitfalls of image segmentation tools, segmentation is not
+performed for feature extraction. 2) To handle the problem of
+huge intraconcept visual diveristy, multiple types of kernels are
+integrated to characterize the diverse visual similarity relation-
+ships between the images more effectively. 3) To address the
+problem of huge interconcept visual similarity, a novel algo-
+rithm is developed by incorporating concept ontology and mul-
+titask learning to exploit the interconcept correlations for hier-
+archical image classifier training.
+The paper is organized as follows. Section II reviews the
+related work briefly. Section III introduces a new scheme by
+incorporating the concept ontology for interconcept correlation
+characterization and hierarchical image concept organization.
+Section IV presents our scheme for feature extraction and
+kernel-based similarity characterization. Section V describes
+our new algorithm for hierarchical image classifier training.
+Section VI presents our algorithm for automatic multilevel
+image annotation. Section VII describes our work on algorithm
+and system evaluation, and we conclude in Section VIII.
+II. RELATED WORK
+To address the first issue for image classification and auto-
+matic annotation (i.e., feature extraction for image content rep-
+resentation), three approaches are available for feature extrac-
+tion: 1) image-based approach that extracts the global visual fea-
+tures from entire image [19]–[21], [64]–[66]; 2) region-based
+approach that extracts the local visual features from homoge-
+neous image regions or image grids (i.e., regular image parti-
+tions) [11]–[15]; 3) object-based approach that extracts the local
+visual features from image objects [16]–[18].
+The major advantage of the image-based approach is that no
+segmentation is incorporated; thus, it allows fast feature extrac-
+tion. The major drawback with the image-based approach is that
+the global visual features extracted from entire images may not
+be able to characterize the local visual properties at the object
+level. The major advantage of the region-based and object-based
+approaches is that they can provide the local visual properties
+of the image objects with certain levels of accuracy. The major
+problem with the region-based and object-based approaches is
+that image segmentation is performed, and, thus, they may seri-
+ously suffer from the pitfalls of the underlying image segmen-
+tation tools, and automatically segmenting the images into the
+semantic-sensitive salient image components (image objects) is
+still an open issue for computer vision.
+To address the second issue for image classification and
+automatic annotation (i.e., similarity function determination),
+the basic question is to define more suitable similarity functions
+for characterizing the diverse visual similarity relationships
+between the images more precisely. Recently, the use of kernels
+for data similarity characterization plays an important role
+in statistical learning, where the kernels may satisfy some
+mathematical requirements and possibly capture some domain
+knowledge [44]–[46], [48]–[51]. Unfortunately, most existing
+work focus on using one single type of kernel to characterize
+the diverse visual similarity relationships between the images,
+and, thus, their performances may not be acceptable for some
+complex image concepts which have huge intraconcept visual
+diversity.
+To address the third issue for image classification (i.e.,
+classifier training), there are two well-known approaches for
+image classifier training: a) flat approach (i.e., the classifier
+FAN et al.: INTEGRATING CONCEPT ONTOLOGY AND MULTITASK LEARNING TO ACHIEVE MORE EFFECTIVE CLASSIFIER TRAINING 409
+for each image concept is learned independently) [11], [67];
+b) hierarchical approach (i.e., the contextual relationships
+between the image concepts are integrated for image classifier
+training) [24]–[29]. The major problem with the flat approach is
+that it is too expensive to learn the classifiers for the high-level
+image concepts with larger intraconcept visual diversity, be-
+cause the hypothesis spaces for classifier training could be
+very large. When large amount of image concepts come into
+view, isolating the image concepts and learning their classifiers
+independently are not appropriate. On the other hand, the
+hierarchical approach can provide at least two benefits. 1) The
+classifiers for the high-level image concepts can effectively be
+learned by combining the classifiers for the relevant lower-level
+image concepts with smaller intraconcept visual diversity, and,
+thus, the large hypothesis spaces for learning the classifiers of
+the higher level image concepts can be partitioned into mul-
+tiple smaller ones for the relevant lower-level image concepts.
+2) The computational complexity for training large amount of
+image classifiers can be reduced significantly by exploiting the
+interconcept correlations for classifier training.
+Some pioneer work have been proposed for achieving hier-
+archical image classifier training [24]–[29]. Huang et al. have
+incorporated normalized cuts for hierarchical image classifier
+training [24]. Barnard et al., Fan et al., and Vasconcelos et al.
+have incorporated hierarchical mixture models and a predefined
+concept hierarchy for semantic image classification [25], [27],
+[29]. Fei-Fei et al. have also incorporated prior knowledge to
+improve hierarchical image classification [28]. Li et al. have
+proposed a linguistic structure for image database indexing,
+classification and annotation [26]. The major problem with the
+hierarchical approach is that the classification errors may be
+propagated among the classifiers for the relevant image con-
+cepts (i.e., interconcept error propagation) [27]. Unfortunately,
+most existing work ignore such critical issue of interconcept
+error propagation, and, thus, their performance may sometimes
+be worse than that of the flat approach [27].
+Some pioneer work have recently been proposed to char-
+acterize and quantify the interconcept correlations for image
+classifier training [38], [69]. Qi et al. have developed a correla-
+tive multilabeling technique for learning multiple classifiers for
+the relevant video concepts simultaneously [69]. Torralba et al.
+have proposed a novel algorithm (called multitask boosting)
+to exploit the intertask correlations for object detection [32],
+where the intertask correlations are simply characterized by
+using pairwise object combinations. Based on the idea of
+conditional random fields (directly modeling the posterior
+distribution as a Gibbs field) [43], Kumar et al. have proposed
+discriminative random fields (DRF) to exploit the interpatch
+correlations for object detection [38]. Yang et al. and Chen et al.
+have recently extended such DRF technique for image/video
+concept detection [39], [40], and the intertask correlations
+are simply approximated by using pairwise concept combina-
+tions [32]. It is very interesting to use such pairwise concept
+combinations for modeling the intertask correlations, but such
+simple approach may seriously suffer from two problems.
+a) The hypothesis spaces for learning the classifiers for the
+pairwise concept combinations may be much larger than the
+individual hypothesis spaces for the relevant image concepts,
+and, thus, it may be harder to learn reliable classifiers for such
+pairwise concept combinations, especially when the available
+training images are limited. b) There are pairwise concept
+combinations and is the number of the available image
+concepts; thus, the computational complexity may be increased
+dramatically when large amount of image concepts come into
+view. In addition, not all the image concepts are strongly
+related and combining the irrelevant image concepts for joint
+classifier training may decrease the performance rather than
+improvement [37]. Therefore, there is an urgent need to develop
+new approaches for characterizing the intertask correlations
+more precisely.
+The concept ontology has provided an effective and intuitive
+approach for characterizing the correlations between the image
+concepts [6]–[10]. There have some efforts on constructing the
+concept ontology for organizing large amount of image/video
+concepts [60], [61]. Some researchers have incorporated both
+the contextual relationships and the perceptual relationships be-
+tween the video/image concepts for multimedia concept on-
+tology construction [62], [63]. All these existing work have sup-
+ported solid background for us to incorporate the concept on-
+tology for intertask correlation characterization and hierarchical
+image concept organization.
+III. INCORPORATING CONCEPT ONTOLOGY FOR INTERCONCEPT
+CORRELATION CHARACTERIZATION
+As mentioned above, classifying the images into the most
+relevant image concepts at different semantic levels is one
+promising solution to enable automatic multilevel image an-
+notation. Supporting multilevel image annotation can further
+provide users with more sufficient keywords at different se-
+mantic levels, so that they can have more flexibility on selecting
+different keywords to specify their vaious image needs. Vi-
+sualizing the concept ontology (i.e., large amount of image
+concepts and their contextual relationships) can also allow
+users to easily select more suitable keywords for query formu-
+lation [77]. Motivated by this observation, we have developed
+a new scheme by incorporating concept ontology [6]–[10]
+for interconcept correlation characterization and hierarchical
+image concept organization. On the concept ontology, each
+node represents one image concept at certain semantic level
+as shown in Fig. 1. The concept nodes at the first level of the
+concept ontology are defined as atomic image concepts, which
+are used to represent the image concepts with the most specific
+subjects and have smaller intraconcept visual diversity. They
+can further be assigned to the most relevant image concepts
+at the higher level of the concept ontology, which are used to
+interpret more general subjects of image contents with larger
+intraconcept visual diversity. Therefore, the mapping functions
+between the low-level visual features and the high-level image
+concepts may not be obvious, and, thus, learning the classifiers
+for the high-level image concepts is much harder than learning
+the classifiers for the atomic image concepts.
+The contextual relationships between the image concepts
+consists of two parts: a) semantic similarity; b) visual simi-
+larity. Unfortunately, most existing techniques have completely
+ignored the interconcept visual similarity for concept ontology
+construction; thus, they cannot directly be extended to construct
+410 IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 17, NO. 3, MARCH 2008
+Fig. 1. Our concept ontology for hierarchical image concept organization.
+Fig. 2. Our concept ontology with icon images.
+the concept ontology for organizing large amount of image
+concepts. In this paper, both the semantic similarity and the
+visual similarity between the image concepts are seamlessly
+integrated to determine their associations
+(1)
+where the first part denotes the semantic similarity between the
+image concepts and , the second part indicates their visual
+similarity according to the similarity between their image distri-
+butions, is the length of the shortest path between the
+image concepts and by searching the relevant keywords
+for image concept interpretation from WordNet [76], is the
+maximum depth of WordNet, is the visual similarity
+between the images under and . Kullback–Leibler (KL)
+divergence between their image distributions is used to charac-
+terize the visual similarity between the image concepts and
+in the high-dimensional feature space.
+The concept ontology for our test data set is shown in
+Figs. 1 and 2, where each image concept is linked with the
+most relevant image concept with maximum value of .
+One can observe that the concept ontology can interpret the
+image semantics more sufficiently and provide a good global
+overview of large-scale image collections at the concept level.
+Thus, the concept ontology can provide a good environment for:
+a) characterizing the interconcept correlations more precisely
+and enabling more sufficient image annotations at multiple
+semantic levels; b) supporting more effective multitask learning
+and enhancing the discrimination and adaptation power of the
+image classifiers significantly; c) bringing powerful inferencing
+FAN et al.: INTEGRATING CONCEPT ONTOLOGY AND MULTITASK LEARNING TO ACHIEVE MORE EFFECTIVE CLASSIFIER TRAINING 411
+Fig. 3. Visual feature extraction for image similarity characterization: (a) original images; (b) interest points and SIFT vectors; (c) wavelet transformation.
+Fig. 4. Visual feature extraction for image similarity characterization: (a) original images; (b) interest points and SIFT vectors; (c) wavelet transformation.
+scheme to learn the ensemble classifiers hierarchically for the
+high-level image concepts and reducing the computational cost
+significantly.
+IV. INTEGRATING MULTIPLE KERNELS FOR DIVERSE IMAGE
+SIMILARITY CHARACTERIZATION
+We have extracted both the global visual features and the local
+visual features to characterize various visual properties of the
+images. To avoid the pitfalls of the image segmentation tools,
+segmentation is not performed for feature extraction. In our cur-
+rent implementations, we have extracted the following visual
+features: 1) 16-bin color histogram to characterize the global
+color distributions of the images [64], [65]; 2) 62-D texture fea-
+tures from Gabor filter banks to characterize the global visual
+properties (i.e., global structures) of the images [19], [66]; 3) a
+number of interest points and their SIFT (scale invariant feature
+transform) features to characterize the local visual properties
+(i.e., coarse shapes of the image objects and local image struc-
+tures) of the underlying salient image components [22], [23].
+As shown in Figs. 3 and 4, one can observe that our global and
+local visual features can characterize the principal visual prop-
+erties of the images effectively.
+By using multimodal visual features for image content rep-
+resentation, the diverse visual properties of the images can be
+characterized more precisely. The statistical properties of the
+images in the high-dimensional multimodal feature space may
+be heterogeneous, and, thus, the diverse visual similarity rela-
+tionships between the images cannot be approximated precisely
+by using one single type of kernel. In addition, the standard
+techniques for SVM classifier training have time com-
+plexity and space complexity, where is the number
+of training images [44]–[47], [50]–[51]. Because the number of
+training images increases exponentially with the feature dimen-
+sions; thus, it is too expensive to learn the SVM image classifiers
+directly in the high-dimensional multimodal feature space.
+Based on these observations, the high-dimensional multi-
+modal visual features are first partitioned into multiple feature
+subsets and each feature subset is used to characterize one
+certain type of visual properties of the images, and the under-
+lying visual similarity relationships between the images are
+412 IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 17, NO. 3, MARCH 2008
+more homogeneous and can be approximated more precisely
+by using one particular type of kernel. We have also studied the
+statistical property of the images under each feature subset, and
+the gained knowledge has been used to design the basic image
+kernel for each feature subset. Finally, multiple types of basic
+image kernels are integrated to characterize the diverse visual
+similarity relationships between the images more precisely. In
+our multiple kernel approach, the dimensions for each feature
+subset are relatively lower, thus incorporating multiple kernels
+for diverse image similarity characterization can reduce the
+size of training images dramatically and generalize the image
+classifiers significantly from fewer training images.
+A. Color Histogram Kernel
+We calculate a coarse color histogram as a rough approxima-
+tion of the color distribution in an image [64], [65]. Specifically,
+we quantize the color channel uniformly into 16 bins. Given
+this histogram-based color representation, a kernel function is
+designed to construct the kernel matrix for characterizing the
+image similarity according to their color principles. We adopt
+the kernel function and it is a Mercer kernel. Given two color
+histograms and with equal length (16 bins), their statis-
+tical similarity is defined as
+(2)
+where and are the corresponding color bins from two
+color histograms and . The color histogram kernel function
+, which is used to characterize the similarity relation-
+ship between the images according to their color principles, is
+defined as
+(3)
+where is set to be the mean value of the distances between
+all the image pairs in our experiments.
+B. Wavelet Filter Bank Kernel
+To capture the image textures, we have applied a bank of
+wavelet filters on each image as shown in Figs. 3(c) and 4(c),
+where the image textures are represented by histogramming
+the outputs of the filtered channels. Particularly, Gabor filters
+with six orientations and three scales are applied for extracting
+the texture features [19], [66]. Suppose there are filtered
+responses for each image, we have estimated the empirical
+distribution of the filtered responses by building a -bin his-
+togram , where is the filtered response
+for the th channel. The wavelet filter bank kernel for
+characterizing the similarity relationship between two images
+and is then defined as
+(4)
+where is the distance between the two his-
+tograms and obtained from the filtering channel
+of the respective images.
+The wavelet filter bank kernel can be decomposed
+as a product of component kernels
+(5)
+where each component kernel satisfies
+Mercer’s conditions. Therefore, the wavelet filter bank kernel
+also satisfies Mercer’s conditions.
+C. Interest Point Matching Kernel
+In the real-world image collections, meaningful image con-
+tents at the object level are often mixed with other signals such
+as cluttered image background, lighting change, geometric
+deformation, etc. Thus, the local visual features may provide
+better performance on characterizing the visual similarity
+relationships between the salient image components. As shown
+in Figs. 3(b) and 4(b), such interest points and their local visual
+features can characterize the locations of the salient image
+components and their geometric properties effectively.
+In our current work, the difference of Gaussian (DoG) is em-
+ployed as the interest point detector and SIFT features as the de-
+scriptors because of their distinctiveness and success in object
+detection [22]. For two images, their interest point sets and
+may have different numbers of interest points: and .
+Based on this observation, the Earth mover’s distance (EMD)
+between these two interest point sets is then defined as [47]
+(6)
+where is an importance factor that can be determined auto-
+matically by solving a linear programming problem [47], and
+is the ground distance function between two random
+interest points and from and . To incorporate the EMD
+distance into our kernel-based image similarity characterization
+framework, our interest point matching kernel is defined as
+(7)
+where is set as the mean value of of the image pairs
+in our experiments.
+It is also worth pointing out that these three basic image
+kernels (color histogram kernel, wavelet filter bank kernel,
+and interest point matching kernel) are used as the examples
+to illustrate our new framework for basic image kernel con-
+struction. The basic image kernels for other multimodal feature
+subsets can be constructed autonomously according to the
+underlying statistical properties of the images, and our multiple
+kernel learning algorithm has provided a natural way to add
+new types of feature subsets and their basic image kernels
+incrementally.
+FAN et al.: INTEGRATING CONCEPT ONTOLOGY AND MULTITASK LEARNING TO ACHIEVE MORE EFFECTIVE CLASSIFIER TRAINING 413
+V. HIERARCHICAL CLASSIFIER TRAINING FOR AUTOMATIC
+IMAGE CONCEPT DETECTION
+To achieve automatic image annotation, it is very important
+to develop new algorithms for learning more reliable mapping
+functions (i.e., image classifiers) between the low-level visual
+features and the high-level human interpretation of image se-
+mantics (i.e., image concepts at different semantic levels). The
+image concepts are correlated and such interconcept correla-
+tions can be characterized precisely by the concept ontology. In
+this paper, we have developed a novel scheme by incorporating
+the concept ontology to exploit the interconcept correlations for
+achieving more reliable image classifier training. a) A novel
+multiple kernel learning algorithm is investigated by synthe-
+sizing multiple multimodal feature subsets to tackle the problem
+of huge intraconcept visual diversity more effectively. b) A hier-
+archical boosting algorithm is developed to learn the ensemble
+classifiers hierarchically for the high-level image concepts and
+tackle the problem of huge intraconcept visual diversity effec-
+tively. c) A novel multitask learning algorithm is developed to
+learn the correlated classifiers for the sibling image concepts
+under the same parent concept and handle the problem of huge
+interconcept visual similarity effectively.
+A. Multiple Kernel Learning
+Because different basic image kernels may play different
+roles on characterizing the diverse visual similarity relation-
+ships between the images, and the optimal kernel for diverse
+image similarity characterization can be approximated more
+accurately by using a linear combination of these basic image
+kernels with different importances [50], [51]. Based on these
+observations, we have developed a multiple kernel learning
+algorithm for SVM image classifier training. For a given atomic
+image concept at the first level of the concept ontology, its
+SVM classifier can be learned by using a mixture of these basic
+image kernels (i.e., mixture-of-kernels)
+(8)
+where is the number of feature subsets (i.e., the number of
+basic image kernels), is the importance factor for the
+th basic image kernel and it can be obtained auto-
+matically in the following multiple kernel learning procedure.
+Given a set of labeled training images
+, the diverse visual similarity relationships between
+the training images can be characterized more precisely by using
+kernel mappings: , , from the orig-
+inal feature space into kernel spaces ,
+where denotes the dimensionality of the th feature subset.
+Thus, the distribution of the images is warpped by a nonlinear
+mapping into multiple kernel spaces for achieving more effec-
+tive characterization of their diverse visual similarity relation-
+ships. The SVM classifier for the given atomic image
+concept can be defined as
+(9)
+The kernel coefficients and the weights for the training
+images can be obtained simultaneously by solving a min-max
+problem [51], [74]
+(10)
+subject to
+where is defined as the penalty parameter between the training
+error rate and the regularization term. By solving the min-max
+problem to obtain the optimal values of , and
+, , the SVM classifier for the given atomic
+image concept can be obtained automatically. The min-max
+problem can be solved by using a wrapper algorithm [51], [74]
+which divides the problem into an inner subproblem and an
+outer subproblem. Thus, the solution of such min-max problem
+is obtained by alternatively solving the outer subproblem using
+the results of the inner subproblem as the input and vice versa
+until convergence.
+By using the mixture-of-kernels to achieve a better approxi-
+mation of the diverse visual similarity relationships between the
+images in the high-dimensional multimodal feature space, our
+multiple kernel learning algorithm can provide more effective
+solution for addressing the problem of huge intraconcept visual
+diversity; thus, it can enhance the discrimination and adapta-
+tion power of the classifiers significantly. Our multiple kernel
+learning algorithm has provided a natural way to add new types
+of feature subsets and their basic image kernels by using the
+mixture-of-kernels; thus, it has also provided a new approach to
+synthesize diverse information and knowledge sources for en-
+abling more reliable image concept detection. Because the di-
+mensions for each feature subset are relatively low, our mul-
+tiple kernel learning algorithm can reduce the computational
+cost dramatically and generalize the image classifiers signifi-
+cantly from fewer training images. While most existing methods
+for image classifier training suffer from the problem of curse of
+dimensionality, our multiple kernel learning algorithm can take
+advantage of high-dimensional multimodal visual features by
+using the mixture-of-kernels to synthesize multiple multimodal
+feature subsets. Through learning the kernel coefficients auto-
+matically, it is able for us to understand the importances of these
+basic image kernels and their relevant feature subsets for a given
+classification task. Thus, our multiple kernel learning algorithm
+can provide a new framework for automatic feature subset selec-
+tion. To enhance the discrimination and adaptation power of the
+image classifiers, multitask learning can further be integrated to
+learn the correlated classifiers for the sibling atomic image con-
+cepts simultaneously (see Section B).
+414 IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 17, NO. 3, MARCH 2008
+The proportion of the errors for our multiple
+kernel learning algorithm on the test images is bounded by [74]
+(11)
+where is the size of the test images, is a certain
+measure of the complexity of the mixture-of-kernels and
+is the bound on the trace of the mixture-of-kernels , and
+is the error rate for the training image set. Thus, the
+proportion of the errors on the test images is bounded by the av-
+erage error rate on the training image set and a complexity term
+of the mixture-of-kernels. Good generalization is expected if
+the error rate on the training image set is small while the clas-
+sifier has a large margin. Based these observations, we have de-
+veloped a novel multitask learning algorithm (see Section B) to
+maximize the margins of the image classifiers and reduce the
+average error rate on the training image set.
+B. Multitask Learning
+On the concept ontology, the sibling image concepts under
+the same parent concept are strongly correlated and share some
+common visual properties, thus isolating these sibling image
+concepts and learning their classifiers independently are not ap-
+propriate. Multitask learning is one promising solution for this
+problem [30]–[37], but its success largely depends on the relat-
+edness between multiple learning tasks. The idea behind multi-
+task learning is that if multiple learning tasks share a common
+predictive structure (share a common predictive structure for
+their hypothesis spaces), then such common predictive struc-
+ture can be estimated more reliably by considering these related
+learning tasks together [36]. One of the most important open
+problems for multitask learning is to better characterize what
+the related tasks are.
+In this paper, we have developed a novel multitask learning
+scheme to exploit the interconcept correlations for enhancing
+the discrimination power of the image classifiers. a) The concept
+ontology is used to identify the related learning tasks precisely,
+e.g., training the correlated classifiers for the sibling image con-
+cepts under the same parent concept. b) The intertask related-
+ness is characterized precisely by using a common predictive
+structure shared among the correlated SVM image classifiers
+for the sibling image concepts under the same parent concept.
+For a given parent concept at the higher level of the con-
+cept ontology, we assume that it has sibling children concepts
+at the sublevel of the concept ontology. Thus, the SVM classi-
+fier for one particular children concept can be defined as
+(12)
+where the first part is the common predictive structure shared
+among the correlated SVM classifiers for all these sibling
+children concepts under the same parent concept , the second
+part is the individual predictive structure of the SVM classifier
+for the given children concept .
+By learning two different sets of the kernel coefficients
+and simultaneously, our multitask learning algorithm can au-
+tomatically determine two separable kernel spaces and feature
+subspaces to effectively characterize both the common visual
+properties shared among all these sibling children concepts
+and the individual visual properties for each particular children
+concept. By learning two different sets of the weights and
+for the training images simultaneously, our multitask learning
+algorithm can automatically establish two independent decision
+boundaries for both the common predictive structure (shared
+among the correlated SVM classifiers) and the individual pre-
+dictive structure of the SVM classifier for each particular chil-
+dren concept. The kernel coefficients and the weights are
+fixed for all these correlated image classifiers to characterize
+their common predictive structure.
+Because the common predictive structure is shared among
+the correlated SVM classifiers from all these sibling
+children concepts under , it can be estimated more re-
+liably by optimizing a joint objective function. Given the
+labeled training images for sibling children concepts under
+, the margin
+maximization procedure can be transformed into the following
+joint optimization problem:
+(13)
+subject to
+where and are the individual and common objective
+functions, and they are defined as
+(14)
+(15)
+For each sibling children concept, we have labeled training
+images for classifier training, and, thus, the total number of
+FAN et al.: INTEGRATING CONCEPT ONTOLOGY AND MULTITASK LEARNING TO ACHIEVE MORE EFFECTIVE CLASSIFIER TRAINING 415
+the training images for all these sibling children concepts
+under the same parent concept can be . Thus, we can
+always have more training images for optimizing the common
+predictive structure shared among the correlated image classi-
+fiers. Even the size of the training images is small for each sib-
+ling children concept, we can always have larger size of the
+training images for learning the common predictive structure
+more accurately to enhance the discrimination and adaptation
+power of the correlated image classifiers.
+Because the common predictive structure can be learned
+jointly by using the training images for all these sibling children
+concepts under the same parent concept, our multitask learning
+algorithm can handle the problem of huge interconcept visual
+similarity effectively. By using a common predictive structure
+to characterize the relatedness among multiple correlated SVM
+image classifiers (rather than using simple pairwise concept
+combinations [32]), our multitask learning algorithm can re-
+duce the computational cost dramatically. By learning from
+the training images for other sibling children concepts, our
+multitask learning algorithm can enhance the discrimination
+and adaptation power of the correlated image classifiers signif-
+icantly. Incorporating the training images from other sibling
+children concepts for classifier training can significantly gener-
+alize the classifiers from fewer training images, especially when
+the available training images for the given children concept may
+not be representative for large amount of unseen test images.
+The error rate for our multitask learning algorithm is
+bounded by
+(16)
+where is the training error rate obtained by the
+underlying empirical risk function, and are the constants
+[36], is a predefined threshold.
+C. Hierarchical Boosting
+Because the mapping functions between the low-level visual
+features and the high-level image concepts with larger intracon-
+cept visual diversity may not be obvious, automatic detection
+of the high-level image concepts is still beyond the ability of
+the state-of-the-art techniques. The high-level image concepts
+cover more general subjects of image contents, and, thus, the
+hypothesis spaces for training the corresponding image classi-
+fiers could be very large and result in higher computational cost.
+To reduce the computational cost and tackle the problem of huge
+intraconcept visual diversity, we have developed a novel hierar-
+chical boosting scheme to learn the ensemble classifiers hierar-
+chically for the high-level image concepts.
+For a given high-level image concept , the common pre-
+dictive structure shared among the correlated SVM classifiers
+for its sibling children concepts can further be treated as prior
+predictive structure to learn a bias classifier incrementally for
+characterizing the common visual properties shared among
+Fig. 5. Flowchart for our hierarchical boosting algorithm.
+its sibling children concepts. Thus, the bias classifier for the
+given high-level image concept can be obtained via transfer
+learning
+(17)
+where the first part is the common predictive structure shared
+among the correlated classifiers for its sibling children concepts,
+and the second part is used to characterize its particular visual
+properties only learned from new training images for clas-
+sifier adaptation, is the number of sibling children concepts
+under the same parent concept .
+To enable hierarchical image classifier training, the ensemble
+classifier for the high-level image concept should be able to
+characterize both the common visual properties shared among
+its sibling children concepts and the individual visual proper-
+ties for each of its sibling children concepts. To achieve more
+accurate approximation of the given high-level image concept
+(i.e., learning the ensemble classifier for ), it is neces-
+sary to integrate its bias classifier with these correlated classi-
+fiers for its sibling children concepts. Unfortunately, all the ex-
+isting boosting techniques are proposed to combine the weak
+classifiers that are learned in different ways (i.e., different input
+spaces) but for the same task [30], and they did not include the
+regularization between different tasks which is very essential for
+hierarchical image classifier training.
+To address this issue, we have developed a new scheme for
+combining multitask classifiers (called hierarchical boosting)
+that is able to integrate the correlated classifiers trained for the
+related concepts while leveraging their distinct strengths signif-
+icantly. Our hierarchical boosting scheme can search an optimal
+combination of these multitask classifiers by sharing a common
+predictive structure according to the new task, and, thus, it is
+able to generalize the ensemble classifier significantly while re-
+ducing the computational cost dramatically. As shown in Fig. 5,
+the ensemble classifier for the given high-level image concept
+can be obtained by a logistic regression of the predictions of
+its bias classifier and the correlated classifiers for its sibling
+children concepts
+(18)
+416 IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 17, NO. 3, MARCH 2008
+where is the posterior distribution of the th correlated
+classifier to be combined, and is determined by
+(19)
+For a given high-level image concept with larger intraconcept
+visual diversity, our hierarchical boosting algorithm is able to
+learn its ensemble classifier more effectively by partitioning its
+large hypothesis space into multiple smaller ones for its children
+concepts, and, thus, the computational cost can be reduced sig-
+nificantly. In addition, multitask learning is performed to learn
+the correlated classifiers for the sibling children concepts si-
+multaneously and enhance the discrimination and adaptation
+power of the image classifiers to be combined; thus, more reli-
+able learning of the ensemble classifiers for the high-level image
+concepts can be achieved.
+With the training error rates for all these
+classifiers (i.e., classifiers for sibling children image con-
+cepts under and the bias classifier for ), the error proba-
+bility of our hierarchical boosting algorithm is bounded by [75]
+(20)
+where is a predefined threshold.
+Our hierarchical boosting algorithm has provided a new ap-
+proach for modeling the intertask correlations, and, thus, it can
+reduce the computational cost significantly. By exploiting the
+interconcept correlations between the sibling image concepts to
+learn a bias classifier for their parent concept, our hierarchical
+boosting algorithm can handle the problem of huge interconcept
+visual similarity effectively and enhance the discrimination and
+adaptation power of the image classifiers to be combined. Our
+hierarchical boosting algorithm is able to combine the classifiers
+trained for different tasks, leverage their individual strengths,
+and boost their performance significantly. Thus, our hierarchical
+boosting algorithm can provide more effective solution for hi-
+erarchical image classification and annotation.
+VI. MULTILEVEL IMAGE ANNOTATION VIA
+HIERARCHICAL CLASSIFICATION
+After our hierarchical image classifiers are available, they
+are used to classify the images into the most relevant image
+concepts at different semantic levels. In a top-down hierar-
+chical image classification scheme, the initial classification
+of a test image is critical because the classifiers at the subse-
+quent levels cannot recover from the misclassification of the
+test image that may occur at a higher concept level, and this
+misclassification can be propagated to the terminal node (i.e.,
+interconcept error propagation) [27]. We have integrated two
+innovative solutions seamlessly to address such interconcept
+error propagation problem. 1) At the image classifier training
+procedure, a hierarchical boosting algorithm is developed for
+enhancing the discrimination power of the image classifiers by
+exploiting the interconcept correlations to address the problem
+of huge interconcept visual similarity effectively. 2) A overall
+confidence is defined to detect the misclassification path early
+and take appropriate actions for automatic error recovery.
+Three significant aspects of our hierarchical image classifi-
+cation scheme are able to address the interconcept error prop-
+agation problem effectively. a) A common predictive structure
+is shared among the correlated classifiers for the sibling image
+concepts at the same semantic level of the concept ontology
+to maximize their margins, handle the huge interconcept vi-
+sual similarity effectively and enhance their discrimination and
+adaptation power significantly. By exploiting the strong correla-
+tions between the classifiers for the sibling image concepts, our
+hierarchical boosting scheme is able to learn the ensemble clas-
+sifiers more reliably for the image concepts at the higher levels
+of the concept ontology. Thus, the test images can be classi-
+fied more accurately at the beginning, i.e., image concepts at the
+higher levels of the concept ontology. b) The classification deci-
+sion for each test image is determined by a voting from multiple
+multitask classifiers for the sibling image concepts to make their
+errors to be transparent. c) An overall confidence is calculated
+to determine the optimal path for hierarchical image classifica-
+tion. For a given test image, an optimal classification path should
+provide maximum value of the overall confidence among all the
+possible classification paths (i.e., all the paths from the parent
+concept node to multiple sibling children concept nodes).
+The overall confidence for one certain classification
+path (from one certain higher level image concept to the
+relevant lower level image concept ) is defined as [70]
+(21)
+where is the confidence for the given test image to be
+classified into the current image concept at the higher level
+of the concept ontology, is the maximum value of the
+confidence for the given test image to be classified into the most
+relevant children concept node . The confidence for the given
+test image to be classified into one relevant children image con-
+cept of is defined as [49]
+(22)
+where is the output of the ’s SVM classifier for the
+test image with the visual features . The parameters and
+can be determined by minimizing the negative log-likelihood
+(NLL) function on the validation image set [49]. Because there
+are sibling children image concepts under the same parent
+concept , the children image concept which is most rele-
+vant to the given test image is determined by
+(23)
+Thus, the optimal classification path with the maximum value
+of the overall confidence for the given test image is selected.
+By using the overall confidence, it is able for us to detect the
+incorrect classification path early and take appropriate actions
+for automatic error recovery.
+It is important to note that, once a test image is classified,
+the keywords for interpreting the relevant image concepts at
+different semantic levels of the concept ontology become the
+annotations for interpreting its semantics. Our multilevel image
+FAN et al.: INTEGRATING CONCEPT ONTOLOGY AND MULTITASK LEARNING TO ACHIEVE MORE EFFECTIVE CLASSIFIER TRAINING 417
+Fig. 6. Multilevel image annotation results and comparison.
+annotation scheme is very attractive to enable more effective
+image retrieval because more sufficient keywords are used for
+image annotation. In addition, the concept ontology can directly
+present the keywords (which are used for image annotation) to
+the users, so that they can easily find the adequate keywords for
+query formulation [77]. Some of our experimental results on
+hierarchical image classification and multilevel annotation are
+given in Fig. 6. From our experimental results, one can find that
+our proposed hierarchical image classification scheme is able to
+achieve more sufficient interpretation of the image semantics by
+using multiple relevant keywords for image annotation.
+VII. ALGORITHM EVALUATION AND INTERACTIVE
+HYPOTHESES ASSESSMENT
+We carry out our experimental studies by using three data
+sets: Corel, LabelMe [32], and large-scale images from Flickr.
+We have learned the concept ontology which consists of more
+than 300 image concepts at multiple semantic levels. In this
+paper, we focus on learning the classifiers for only 120 image
+concepts as shown in Figs. 1 and 2. For each atomic image
+concept at the first level of our concept ontology, 350 im-
+ages are labeled as the training samples to learn the relevant
+SVM image classifier. In addition, the training images for
+these atomic image concepts are propagated as the training
+images for their parent concept nodes hierarchically. For each
+higher-level image concept, 120 images are labeled as the new
+training samples to learn their bias classifiers. 128 000 images
+which are not used for image classifier training are treated as
+the test set for evaluating our image classifiers.
+Our work on algorithm evaluation focus on: 1) comparing
+the performance differences of the same SVM image classifier
+training tool by using one single kernel or mixture-of-kernels
+for diverse image similarity characterization; 2) comparing the
+performance differences between various approaches for mul-
+titask learning; 3) comparing the performance differences be-
+tween our hierarchical approach and the flat approach for image
+classifier training. The benchmark metric for classifier evalua-
+tion includes precision and recall . They are defined as
+(24)
+where is the set of true positive images that are related to the
+corresponding image concept and are classified correctly, is
+the set of true negative images that are irrelevant to the cor-
+responding image concept and are classified incorrectly, and
+is the set of false positive images that are related to the corre-
+sponding image concept but are misclassified.
+A. Single Kernel Versus Multiple Kernels
+Most existing kernel-based classifier training techniques as-
+sume that the statistical properties of the images are homoge-
+neous in the high-dimensional multimodal feature space, and
+one single type of kernel is used to characterize the diverse
+visual similarity relationships between the images. However,
+the statistical properties of the images are heterogeneous in the
+high-dimensional multimodal feature space, and, thus, multiple
+types of kernels should be used to achieve more accurate ap-
+proximation of the diverse visual similarity relationships be-
+tween the images. Based on this understanding, our multiple
+kernel learning algorithm can achieve more accurate approxi-
+mation of the diverse visual similarity relationships between the
+images and may result in higher classification accuracy. For the
+same image classification task (i.e., learning the classifier for
+the same image concept), we have compared the performance of
+our multiple kernel learning algorithm with other single-kernel
+techniques. As shown in Fig. 7, one can observe that our mul-
+tiple kernel learning algorithm can significantly outperform the
+single-kernel techniques.
+Such significant improvement on classification accuracy ben-
+efits from two components. a) Using multiple types of kernels is
+able to achieve more accurate characterization of the diverse vi-
+sual similarity relationships between the images. b) Each basic
+418 IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 17, NO. 3, MARCH 2008
+Fig. 7. Comparison results on the precision  between our multiple kernel learning algorithm and single kernel technique.
+Fig. 8. Comparison results on the size of training images between our multiple kernel learning algorithm and traditional single learning algorithm.
+image kernel is used to characterize one certain type of the di-
+verse visual similarity relationships between the images, and the
+dimensions for the relevant feature subset are relatively lower;
+thus, our multiple kernel learning algorithm can generalize the
+classifiers significantly from smaller size of training images.
+It is well-known that the cost for SVM image classifier training
+largely depends on the number of training images (which in-
+crease exponentially with the feature dimensions). To evaluate
+the computational cost of different algorithms for SVM image
+classifier training, their sizes of the training images (which are
+required for achieving the same accuracy rate of the image classi-
+fier) are compared. 1) For each image concept, one single kernel
+is used to approximate the diverse image similarity relationships
+directly in the high-dimensional multimodal feature space. 2) For
+each image concept, our multiple kernel learning algorithm is
+performed by using the mixture-of-kernels to approximate the
+diverse image similarity relationships jointly, where each basic
+image kernel focuses on one particular feature subset with lower
+feature dimensions. Because the dimensions for each feature
+subset are relatively lower, our multiple kernel learning algo-
+rithm can significantly reduce the number of training images that
+are required for achieving reliable classifier training. As shown
+in Fig. 8, one can observe that our multiple kernel learning algo-
+rithm can significantly reduce the number of training images
+and result in lower computational cost.
+B. Hierarchical Boosting Versus Multitask Boosting
+Our hierarchical boosting algorithm can significantly reduce
+the computational cost for image classifier training as compared
+with some traditional multitask learning techniques such as mul-
+ticlass boosting and multitask boosting [30]–[32]. The multi-
+class boosting techniques do not explicitly exploit the common
+predictive structure among the classifiers [30], [31]. The mul-
+titask boosting algorithms have recently been proposed to en-
+able multiclass object detection by sharing the common features
+among the classifiers [32]. Rather than exploiting a common
+FAN et al.: INTEGRATING CONCEPT ONTOLOGY AND MULTITASK LEARNING TO ACHIEVE MORE EFFECTIVE CLASSIFIER TRAINING 419
+Fig. 9. Comparison results on the precision  between our hierarchical boosting algorithm, multiclass boosting and multitask boosting for some image concepts.
+Fig. 10. Comparison results on the precision  between our hierarchical classifier training algorithm and traditional flat approach for some image concepts.
+predictive structure to learn a bias classifier, the ensemble clas-
+sifier for each object class is simply composed by the classifiers
+that are trained for all the potential pair-wise object class com-
+binations [32]. Thus, the multitask boosting algorithm may se-
+riously suffer from huge computational cost and may result in
+low classification accuracy.
+On the other hand, our hierarchical boosting algorithm can
+provide a good environment for supporting multitask learning,
+where the related tasks are well defined by the concept on-
+tology and the intertask correlations are effectively approxi-
+mated by using a common predictive structure between the cor-
+related SVM image classifiers. Thus, our hierarchical boosting
+algorithm can reduce the computational cost dramatically, gen-
+eralize the image classifiers significantly from fewer training
+images, and address the problem of huge interconcept visual
+similarity more effectively.
+As shown in Fig. 9, one can find that our hierarchical boosting
+algorithm can significantly outperform the traditional techniques
+such as multiclass boosting and multitask boosting, especially
+for the image concepts on the higher levels of the concept
+ontology. In our hierarchical boosting algorithm, a common
+predicitive structure is used to effectively characterize the task
+relatedness between multiple tasks for SVM image classifier
+training. Thus, our hierarchical boosting algorithm can signif-
+icantly reduce the computational cost for achieving multitask
+learning. Because the intertask correlations are simply modeled
+by using pair-wise concept combinations, the multitask learning
+algorithm requires larger size of training images to achieve
+reliable classifier training because the hypothesis space is larger.
+C. Hierarchical Approach Versus Flat Approach
+By using the same set of visual features for image content
+representation, we have compared the performance differences
+between two approaches for classifier training by using the same
+set of training images: flat approach (i.e., the classifier for each
+image cocept is learned independently) versus our hierarchical
+approach.
+As shown in Fig. 10, one can observe that our hierarchical
+classifier training scheme can significantly improve the classifi-
+cation accuracy for the high-level image concepts. Such signif-
+420 IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 17, NO. 3, MARCH 2008
+icant improvement on the classification accuracy benefits from
+three components. a) The classifiers for the high-level image
+concepts with larger intraconcept visual diversity are trained hi-
+erarchically by combining the classifiers for the relevant low-
+level image concepts with smaller intraconcept visual diver-
+sity, and, thus, the large hypothesis space for classifier training
+is partitioned into multiple smaller ones which can generalize
+the classifiers significantly from fewer training images. b) For a
+given high-level image concept, the strong correlations between
+its children image concepts are exploited effectively by sharing
+a common predictive structure. Thus, our hierarchical classifier
+training algorithm can learn not only the reliable classifiers but
+also the bias, i.e., learn how to generalize. c) The final predic-
+tion results for the classifiers of the high-level image concepts
+are obtained by a voting procedure according to the classifiers
+at the same semantic level to make their prediction errors to be
+transparent, and the interconcept error transmission problem can
+be addressed effectively by using the overall confidence.
+For the atomic image concepts at the first level of the concept
+ontology, our proposed hierarchical classifier training scheme
+can also obtain higher classification accuracy, because the strong
+interconcept correlations between the sibling atomic image con-
+cepts under the same parent node are exploited by performing
+multitask learning. In addition, ourhierarchical classifier training
+schemehasprovidedagoodenvironmenttoenablemoreeffective
+multitask learning, i.e., simultaneously training the classifiers for
+thestronglycorrelatedandsibling imageconceptsunder thesame
+parent concept node. Through performing multitask learning, the
+risk of overfitting the shared part (common predictive structure)
+is significantly reduced and the problem of huge interconcept
+similarity on visual properties can be addressed more effectively,
+which can further result in higher classification accuracy.
+D. Image Visualization for Interactive Hypotheses Assessment
+Most existing classifier training algorithms require well-
+trained experts to evaluate the effectiveness of the underlying
+hypotheses for image classifier training. For our hierarchical
+image classifier training algorithm, the following hypotheses
+are implicitly used: a) semantically-similar images from the
+same image concept may have different statistical properties
+under different feature subsets (i.e., huge intraconcept visual
+diversity) and such diverse statistical properties can be char-
+acterized more effectively by using the mixture-of-kernels; b)
+semantically-dissimilar images from different image concepts
+may have huge interconcept visual similarity and such inter-
+concept visual similarity can be handled effectively by using
+multitask learning to maximize the interconcept margins. Ob-
+viously, the effectiveness of the hypotheses for image classifier
+training can be evaluated by using the precision and recall of the
+image classifiers. However, there is an urgent need to develop
+new algorithms to assess such hypotheses more intuitively by
+allowing users to see large amount of images and the margins
+between the images from different image concepts.
+Similarity-based image visualization is one promising so-
+lution for allowing users to assess the hypotheses for image
+classifier training intuitively, and some pioneer work have been
+done by incorporating multidimensional scaling (MDS) for
+supporting image visualization [53]–[57]. One major adavan-
+tage of image visualization is that it can allow users to see large
+amount of images and their global distribution structures for
+assessing the hypotheses for image classifier training. Unfor-
+tunately, each image concept may consist of large amount of
+images and most existing MDS-based visualization techniques
+are unable to deal with large amount of images, because they
+cannot support adaptive image sampling and change of focus
+effectively. In addition, it is a challenging task to obtain a good
+similarity-preserving projection of large amount of images from
+the high-dimensional multimodal feature space to a 2-D display
+space. Even visualization can allow users to see large amount of
+images at once, visualizing large amount of images on a size-lim-
+ited display screen may seriously suffer from the overlapping
+problem. To incorporate image visualization for assisting users
+on hypotheses assessment, new algorithms should be developed
+to achieve adaptive image sampling and similarity-preserving
+image projection.
+To address these issues, we have developed multiple innova-
+tive techniques. 1) A kernel-based image clustering algorithm
+is developed to partition the semantically-similar images in
+the same concept into multiple clusters. 2) An adaptive image
+sampling algorithm is developed for selecting the most repre-
+sentative images to reduce the visual complexity for large-scale
+image visualization. 3) Kernel principal component analysis
+(KPCA) [73] is used for achieving similarity-preserving image
+projection to highlight the similarities and the significant
+differences between the most representative images that are
+selected from different image clusters. 4) Hyperbolic geometry
+is integrated to create “more spaces” for image visualization
+and support interactive exploration of large amount of images
+for hypotheses assessment [58], [59].
+The optimal partition of the semantically-similar images
+under the same concept is obtained by minimizing the trace
+of the within-cluster scatter matrix, . The scatter matrix is
+given by
+(25)
+where is the mixture kernel function, is the number
+of images under the same image concept and is the number of
+clusters, is the number of images in the th cluster. Searching
+the optimal values of the elements that minimizes the expres-
+sion of the trace is achieved effectively by an iterative procedure
+[71], [72]. Our kernel-based image clustering algorithm is able
+to obtain the most significant global distribution structures of
+the images under the same concept (i.e., image clusters and their
+relationships), and such global image distribution structures can
+be used to achieve adaptive image sampling for image visualiza-
+tion and hypotheses assessment.
+Our adaptive image sampling technique has exploited the
+following criteria for selecting the most representative im-
+ages. a) Global Image Distribution Structures: Our kernel-
+based image clustering algorithm can provide a good overview
+FAN et al.: INTEGRATING CONCEPT ONTOLOGY AND MULTITASK LEARNING TO ACHIEVE MORE EFFECTIVE CLASSIFIER TRAINING 421
+of the global distribution structures (i.e., image clusters and
+their relationships) for large amount of images under the same
+concept. Thus, adaptive image sampling can be achieved by
+selecting the most representative images to represent the images
+in the same cluster which have similar visual properties. b)
+Coverage Percentage: Different clusters may contain various
+numbers of images, and, thus, more images can be selected
+from the clusters with bigger coverage percentages. Obviously,
+the relative numbers of their most representative images can be
+optimized according to their coverage percentages.
+We have integrated the representativeness scores of the im-
+ages for selecting the most representative images. The represen-
+tativeness scores of the images in the same cluster depend their
+kernel-based similarity distances with the decision boundaries
+(i.e., support vectors for image clustering), because the support
+vectors can effectively capture the essentials (i.e., principal vi-
+sual properties) of the images in the same cluster. Thus, the rep-
+resentativeness score of the given image with the visual
+features depends on its closeness with the decision bound-
+aries (i.e., margin)
+(26)
+where is the set of support vectors for image clustering and
+is the margin between the given image and the deci-
+sion boundaries. Thus, the images, which are closer to the de-
+cision boundaries, may have larger values of the representative-
+ness scores . The images in the same cluster are ranked pre-
+cisely according to their representativeness scores, and the most
+representative images with larger values of are selected and
+presented to the users for assessing the hypotheses for image
+classifier training.
+Only the most representative images are selected, and large
+amount of redundant images which have similar visual proper-
+ties with the most representative images are eliminated automat-
+ically. Thus, our adaptive image sampling algorithm can signifi-
+cantly reduce the visual complexity for image visualization and
+hypotheses assessment. To preserve the visual similarity rela-
+tionships between the images, the selected most representative
+images are projected to a hyperbolic plane by using kernel PCA
+[73] according to their kernel-based similarity distances. The
+kernel PCA is obtained by solving the eigenvalue equation
+(27)
+where denotes the eigenvalues and
+denotes the corresponding complete set of eigen-
+vectors, is the number of the most representative images,
+is a kernel matrix and its component is calculated as
+.
+The optimal KPCA-based image projection can be obtained
+by
+(28)
+where is the original kernel-based similarity distance
+between the images with the visual features and ,
+is their location distance on the display unit disk by using kernel
+PCA to achieve similarity-preserving image projection.
+After such similarity-based image projection is obtained by
+using KPCA, we can then use Poincaré disk model [58], [59]
+to map the most representative images on the hyperbolic plane
+onto a 2-D display coordinate (disk unit). Poincaré disk model
+can map the entire hyperbolic space onto an open unit circle,
+and produce a nonuniform mapping with “more display space.”
+Each image can be assigned a location within the
+unit disk for image display, which represents its Poincare co-
+ordinates. By treating the location of the image as a complex
+number, we can define such Poincaré mapping as an isometric
+transformation
+(29)
+where and are the complex numbers, and is the com-
+plex conjugate of . Such Poincaré mapping can easily support
+change of focus to allow users to explore large amount of im-
+ages interactively [59], so that users are allowed to assess the
+hypotheses for image classifier training effectively.
+If the underlying mixture-of-kernels can characterize the di-
+verse visual similarity relationships between the images pre-
+cisely, the visually-similar images from the same cluster should
+be visualized closely on the display unit disk and the visually-
+dissimilar images from different clusters should be spatially dis-
+tinct. Therefore, such similarity-based image visualization ap-
+proach can provide an intuitive solution for users to interac-
+tively assess the hypotheses for image classifier training, e.g.,
+good mixture-of-kernels should support better similarity-based
+image visualization and selecting different combinations of the
+kernels can produce different presentation and visualization of
+the same set of images under the same concept. As shown in
+Fig. 11, one can observe that good mixture-of-kernels can make
+the visually-similar images to be displayed closely according to
+their kernel-based visual similarity, and the visually-dissimilar
+images from different image concepts can be separated effec-
+tively. As shown in Fig. 12, users can also evaluate the effec-
+tiveness of different kernels for image similarity characteriza-
+tion, e.g., selecting different types of kernels for image simi-
+larity characterization can change the corresponding presenta-
+tion and visualization of the same set of images significantly.
+From these experimental results, one can conclude that our hy-
+perbolic image visualization algorithm can provide an intuitive
+approach for users to assess the effectiveness of the underlying
+hypotheses for image classifier training. The knowledge gained
+from such interactive hypotheses assessment process can further
+be integrated to select better hypotheses for achieving more re-
+liable classifier training.
+E. When Our Algorithms May Fail
+Even our hierarchical boosting algorithm may have many ad-
+vantages, it may fail for the following cases.
+a) When the image concepts should be interpreted according
+to the appearances of the image objects, our hierarchical
+boosting algorithm may fail, especially when the images
+consist of multiple classes of image objects and the cover-
+ages of the image objects of interest are relatively small.
+422 IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 17, NO. 3, MARCH 2008
+Fig. 11. Images from multiple children concepts under the same parent concept “indoor” can be separated effectively by using the mixture-of-kernels: (a) hyper-
+bolic visualization of the most representative images for the image concept “indoor,” where the most representative images for the children image concept “office”
+(in black circle) can be projected on the upper corner and be separated effectively from other children concepts; (b) the most representative images for the image
+concept “office” via change of focus.
+As shown in Fig. 13, our hierarchical boosting algorithm
+may have low accuracy rate for some image concepts,
+such as “building,” “car,” “road,” “chair,” because the
+interest points may not be able to characterize the ap-
+pearances of the underlying image objects effectively. In
+Fig. 14, we have also shown top 15 image concepts with
+lower accuracy rate. The reason is that only the interest
+points and their SIFT features are not sufficient to detect
+the appearances of the image objects; thus, more effective
+solutions are expected.
+b) In our hierarchical boosting algorithm, the concept on-
+tology is seamlessly integrated for characterizing the in-
+FAN et al.: INTEGRATING CONCEPT ONTOLOGY AND MULTITASK LEARNING TO ACHIEVE MORE EFFECTIVE CLASSIFIER TRAINING 423
+Fig. 12. Hyoerbolic visualization of the images for the concept “city landscape”: (a) image projection which is obtained by using the mixture-of-kernels; (b)
+image project which is obtained by using only the interest point matching kernel.
+terconcept correlations and reducing the number of con-
+cept-pairs for multitask learning. Obviously, the concept
+ontology can provide a good environment for multitask
+learning and reduce the computational cost significantly.
+Unfortunately, the concept ontology may over-specify the
+types of the interconcept correlations, and, thus, our hi-
+erarchical boosting algorithm may not be able to exploit
+all the types of the interconcept correlations for multitask
+learning. Therefore, there is an urgent need to develop new
+algorithms for characterizing various types of the inter-
+concept correlations to achieve more effective multitask
+learning.
+c) The statistical properties of the images may be signifi-
+cantly different in various image domains, and, thus, our
+424 IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 17, NO. 3, MARCH 2008
+Fig. 13. Some image concepts with mis-detection and wrong-detection of the appearances of the relevant objects: (a) car; (b) window; (c) person; (d) traffic light;
+(e) chair; (f) bottle.
+Fig. 14. Top 15 image concepts with low accuracy rate.
+image classifiers may still constrain their adaptability to
+be used for annotating the web-scale image collections.
+Therefore, one of our future work will focus on exploiting
+the interdomain correlations to enable transfer learning
+for automatic classifier adaptation. Our proposed multi-
+task learning algorithm has also provided a good approach
+to enable automatic classifier adaptation.
+VIII. CONCLUSIONS AND FUTURE WORKS
+In this paper, we have proposed a novel scheme for achieving
+automatic multilevel image annotation via hierarchical classifi-
+cation. The global visual features and the local visual features
+are seamlessly integrated to characterize various visual prop-
+erties of the images. Multiple kernels are integrated to charac-
+terize the diverse visual similarity relationships between the im-
+ages, achieve more reliable image classifier training, and bridge
+the semantic gap successfully. A novel multiple kernel learning
+algorithm is proposed for training the SVM classifiers for the
+atomic image concepts. To achieve multilevel image annotation,
+a novel hierarchical boosting algorithm is proposed by incorpo-
+rating concept ontology and multitask learning to exploit the in-
+terconcept correlations for hierarchical image classifier training.
+Our experiments on large-scale image collections have also ob-
+tained very positive results.
+Our future work will focus on: a) developing new algo-
+rithms for addressing training samples imbalance problem
+which is very important for multiclass SVM classifier training;
+b) proposing more effective techniques for integrating concept
+network to characterize multiple types of the interconcept
+correlations for multitask learning; c) extending our algorithms
+for handling the web-scale image collections with more experi-
+mental evaluations.
+ACKNOWLEDGMENT
+The authors would like to thank the reviewers for their
+insightful comments and suggestions to make this paper
+more readable. They would also liketo thank Associate Editor
+Prof. D. Schonfeld for handling the review process of this
+paper.
+REFERENCES
+[1] Y. Rui, T. S. Huang, and S.-F. Chang, “Image retrieval: Current tech-
+niques, promising directions and open issues,” J. Vis. Commun. Image
+Represent., vol. 10, pp. 39–62, 1999.
+[2] A. W. M. Smeulders, M. Worring, S. Santini, A. Gupta, and R. Jain,
+“Content-based image retrieval at the end of the early years,” IEEE
+Trans. Pattern Anal. Mach. Intell., vol. 22, no. 12, pp. 1349–1380, Dec.
+2000.
+[3] A. Vailaya, M. Figueiredo, A. K. Jain, and H. J. Zhang, “A Bayesian
+framework for semantic classification of outdoor vacation images,”
+Proc. SPIE, vol. 3656, 1998.
+[4] R. Lienhart and A. Hartmann, “Classifying images on the web auto-
+matically,” J. Electron. Imag., vol. 11, no. 4, pp. 445–454, 2002.
+[5] J. R. Smith, M. Naphade, and A. Natsev, “Multimedia semantic in-
+dexing using model vectors,” presented at the IEEE ICME, 2003.
+[6] C. Breen, L. Khan, and A. Ponnusany, “Image classification using
+neural networks and ontologies,” in Proc. DEXA Workshop, 2002, pp.
+98–102.
+FAN et al.: INTEGRATING CONCEPT ONTOLOGY AND MULTITASK LEARNING TO ACHIEVE MORE EFFECTIVE CLASSIFIER TRAINING 425
+[7] M. Naphade, J. R. Smith, J. Tesic, S.-F. Chang, W. Hsu, L. Kennedy,
+A. Hauptmann, and J. Curtis, “Large-scale concept ontology for mul-
+timedia,” IEEE Trans. Multimedia, vol. 13, no. 3, pp. 86–91, Jul.-Sep.
+2006.
+[8] M. Yelizaveta, T.-S. Chua, and R. Jain, “Semi-supervised annotation
+of brushwork in paitings domain using serial combinations of multiple
+experts,” ACM Multimedia, 2006.
+[9] Y. Wu, B. L. Tseng, and J. R. Smith, “Ontology-based multi-classifica-
+tion learning for video concept detection,” in Proc. IEEE ICME, 2004,
+pp. 1003–1006.
+[10] M. Naphade and T. S. Huang, “A probabilistic framework for semantic
+video indexing, filterig and retrieval,” IEEE Trans. Multimedia, vol. 3,
+no. 1, pp. 141–151, Mar. 2001.
+[11] C. Carson, S. Belongie, H. Greenspan, and J. Malik, “Blobworld:
+Image segmentation using expectation-maximization and its applica-
+tion to image querying,” IEEE Trans. Pattern Anal. Mach. Intell., vol.
+24, no. 8, pp. 1026– 1038, Aug. 2002.
+[12] J. Z. Wang, J. Li, and G. Wiederhold, “Simplicity: Semantic-sensitive
+integrated matching for picture libraries,” IEEE Trans. Pattern Anal.
+Mach. Intell., vol. 23, no. 9, pp. 947– 963, Sep. 2001.
+[13] R. Zhang, Z. Zhang, M. Li, W.-Y. Ma, and H.-J. Zhang, “A proba-
+bilistic semantic model for image annotation and multi-modal image
+retrieval,” presented at the IEEE ICCV, 2005.
+[14] Y. Li, L. G. Shapiro, and J. A. Bilmes, “A generative/discriminative
+learning algorithm for image classification,” presented at the IEEE
+ICCV, 2005.
+[15] J. Jeon and R. Manmatha, “Using maximum entropy for automatic
+image annotation,” CIVR, pp. 24–32, 2004.
+[16] J. Luo, A. E. Savakis, and A. Singhal, “A Bayesian network-based
+framework for semantic image understanding,” Pattern Recognit., vol.
+38, no. 6, pp. 919–934, 2005.
+[17] A. B. Torralba and A. Oliva, “Semantic organization of scenes
+using discriminant structural templates,” presented at the Proc.
+ICCV, 1999.
+[18] J. Fan, Y. Gao, and H. Luo, “Multi-level annotation of natural scenes
+using dominant image compounds and semantic concepts,” ACM Mul-
+timedia, 2004.
+[19] W.-Y. Ma and B. S. Manjunath, “Texture features and learning simi-
+larity,” in Proc. IEEE CVPR, 1996, pp. 425–430.
+[20] E. Chang, K. Goh, G. Sychay, and G. Wu, “CBSA: Content-based an-
+notation for multimodal image retrieval using Bayes point machines,”
+IEEE Trans. Circuits Syst. Video Technol., vol. 13, no. 1, pp. 26–38,
+Jan. 2003.
+[21] A. Oliva and A. Torralba, “Building the gist of a scene: The role of
+global image features in recognition,” Progr. Brain Res.: Vis. Percept.,
+no. 155, pp. 23–36, 2005.
+[22] D. Lowe, “Distinctive image features from scale invariant keypoints,”
+Int. J. Comput. Vis., vol. 60, pp. 91–110, 2004.
+[23] P. Quelhas, F. Monay, J.-M. Odobez, D. Gatica-Perez, T. Tuytelaars,
+and L. J. V. Gool, “Modeling scenes with local descriptors and latent
+aspects,” in Proc. IEEE ICCV, 2005, pp. 883–890.
+[24] J. Huang, S. R. Kumar, and R. Zabih, “An automatic hierarchical image
+classification scheme,” ACM Multimedia, 1998.
+[25] N. Vasconcelos, “Image indexing with mixture hierarchies,” in Proc.
+IEEE Trans. CVPR, 2001, pp. I–3–I–10.
+[26] J. Li and J. Z. Wang, “Automatic linguistic indexing of pictures by a
+statistical modeling approach,” IEEE Trans. Pattern Anal. Mach. In-
+tell., vol. 25, no. 9, pp. 1075–1088, Sep. 2003.
+[27] J. Fan, H. Luo, Y. Gao, and M.-S. Hacid, “Mining image databases on
+semantics via statistical learning,” ACM SIGKDD, 2005.
+[28] L. Fei-Fei and P. Perona, “A Bayesian hierarchical model for learning
+natural scene categories,” in Proc. IEEE CVPR, 2005, pp. 524–531.
+[29] K. Barnard and D. Forsyth, “Learning the semantics of words and pic-
+tures,” in Proc. IEEE ICCV, 2001, pp. 408–415.
+[30] R. E. Schapire and Y. Singer, “Boostexter: A boosting-based system
+for text categorization,” Mach. Learn., vol. 39, pp. 135–168, 2000.
+[31] J. Friedman, T. Hastie, and R. Tibshirani, “Additive logistic regression:
+A statistical view of boosting,” Ann. Statist., vol. 28, no. 2, pp. 337–374,
+2000.
+[32] A. Torralba, K. P. Murphy, and W. T. Freeman, “Sharing features: Ef-
+ficient boosting procedures for multiclass object detection,” in Proc.
+IEEE CVPR, 2004, pp. II-762–II-769.
+[33] A. Esuli, T. Fagni, and F. Sebastiani, “TreeBoost.MH: A boosting al-
+gorithm for multi-label hierarchical text categorization,” presented at
+the SPIRE, 2006.
+[34] K. Yu, A. Schwaighofor, V. Tresp, W.-Y. Ma, and H. J. Zhang, “Collab-
+orative ensemble learning: Combining content-based information fil-
+tering via hierarchical Bayes,” presented at the Int. Conf. Uncertainty
+in Artificial Intelligence (UAI), 2003.
+[35] T. Evgeniou, C. A. Micchelli, and M. Pontil, “Learning multiple tasks
+with kernel methods,” J. Mach. Learn. Res., vol. 6, pp. 615–637, 2005.
+[36] R. K. Ando and T. Zhang, “A framework for learning predictive struc-
+tures from multiple tasks and unlabeled data,” J. Mach. Learn. Res.,
+vol. 6, pp. 1817–1853, 2005.
+[37] S. Thrun and L. Pratt, Learning to Learn. Norwell, MA: Kluwer,
+1997.
+[38] S. Kumar and M. Hebert, “Discriminative random fields,” Int. J.
+Comput. Vis., vol. 68, no. 2, pp. 179–201, 2006.
+[39] J. Yang, Y. Liu, E. X. Ping, and A. G. Hauptmann, “Harmonium models
+for semantic video representation and classification,” presented at the
+SIAM Conf. Data Mining, 2007.
+[40] M.-Y. Chen and A. G. Hauptmann, “Discriminative fields for mod-
+eling semantic concepts in video,” presented at the RIAO Large-Scale
+Semantic Access to Content, May 2007.
+[41] R. Shi, T.-S. Chua, C.-H. Lee, and S. Gao, “Bayesian learning of hier-
+archical multinomial mixture models of concepts for automatic image
+annotation,” presented at the CIVR, 2006.
+[42] W. Jiang, S.-F. Chang, and A. Loui, “Context-based concept fusion
+with boosted conditional random fields,” presented at the IEEE
+ICASSP, 2007.
+[43] J. Lafferty, A. McCallum, and F. Pereira, “Conditional random field:
+Probabilistic models for segmenting and labeling sequence data,” pre-
+sented at the ICML, 2001.
+[44] S. Tong and E. Y. Chang, “Support vector machine active learning for
+image retrieval,” ACM Multimedia, pp. 107–118, 2001.
+[45] D. Tao, X. Tang, X. Li, and X. Wu, “Asymmetric bagging and random
+subspace for support vector machines-based relevance feedback in
+image retrieval,” IEEE Trans. Pattern Anal. Mach. Intell., vol. 28, no.
+7, pp. 1088–1099, Jul. 2006.
+[46] J. Li, N. Allinson, D. Tao, and X. Li, “Multi-training support vector
+machine for image retrieval,” IEEE Trans. Image Process., vol. 15, no.
+11, pp. 3597–3601, Nov. 2006.
+[47] Y. Rubner, C. Tomasi, and L. J. Guibas, “A metric for distributions
+with applications to image databases,” in Proc. IEEE CVPR, 1998, pp.
+59–66.
+[48] V. Vapnik, The Nature of Statistical Learning Theory. New York:
+Springer-Verlag, 1995.
+[49] J. C. Platt, “Probabilistic outputs for support vector machines and com-
+parisons to regularized likelihood methods,” in Adavances in Large
+Margin Classifiers. Cambridge, MA: MIT Press, 1999.
+[50] S. Hoi, M. Lyu, and E. Y. Chang, “Learning the unified kernel machines
+for classification,” ACM SIGKDD, 2006.
+[51] S. Sonnenburg, G. Ratsch, C. Schafer, and B. Scholkopf, “Large scale
+multiple kernel learning,” J. Mach. Learn. Res., vol. 7, pp. 1531–1565,
+2006.
+[52] T. Evgeniou and M. Pontil, “Regularized multi-task learning,” ACM
+SIGKDD, 2004.
+[53] T. Lai, J. Tait, and S. McDonald, “Image browsing and navigation using
+hierarchical classification,” CIVR, 1999.
+[54] S. Santini, A. Gupta, and R. Jain, “Emergent semantics through inter-
+action in image databases,” IEEE Trans. Knowl. Data Eng., vol. 13, no.
+3, pp. 337–351, Mar. 2001.
+[55] Y. Rubner, C. Tomasi, and L. Guibas, “A metric for distributions
+with applications to image databases,” in Proc. IEEE ICCV, 1998, pp.
+59–66.
+[56] D. Stan and I. Sethi, “EID: A system for exploration of image
+databases,” Inf. Process. Management, vol. 39, pp. 335–361, 2003.
+[57] B. Moghaddam, Q. Tian, N. Lesh, C. Shen, and T. S. Huang, “Visual-
+ization and user-modeling for browsing personal photo libraries,” Int.
+J. Comput. Vis., vol. 56, pp. 109–130, 2004.
+[58] J. Lamping and R. Rao, “The hyperbolic browser: A focus + content
+technique for visualizing large hierarchies,” J. Vis. Lang. Comput., vol.
+7, pp. 33–55, 1996.
+[59] J. Fan, Y. Gao, and H. Luo, “Hierarchical classification for automatic
+image annotation,” ACM SIGIR, 2007.
+[60] A. D. Maedche, Ontology Learning for the Semantic Web. New York:
+Springer Verlag, 2002.
+[61] P. Buitelaar, P. Cimiano, and B. Magnini, Ontology Learning from
+Text: Methods, Evaluation, and Applications. Amsterdam, The
+Netherlands: ISO Press, 2005.
+426 IEEE TRANSACTIONS ON IMAGE PROCESSING, VOL. 17, NO. 3, MARCH 2008
+[62] A. B. Benitez, J. R. Smith, and S.-F. Chang, “Medianet: A multimedia
+information network for knowledge representation,” Proc. SPIE, vol.
+4210, 2000.
+[63] A. Jaimes and J. R. Smith, “Semi-automatic, data-driven construction
+of multimedia ontologies,” presented at the IEEE ICME, 2003.
+[64] M. Swain and D. Ballard, “Color indexing,” Int. J. Comput. Vis., 1991.
+[65] Y. Deng, B. S. Manjunath, C. Kenney, M. S. Moore, and H. Shin, “An
+efficient color representation for image retrieval,” IEEE Trans. Image
+Process., vol. 10, no. 1, pp. 140–147, Jan. 2001.
+[66] T. Chang and C. Kou, “Texture analysis and classification with tree-
+structured wavelet transform,” IEEE Trans. Image Process., vol. 2, no.
+4, pp. 429–441, Apr. 1993.
+[67] D. J. Crandall and J. Luo, “Robust color object detection using spa-
+tial-color joint probability functions,” in Proc. IEEE CVPR, 2004, pp.
+379–385.
+[68] R. Fergus, P. Perona, and A. Zisserman, “Object class recognition
+by unsupervised scale-invariant learning,” Proc. IEEE CVPR, pp.
+II-264–II-271, 2003.
+[69] G.-J. Qi, X.-S. Hua, Y. Rui, J. Tang, T. Mei, and H.-J. Zhang,
+“Correlative multi-label video annotation,” ACM Multimedia, pp.
+17–26, 2007.
+[70] D. E. Knuth, “The art of computer programming,” in Sorting and
+Searching. Reading, MA: Addison-Wesley, 1978, vol. 3.
+[71] M. Girolami, “Mercer kernel-based clustering in feature space,” IEEE
+Trans. Neural Netw., vol. 13, no. 3, pp. 780–784, Jun. 2002.
+[72] A. Ben-Hur, D. Horn, H. T. Siegelmann, and V. Vapnik, “Support
+vector clustering,” J. Mach. Learn. Res., vol. 2, pp. 125–137, 2001.
+[73] B. Scholkopf, A. J. Smola, and K.-R. Muller, “Kernel principal
+component analysis,” Neural Comput., vol. 10, no. 5, pp. 1299–1319,
+1998.
+[74] G. Lanchriet, N. Cristianini, P. Bartlett, L. E. Ghaoui, and M. I. Jordan,
+“Learning the kernel matrix with semidefinite programming,” J. Med.
+Learn. Res., vol. 5, pp. 27–72, 2004.
+[75] R. Schapire, Y. Freund, P. Bartlett, and W. Lee, “Boosting the margin:
+A new explanation for the effectiveness of voting methods,” Ann.
+Statist., vol. 26, no. 5, pp. 1651–1686, 1998.
+[76] C. Fellbaum, WordNet: An Electronic Lexical Database. Boston,
+MA: MIT Press, 1998.
+[77] J. Fan, Y. Gao, H. Luo, and R. Jain, “Mining multilevel image seman-
+tics via hierarchical classification,” IEEE Trans. Multimedia, vol. 10,
+no. 2, pp. 167–187, Feb. 2008.
+Jianping Fan received the M.S. degree from in
+theory physics from Northwestern University, Xian,
+China, in 1994, and the Ph.D. degree in optical
+storage and computer science from the Shanghai
+Institute of Optics and Fine Mechanics, Chinese
+Academy of Sciences, Shanghai, China, in 1997.
+He was a Researcher at Fudan University,
+Shanghai, during 1998. From 1998 to 1999, he was
+a Researcher with the Japan Society of Promotion
+of Science (JSPS), Department of Information
+System Engineering, Osaka University, Osaka,
+Japan. From September 1999 to 2001, he was a Researcher in the Department
+of Computer Science, Purdue University, West Lafayette, IN. In 2001, he
+joined the Department of Computer Science, University of North Carolina,
+Charlotte, as an Assistant Professor and then became Associate Professor. His
+research interests include content-based image/video analysis, classification
+and retrieval, surveillance videos, and statistical machine learning.
+Yuli Gao received the B.S. degree in computer
+science from Fudan University, Shanghai, China,
+in 2002, and the Ph.D. degree in information
+technology from the University of North Carolina
+(UNC), Charlotte, in 2007.
+In 2002, he joined UNC. In 2007, he joined HP
+Labs, Palo Alto, CA. His research interests include
+computer vision, image classification and retrieval,
+and statistical machine learning.
+Dr. Gao received an award from IBM for emerging
+leader in multimedia in 2006.
+Hangzai Luo received the B.S. degree in com-
+puter science from Fudan University, Shanghai,
+China, in 1998, and the Ph.D. degree in information
+technology from the University of North Carolina
+(UNC), Charlotte.
+In 1998, he joined Fudan University as Lecturer. In
+2002, he joined UNC. He joined East China Normal
+University, Shanghai, as an Associate Professor in
+2007. His research interests include computer vision,
+video retrieval, and statistical machine learning.
+Dr. Luo received a second place award from the
+Department of Homeland Security in 2007 for his excellent work on video anal-
+ysis and visualization for homeland security applications.
+

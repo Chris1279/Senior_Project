@@ -1,0 +1,446 @@
+Automatic Image Annotation with Weakly Labeled Dataset?
+Wei Zhang1, Yao Lu1, Xiangyang Xue1, Jianping Fan2
+1School of Computer Science, Fudan University, Shanghai, China
+2Department of Computer Science, UNC-Charlotte, NC28223, USA
+{weizh, yaolu, xyxue}@fudan.edu.cn jfan@uncc.edu
+ABSTRACT
+It is very attractive to exploit weakly-labeled image dataset
+for multi-label annotation applications. In our paper the
+meaning of the terminology weakly labeled is threefold: i)
+only a small subset of the available images are labeled; ii)
+even for the labeled image, the given labels may be uncor-
+rect or incomplete; iii) the given labels do not provide the
+exact object locations in the images. A novel method is
+developed to predict the multiple labels for images and to
+provide region-level labels for the objects. We cluster the im-
+age regions to learn several region-exemplars and predict the
+label vector for each image region as a locally weighted aver-
+age of the label vectors on exemplars. By investigating the
+label confidence matrix for the region-exemplars from dif-
+ferent perspectives (column picture and row picture), we
+sufficiently leverage the visual contexts, the semantic con-
+texts, and the consistency between similarities in the visual
+feature space and semantic label space. Experimental re-
+sults on real web images demonstrate the effectiveness of
+the proposed method.
+Categories and Subject Descriptors
+H.3.1 [Information Storage and Retrieval]: Content
+Analysis and Indexing
+General Terms
+Algorithms, Experimentation, Performance
+Keywords
+Multi-Label Image Annotation, Weakly-Labeled Dataset,
+Region-Level Labels
+1. INTRODUCTION
+With the massive explosion of web images, how to ac-
+cess these images efficiently is an important research task,
+?Area chair: Bernard Merialdo
+Permission to make digital or hard copies of all or part of this work for
+personal or classroom use is granted without fee provided that copies are
+not made or distributed for profit or commercial advantage and that copies
+bear this notice and the full citation on the first page. To copy otherwise, to
+republish, to post on servers or to redistribute to lists, requires prior specific
+permission and/or a fee.
+MM’11, November 28–December 1, 2011, Scottsdale, Arizona, USA.
+Copyright 2011 ACM 978-1-4503-0616-4/11/11 ...$10.00.
+and automatic image annotation has become more and more
+attractive. In real image annotation applications, multiple
+semantic concepts may occur simultaneously in an image;
+each individual label of one image is actually related to lo-
+cal regions rather than the whole image. It is attractive
+to learning the image classifiers from weakly labeled images
+available on the web. Herein the terminology weakly labeled
+can be investigated from three perspectives: i) Since manu-
+ally annotating is time-consuming and labor-intensive, only
+a subset of images are labeled, and the number of available
+labeled images is much smaller than that of unlabeled ones;
+ii) In a collaborative image tagging system, people can tag
+the images according to their personal expertise and per-
+ception, and the label set for each labeled image may be
+uncorrect or incomplete; iii) The multiple labels are given
+loosely at the image level rather than at the object level
+(i.e., without providing the exact object locations in the im-
+ages). Our goal is to precisely predict the multiple labels
+for images and to provide region-level labels for the objects,
+simultaneously.
+In [2] a framework was proposed to improve the retrieval
+performance by refining noisy labels of a group of Flickr
+photos. [17] proposed a label refinement formulation con-
+sidering the label characteristics from the points of view of
+low-rank, error sparsity, content consistency and label cor-
+relation. [15] and [14] both proposed graph-based semi-
+supervised learning frameworks, which can simultaneously
+explore the correlations among multiple labels and the label
+consistency over the graph. Those methods above inferred
+the correspondence between the images and their associated
+labels only at the image level rather than at the region level.
+[8] proposed a unified formulation to implement various tag
+analysis tasks including label-to-region assignment in a co-
+herent way; however the correlations between labels are not
+exploited in [8].
+In this paper a novel method is developed to simultane-
+ously perform label prediction and label-to-region assign-
+ment based on weakly-labeled web image dataset. Each im-
+age is firstly segmented into several regions. We cluster the
+image regions to learn a small number of region-exemplars
+and predict the label vector for each image region as a lo-
+cally weighted average of the label vectors on exemplars.
+By investigating the label confidence matrix for the region-
+exemplars from different perspectives (column picture and
+row picture), our method sufficiently leverages the visual
+contexts, the semantic contexts, and the associations be-
+tween image-level and region-level labels. Different from
+[8], the correlations between the semantic concepts are effec-
+1185
+tively captured in our method, which is of significance to the
+performance of multi-label image annotation. Experimental
+results on the real web images demonstrate the effectiveness
+of the proposed method.
+2. ALGORITHM
+Suppose that {(x1,y1), ..., (xl,yl)} are l labeled images
+for training. Each image includes ri regions: x
+i = {xi1, ...,xiri},
+where the number of regions ri may vary across images. Let
+C = {c1, ..., cm} be a semantic lexicon of m concepts, and let
+yi = [yi1, . . . ,y
+i
+m]
+ ? {0, 1}m be the initial m?dimensional
+label vector corresponding to the image xi, where yis =
+1(s = 1, . . . ,m) if the concept cs is associated with the
+image xi, and 0 otherwise. Our goal is to predict the la-
+bel vector for any new image and to predict the region-level
+label simultaneously.
+Figure 1: An overview of our method. Each im-
+age is firstly segmented into regions. All regions are
+clustered into several groups. In the visual feature
+space, region-exemplars are used to construct the vi-
+sual context graph. In the semantic label space, con-
+cepts form the semantic context graph which cap-
+tures the correlations between concepts.
+Each image is firstly segmented into several regions. Let
+hij ? [0, 1]m(j = 1, ..., ri) denote the label confidence vector
+of xij (the j?th region in the i?th image), and the s?th com-
+ponent of hij just measures the probability that the concept
+cs is associated with the region x
+i
+j . To address the scalability
+issue, all the image regions are clustered into several groups
+by clustering algorithms such as Affinity Propagation [6]
+based on the visual similarity. Suppose that n clusters are
+obtained, and one region-exemplar is learned for each clus-
+ter, then we get n region-exemplars {x?1, ..., x?n}. Inspired
+by [12], we approximately reconstruct each image region as
+a convex combination of its nearest exemplars:
+xij ?
+?
+q??xij?
+?ijqx?q,
+(1)
+where ?xij? denotes the index set of k closest exemplars for
+xij , and the combination coefficients ?ijq can be learned by
+quadratic programming (QP) as follows:
+min
+1
+2
+??xij ? ?
+q??xij?
+?ijqx?q
+??2, s.t. ?ijq ? 0, ?
+q??xij?
+?ijq = 1
+(2)
+Let h?q ? [0, 1]m denote the label confidence vector for the
+exemplar region x?q, (q = 1, ..., n), which can be viewed as a
+point in the semantic label space. It it reasonable to pre-
+serve the neighborhood contexts when mapping image re-
+gions from the visual feature space to the semantic label
+space. Then, the label confidence vector for the image re-
+gion xij can be estimated as a locally weighted average of
+the labels on exemplars:
+hij =
+?
+q??xij?
+?ijqh?q,
+(3)
+Let ?ijq = 0 if q /? ?xij? and denote ?ij = [?ij1, ..., ?ijn],
+H? = [h?1, ..., h?n] ? [0, 1]m×n, then Eq. (3) can be expressed
+as:
+hij = H??
+i
+j , (4)
+Once the region-level label confidence vectors are learned,
+the image-level label confidence vectors can be estimated by?ri
+j=1 ?
+i
+jh
+i
+j ( herein ?
+i
+j is the voting weight and can be se-
+lected as the percentage of covered area of each region). To
+achieve the coherence between region-level labels and image-
+level labels, and thus realize the cross-level label propaga-
+tion, we minimize the following loss function:
+min
+l?
+i=1
+??yi ? ri?
+j=1
+?ijh
+i
+j
+??2 = Tr((Y ? H?A)(Y ? H?A))
+(5)
+where Y = [y1, ...,yl] ? {0, 1}m×l, H? = [h?1, ..., h?n] ? [0, 1]m×n,
+and A = [
+?r1
+j=1 ?
+1
+j ?
+1
+j , ...,
+?rl
+j=1 ?
+l
+j?
+l
+j ] ? Rn×l.
+The label confidence matrix for the region-exemplars H? =
+[h?1, ..., h?n] ? [0, 1]m×n can be investigated from different
+perspectives: i)column picture: Each column of H? corre-
+sponds to the label distribution for one region-exemplar ,
+and h?q(q = 1, ..., n) can be viewed as the high-level feature
+vector of the q?th region-exemplar in the semantic label
+space, which differs from the low-level feature vector x?q in
+the visual feature space; ii)row picture: Each row of H? can
+be viewed as the voting scores from all the region-exemplars
+for each concept, and can also be viewed as the feature vector
+of the concept. By constructing different graphs from above
+two perspectives, we can sufficiently leverage visual context,
+semantic context, and the consistency between visual fea-
+tures and semantic concepts, to improve the performance of
+image annotation.
+Let G = ({x?q}nq=1, S) be the visual context graph with the
+vertex set corresponding to the region-exemplars {x?q}nq=1
+and the adjacent matrix S measuring the visual similarities
+1186
+between region pairs. S is an n×n sparse symmetric matrix
+and can be defined using visual features as follows:
+Spq =
+{
+exp{??d(x?p, x?q)} x?p ? ?x?q? ? x?q ? ?x?p?
+0 otherwise
+(6)
+where ?x?q? denotes the set of k closest exemplars for x?q,
+d(x?p, x?q) is the distance between exemplars x?p and x?q, and
+? is the scaling parameter. The visual and semantic consis-
+tency for the exemplar regions can be achieved by solving
+the following problem:
+min
+1
+2
+?
+pq
+Spq
+??col(H?, p)? col(H?, q)??2 = Tr(H?(S˜ ? S)H?)
+(7)
+where col(H?, p) denotes the p?th column of H?, i.e., h?p, and
+S˜ is an n× n diagonal matrix with S˜qq =?np=1 Spq.
+On the other hand, let G? = ({cs}ms=1,W ) be the seman-
+tic context graph with the vertex set corresponding to the
+concepts {cs}ms=1 and the adjacent matrix W measuring the
+correlations between concepts. W is an m×m sparse sym-
+metric matrix and can be defined as follows:
+Wst =
+{
+exp{??d(cs, ct)} d(cs, ct) < 
+0 otherwise
+(8)
+where ? and  are the parameters, and d(cs, ct) is the Nor-
+malized Google Distance (NGD) [4] between concepts cs
+and ct:
+d(cs, ct) =
+max{logf(cs), logf(ct)} ? logf(cs, ct)
+logN ?min{logf(cs), logf(ct)} (9)
+where f(cs) is the numbers of the webpages returned by
+Google search engine when typing cs as the search term,
+f(cs, ct) is the number of webpages returned when typing cs
+and ct together as the search term, and N is the total num-
+ber of the images in Google. The smaller the NGD is, the
+stronger the semantic relation is; so, the weight Wst mea-
+sures the affinity between concepts cs and ct. At the same
+time, each row of H? corresponds to the voting scores from
+all the region-exemplars for each concept and can be viewed
+as the feature vector of the concept. Strongly correlated
+concepts concepts should have similar voting scores, which
+can be achieved by solving the following problem:
+min
+1
+2
+?
+st
+Wst
+??row(H?, s)? row(H?, t)??2 = Tr(H?(W˜ ?W )H?)
+(10)
+where row(H?, s) denotes the s?th row of H?, and W˜ is an
+n× n diagonal matrix with W˜tt =?ms=1 Wst.
+Therefore, by incorporating various contextual relations
+in a single framework as shown in Figure. 1, the proposed
+model for automatic image annotation takes the formulation
+as:
+min
+H?
+Tr
+(
+(Y ? H?A)(Y ? H?A))+
+?1Tr
+(
+H?(S˜ ? S)H?) + ?2Tr(H?(W˜ ?W )H?) (11)
+where ?1 and ?2 are the controlling parameters. Let the
+derivative of the above cost function with respect to H? be
+zero, we have
+H?(?1(S˜ ? S) + AA) + ?2(W˜ ?W )H? = Y A (12)
+which is essentially a Sylvester equation [15] widely used in
+control theory. Vectorizing the unknown matrix H?, Eq. (12)
+can be transformed to a linear system:
+[(?1(S˜ ? S) + AA)? Im + In ? (?2(W˜ ?W ))]vec(H?)
+= vec(Y A)
+(13)
+where vec(.) is the vectorization of the matrix, ? is the Kro-
+necker product, and Im and In are m×m and n×n identity
+matrices, respectively. We can efficiently solve vec(H?) in
+Eq. (13) by a generalized minimal residual algorithm [13],
+and then obtain H? from vec(H?). For any new image, we pre-
+dict its region-level labels using H? via Eq. (1) and Eq. (3),
+and then the image-level label vector is derived as well.
+3. EXPERIMENTS
+In this section, we evaluate the proposed method on the
+NUS-WIDE-SUB dataset [3, 8] which is a challenging collec-
+tion of real-world web images from Flickr containing 18,325
+images with 81 labels. We focus on evaluating our method
+when the number of labeled images is much smaller than
+that of unlabeled ones, and randomly split the dataset into
+the 10% subset for training and the 90% subset for testing.
+Since the user-provided tags is noisy, the training images are
+precisely re-annotated at first. We use Felzenswalb’s graph
+cut algorithm [5] to segment each image into several regions.
+Four kinds of visual features are extracted for each region:
+1) 14-dim color feature including mean RGB, HSV conver-
+sion, HUE histogram and SAT histogram; 2) 30-dim texture
+feature including LM-filter mean response [7] and LM-filter
+response histogram; 3) 8-dim geometric feature encoding the
+position and size information of the segment; 4) 500-dim
+BoW histogram. Based on the above visual features, the
+composite distance between image regions is computed us-
+ing JEC[10]. Employing Affinity Propagation algorithm [6],
+we cluster the regions from the training images and obtain
+the region-exemplars.
+Method Training% Precision Recall
+ML-LGC 50% 0.28 0.29
+CNMF 50% 0.29 0.31
+SMSE 50% 0.32 0.32
+MISSL 50% 0.27 0.33
+MEG 50% 0.35 0.37
+Ours 10% 0.31 0.41
+Table 1: Performance comparisons of different au-
+tomatic annotation methods on NUS-WIDE-SUB.
+We compare the proposed method with the state-of-the-
+art algorithms: 1) ML-LGC[16], 2) CNMF[9], 3)SMSE[1],
+4)MISSL[11], 5)MEG[8]. In the label prediction task, we
+aim at predicting the labels of the testing images and use
+the provided 81 semantic concepts as the ground truth an-
+notations for evaluation. We calculate the average precision
+and average recall to measure the performance. Table 1
+gives the performance comparisons of the image annotation
+algorithms. The results of the state-of-the-art were reported
+in [8]. From the results we can clearly see that our algo-
+rithm is better than or comparable with the state-of-the-art
+algorithms even though much fewer training examples are
+required than the state-of-the-art, which demonstrates the
+1187
+Figure 2: The refined label rank lists are obtained
+according to the learned label confidence vector.
+effectiveness of strategy to sufficiently leverage various con-
+textual relations. Figure 2 gives the refined label rank lists
+obtained by the learned label confidence vector in compari-
+son with the initial labels provided by the users. Moreover,
+the proposed algorithm is also suitable for the task of label-
+to-region assignment. Since the NUS-WIDE-SUB dataset
+has no ground truth for this task, we merely give some re-
+sults in Figure 3. The results demonstrate that by learning
+the label confidences for the region-exemplars, our method
+can effectively estimate the label confidences for each image
+region, then the tasks of predicting both image-level and
+region-level labels are accomplished simultaneously.
+4. CONCLUSIONS
+In this paper a novel method is proposed to perform auto-
+matic image annotation with weakly-labeled image dataset.
+Clustering technique is employed to learn a small number
+of region-exemplars, and the labels for each image region
+are predicted as a locally weighted average of the labels on
+exemplars. By investigating the label confidence matrix for
+the region exemplars from column and row pictures, we
+sufficiently leverage the consistency of similarities between
+samples in the visual feature space and semantic label space,
+the correlations among the semantic concepts, and the asso-
+ciations between image-level and region-level labels, which
+are of significance to the performance of image annotation.
+5. ACKNOWLEDGMENTS
+We would like to thank the anonymous reviewers for their
+helpful comments. This work was supported in part by
+the 973 Program (No.2010CB327906), the NSF of China
+(No.60903077 and No.60873178), and the STCSM’s innova-
+tion program(No. 10511500703).
+6. REFERENCES
+[1] G. Chen, Y. Song, F. Wang, and C. Zhang.
+Semi-supervised multi-label learning by solving a
+sylvester equation. In SDM, 2008.
+[2] L. Chen, D. Xu, I. W. Tsang, and J. Luo. Tag-based
+web photo retrieval improved by batch mode
+re-tagging. In CVPR, 2010.
+Figure 3: Region-level labeling results of our
+method for some images from NUS-WIDE-SUB
+dataset.
+[3] T.-S. Chua, J. Tang, R. Hong, H. Li, Z. Luo, and Y.-T.
+Zheng. Nus-wide: A real-world web image database
+from national university of singapore. In CIVR, 2009.
+[4] R. Cilibrasi and P. Vitany. The google similarity
+distance. In TKDE, 2007.
+[5] P. Felzenszwalb and D. Huttenlocher. Efficient
+graph-based image segmentation. IJCV,
+59(2):167–181, 2004.
+[6] B. Frey and D. Dueck. Clustering by passing messages
+between data points. Science, vol. 315, 2007.
+[7] T. Leung and J. Malik. Representing and recognizing
+the visual appearance of materials using
+three-dimensional textons. IJCV, 43(1):29–44, 2001.
+[8] D. Liu, S. Yan, Y. Rui, and H.-J. Zhang. Unified tag
+analysis with multi-edge graph. In ACM MM, 2010.
+[9] Y. Liu, R. Jin, and L. Yang. Semi-supervised
+multi-label learning by constrained non-negative
+matrix factorization. In AAAI, 2006.
+[10] A. Makadia, V. Pavlovic, and S. Kumar. A new
+baseline for image annotation. In ECCV, 2008.
+[11] R. Rahmani and S. Goldman. Missl: Multiple-instance
+semi-supervised learning. In ICML, 2006.
+[12] S. T. Roweis and L. K. Saul. Nonlinear dimensionality
+reduction by locally linear embedding. Science, vol.
+290, 2000.
+[13] Y. Saad and M. H. Schultz. Gmrs: A generalized
+minimal residual algorithm for solving nonsymmetrci
+linear systems. In SIAM JSSC., 1986(7).
+[14] J. Tang, S. Yan, R. Hong, G.-J. Qi, and T.-S. Chua.
+Inferring semantic concepts from community
+contributed images and noisy tags. In ACM MM, 2009.
+[15] Z.-J. Zha, T. Mei, J. Wang, Z. Wang, and X.-S. Hua.
+Graph-based semi-supervised learning with multiple
+labels. J. Vis. Commun. Image R., 2009.
+[16] D. Zhou, O. Bousquet, T. Lal, J. Weston, and
+B. Scholkopf. Learning with local and global
+consistency. In NIPS, 2003.
+[17] G. Zhu, S. Yan, and Y. Ma. Image tag refinement
+towards low-rank, content-tag prior and error sparsity.
+In ACM MM, 2010.
+1188
+

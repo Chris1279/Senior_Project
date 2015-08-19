@@ -1,0 +1,1491 @@
+This article appeared in a journal published by Elsevier. The attached
+copy is furnished to the author for internal non-commercial research
+and education use, including for instruction at the authors institution
+and sharing with colleagues.
+Other uses, including reproduction and distribution, or selling or
+licensing copies, or posting to personal, institutional or third party
+websites are prohibited.
+In most cases authors are permitted to post their version of the
+article (e.g. in Word or Tex form) to their personal website or
+institutional repository. Authors requiring further information
+regarding Elsevier’s archiving and manuscript policies are
+encouraged to visit:
+http://www.elsevier.com/copyright
+Author's personal copy
+Integrating multi-modal content analysis and hyperbolic
+visualization for large-scale news video retrieval and exploration
+H. Luo a, J. Fan b,, S. Satoh c, J. Yang b, W. Ribarsky b
+a Software Engineering Institute, East China Normal University, Shanghai, China
+b Department of Computer Science, UNC-Charlotte, Charlotte, USA
+c National Institute of Informatics, Tokyo 101-8430, Japan
+a r t i c l e i n f o
+Article history:
+Received 15 April 2008
+Accepted 29 April 2008
+Keywords:
+Multi-modal content analysis
+Interestingness assignment
+Association determination
+Hyperbolic visualization
+a b s t r a c t
+In this paper, we have developed a novel scheme to achieve more effective analysis,
+retrieval and exploration of large-scale news video collections by performing multi-modal
+video content analysis and synchronization. First, automatic keyword extraction is
+performed on news closed captions and audio channels to detect the most interesting
+news topics (i.e., keywords for news topic interpretation), and the associations among
+these news topics (i.e., contextual relationships among the news topics) are further
+determined according to their co-occurrence probabilities. Second, visual semantic items,
+such as human faces, text captions, video concepts, are extracted automatically by using
+our semantic video analysis techniques. The news topics are automatically synchronized
+with the most relevant visual semantic items. In addition, an interestingness weight is
+assigned for each news topic to characterize its importance. Finally, a novel hyperbolic
+visualization scheme is incorporated to visualize large-scale news topics according to
+their associations and interestingness. With a better global overview of large-scale news
+video collections, users can specify their queries more precisely and explore large-scale
+news video collections interactively. Our experiments on large-scale news video
+collections have provided very positive results.
+& 2008 Elsevier B.V. All rights reserved.
+1. Introduction
+The broadcast news videos have extensive influence
+and carry abundant information, different organizations
+and individuals are utilizing them for different purposes.
+For example, the government can boost up the morale by
+publishing positive reports. On the other hand, the
+terrorists can also use it to display their announcement
+(e.g., Al Jazeera), formulate their plans, raise funds, and
+spread propaganda. By watching and analyzing the
+international news reports, the intelligence agents can
+translate the raw news videos into useful information and
+the private investors can also evaluate the political,
+economic, and financial status for making good decisions.
+Unfortunately, watching large-scale news video collec-
+tions could be very tedious. Due to the large number of
+broadcast channels, it is too expensive and time-consum-
+ing to hire people to do manual process, and such manual
+process of large-scale news video collections may also
+delay our response for critical news events. Therefore,
+there is a growing interest of developing more effective
+techniques for automatic news video analysis and ex-
+ploration of large-scale news video collections. In addi-
+tion, supporting automatic news video analysis and
+exploration is able to acquaint general audiences with a
+better global overview of large-scale news video collec-
+tions, so that they can also harvest our research achieve-
+ments. Unfortunately, most existing tools for automatic
+news video analysis and exploration still suffer from the
+following challenging problems.
+The first problem is how to automatically extract the
+video semantics from news video clips and bridge the
+Contents lists available at ScienceDirect
+journal homepage: www.elsevier.com/locate/image
+Signal Processing: Image Communication
+ARTICLE IN PRESS
+0923-5965/$ - see front matter & 2008 Elsevier B.V. All rights reserved.
+doi:10.1016/j.image.2008.04.014
+ Corresponding author. Tel.: +17046878556; fax: +17046873516.
+E-mail address: jfan@uncc.edu (J. Fan).
+Signal Processing: Image Communication 23 (2008) 538–553
+Author's personal copy
+semantic gap [7,17,40] between the low-level visual
+features and the high-level human interpretation of video
+semantics. Most existing systems can only support
+automatic extraction of low-level visual features and
+search video clips via similarity matching according to
+their low-level visual features [1,2,5,30,33,42,41,44,51,52].
+On the other hand, most users may not be familiar with
+the low-level visual features and they can only express
+their information needs via high-level video concepts (i.e.,
+keywords for video concept interpretation) [16,17]. Due to
+the huge diversities of visual properties and semantics in
+news videos, most existing tools for semantic video
+classification cannot directly be extended to achieve
+automatic analysis and exploration of large-scale news
+video collections [1,2,5,9,33,42,41,44,51,52].
+The second problem is how to extract most significant
+news topics from large-scale news video collections. This
+problem is becoming more critical because of the
+following reasons: (a) The amount of news topics could
+be very large because there are so many broadcast
+channels; (b) different news topics may have different
+importance; (c) different users may have different inter-
+estingness on the same news topic and there is no existing
+approach for user interestingness modeling. Thus there is
+an interest gap [49] between the available collections of
+news topics and the user’s real information needs.
+The third problem is how to present the significant news
+topics to the users efficiently and effectively. Large-scale
+collections of news videos may carry huge amount of
+information. However, it is very slow to exchange
+information between the user and the computer. Gen-
+erally, a person can accept information at the speed of
+tens of bits per second. But our database has 10GB to 1 TB
+or larger scale. As a result, there is an interaction gap
+between the computer and the user.
+Based on the above observations, we have developed a
+new framework with the workflow given in Fig. 1. Firstly,
+visual semantic items for video content interpretation are
+automatically extracted from raw video clips by using our
+semantic video analysis technique. The keywords (e.g.,
+text semantic items) for news topic interpretation and
+their associations (e.g., contextual relationships between
+the news topics) are extracted from the closed captions
+and audio channels, and they are further synchronized
+with the most relevant visual semantic items. Secondly,
+the interestingness measurements (weights) for these
+multi-modal (i.e., visual, auditory, and textual) semantic
+items are assigned simultaneously via statistical analysis.
+Finally, a novel hyperbolic visualization framework is
+incorporated to visualize large-scale news relation net-
+work (i.e., news topics and their associations) and support
+interactive news exploration, so that users can have better
+understanding of large-scale collections of news videos
+and make better query decisions. In addition, the users
+can also communicate with our system by providing their
+feedbacks, and such feedbacks can further be integrated to
+improve our algorithms for semantic video analysis and
+interestingness assignment.
+Each step of the proposed framework bridge one of the
+three gaps as described above. Our proposed scheme is
+not a simple aggregation of the related techniques. It
+optimizes all steps toward the final goal. Therefore, the
+techniques used in our scheme may not be the best one in
+the relevant area, but it is the best suitable one for our
+proposed scheme. Firstly, because the vision is the fastest
+way to accept information for human beings, we adopt
+visualization to bring the interaction between the users
+and our system. The visualization technique can allow our
+system to present more information at the same time to
+the users than traditional techniques adopted by other
+retrieval or exploration systems, such as classified ex-
+ploration and keyword-based search. Secondly, to fully
+utilize the capability of the visualization technique, we
+adopt a very small semantic unit (compared to the units
+adopted in other video semantic analysis and retrieval
+systems) to characterize the semantics and interesting-
+ness of the video news reports. On the one hand, it is more
+easy to detect and evaluate small semantic items, thus our
+algorithms for semantic video analysis and interesting-
+ness weighting can have higher performance. On the other
+hand, more accurate evaluation of the interestingness
+weighting enables more effective visualization. As a result,
+our proposed scheme may have better performance than
+aggregating the most sophisticated techniques in the
+relevant areas.
+In this paper, we have developed multiple algorithms
+to address the following problems: (1) How to extract
+semantic items from large-scale news video collections
+that may have huge diversities of visual properties and
+semantics? (2) How to extract news topics and their
+associations? (3) How to assign the interestingness with
+the news topics and semantic items automatically?
+(4) How to achieve synchronization between multi-modal
+news video contents? (5) How to visualize large-scale
+relation network (i.e., news topics and their associations)
+in a limited-size scene?
+This paper is organized as follows: In Section 2, we
+briefly review the most relevant works. In Section 3, we
+introduce our algorithm for news topic detection and
+relation network generation. Section 4 describes our
+scheme for user interestingness modeling. Section 5
+introduces our semantic video analysis and multi-modal
+video content synchronization algorithm. In Section 6,
+we introduce our work on hyperbolic visualization of
+large-scale relation network. Finally, we conclude in
+Section 8.
+ARTICLE IN PRESS
+Semantic 
+Video Analysis
+Interestingness 
+Weighting 
+Semantic 
+Interpretation  Visualization 
+Knowledge 
+Interpretation  
+Feedback  
+Fig. 1. The workflow of our proposed framework for analysis and exploration of large-scale news video collections.
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553 539
+Author's personal copy
+2. Related works
+In the past, researchers have proposed some interest-
+ing approaches for bridging these gaps (i.e., semantic gap,
+interest gap and interaction gap). In this section, we give a
+brief review for some of these existing algorithms which
+are most relevant to our proposed work.
+2.1. Bridging semantic gap
+Semantic video classification is one promising solution
+to bridge the semantic gap [1,2,4,5,12,14,33,42,41,44,
+51,52], but its performance largely depends on two
+inter-related issues: (1) suitable algorithms for video
+content representation and feature extraction; (2) effec-
+tive algorithms for video classifier training.
+To address the first issue, many approaches have been
+proposed for video content representation and feature
+extraction, and most existing approaches can be classified
+into three categories: (1) shot-based approaches that
+extract the global visual features from whole video shots
+[19,36]; (2) region-based approaches that extract the local
+visual features from motion, color, or texture consistent
+homogeneous video regions [10,18,28]; and (3) object-
+based approaches that extract the representative visual
+features from semantic-sensitive video objects [24]. To
+enhance the power of the visual features on discriminat-
+ing various video concepts, the underlying video patterns
+for feature extraction should be able to capture the
+intermediate video semantics at the object level effec-
+tively and efficiently (i.e., semantics for interpreting the
+real world physical objects in a video clip). Using the
+segmentation of real world physical objects (i.e., video
+objects) for feature extraction can significantly enhance
+the ability of the visual features on discriminating various
+video concepts. Unfortunately, automatic detection of
+large amounts of semantic video objects with diverse
+perceptual properties is still an open problem in computer
+vision. On the other hand, both the shot-based and the
+region-based approaches are easy for implementation, but
+their visual features may not be representative and cannot
+be used to discriminate various video concepts effectively.
+Consequently, there is an urgent need to develop new
+framework for video content representation and feature
+extraction, which is able to take the advantages for all
+these three existing approaches and avoid their short-
+comings.
+To address the second issue, robust video classifier
+training techniques are needed to model both the inter-
+concept variations and intra-concept similarity effectively.
+Two approaches are widely used to train video classifiers
+[1,2,4,5,12,14,20,27,33,42,41,44,51,52]: (a) GMM-based ap-
+proach uses Gaussian mixture models to approximate the
+underlying distributions of video data; (b) SVM-based
+approach uses support vector machines to maximize the
+margin between the positive samples and the negative
+samples. As a generative model, the major advantage of
+the GMM-based approach is that prior knowledge can be
+effectively incorporated into training suitable concept
+models for accurate video classification and annotation by
+predefining part of the model structure. Due to the
+diversity and richness of video contents, GMM models for
+video semantics interpretation may contain hundreds of
+parameters in a high-dimensional feature space, and thus
+large-scale labeled videos are needed for accurate classifier
+training. In addition, there may be mismatch between
+Gaussian functions and the real distributions of video data.
+On the other hand, the SVM-based approach enables more
+effective classifier training with smaller generalization
+error rate in high-dimensional feature space. However,
+searching the optimal model parameters (i.e., SVM para-
+meters) is computationally expensive, and its performance
+is very sensitive to choices of kernel functions. Further-
+more, automatic kernel function selection heavily depends
+on the implicit geometric property of the video data in the
+high-dimensional feature space. Because the high-dimen-
+sional feature space may be heterogeneous, it is difficult to
+select one common kernel function that can effectively
+characterize the implicit geometric properties of the video
+data. Another shortcoming of the SVM-based approach is
+that its training complexity depends on the number of
+training videos, and the prior knowledge (i.e., the correla-
+tions between video concepts) is not incorporated into
+SVM video classifier training.
+The Informedia Digital Video Library project at CMU
+has achieved significant progresses on analyzing, indexing
+and searching of large-scale news video collections.
+A detailed survey can be found in [21]. Several applica-
+tions have been reported, such as keyword-based video
+retrieval and query results visualization. The DELOS
+project also has significant progress on multiple areas
+including information access and personalization [11],
+object detection [3] and visualization [8]. Our proposed
+work has significant differences from these existing
+works: (a) Rather than performing semantic video
+classification to achieve automatic news video content
+understanding, multi-modal content analysis results from
+multiple information sources are synchronized and in-
+tegrated for indexing and exploring large-scale news
+video collections. Even though many video classification
+algorithms have been proposed [1,2,4,5,12,14,33,42,41,
+44,51,52], they cannot be used to achieve reliable
+classification of large-scale news video collections be-
+cause of their huge diversities of visual properties and
+semantics. Most existing techniques for semantic video
+classification can perfectly work on same specific video
+domains with strong constraints of video contents.
+However, none of them can effectively handle the huge
+diversity of visual properties and semantics in the news
+videos. (b) An interestingness score is automatically
+assigned to each news topic via statistical analysis, and
+such interestingness scores are further used to decide the
+importance of the relevant news topics for filtering less
+interesting news topics. (c) The associations among the
+news topics are extracted for achieving more effective
+visualization and interactive exploration of large-scale
+news video collections. (d) A hyperbolic visualization tool
+is incorporated to acquaint the users with a better global
+overview of large-scale news video collections, so that
+they can explore large-scale news video collections
+interactively.
+ARTICLE IN PRESS
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553540
+Author's personal copy
+2.2. Bridging interest gap
+To bridge the interest gap, visualization is widely used
+to help the users explore large amounts of information
+and find interesting parts interactively. In-spire [50] has
+been developed for visualizing and exploring large-scale
+text document collections, where statistics of news
+reports [31] is put on a world map to inform the audiences
+of the ‘‘hotness’’ of the regions and the relations among
+the regions. TimeMine [45] is proposed to detect the most
+important reports and organize them through timeline
+with statistical models of word usage. Another system,
+called newsmap [48], can organize news topics from
+Google news on a rectangle, where each news story covers
+a visualization space that is proportional to the number of
+related news pages reported by Google. News titles are
+drawn in the corresponding visualization space allocated
+to relevant news topic. ThemeRiver [22] and ThemeView
+[23] can visualize a large collection of documents with
+keywords or themes. ThemeRiver and ThemeView can
+intuitively represent the distribution structure of themes
+and keywords in the collections.
+Rather than recommending the most interesting news
+topics to the users, all of these existing news visualization
+systems prefer to disclose all the available information to
+the users, and thus the users have to dig out the
+interesting information by themselves. When large-scale
+news collections come into view, such available informa-
+tion could be very large and displaying all of them to the
+users may mislead them. To address this problem, some of
+these existing news visualization systems also disclose
+different distribution structures of large-scale news
+collections, but such distribution structures may not
+make any sense to the users because there is an interest
+gap between the distribution structures and the user’s
+real information needs [49]. Therefore, it is very attractive
+to incorporate the interestingness of news topics for
+achieving more effective visualization and exploration of
+large-scale news video collections. Several researchers use
+predefined ontology to assist visual content analysis and
+retrieval [13,15,46]. However, such pre-defined ontology is
+unacceptable for news content representation because the
+news content is highly dynamic. How to extract the
+semantic structure automatically from large-scale news
+video collections is still an open problem.
+2.3. Bridging interaction gap
+As addressed above, the vision is the fastest way for
+human beings to accept information. Thus supporting
+news video visualization is one potential solution for
+exploring large-scale news video collections. Therefore,
+visualization techniques are potential solution. To fully
+utilize user’s vision capability, the adopted visualization
+technique must adapt to the human being’s vision
+property. It is reported [26,47] that a human being will
+focus on the details of a single point but still check the
+global context at the same time. Because the hyperbolic
+visualization technique [26,47] implements the fish-eye
+effect with a uniform framework, which is very suitable
+for the goal of our system. However, the hyperbolic
+visualization technique is only a single layer exploration
+technique for a specific format of information. The
+information carried in large-scale news video collections
+may need hierarchical interactive exploration. Therefore,
+how to transform the data upon user input to implement
+user-adaptive hierarchical exploration is still an open
+problem.
+In [29], a preliminary framework is proposed to resolve
+the above problems. This paper is the extension of [29]. In
+this paper, we developed the text term extraction and
+relation network generation algorithm, introduced a new
+visualization approach and proposed an algorithm to
+perform user-adaptive visualization. These extensions
+greatly improve the overall performance of our previous
+work [29].
+3. Text term extraction and relation network
+generation
+For news programs, the closed captions can provide
+abundant information and such information can be used
+to detect news topics of interest with high accuracy.
+Rather than performing semantic video classification to
+obtain the news topics [1,2,5,20,27,33,42,41,44,51,52] (i.e.,
+which can extract only a limited number of semantic
+concepts via multi-modal visual features), we have taken
+the advantage of cross-media to clarify the video contents
+and achieve automatic news topic detection from news
+closed captions. To do this, the closed captions are first
+segmented into sentences, and the text sentence is further
+segmented into keywords.
+In news videos, some special text sentences, such as
+‘‘somebody, CNN, somewhere’’ and ‘‘ABC’s somebody re-
+ports from somewhere’’, need to be processed separately.
+The names for news reporters in those text sentences are
+generally not the content of the news report. Therefore,
+they are not appropriate for news semantics interpreta-
+tion and should be removed. Because there may have clear
+and fixed patterns for these sentences, we have designed a
+context-free syntax parser to detect and mark this
+particular information. By incorporating 10–15 syntax
+rules, the parser can detect and mark such specific
+sentences in high accuracy.
+Most named entity detectors may fail in processing all-
+capital strings because initial capitalization is very
+important to achieve accurate named entity recognition.
+One way to resolve this problem is to train a detector with
+ground truth from the closed caption text. However, it is
+very expensive to obtain the manually marked text
+material. Because English has relatively strict grammar,
+it is possible to parse the sentences and recover the most
+capital information by using part-of-speech (POS) [39]
+and lemma information. We use TreeTagger [39] to
+perform the POS tagging. Capital information can be
+recovered automatically by using the TreeTagger parsing
+results.
+After such specific sentences are marked and capital
+information is recovered, an open source text analysis
+package LingPipe [25] is used to perform the named entity
+ARTICLE IN PRESS
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553 541
+Author's personal copy
+detection and resolve co-reference of the named entities.
+The named entities referring to the same entity are
+normalized to a most representative format to enable
+statistical analysis, where the news model of LingPipe is
+used and all the parameters are set to default values.
+Finally, the normalized results are parsed again by
+TreeTagger to extract the POS information and resolve the
+words to their original formats. For example, TreeTagger
+can resolve ‘‘better’’ to ‘‘well’’ or ‘‘good’’ according to its
+POS tag. We do not adopt the stemming technique
+because it may output unreadable words and resolve
+different words to the same stem. By using the POS tag to
+resolve the words to their original formats, this problem
+can be resolved. In addition, the POS tag can be used to
+remove words without real meanings, such as adverbs and
+prepositions. Most stop words can be removed by POS tag.
+All these detected keywords are treated as a basic
+vocabulary for interpreting the relevant news topics.
+The relations among different news topics are also very
+important to enable more effective retrieval and explora-
+tion of large-scale news video collections. Because the
+news topics have already been extracted, the relations
+(associations) among these news topics can further be
+extracted according to their co-occurrence probabilities.
+Based on this observation, a weighted news topic relation
+network is used for knowledge interpretation. Based on
+this observation, we use a weighted news topic relation
+network as the knowledge interpretation. The network
+uses news topics (i.e., keywords and keyframes) as nodes
+and their relations as edges, and the edges are weighted
+according to their interestingness for the users. If we use D
+to represent the collection of news videos of interest and
+KD to represent the knowledge interpretation of D (i.e., the
+weighted relation network), KD can be represent as
+KD ¼ fðki ¼ ðsa; sbÞ;wUðkiÞÞj1pipNg (1)
+where ki is a relation (i.e., a pair of news topics sa and sb),
+U is the user who is using the system, and wUðkiÞ is the
+interestingness weight of ki based on U’s preference.
+A pair of news topics sa and sb is defined as a relation
+when they occur in a closed caption or automatic speech
+recognition (ASR) script sentence simultaneously. By
+collecting all these relations together, the semantics of
+the large-scale collections of news videos can be repre-
+sented. Examples of the relation network are given in
+Figs. 2 and 3.
+Even though the relation network is a good semantic
+representation of large-scale collections of news videos,
+not all of these relations are interesting for the users. To
+resolve this problem, we also compute an interestingness
+weight wUðkiÞ for each knowledge item ki. Our knowledge
+interpretation extraction algorithm will extract the inter-
+estingness weights for the knowledge items. The algo-
+rithm is introduced in the next section.
+4. User interestingness modeling
+The interestingness of the news topics and their
+relations must be quantified to implement our visualiza-
+tion system, but most existing visualization techniques
+[22,48] use the raw frequency or probability to organize
+the visualization, and the raw frequency or probability
+may not indicate user’s information need. For example,
+‘‘Bush’’ is a keyword with very high frequency in 2006, but
+it may not be interesting because it is already well known.
+As the same reason, the relation between ‘‘President’’ and
+‘‘Bush’’ is uninteresting for most users because it is
+already known. In the scenario of news browsing and
+retrieval applications, a user may be interested in only the
+information that he or she did not know before (e.g., the
+‘‘really unexpected’’ information).
+To resolve this problem, the interestingness of the news
+topics and their relations must be assigned for visualizing
+large-scale news video collections. Ideally, the interest-
+ingness is related to the user’s preference and their prior
+knowledge, but it is very difficult to gather user
+preference information. Because the users may learn
+information from different sources that our system may
+not know, such as friends. In addition, it is even more
+difficult to have an accurate knowledge model of a specific
+user in the foreseeable future. Thus a general interesting-
+ARTICLE IN PRESS
+Fig. 2. Links of the semantic item ‘‘test’’ disclose details of the event and response of the international community during the North Korean nuclear
+weapon test.
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553542
+Author's personal copy
+ness measurement that is effective for most users is
+proposed in this paper.
+Google has implemented a great search engine based
+on the PageRank [35] technique. The PageRank technique
+ranks the web pages according to the provider behavior
+(e.g., the links of web pages). Even though Google has no
+user preference data, the PageRank technique can still give
+reasonable ranks of web pages for most users. Based on
+this observation, the provider behavior is valuable in-
+formation for quantifying the interestingness. More im-
+portantly, it is possible for us to gather the provider
+behavior information. Thus we can quantify the interest-
+ingness of news topics by using the statistical information
+extracted from many TV channels. To quantify the
+interestingness of news topics with the provider behavior,
+we assume that the audiences may have higher prob-
+ability to know a piece of information if it is repeated
+more frequently on TV programs. Thus the past news
+collections can be used to extract a general knowledge
+model of the user’s knowledge. We use a probability
+distribution to represent the knowledge model:
+G ¼ fgðxÞjx 2 Sg (2)
+where x is the given news topic or relation, S is the set of
+all the news topics and their relations, and gðxÞ is the
+probability of the news topic or relation x. The general
+knowledge model can be used as a predictor. If a news
+topic or relation can be predicted completely, then it may
+not be interesting at all for the users. Only those news
+topics or relations that cannot be predicted well may be
+interesting for the users. According to information theory,
+the unpredictability of a message (i.e., news topics or their
+relations in our system) can be quantified by the
+information it carries. To quantify the amount of the
+information a news topic or relation carries, the local
+probability model of news topics or relations of news
+reports for a specific time interval of interest is defined as
+LðtÞ ¼ fltðxÞjx 2 St  Sg (3)
+where t is the specific time interval of interest, such as one
+specific day, St is the set of all the news topics or their
+relations in the specific time interval t and ltðxÞ is the
+probability of the given news topic or relation x in t. The
+difference between the local probability model LðtÞ and
+the general knowledge model G is able to tell us how
+much information we can obtain by knowing LðtÞ. Because
+both the local probability model LðtÞ and the general
+knowledge model G are distributions, the Kullback–Lei-
+bler divergence is used to characterize their difference:
+DðLðtÞkGÞ ¼
+X
+x2St
+ltðxÞ log
+ltðxÞ
+gðxÞ (4)
+The distance function DðLðtÞkGÞ is able to characterize
+the difference between LðtÞ and G, but we also need to
+evaluate the information carried by each news topic or
+relation x 2 St . By examining Eq. (4), one can observe that
+DðLðtÞkGÞ is the weighted sum of a set of components, and
+each component is only related to one single news topic x.
+Therefore, the contribution for one certain news topic x 2
+St can be obtained by the relevant component of DðLðtÞkGÞ
+in Eq. (4). Based on this observation, we can quantify the
+interestingness of x as
+wrt ðxÞ ¼ ltðxÞ log
+ltðxÞ
+gðxÞ (5)
+From Eq. (5), one can observe that the interestingness
+measurement wrt ðxÞ depends on two factors: ltðxÞ and
+ltðxÞ=gðxÞ. The first factor ltðxÞ characterizes the probability
+of news topic x in local probability model LðtÞ and the
+second factor ltðxÞ=gðxÞ characterizes the probability
+difference of x in between LðtÞ and G (i.e., unpredict-
+ability). Because the purpose of Kullback–Leibler diver-
+gence is to measure the overall difference of LðtÞ and G, as
+a result the unpredictability factor ltðxÞ=gðxÞ must be
+scaled by ltðxÞ in Eq. (4) so that DðLðtÞkGÞ is adapt to the
+local distribution LðtÞ. However, our purpose is to measure
+the interestingness of individual news topic x. Therefore,
+the scale ltðxÞ is irrelevant to our purpose. Consequently,
+only the unpredictability factor ltðxÞ=gðxÞ should be used to
+characterize the interestingness measurement:
+wdt ðxÞ ¼
+ltðxÞ
+gðxÞ (6)
+Because multiple media channels (audio, video and
+closed caption text) are involved in the visualization,wdt ðxÞ
+in Eq. (6) needs to be normalized to simplify the multi-
+modal data fusion:
+wtðxÞ ¼
+wdt ðxÞ
+maxx2St fwdt ðxÞg
+(7)
+Eq. (7) normalizes the interestingness weights to ½0;1.
+The normalized weights are preferable to fuse with other
+factors. In our system, we use Eq. (7) to compute wUðkiÞ,
+i.e., wUðkiÞ ¼ wtðkiÞ. And Eq. (7) is a general weighting
+algorithm that can be applied to weigh news topics,
+relations and other visual properties such as video
+semantic concepts. Therefore, we use Eq. (7) to compute
+ARTICLE IN PRESS
+Fig. 3. North Korean nuclear weapon test event in the global news
+reports context.
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553 543
+Author's personal copy
+not only wUðkiÞ but also interestingness weights of other
+items.
+With the above algorithm for assigning the weights for
+the news topics and their relations, our system is able to
+extract the interesting news topics and suppress less
+interesting news topics. Because only statistically impor-
+tant semantic items can have high interestingness
+measurement, the random error of semantic analysis,
+which outputs a number of different incorrect semantic
+items, can be filtered out automatically and more robust
+results can be achieved.
+To enable more efficient visualization of large-scale
+news video collections, special visual features must be
+considered, or else the results may not be visually
+important. There are multiple types of visual features
+that may be important. Some types of visual features can
+be processed by using Eq. (7), such as the people and the
+semantic concepts of news video shots. Other types of
+visual features may not be characterized by using the
+same statistical analysis algorithms as described above,
+such as video production rules. Based on this under-
+standing, we have developed a series of semantic video
+analysis algorithms to extract the needed video semantics.
+These algorithms are introduced in the next section.
+5. Semantic video analysis
+Even though semantic video analysis and understand-
+ing are still very challenging, supporting semantic video
+analysis plays an important role in enabling more efficient
+retrieval and exploration of large-scale news video
+collections. Based on this observation, we have developed
+multiple solutions to automatically detect multi-modal
+semantic items (i.e., video, audio, text) and extract the
+representative visual features for video content represen-
+tation. In addition, the interestingness weights for these
+semantic items are assigned automatically via our
+statistical video analysis algorithm.
+5.1. Statistical property analysis of video shots
+The video shots are the basic units for video content
+representation, and thus they can be treated as one of
+the semantic items for automatic weight assignment.
+However, unlike the keywords in text documents, the re-
+appearance of video shots cannot be detected automati-
+cally via simple comparison of their visual properties.
+Thus new techniques are desired for detecting the re-
+appearance of video shots in news videos [29], so that we
+can assign the importance weights of video shots auto-
+matically.
+One certain video shot may be repeated multiple times
+because of the following reasons: (a) video shots for the
+anchors may repeat multiple times in the same news
+program; (b) video shots for the participants of an
+interview may appear multiple times in the same news
+program; (c) video shots for interpreting the important
+news may appear in both the news summary at the
+beginning and the detailed report later in the same
+program; (d) video shots for the important news may
+appear in different news programs of the same channel
+(at different time periods) or different TV channels
+(at different time or same time). The last two situations
+of video shot re-appearance indicate the importance for
+the corresponding video shots. Nevertheless, the first two
+situations of video shot re-appearance may not indicate
+that the corresponding video shots are important. To
+quantify the effect of above four rules, the intra-program
+re-appearance number rintraðiÞ and inter-program re-
+appearance number rinterðiÞ for each video shot are
+computed. The two re-appearance numbers rinterðiÞ and
+rintraðiÞ for most video shots are equal to 1 because they are
+not repeated. Obviously, some video shots may have these
+two numbers bigger than 1 and different re-appearance
+patterns (i.e., different re-appearance situations) may
+provide different semantics and different weights should
+be assigned. Based on these understandings, the weights
+for different re-appearance numbers of video shots are
+approximated by using a bell shaped curve:
+wintraðiÞ ¼ eððrintraðiÞRintraÞ=RintraÞ
+2=2
+winterðiÞ ¼ eððrinterðiÞRinterÞ=RinterÞ
+2=2 (8)
+where Rintra and Rinter are the parameters. For intra-
+program repetition of video shots, Rules (a), (b) and (c)
+apply. However, the shots satisfying Rules (a) and (b) are
+not very attractive while the shots satisfying Rule (c) may
+be attractive. To discriminate the re-appearance pattern of
+Rule (c) from that of Rules (a) and (b), Rintra ¼ 2 is adopted
+in our experiments. As a result, anchor and interview
+shots re-appearing many times are suppressed because
+they are not ‘‘visually’’ important. On the other hand,
+news shots repeated in both the summary and the
+detailed report are emphasized, because their intra-
+program re-appearance number is exactly 2. For inter-
+program repetition, we found via experiments that little
+shot is repeated more than 5 times in different programs.
+In addition, if a news report is repeated channel by
+channel and program by program, it quickly becomes well
+known and therefore no longer ‘‘news’’. Therefore, we set
+Rinter ¼ 5 in our experiments.
+5.2. Video objects detection
+For news videos, video objects, such as text areas and
+human faces, may provide important clues about news
+stories of interest. Text lines and human faces in news
+videos can be detected automatically by using suitable
+computer vision techniques [29]. Obviously, these auto-
+matic detection functions may fail in some cases. Thus the
+results that are detected by using a single video frame
+may not be reliable. To address this problem, the detection
+results on all the video frames within the same video
+shots are integrated and the corresponding confidence
+maps for the detection results are calculated. As shown in
+Fig. 4, such confidence maps can provide valuable
+information for evaluating our detection results.
+The confidence region is generated by transforming the
+relevant confidences for our detection results into a binary
+image via thresholding. The threshold for generating the
+confidence region of text is set to the recall of the object
+ARTICLE IN PRESS
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553544
+Author's personal copy
+detection algorithm. The reason of using recall as the
+threshold is that our object detection algorithm is tuned
+with high precision. Therefore, object regions will have
+confidence value higher or equal to the recall. Obviously,
+the size ratio between the confidence region and the size
+of video frames provides some valuable information for
+weight assignment. Therefore the size ratios for text and
+human faces regions are obtained, atextðiÞ and afaceðiÞ.
+However, the ratios cannot be directly used as the weight
+of the video shot. News editors may emphasize a person
+by putting a close-up, resulting in a large afaceðiÞ. But a
+small face generally does not mean the person is
+unimportant, it only means the shot is an event shot.
+The text object is analog to the face object. As a result, the
+ratios must be converted by using a lower-bounded curve:
+wareaðiÞ ¼ 1
+1þ emaxfaðiÞn;0g=l (9)
+where n is lower-bound ratio that news editors adopt for
+emphasizing information. For the face object, it generally
+equals the average ratio in anchor shots. For the text
+object, it generally equals the average ratio in shots
+without extra open captions (e.g., only with open captions
+overlayed on every shot). When a is less than n, we cannot
+tell whether the news editor wants to emphasize the
+object or not. Therefore, the curve of Eq. (9) assigns the
+same weight to all these shots. For shots with a larger than
+n, l controls the conversion from a to the weight. To decide
+appropriate values for a and l, we compute the atextðiÞ and
+afaceðiÞ of all shots on a 10-h news video database. We
+found that the average afaceðiÞ for anchor shots is close to
+0.01 and average atextðiÞ for shots without extra open
+captions is close to 0.05. Therefore, we adopt ntext ¼ 0:05
+and nface ¼ 0:01. To compute l, we select the control point
+of the conversion at 0.8, e.g., if a shot has a aðiÞ value that is
+larger than 80% of the shots (only counting shots with
+aðiÞXn), then it is assigned the weight 0.8. According to
+experimental data, ltext ¼ 0:1593 and lface ¼ 0:04096. For
+a given video shot, the importance weight for human face
+area wfaceAreaðiÞ and the importance weight for text area
+wtextAreaðiÞ can be determined by
+wtestAreaðiÞ ¼
+1
+1þ emaxfatextðiÞntext ;0g=ltext
+wfaceAreaðiÞ ¼
+1
+1þ emaxfafaceðiÞnface ;0g=lface (10)
+By performing face clustering [38], face objects can be
+clustered into several groups. As a result, the human
+objects can be identified and be treated as one of the
+semantic items for weight assignment. The face object is
+similar to text term. Therefore, they can be weighted by
+using news topics weighting algorithm as Eq. (7), which is
+introduced in Section 4. In addition, there may be more
+than one human object in a video shots. We just pick up
+the one with the highest weight as the representative for
+the video shot:
+whumanðiÞ ¼ max max
+x2HUMANðiÞ
+fwtðxÞg;0:5
+ 
+(11)
+where HUMANðiÞ is the set of human objects of shot i. The
+first maxfg lower-bounds the humanweight at 0.5 for the
+same reason discussed above. w¯tðÞ is the news topics
+weighting algorithm of Eq. (7). The second maxfg ensures
+our algorithm to detect the most important person in the
+shot and ignore unimportant people.
+5.3. Semantic video classification
+The video concepts associated with the video shots can
+provide valuable information to enable more effective
+visualization and retrieval of large-scale news video
+collections, and semantic video classification is one
+ARTICLE IN PRESS
+Fig. 4. Automatic text and face detection results. (a) Detected text lines. (b) Confidence map of text. (c) Detected faces. (d) Confidence map of faces.
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553 545
+Author's personal copy
+promising solution to detect such video concepts. To
+detect the video concepts automatically, we have adopted
+our previous work reported in [17].
+Two types of information about video concepts can be
+used for weight assignment. First, each video concept has
+an intrinsic importance. For example, a shot with a person
+reading an announcement is more important than a shot
+with a journalist introducing background information. The
+importance of the video concepts, wcðCðiÞÞ, is determined
+by user study. Results are in Table 1. Where CðiÞ is the
+video concept in the video shot i.
+Second, the video concept can be treated as a text term.
+As a result, it can also be weighted as news topics by
+Eq. (7), which is introduced in Section 4. Finally, the
+weight for the given video concept is determined by
+wconceptðiÞ ¼ wcðCðiÞÞ wtðCðiÞÞ (12)
+where w¯tðÞ is the news topics weighting algorithm of
+Eq. (7).
+5.4. Semantic visual weights fusion
+Our purpose of weighting is to detect the existence of
+some visual properties and emphasize those shots with
+interesting visual properties. The existence of one visual
+property may be indicated by different visual patterns. For
+example, the repeat property may be represented by wintra
+or winter. To ensure we detect the existence of interesting
+visual properties and do not be misled by missing some
+visual patterns, we first use max operation to fuse weights
+for the same visual property:
+wrepeatðiÞ ¼ maxfwintraðiÞ;winterðiÞg
+wobjectðiÞ ¼ maxfwfaceAreaðiÞ;wtextAreaðiÞg
+wsemanticsðiÞ ¼ maxfwhumanðiÞ;wconceptðiÞg (13)
+They are all derived from visual characteristics of video
+shots. Where wrepeat is the weight reflecting repetition of
+the shot, wobject reflecting prominent objects in the shot,
+and wsemantics reflecting semantic categories. Conse-
+quently, the overall visual importance weight for a given
+video shot is determined by the geometric average of
+above three weights:
+wvideoðiÞ ¼
+ffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffi
+wrepeatðiÞ wobjectðiÞ wsemanticsðiÞ3
+q
+(14)
+5.5. Multi-modal news content synchronization and
+decision fusion
+For news programs, the closed captions have good
+matching with the relevant audios. Therefore, they can
+be integrated to take advantage of cross-media to clarify
+the video contents and remove the redundant informa-
+tion. The text documents for the closed captions may
+not synchronize with the video well and generally
+have a delay of a few seconds. Nevertheless, the audio
+generally synchronizes very well with the video but the
+accuracy of most existing techniques for ASR is still low.
+By integrating the results for ASR with the results of
+closed caption analysis, the closed captions can be
+synchronized with the video contents with higher
+accuracy.
+After the closed captions are synchronized to the
+relevant news videos, we can determine the correlation
+between the closed captions and the video shots. To do this,
+the closed captions are first segmented to sentences, and
+the start time and the stop time for each text sentence
+can also be obtained automatically. All these video shots
+that locate between the start time and the stop time for
+the same text sentence are associated with the corres-
+ponding text sentence. In addition, the text sentence is
+further segmented into keywords, as discussed in Section 3.
+Finally, all the video shots are associated with the relevant
+keywords in the same text sentence. After all shots have
+been associated with keywords, the keyword weight of a
+shot is computed by
+wkeywordðiÞ ¼ max
+x
+fwtðxÞjx is a keyword of ig (15)
+where w¯tðÞ is the news topics weighting algorithm of
+Eq. (7), which is introduced in Section 4. The reason to use
+maxfg to compute the overall keyword weight is that
+almost every shot is associated with several high-frequent
+uninteresting keywords, and really interesting keywords
+are generally rare. If any average algorithm is used, the
+calculated value is dominated by the low weights of high-
+frequent uninteresting keywords. The maxfg operation
+ensures our algorithm to detect the existence of really
+interesting keywords robustly.
+With the keyword weight and the visual weight
+computed above, the overall weight for a given video
+shot is determined by averaging wvideo and wkeyword:
+wðiÞ ¼ gwvideoðiÞ þ ð1 gÞ wkeywordðiÞ (16)
+In our current experiments, we set g ¼ 0:6.
+6. Visualization for large-scale news video exploration
+After the news topics and semantic items are available,
+we introduce our visualization framework to enable more
+effective retrieval and exploration of large-scale news
+video collections. Because the available scene size for
+news video visualization is limited and there are large
+amount of interesting news topics, we need to answer
+three questions: (a) Which news topics are more inter-
+esting to users and should receive more space for display?
+(b) How can we display large amount of interesting news
+topics and their associations more effectively on a limited-
+size scene? (c) Which visualization method is the most
+suitable one? (d) How canwe visualize the changing trend
+of news topics along the time?
+ARTICLE IN PRESS
+Table 1
+Video concept importance
+Concept CðiÞ wcðCðiÞÞ Concept wcðCðiÞÞ
+Announcement 0.9 Report 0.3
+Sports 0.5 Weather 0.5
+Gathered people 1 Unknown 0.8
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553546
+Author's personal copy
+6.1. Visualization of relation network
+As the news reports are unpredictable, both the general
+audiences and the news analysts may first want to have a
+global overview of all the available news reports. This
+means that the global overview is the first piece of
+information that is meaningful for most audiences, and
+such global overview is not necessarily formed by the
+whole news stories. It can be composed of the news topics
+with their interestingness weights and their associations.
+For providing the global overview of large-scale news
+video collections, the news topics and their associations
+are better than the whole news stories because the
+audiences may be interested in a certain small piece of
+information of a news report, such as a name or an
+interesting video shot.
+The news topics can provide a good hint to the users,
+and thus the users can quickly make the decision of which
+news topic is more interesting than others according to
+their own preferences. By acquainting the users with a
+better global overview of large-scale news video collec-
+tions, they can easily and intuitively specify their queries
+by clicking the relevant news topics interactively, and our
+system will return the most relevant news video clips
+which are strongly related to the corresponding news
+topics. Compared with the traditional keyword-based
+news video retrieval systems, our system can visually
+acquaint the users with: (a) keywords for news topic
+interpretation; (b) associations between the news topics;
+(c) interestingness weights to suppress the less interesting
+news topics. Because the less interesting news topics are
+suppressed and the unexpected news topics are empha-
+sized, our proposed visualization algorithm can allow
+users to find the most interesting information easily. On
+the other hand, the associations among the news topics
+can also disclose interesting and meaningful information
+to the users.
+For naive users to harvest our research achievements, it
+is very important to develop more comprehensive frame-
+work for visualizing such relation network of news topics,
+so that they can specify their queries easily and intuitively
+or explore large-scale news video collections interactively.
+Visualizing large-scale relation network in 2D system
+interface is not a trivial task [26,32,34,37,43,47]. We have
+developed a framework integrating multiple innovative
+ideas to tackle this issue effectively: (a) A tree-based
+approach is incorporated to visualize the relation network
+in a nested graph view, where each news topic is
+displayed along with its relevant ones. (b) The geometric
+closeness of the news topics on the visualization tree is
+related to their semantic relevance and associations, so
+that our graphical presentation can reveal a great deal
+about how these news topics are organized and how they
+are intended to be used. (c) Both geometric zooming and
+semantic zooming are integrated to adjust the level of
+visible detail automatically according to the discerning
+constraint on the number of news topics that can be
+displayed per visualization view.
+Our approach for relation network visualization ex-
+ploits hyperbolic geometry [26]. The hyperbolic geometry
+is particularly well suited to graph-based layout of large-
+scale relation network because of two reasons. First, the
+area of a circle on a hyperbolic plane rises exponentially in
+radius. Because the number of nodes of the relation
+network increases exponentially as the depth increases,
+these nodes can be put on a hyperbolic plane in equal
+density. Second, the hyperbolic plane can be projected to
+the Euclidean plane by Poincare´ disk model [26] to
+implement a effect similar to the log-polar transformation
+in a uniform framework. This effect is essential to
+visualization because it matches the property of the
+human vision [6].
+The essence of our approach is to project the relation
+network onto a hyperbolic plane according to the
+contextual relationships between the news topics, and
+layout the relation network by mapping the relevant news
+topics onto a circular display region. Thus our relation
+network visualization framework takes the following
+steps: (a) The news topics on the relation network are
+projected to a hyperbolic plane according to their
+associations, and such projection can usually preserve
+the original associations between the news topics. (b)
+After we obtain such context-preserving projection of the
+news topics, we can then use Poincare´ disk model [26] to
+map the news topics on the hyperbolic plane to a 2D
+display coordinate. Poincare´ disk model maps the entire
+hyperbolic space onto an open unit circle, and produces a
+non-uniformmapping of the news topics to the 2D display
+coordinate. The Poincare´ disk model preserves the angles,
+but distorts the lines. The Poincare´ disk model also
+compresses the display space slightly less at the edges,
+which in some cases can have the advantage of allowing a
+better view of the context around the center of projection.
+Our implementation relies on the representation of the
+hyperbolic plane, rigid transformations of the hyperbolic
+plane and mappings of the news topics from the
+hyperbolic plane to the unit disk. Internally, each news
+topic on the graph is assigned a location z ¼ ðx; yÞ
+within the unit disk, which represents the Poincare´
+coordinates of the corresponding news topic. By treating
+the location of the news topic as a complex number, we
+can define such a mapping as the linear fractional
+transformation [26]:
+Zt ¼
+yzþ P
+1þ Pyz (17)
+where P and y are complex numbers, jPjo1 and jyj ¼ 1,
+and P is the complex conjugate of P. This transformation
+indicates a rotation by y around the origin followed by
+moving the origin to P (and P to the origin).
+6.2. Interactive exploration of large-scale news video
+collections
+After the hyperbolic visualization of the relation net-
+work is available, it can be used to enable interactive
+exploration and navigation of large-scale news video
+collections at the topic level via change of focus. The
+change of focus is implemented by changing the mapping
+of the news topics from the hyperbolic plane to the
+display unit disk. The positions of the news topics on the
+hyperbolic plane need not to be altered during focus
+ARTICLE IN PRESS
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553 547
+Author's personal copy
+manipulation. Users can change their focus of news topics
+by clicking on any visible news topic to bring it into focus
+at the center, or by dragging any visible news topic
+interactively to any other location without losing the
+contextual relationships between the news topics, where
+the rest of the layout of the relation network transforms
+appropriately. Thus our hyperbolic framework for relation
+network visualization has demonstrated the remarkable
+capabilities for interactively exploring large-scale news
+video collections. By supporting change of focus, our
+hyperbolic visualization framework can theoretically dis-
+play unlimited number of news topics in a 2D unit disk.
+Moving the focus point over the display disk unit is
+equivalent to translating the relation network on the
+hyperbolic plane, such change of focus can provide a
+mechanism for controlling which portion of the relation
+network receives the most space. Through such change of
+focus on the display disk unit for relation network
+visualization and manipulation, the users are able to
+interactively explore and navigate large-scale news video
+archives. Therefore, users can always see the details of the
+regions of interest by changing the focus. Different views
+of the layout results of our relation network are given in
+Figs. 5–8. By changing the focus points, our hyperbolic
+framework for relation network visualization can provide
+an effective solution for interactive exploration of large-
+scale news video collections at the topic level. The users
+can rotate, translate and zoom the network to examine the
+details at different level. An online demo can be found
+at http://webpages.uncc.edu/hluo/relation/Relation.html.
+The relations can disclose another level of knowledge to
+the users.
+6.3. Intuitive query specification
+Our hyperbolic visualization of the relation network
+can acquaint the users with a good global view of the
+overall information of large-scale news video collections
+at the first glance, so that users can specify their queries
+visually because the relevant keywords for news topic
+interpretation and the most representative keyframes are
+visible. In addition to such specific queries, our framework
+can allow users to start at any level of the relation
+network and navigate towards more details by clicking the
+relevant news topics of interest to change the focus.
+Therefore, our graphical visualization framework can
+significantly extend user’s ability on video access and
+allow users to explore large-scale news video collections
+interactively at different levels of details. After the users
+click the relevant news topics, our system can then
+ARTICLE IN PRESS
+Fig.5. Display emphasizing the top-left part.
+Fig.6. Display emphasizing the top-right part.
+Fig.7. Display emphasizing the bottom-left part.
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553548
+Author's personal copy
+retrieve the news video databases according to the
+selected news topic and most relevant news stories are
+selected and returned to the users. The retrieved stories
+can be organized by timeline so that the users can easily
+learn the history of the whole event, as shown in Fig. 9(a).
+In addition, the most relevant web news can also be
+retrieved, as shown in Fig. 9(b). This feature is very
+important for audiences who want to know more details
+and relevant discussions of the event, and thus our system
+can provide a good technique of reasoning.
+6.4. User-adaptive visualization of relation network
+After the users navigate the relation network for large-
+scale news video collections, they can specify their queries
+according to their interestingness. Therefore, the users can
+obtain more relevant news stories by submitting some
+specific queries. Consequently, we must extract a new
+news topic relation network that is relevant to the user
+input but still preserves the global semantic context. To
+achieve this purpose, we ‘‘boost’’ the relevant knowledge
+items relevant to the user input on the global network by a
+relevance factor:
+KDðsIÞ ¼ fðki;wUðkiÞ $ðki; sIÞÞj1pipNg
+¼ fðki;wUðkiÞ  cmaxfrðsa ;sI Þ;rðsb ;sIÞgÞg (18)
+where sI is the clicked item, $ðki; sIÞ is a boosting factor to
+emphasize items most relevant to sI , cX1 is the boosting
+constant, and rðs; sIÞ 2 ½0;1 is the relevance between s
+and sI . By applying Eq. (18) to the global network,
+irrelevant knowledge items with rðs; sIÞ ¼ 0 stay un-
+changed and relevant knowledge items with rðs; sIÞ40
+have interestingness weights increased according to their
+relevance to the user input. As a result, more relevant
+knowledge items are selected for visualization on the new
+network. Constant c balances the local details and the
+global context. Larger c enables more local details to be
+included in the new network. Smaller c preserves more
+global context in the new network.
+To compute KDðsIÞ, rðs; sIÞ must be computed. Because
+the news topic relation network KD represents the
+relevance quantities among news topics, rðsm; snÞ can be
+computed by exploring KD. Between a pair of news topics
+sm and sn, there may be several paths pxðsm; snÞ ¼
+ðsm; . . . ; sl; . . . ; snÞ on KD. The interestingness of pxðsm; snÞ
+is defined as
+wUðpxðsm; snÞÞ ¼ minfwUðkj ¼ ðsa; sbÞÞg (19)
+ARTICLE IN PRESS
+Fig.8. Display emphasizing the bottom-right part.
+Fig. 9. An example of search results. (a) Results by timeline. (b) Cross-
+media retrieval results.
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553 549
+Author's personal copy
+where kj is a segment of pxðsm; snÞ. The shortest path is
+defined as
+pminðsm; snÞ ¼ argmaxx fwUðpxðsm; snÞÞg (20)
+The shortest path pminðsm; snÞ represents the most inter-
+esting route connecting sm and sn. Therefore, it is a good
+measure of the relevance between sm and sn:
+rðsm; snÞ ¼ wUðpminðsm; snÞÞ (21)
+By combining Eq. (21) into Eq. (18), a new semantic
+network KDðsIÞ can be generated, which is relevant to the
+user input sI . In addition, relevant nodes are automatically
+laid out close to sI . Relevant events can then be easily
+checked. Furthermore, the global semantic context is still
+preserved, so that the user can quickly switch to new
+point of interest if she changes her mind. Examples are
+given in Figs. 10 and 11. Such user-adaptive visualization
+of relation network can provide the users more details of
+the relevant news.
+6.5. News changing trend visualization
+As the content of news reports is dynamic (i.e., news
+are changed along the time), the audiences may also want
+to see the news changing trend over time. Such dynamic
+news trend is able to tell the history of the whole news
+event to the users, and thus the users can have more
+complete view of the interesting topics with the dynamic
+trend.
+To effectively depict the above information, several
+visualization techniques are adopted. Firstly, global over-
+view information is represented by using the keyframes
+map, as shown in Fig. 12(a) and (d). The size of the
+keyframe in the map is proportional to the interestingness
+weight of the relevant news topic. By organizing the
+global overview information in this way, the users can
+directly find the interesting news reports on the key-
+frames map and learn the global structure of all news
+reports. To represent the dynamic trend of the news
+reports, an animation of keyframes on the keyframes map
+is used. Two animation frames are given in Fig. 12(b) and
+(c). By watching the animation the users are able to catch
+the dynamic trend of the news topics.
+7. Experiments
+To evaluate the efficiency of our system, we compare
+our system with the state of the art news search engine,
+Google News. We ask users to evaluate the difficulty of
+answering several news related questions by using our
+system and Google News. Total 12 users participated the
+experiments. Ten of them are undergraduate students
+without any related background, and two of them are
+security experts. Half of the users evaluate our system
+first. Another half evaluate Google News first. Before a
+user evaluate our system, the user watches a 2-min
+introduction video. For each task, the users give out only
+the difficulty level to complete the task. The difficulty
+level is defined as a number between 1 and 10, where 1 is
+the lowest level and 10 is the highest level. The database
+used in the evaluation contains three channels (CNN, FOX,
+and MSNBC) of video news reports in the past month
+(which is October, 2006).
+The first task is to list several most important news
+events in the past month. The average difficulty level for
+Google News is 9.2, and that for our system is 4.5. Most
+ARTICLE IN PRESS
+Fig. 10. Adaptation example for query ‘‘Robert Gates’’. (a) ‘‘Robert Gates’’
+in global relation network. (b) Detailed view focusing on ‘‘Robert Gates’’.
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553550
+Author's personal copy
+users said Google News provides little help on completing
+this task. The two security experts said our system is very
+helpful to complete this task, and this task is typical for
+their everyday work.
+The second task is to summarize the whole event of
+North Korean nuclear weapon test. The average difficulty
+level for Google News is 6.6, and that for our system is 4.3.
+The users said that our system places relevant news topics
+immediately surrounding the point of focus, which is very
+helpful to figure out the rough aspects of the whole event.
+The third task is to answer when, where, why and how of
+the Amish school shooting. The average difficulty level for
+Google News is 4.1, and that for our system is 6.7. Google
+News outperforms our system in this task. The most two
+important reasons given by the users are: (1) The
+keyword-based search technique of Google News is
+significantly better than ours. (2) It is much easier to
+extract fine details from the web news reports than from
+the video news reports.
+At February 2008, we performed a new experiment for
+January 2008 database. During this experiment, the
+average completion time was used as the evaluation
+criteria. Total 20 undergraduate students participated
+the experiment. Ten of them were asked to use Google
+News and another 10 were asked to use our system.
+A participant can only use one of the two systems. None of
+them has used our system before.
+The first task is to find an interesting news and read it.
+The average completion time for Google News is 0.9min,
+and that for our system is 0.5min. We asked the
+participants to press the ‘‘complete’’ button only when
+they read a really interesting news. Therefore, a user may
+read more than one news to complete this task. As a
+result, the average completion time is longer than the
+time to perform the first click.
+The second task is to list five most important news
+events in the past month. The average completion time for
+Google News is 2.3min, and that for our system is 5.5min.
+The result is completely different than our expectation.
+After checking the answer sheets and inquiring the
+participants, we found that the users of Google News
+answered this question primarily by memory, while the
+users of our system did actually explore the database and
+check the news reports carefully. As a result, four of the
+Google News users listed less than five news reports,
+while all the users of our system listed five news reports.
+The third task is to summarize the first event listed in the
+second task. The average completion time for Google News
+is 3.7min, and that for our system is 3.3min. Our system
+outperforms Google News slight. The difference is less
+than what we expected. We again inquired the participant
+and checked the experiment log, found that watching the
+video reports consumes more time than reading text
+reports for summarization purpose. Therefore, even
+though our system can help the users find relevant
+reports in shorter time, the users need to use more time
+to watch the reports. If we exclude the time for reading or
+watching by using the experiment log, the average
+completion time becomes 1.5min for Google News users
+vs. 0.8min for users of our system.
+Based on the above experiments, one can find that:
+(1) Our system provides valuable service when the users
+do not have detailed preference. (2) Sophisticated key-
+word-based search techniques perform better when the
+users have detailed preference and need to learn the fine
+ARTICLE IN PRESS
+Fig. 11. Adaptation example for query ‘‘education’’. (a) ‘‘Education’’ in
+global relation network. (b) Detailed view focusing on ‘‘education’’.
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553 551
+Author's personal copy
+details. Therefore, our system is able to guide the users to
+build their own preference effectively and efficiently. Then
+keyword-based search techniques can be adopted to
+disclose fine details after the system catches the user’s
+fine preference.
+8. Conclusions
+In this paper, we have developed a novel framework to
+achieve more effective analysis, retrieval and exploration of
+large-scale news video collections. By integrating cross-
+media information from multiple sources and synchroniz-
+ing multi-modal content analysis results, our proposed
+schemes can achieve more effective news topic detection
+and interestingness assignment and bridge the semantic
+gap successfully. By incorporating hyperbolic visualization
+for relation network visualization, our system can also
+support more effective retrieval and exploration of large-
+scale news video collections. Our experiments on large-scale
+news video collections have provided very positive results.
+Acknowledgment
+This work was sponsored by the National Visualization
+and Analytics Center ðNVACTMÞ under the auspices of the
+Southeast Regional Visualization and Analytics Center.
+NVAC is a US Department of Homeland Security Program
+led by Pacific Northwest National Laboratory.
+ARTICLE IN PRESS
+Fig. 12. An example of video news visualization. (a) Keyframes map for US news on July 22, 2006. (b) and (c) Intermediate animation. (d) Keyframes map
+for US news on July 23, 2006. The keyframes map shows the news topics on given day, the animation represents the trend of topic change over time. An
+example of animation can be downloaded at http://webpages.uncc.edu/hluo/NewsDemo.avi.
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553552
+Author's personal copy
+References
+[1] B. Adams, C. Dorai, S. Venkatesh, Towards automatic extraction of
+expressive elements from motion pictures: tempo, IEEE Trans.
+Multimedia 4 (4) (2002) 472–481.
+[2] W.H. Adams, G. Iyengar, C. Lin, M. Naphade, C. Neti, H. Nock, J.R. Smith,
+Semantic indexing of multimedia content using visual, audio and text
+cues, EURASIP J. Appl. Signal Process. 2003 (2) (2003) 170–185.
+[3] G. Antini, S. Berretti, A. Del Bimbo, P. Pala, 3d face identification
+based on arrangement of salient wrinkles, in: Proceedings of the
+IEEE International Conference on Multimedia and Expo (ICME
+2006), 2006, pp. 85–88.
+[4] T. Athanasiadis, P. Mylonas, Y. Avrithis, S. Kollias, Semantic image
+segmentation and object labeling, IEEE Trans. Circuits Systems
+Video Technol. 17 (3) (2007) 298–312.
+[5] K. Barnard, P. Duygulu, N. de Freitas, D. Forsyth, D. Blei, M.I. Jordan,
+Matching words and pictures, J. Machine Learn. Res. 3 (2003)
+1107–1135.
+[6] A. Bernardino, J. Santos-Victor, Binocular visual tracking: integration
+of perception and control, IEEE Trans. Robot. Automat. 6 (1999) 15.
+[7] H. Le Borgne, A. Guerin-Dugue, N.E. O’Connor, Learning midlevel
+image features for natural scene and texture classification, IEEE
+Trans. Circuits Systems Video Technol. 17 (3) (2007) 286–297.
+[8] H. Bruce, B. Cleal, R. Fidel, A.M. Pejtersen, A multidimensional
+approach to the study of human–information interaction: a case
+study of collaborative information retrieval, J. Amer. Soc. Inform.
+Sci. Technol. 55 (11) (2004) 939–953.
+[9] D. Bulgarelli, C. Grana, R. Vezzani, R. Cucchiara, A semi-automatic
+video annotation tool with mpeg-7 content collections, in:
+Proceedings of IEEE International Symposium on Multimedia
+(ISM2006), 2006, pp. 742–745.
+[10] Y. Chen, J.Z. Wang, Image categorization by learning and reasoning
+with regions, J. Machine Learn. Res. 5 (2004) 913–939.
+[11] S. Christodoulakis, C. Tsinaraki, A multimedia user preference model
+that supports semantics and its application to mpeg 7/21, in:
+Proceedings of the Multimedia Modeling 2006 Conference (MMM
+2006), 2006, pp. 35–42.
+[12] S. Cooray, N. O’Connor, S. Marlow, N. Murphy, T. Curran, Semi-
+automatic video object segmentation using recursive shortest
+spanning tree and binary partition tree, in: Workshop on Image
+Analysis For Multimedia Interactive Services, 2001.
+[13] S. Dasiopoulou, C. Doulaverakis, V. Mezaris, I. Kompatsiaris, M.G.
+Strintzis, An ontology-based framework for semantic image
+analysis and retrieval, Semantic-Based Visual Information Retrieval,
+Idea Group Inc., 2007.
+[14] S. Dasiopoulou, V. Mezaris, I. Kompatsiaris, V.K. Papastathis, M.G.
+Strintzis, Knowledge-assisted semantic video object detection, IEEE
+Trans. Circuits Systems Video Technol. 15 (10) (2005) 1210–1224.
+[15] S. Dasiopoulou, C. Saathoff, Ph. Mylonas, Y. Avrithis, Y. Kompatsiaris,
+S. Staab, M.G. Strintzis, Introducing context and reasoning in visual
+content analysis: an ontology-based framework, Semantic Multi-
+media and Ontologies: Theory and Applications, Springer, Berlin,
+2007.
+[16] J. Fan, Y. Gao, H. Luo, Multi-level annotation of natural scenes using
+dominant image components and semantic image concepts, in:
+ACM Multimedia, 2004, pp. 540–547.
+[17] J. Fan, H. Luo, A.K. Elmagarmid, Concept-oriented indexing of video
+database toward more effective retrieval and browsing, IEEE Trans.
+Image Process. 13 (7) (2004) 974–992.
+[18] J. Fauqueur, N. Boujemaa, Region-based image retrieval: fast coarse
+segmentation and fine color description, J. Visual Languages
+Comput. 15 (1) (2004) 69–95.
+[19] K. Goh, B. Li, E.Y. Chang, Semantics and feature discovery via
+confidence-based ensemble, ACM Trans. Multimedia Comput.
+Comm. Appl. 1 (2) (2005) 168–189.
+[20] A. Hauptmann, M. Smith, Text, speech, and vision for video
+segmentation: the informedia project, in: AAAI Fall 1995 Sympo-
+sium on Computational Models for Integrating Language and V,
+1995.
+[21] A.G. Hauptmann, Lessons for the future from a decade of informedia
+video analysis research, in: International Conference on Image and
+Video Retrieval (CIVR), Lecture Notes in Computer Science, vol.
+3568, Springer, Berlin, 2005, pp. 1–10.
+[22] S. Havre, B. Hetzler, L. Nowell, Themeriver: visualizing theme
+changes over time, in: IEEE Symposium on Information Visualiza-
+tion (InfoVis), 2000, pp. 115–123.
+[23] E.G. Hetzler, P. Whitney, L. Martucci, J. Thomas, Multi-faceted insight
+through interoperable visual information analysis paradigms, in:
+IEEE Symposium on Information Visualization, 1998, p. 137.
+[24] D. Hoiem, R. Sukthankar, H. Schneiderman, L. Huston, Object-based
+image retrieval using the statistical structure of images, in: IEEE
+Conference on Computer Vision and Pattern Recognition (CVPR),
+2004, pp. 490–497.
+[25] Alias i Inc., Lingpipe hhttp://www.alias-i.com/lingpipe/i.
+[26] J. Lamping, R. Rao, The hyperbolic browser: a focusþ context
+technique based on hyperbolic geometry for visualizing large
+hierarchies, J. Visual Languages Comput. 7 (1) (1996) 33–55.
+[27] W.-H. Lin, A. Hauptmann, News video classification using svm-
+based multimodal classifiers and combination strategies, in: ACM
+Multimedia, 2002.
+[28] T. Louchnikova, S. Marchand-Maillet, Flexible image decomposition
+for multimedia indexing and retrieval, in: SPIE Internet Imaging,
+2002, pp. 203–211.
+[29] H. Luo, J. Fan, J. Yang, W. Ribarsky, S. Satoh, Exploring large-scale
+video news via interactive visualization, in: IEEE Symposium on
+Visual Analytics Science and Technology, 2006, pp. 75–82.
+[30] J. Maydt, R. Lienhart, An extended set of haar-like features for rapid
+object detection, in: Proceedings of the International Conference on
+Image Processing (ICIP 2002), vol. 1, 2002, pp. 900–903.
+[31] A. Mehler, Y. Bao, X. Li, Y. Wang, S. Skiena, Spatial analysis of news
+sources, IEEE Trans. Visualization Comput. Graph. 12 (5) (2006)
+765–772.
+[32] B. Moghaddam, Q. Tian, N. Lesh, C. Shen, T.S. Huang, Visualization
+and user-modeling for browsing personal photo libraries, Internat.
+J. Comput. Vision 56 (2004) 109–130.
+[33] M.R. Naphade, I.V. Kozintsev, T.S. Huang, Factor graph framework
+for semantic video indexing, IEEE Trans. Circuits Systems Video
+Technol. 12 (2002) 40–52.
+[34] G.P. Nguyen, M. Worring, Similarity based visualization of image
+collections, in: AVIVDiLib’05, 2005.
+[35] L. Page, S. Brin, R. Motwani, T. Winograd, The pagerank citation
+ranking: bringing order to the web hhttp://dbpubs.stanford.edu:
+8090/pub/1999-66i.
+[36] Y. Rubner, C. Tomasi, Texture-based image retrieval without
+segmentation, in: IEEE International Conference on Computer
+Vision (ICCV), 1999, pp. 1018–1024.
+[37] Y. Rubner, C. Tomasi, L.J. Guibas, A metric for distributions with
+applications to image databases, in: IEEE ICCV, 1998.
+[38] S. Satoh, N. Katayama, An efficient implementation and evaluation
+of robust face sequence matching, in: International Conference on
+Image Analysis and Processing, 1999, pp. 266–271.
+[39] H. Schmid, Probabilistic part-of-speech tagging using decision
+trees, in: International Conference on New Methods in Language
+Processing, Manchester, UK, 1994.
+[40] A.W.M. Smeulders, M. Worring, S. Santini, A. Gupta, R. Jain,
+Content-base image retrieval at the end of the early years, IEEE
+Trans. Pattern Anal. Machine Intell. 22 (12) (December 2000)
+1349–1380.
+[41] C.G.M. Snoek, M. Worring, J.-M. Geusebroek, D.C. Koelma, F.J.
+Seinstra, A.W.M. Smeulders, The semantic pathfinder: using an
+authoring metaphor for generic multimedia indexing, IEEE Trans.
+Pattern Anal. Machine Intell. 28 (2006) 1678–1689.
+[42] C.G.M. Snoek, M. Worring, A.G. Hauptmann, Learning rich seman-
+tics from news video archives by style analysis, ACM Trans.
+Multimedia Comput. Comm. Appl. 2 (2006) 91–108.
+[43] D. Stan, I.K. Sethi, eid: a system for exploration of image databases,
+Inform. Process. Manage. 39 (2003) 335–361.
+[44] G. Sudhir, J.C.M. Lee, A.K. Jain, Automatic classification of tennis
+video for high-level content-based retrieval, in: CAIVD ’98, 1998.
+[45] R. Swan, D. Jensen, Timemines: constructing timelines with
+statistical models of word, in: ACM SIGKDD, 2000, pp. 73–80.
+[46] D. Vallet, P. Castells, M. Fernandez, P. Mylona, Y. Avrithis, Persona-
+lized content retrieval in context using ontological knowledge, IEEE
+Trans. Circuits Systems Video Technol. 17 (3) (2007) 336–346.
+[47] J.A. Walter, H. Ritter, On interactive visualization of high-dimen-
+sional data using the hyperbolic plane, in: ACM SIGKDD, 2002.
+[48] M. Weskamp, Newsmap hhttp://www.marumushi.com/apps/
+newsmap/index.cfmi.
+[49] J.J. van Wijk, Bridging the gaps, Comput. Graph. Appl. 26 (6) (2006)
+6–9.
+[50] J.A. Wise, J.J. Thomas, K. Pennock, D. Lantrip, M. Pottier, A. Schur, V.
+Crow, Visualizing the non-visual: spatial analysis and interaction
+with information from text documents, in: IEEE Symposium on
+Information Visualization (InfoVis), 1995, pp. 51–58.
+[51] Y. Wu, E.Y. Chang, K.C.-C. Chang, J.R. Smith, Optimal multimodal
+fusion for multimedia data analysis, in: ACM Multimedia, 2004.
+[52] W. Zhou, A. Vellaikal, C.C. Jay Kuo, Rule-based video classification
+system for basketball video indexing, in: ACM Multimedia, 2000.
+ARTICLE IN PRESS
+H. Luo et al. / Signal Processing: Image Communication 23 (2008) 538–553 553
+

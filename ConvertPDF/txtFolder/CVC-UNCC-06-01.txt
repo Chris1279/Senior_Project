@@ -1,0 +1,733 @@
+Hierarchical Simplification of City Models to Maintain Urban Legibility
+Remco Chang† Thomas Butkiewicz† Caroline Ziemkiewicz† Zachary Wartell†
+Nancy Pollard‡ William Ribarsky†
+University of North Carolina Charlotte† Carnegie Mellon University‡
+{rchang, tjbutkie, caziemki, zwartell, ribarsky}@uncc.edu {nsp}@cs.cmu.edu
+Figure 1: Left to right: (a) Original models (285,039 polygons); (b) Simplified models using our algorithm (131,409 polygons); (c) Models
+from (b) that have been simplified are shown in yellow; (d) Here we show view-dependent simplification of (b) from a top-down view. Notice
+that simplified models closer to the eye point have more detailed geometry, while the models farther away have less.
+Abstract
+Mesh simplification and discrete levels of detail (LOD) are well-
+studied areas of research in computer graphics. However, until
+recently, most of the developed algorithms have focused on sim-
+plification and viewing of a single object with a large number of
+polygons. When these algorithms are used on a large collection of
+simple models, many objects may be completely erased, leading to
+results that are misleading to the viewer. In this paper, we present a
+novel approach to simplifying city-sized collections of 2.5D build-
+ings based on the principles of “urban legibility” as defined by ar-
+chitects and city planners. Our main contributions include a clus-
+tering algorithm tailored towards forming logical groups while re-
+specting roads, a polyline simplification algorithm that maintains
+boundary facades, and a LOD process that preserves landmarks and
+skylines. The advantage of our approach is that the legibility and
+understandability of a complex urban space is preserved at all levels
+of simplification.
+CR Categories: I.3.5 [Computational Geometry and Object Mod-
+eling]: Hierarchy and geometric transformations—Curve, surface,
+solid, and object representations;
+Keywords: clustering, levels of detail, simplification, urban legi-
+bility
+1 Introduction
+Traditionally, research in the areas of mesh simplification and lev-
+els of detail has focused on complex models with natural shapes.
+However, with the advent of 3D global visualization tools for pub-
+lic use such as Google Earth ([Google 2005]), the ability to render
+and visualize a large collection of simple models such as buildings
+has become increasingly important. Beyond this, there is the need
+to make the rendering of any urban space useful for tasks such as
+navigation or spatial mental maps.
+Existing techniques for mesh simplification can have trouble with
+models of buildings, which are often nothing more than boxes with
+eight vertices in which polygon decimation results in a mesh that
+no longer retains the appearance of a building. Furthermore, when
+polygon decimation is performed on a collection of simple meshes
+given a target polygon count, the smaller objects are often com-
+pletely decimated because their removal causes less overall “geo-
+metric error” (see Figure 2). For a city-sized collection of simple
+buildings, this could mean the disappearance of an entire residential
+area in which the buildings tend to be smaller than that of commer-
+cial regions. This simplified version of the city model no longer
+“resembles” the un-simplified one.
+In this paper, we incorporate concepts from architecture and city-
+planning as guidelines to performing mesh simplification. Specifi-
+cally, we examine the concept of “urban legibility” on which Lynch
+[1960] has written that the “image” of a city can be categorized into
+paths, edges, districts, nodes, and landmarks. We believe that by
+maintaining this “image,” we can produce simplified models that
+are better understood by viewers. Although these categories are
+qualitative measurements, each step of our algorithm is based on
+considerations of one or more of these concepts.
+The key idea of our algorithm is based on merging of similar
+elements. Consider a row of identical houses separated by lit-
+tle space; when these houses are viewed from afar, we should
+be able to combine their geometries and render them together as
+one single model. To accomplish this goal, we break our algo-
+rithm down into five steps. Hierarchical clustering, cluster merg-
+ing, model simplification, and hierarchical texturing are performed
+during pre-processing, and the runtime LOD selects the appropriate
+models to render. Hierarchical single-link clustering is adopted to
+cluster models of buildings following the principles of paths and
+edges. Polyline-based cluster merging creates logical districts and
+nodes. Model simplification preserves the paths, edges, districts,
+and nodes created in the previous two steps, and finally, the LOD
+process allows the preservation of certain landmarks. Figure 1 pro-
+vides an overview of the application in action.
+Figure 2: Left: Original model. Middle: model decimated using
+QSlim. Right: model simplified using our algorithm. The number
+of polygons used to generate the QSlim image is the same as the
+one used to generate the image on the right.
+2 Related Work
+A tremendous amount of research has been put into mesh simpli-
+fication. For a more comprehensive survey of mesh simplification
+techniques, see [Luebke 2001]. We will only focus on representa-
+tive work that is most relevant to our algorithm, specifically, view
+independent, “topologically-tolerant” vertex merging techniques.
+These techniques combine vertices based on their proximities and
+similarities to other vertices and thus are able to merge multiple
+meshes into one. Methods developed by Rossignac and Borrel
+[1993] and Low and Tan [1997] use vertex clustering and are tol-
+erant in terms of input meshes’ connectivities and topologies, but
+do not guarantee that the output model is free of dangling edges
+and vertices, or that it visually resembles the input meshes. More
+recently, Lindstrom [2003] uses octrees based on vertex clustering
+to partition space and construct multi-resolution meshes in an out-
+of-core fashion. Garland and Heckbert [1997] introduce QSlim,
+in which “virtual” edges are added between unconnected vertices
+that are within a user-specified Euclidean distance ? . These virtual
+edges are treated in the same manner as actual edges in the mesh.
+Erikson and Manocha [1999] further extends Garland’s concept and
+dynamically calculates the value for ? , and they apply the simpli-
+fication algorithm in a hierarchical fashion [2001]. To eliminate
+the effect of “popping” when switching between different LODs,
+Borgeat et. al. [2005] use geomorphing on a hierarchy of pre-
+optimized geometry patches. Lastly, we take inspiration from Jang
+et. al. [2005] who suggest that for man-made objects, removal
+of entire features is typically more visually “understandable” than
+vertex removal. Our goal of urban legibility requires different de-
+sign decisions than previous work, especially in selecting single-
+link clustering as an initial pre-processing step (Section 4).
+Polyline (curve) simplification has a much longer history than mesh
+simplification. A survey by Weibel [1997] gives a good overview of
+the methods, and [Garland and Heckbert 1997] provides a synopsis
+of some of the most notable ones. Algorithms specifically rele-
+vant to this paper are the Douglas-Peucker algorithm [Douglas and
+Peucker 1973], based on recursive line subdivision, and quadric-
+based simplification [Garland and Zhou 2005]. Due to our unique
+approach to merging clusters (see Section 5), we found it necessary
+to develop a new polyline simplification algorithm that preserves
+vertex positions as well as the overall shape of the clusters.
+Although there have been numerous applications in 3D global visu-
+alization and GIS visualization (see [VTP 2006] for a select few),
+the majority of the research has focused on terrain simplification
+and visualization (see [Losasso and Hoppe 2004] for a survey of
+the various algorithms). The use of simplification for displaying
+collections of building models has been mostly limited to discrete
+levels of detail in which buildings beyond a certain distance are not
+rendered, with the exception of [Coors 2001], where QSlim and
+quad-trees are utilized to preserve buildings that are in focus. To
+the best of our knowledge, no existing simplification algorithm pri-
+oritizes higher levels of knowledge such as urban legibility
+Mesh simplification is not the only way to visualize an urban en-
+vironment efficiently. Wand et. al. [2001] use a randomized z-
+buffer algorithm to render complex scenes at interactive rate. Some
+researchers have explored the use of image-based rendering tech-
+niques for urban scenes (e.g., [Sillion et al. 1997] [Maciel and
+Shirley 1995]). Image-based rendering approaches produce visu-
+ally compelling results. However, the problems of preserving oc-
+clusion and skyline effects in city scenes require the use of ex-
+tremely large numbers of images. We also note that visibility
+culling is important. For city scenes in particular, when fly-throughs
+are near street level, occlusion culling as described in [Wonka et al.
+2000], [Schaufler et al. 2000], and [Chhugani et al. 2005] is critical
+for achieving optimal performance.
+Urban legibility was introduced by Lynch [1960], and the idea has
+served as inspiration for building virtual worlds (e.g., [Ingram and
+Bowers 1996]), wayfinding in virtual environments (see [Dalton
+2002] for an overview of selected work), and navigation through
+abstract data (e.g., [Ingram and Benford 1995]). A number of re-
+searchers have also performed user studies to investigate the effec-
+tiveness of urban legibility in wayfinding in virtual environments (a
+comprehensive survey can be found in [Dalton 2002]).
+3 Urban Legibility
+Urban legibility is a concept that has been used for many years in
+the area of city-planning. In his book The Image of the City pub-
+lished in 1960, Kevin Lynch ([Lynch 1960]) defines legibility as:
+“...the ease with which its parts may be recognized
+and can be organized into a coherent pattern.”
+“Coherent pattern” refers to cues that people use in order to “struc-
+ture and identify the environment,” and Lynch further classified
+them into five types of elements:
+Paths: Avenues of travel, such as streets, walkways, railroads,
+canals, etc.
+Edges: Linear elements not considered as paths, including struc-
+tures or features providing boundaries. For example, shorelines,
+edges of development, walls.
+Districts: Medium to large sections of the city which an observer
+mentally “enters.” For example, a historical residential area.
+Nodes: Strategic spots of intense activity and/or information flow,
+occurring most frequently at junctions of paths. For example,
+Times Square in New York City.
+Landmarks: Recognizable objects that are distinctive to the ob-
+servers. Examples include towers, sign posts, hills, etc.
+Although Lynch defines these elements as cues used by the inhabi-
+tants of a city, we believe that these elements also help people better
+recognize a city from a bird’s-eye view. Therefore, it is with these
+five elements in mind that we devise our algorithms for simplifying
+and viewing a collection of buildings.
+Figure 3 shows the five steps in our algorithm. Our hierarchi-
+cal clustering maintains paths and edges when grouping similar
+buildings together; cluster merging combines the geometries of the
+buildings into one single model and creates districts and nodes;
+simplification reduces the geometric complexity of the model, but
+preserves paths, edges, districts and nodes; texturing adds visual
+fidelity to the created model; and finally, the LOD process selects
+the appropriate models to render at runtime, while preserving the
+landmarks in the scene. The next sections describe the five steps in
+our algorithm.
+Figure 3: Flow chart of our algorithm showing the four steps in
+pre-processing stage, and the LOD step during runtime.
+4 Hierarchical Clustering
+Lynch considers paths as the predominant city elements, so it is crit-
+ical that our clustering algorithm does not cluster buildings on op-
+posite sides of a path. In our algorithm, we maintain both paths and
+edges by preserving empty spaces between buildings. To achieve
+this, we use single-link clustering, which creates clusters that “fol-
+low along” a path. In contrast, k-means and complete-link cluster-
+ing both produce “oval-shaped” clusters (Figure 4). For a survey on
+clustering techniques, see [Berkhin 2002].
+Figure 4: Left: single-link clustering. Right: complete-link cluster-
+ing.
+Single-link clustering is an agglomerative (bottom-up) hierarchical
+clustering technique which bases its clustering criteria on a distance
+metric. To create a moderately balanced tree, we use a distance
+metric that incorporates cluster size:
+d(C1,C2) = min{ size(C1) · size(C2)
+avgClusterSize2
+·d(x,y)|x ?C1,y ?C2} (1)
+where size(Cx) denotes the number of buildings in cluster Cx,
+d(C1,C2) is the cost of merging clusters C1 and C2, d(x,y) is
+the Euclidian distance between buildings x and y that can be de-
+fined as the distance between the center point of the buildings, and
+avgClusterSize is the average number of buildings in all the existing
+non-leaf nodes.
+Note our single-link clustering is a O(n3) algorithm because the
+avgClusterSize changes at every step, so all distances need to be re-
+computed. For efficiency, we use an approximate O(n2) algorithm
+that updates distance measures only for the clusters that are affected
+by a merge. For example, if clusters Ca and Cb are merged, all dis-
+tance metrics referring to these two clusters are updated. Although
+this approximate algorithm is not exact, this step is necessary to
+accommodate large datasets.
+5 Creating and Merging Hulls
+Once the clustering process is complete, each node in the hierarchy
+contains a number of buildings that are geographically near each
+other, and are roughly bounded by paths and edges. We then merge
+the buildings within each cluster into a single model (Figure 12(b)),
+which contains and resembles the aggregate of the buildings. This
+merger often creates logical districts (Figure 5).
+Figure 5: Creating a district by merging two clusters (left and mid-
+dle) into one cluster (right).
+Because all the buildings are 2.5D, we can consider merging the
+footprints of the buildings separately from merging the heights of
+the buildings. This also permits us to apply different rules to the
+footprints and the heights. First we find all the boundary edges of
+the footprint (known as footprint edges) of every mesh, and order
+the edges in a counter-clockwise manner (Figure 6(a)). We call
+these directed footprint edges the “Hull” of the mesh. Note that this
+Hull is not necessarily the convex hull.
+To compute the Hulls of the non-leaf nodes, we recursively merge
+the Hulls of their two child nodes (Hull1 and Hull2). There are four
+different possible scenarios when merging two Hulls:
+No Intersections Between Hulls: Find the two shortest, non-
+intersecting edges between the two Hulls (called connection edges),
+and select any one of the four vertices (called connection vertices)
+on those two edges as the pivot (Figures 6(a) and (b)). Starting
+from the pivot, follow the footprint edges of both Hulls. When the
+trace returns to the pivot point, the area forms either the merged
+Hull (Figure 6(c)), or the spatial error introduced by merging the
+two Hulls (Figure 6(d)). If the result is the latter, choose a different
+connection vertex as pivot and repeat the process.
+(a) (b) (c) (d)
+Figure 6: (a) Directed edges of two Hulls; (b) Connection edges
+and connection vertices (circled in green and pink); (c) A successful
+trace starting at a pivot vertex (circled in pink); (d) A trace that finds
+the error.
+Hulls Bisect Each Other: In order to merge two bisecting Hulls
+(Figure 7(a)), more than two new edges are required, rendering the
+technique described above insufficient. A full search for the merged
+Hull begins with the convex hull of Hull1 and Hull2, followed by
+recursive subdivision of each edge (see Figure 7(d)). This recursive
+subdivision scheme is the inverse of the simplification process dis-
+cussed in Section 6, and it ensures that the footprint of the merged
+Hull contains the footprints of Hull1 and Hull2.
+(a) (b) (c)
+(d) (e) (f)
+Figure 7: (a) Hulls that bisect each other; (b) Two intersecting
+Hulls. The green circles show the vertices on CandidateList1 and
+the pink circles show the vertices on CandidateList2; (c) An exam-
+ple of when the heuristic search fails. The dotted green lines repre-
+sent two of the three candidate connection edges. Notice that both
+of them cause self-intersections; (d, e, f) The merged Hull from (a),
+(b), and (c) respectively.
+Hulls Intersect with Intruding Vertices: We begin the search for
+a merged Hull heuristically. The candidates for connection edges
+are all pairs of vertices on the intersecting edges from both Hulls
+(Figure 7(b)). In other words, for each edge in Hull1 that intersects
+Hull2 (including edges that are completely within Hull2), its two
+vertices are (uniquely) added to a list of candidate vertices called
+CandidateList1, and the same process is performed on Hull2.
+We then choose two distinct candidate edges as connection edges
+and perform a trace as described in the previous scenario, “No In-
+tersections Between Hulls.” If there is any building that falls out-
+side the merged Hull, we reject this pair of candidate edges and
+choose another. This process is repeated until a valid Hull is found.
+Because this process is O(n2m2)) (where n and m are the sizes of
+CandidateList1 and CandidateList2, respectively), we limit the use
+of the heuristic search to (n×m)? 12; otherwise, a full Hull search
+is used. Similarly, if no valid Hull can be found using the heuristic
+search (Figure 7(c)), a full hull search is also performed.
+Hull1 inside Hull2 or vice versa: The merged Hull is simply a
+copy of the outer Hull.
+6 Polyline Simplification
+A basic polyline simplification approach is the Douglas-Peucker
+algorithm, in which a single line segment connecting the ends of
+the input polyline is recursively subdivided to approach the input
+polyline. The subdivision terminates when any further subdivi-
+sion would create line segments shorter than a user-defined thresh-
+old. Although this algorithm produces a polyline that converges
+quickly to the general shape of the input polyline, the intermedi-
+ary stages often resemble a star with sharp angles in which paths,
+edges, nodes, and districts are not preserved.
+Instead, we develop a polyline simplification algorithm based on the
+principles of a convex hull which we believe preserves the elements
+of paths, edges, nodes, and districts. Using the polyline generated
+from the previous section (which is non-self-intersecting and water-
+tight), we iteratively remove vertices by connecting their neighbors.
+At each step, we remove the vertex that adds the smallest positive
+area to the footprint while maintaining a non-self-intersecting con-
+straint. The one-mouth theorem [Toussaint 1991] shows that there
+is always a vertex that can be removed in this way until the convex
+hull is found.
+Figure 8: Polyline simplification. Left: 6000 edges; Right: 1000
+edges.
+The most important factor in deciding the stopping criterion for
+polyline simplification is the monotonicity of the hierarchy. It is
+essential to maintain a structure where the number of edges in the
+parent node is less than the sum of the number of edges of its two
+children. With that in mind, our stopping criterion for the polyline
+simplification is defined as the largest number between 2/3 of the
+combined number the child nodes’ edges, 1% of the number of in-
+put edges, or the number of edges in the convex hull of this polyline.
+These numbers are chosen empirically to balance minimization of
+the number of edges with preservation of the overall appearance of
+the merged Hull.
+One main advantage to using our simplification algorithm is the fact
+that no new vertices are created or moved. This could be especially
+important for man-made objects such as our city models. Further-
+more, it could be used in conjunction with OpenGL vertex arrays
+for speed and memory conservation.
+Once the simplified polyline has been calculated, we define the
+height of the cluster to be the weighted average height of all the
+buildings in the cluster, where the weight of each building is di-
+rectly proportional to its area. Buildings with dramatically differ-
+ent heights are considered as landmarks and handled separately, see
+Section 8. The final polygonal model for each cluster (called a clus-
+ter mesh) is produced by protruding the polyline towards the sky to
+the height of the cluster, and using OpenGL (GluTesselator) to cre-
+ate the triangulation of the roof.
+7 Hierarchical Texture
+As with the above urban geometry simplification, the purpose of
+our hierarchical texture approach is not visual quality in its strictest
+sense, but rather legibility of the urban environment at all scales.
+As such, the main goal for texturing is not necessarily to enforce
+small or even unnoticeable pixel errors. Instead, the goal is to create
+textures that maintain legibility and interactivity.
+It is generally accepted that texture mapping is still one of the most
+resource-intensive processes in graphics rendering. For our applica-
+tion, the texture problem is doubled because we generate n?1 new
+cluster meshes in which the geometries are often different from the
+original models, making it impossible to reuse their textures.
+To create side textures for each cluster mesh, we iteratively gener-
+ate an image for each face by placing an orthographic camera such
+that its near clipping plane lies on the face. We then render an im-
+age with all the buildings scaled to the height of the cluster mesh.
+The combined images from all faces are set to fit into a single tex-
+ture, with the resolution of each image proportional to the length
+of each face. The purpose of scaling the buildings to the height of
+the cluster mesh is to create a more pleasing and continuous tex-
+ture, especially towards the seam between the faces and the roof.
+Although some buildings become “stretched” or “squashed,” the
+scaling is necessary to preserve understandability of the textured
+cluster.
+Texturing the roof is more difficult because the negative spaces be-
+tween buildings are more visible from a top-down view. If the cam-
+era angle changes slightly from such a view, the viewer expects to
+see parts of the facades of the buildings. We take images of the roof
+from five different camera angles – top-down view, and 45-degree
+views from north, east, south, and west (Figure 9). Buildings are
+again scaled to the height of the cluster mesh to avoid “shifting”
+between the camera angles. During runtime, the system chooses
+the texture that is closest to the look vector1.
+Figure 9: Five textures for the roof generated from different camera
+angles. Left to right: top down, south, west, north, and east.
+We sort the clusters in ascending order of their cluster meshes’ neg-
+ative space area, then divide them into log(n) bins, with the first
+level bin having the first n/2 clusters, the next level n/4, etc.. Six
+texture files are generated for each bin (one side texture and roof
+textures from the five different angles), with all texture files from all
+bins having the same resolution (defaulted to 1024×1024). For ex-
+ample, the cluster meshes in the first bin would each have 1024×1024
+n/2
+pixels for each of their six textures, while the single cluster mesh in
+the last bin would have all 1024× 1024 pixels. This results in the
+overview of the city model getting the most texture. Our hierarchi-
+cal approach is based on the observation that, at any given time, the
+LOD process on our balanced hierarchy tends not to render cluster
+meshes of drastically different depths in the tree2.
+To ensure that there is enough memory for the textures, we im-
+plemented a simple priority queue similar to the one described by
+[Erikson et al. 2001] in which the least recently used texture is
+swapped out when memory becomes a constraint.
+8 Negative Spaces and Level of Detail
+During both the Hull Merging process (Section 5) and the Hull Sim-
+plification process (Section 6), geometric errors are introduced into
+the final mesh. We call these geometric errors “negative spaces”
+because geometry is added to areas where there used to be empty
+spaces.
+1It is our experience that using OpenGL’s multi-texturing capability to
+blend textures during runtime produces worse results both visually and ana-
+lytically than using a single texture, as is done here (see Section 9 on analyt-
+ical calculation of screen error). Texture blending also requires three times
+as much resident texture memory.
+2On the newer graphics cards, each cluster mesh’s texture need not have
+dimensions that are powers of two. However, our graphics card (nVidia
+6800) requires the textures to have dimensions divisible by four. Therefore
+if 100 pixels are allocated for a texture, only 8x8 pixels are used.
+The area of the negative space of a cluster mesh is the difference in
+area between its footprint and the sum of the buildings’ footprints.
+Our LOD algorithm will not render a cluster if the visual effect of
+this area is too large. In our implementation, we approximate this
+negative-space area as a rectangle with the same ratio in dimensions
+as the axis-aligned bounding box of the merged Hull. During the
+LOD process, this negative-space area is converted into a 3D box
+with the same height as the cluster mesh. The camera-facing faces
+of the box are projected onto screen space, and the number of pix-
+els is compared against a user-defined tolerance (?). If the number
+of pixels is greater than ? , the cluster will not be rendered, but its
+descendants will be checked recursively. Figure 15(a) (Section 9)
+shows the effect of ? on actual screen pixel error in a fly-through
+sequence. The concept of landmarks is perhaps the most subjec-
+tive of Lynch’s categories. However, it seems reasonable that taller
+buildings have higher visual importance than shorter ones because
+of their roles in defining the skyline. A user-defined threshold (?)
+in numbers of pixels is used to determine the acceptable error in
+height. During runtime, ? is projected onto each cluster mesh and
+converted to a height value (called ?height ), shown in Figure 10(c).
+If any building is taller than its cluster’s ?height , the original build-
+ing mesh is rendered along with the cluster mesh (Figure 10(b)).
+(a) (b) (c)
+Figure 10: (a) Cluster meshes (drawn with yellow bounding boxes);
+(b) The green lines represent ?height for each cluster in (a); (c) Find-
+ing ?height : the user-defined height tolerance ? is projected onto a
+cluster mesh and converted to height tolerance (?height ) in world
+coordinate.
+9 Results and Analysis
+In this section, we show the results from various steps of our al-
+gorithm and perform analyses using a dataset of downtown Xinxi-
+ang (a city in the Henan province in China), which contains 26,016
+buildings and 285,039 polygons, and a dataset containing parts of
+Atlanta, Georgia, which has 11,536 buildings and 243,381 poly-
+gons3. All tests are performed on a Pentium 4 3.0GHz desktop
+computer with 2.0GB of memory, using a nVidia 6800 graphics
+card with 256MB of memory. In all the analyses, no display lists
+are used.
+First, we show some results of our clustering. Figure 11(a) shows
+the original layout of the buildings, and 11(b) shows a few clusters
+in that area. Notice that our clustering algorithm follows the paths
+and edges around the buildings, and creates “natural-looking” clus-
+ters.
+In Figure 12, we show the result of applying merging and simpli-
+fication to the clusters in Figure 11(b). The models are drawn as
+un-textured cluster meshes (Figure 12(b)), textured cluster meshes
+(Figure 12(c)), and placed next to the original (un-simplified) mod-
+els (Figure 12(a)). It can be seen that our merging and simplification
+3The textures on the two datasets are not real, and the heights of the
+buildings have been set manually. This is done because accurate data are
+not available; however, the simulated textures and heights have the richness
+of real scenes.
+(a) (b)
+Figure 11: (a) Original buildings; (b) Six different clusters
+process produces cluster meshes of simple geometries while main-
+taining districts and nodes. With the addition of textures, the tex-
+tured cluster meshes resemble the original models both in appear-
+ance and in legibility. Figure 12(d) shows using QSlim to decimate
+the same set of clusters. Although QSlim is one of the best algo-
+rithms for simplifying natural objects, comparing Figures 12(c) and
+(d) demonstrates that QSlim is not well suited in retaining legible
+urban features.
+(a) (b)
+(c) (d)
+Figure 12: (a) Original (textured) models of buildings; (b) Untex-
+tured cluster meshes; (c) Using the clusters from (b) and applying
+textures; (d) Models created using QSlim (the number of polygons
+used is the same as in (b) and (c)).
+To maintain a legible and consistent skyline, we allow the user to
+modify the user tolerance ? (see Section 8). In Figure 13, we see
+the effect of changing the value of ? . As can be seen, by effectively
+controlling the ? value, we can maintain a recognizable skyline
+similar to the original un-simplified model, while incurring a low
+cost in terms of polygon count. For example, the scene in Figure
+13(c) contains 13,712 polygons (5.6% of the polygons in the origi-
+nal scene), while the scene in Figure 13(b), with landmark buildings
+rendered separately, contains only 2114 additional polygons. By
+setting ? to 10000 in 13(c), we effectively remove consideration of
+landmarks and render all clusters at their average heights.
+Figure 14(a) shows the frame rates using our algorithm, and Figure
+14(b) shows the number of rendered polygons. The camera used in
+these tests starts far away from the city and slowly zooms in. It then
+rotates around the city and flies away. The occasional abrupt drops
+in frame rates using our algorithm are caused by runtime loading of
+texture4. In Figure 14(a), where the frame rates using our algorithm
+fall below that of the un-simplified meshes is when the overhead of
+the LOD process becomes more time consuming than rendering of
+4Our current implementation does not include pre-fetching or view frus-
+tum culling.
+(a) (b) (c)
+Figure 13: (a) Original skyline (243,381 polygons) (b) Simplified
+skyline that resembles the original skyline (? = 2, ? = 100, 15,826
+polygons) (c) Skyline that loses its resemblance to the original sky-
+line by not maintaining landmarks (? = 10000, ? = 100, 13,712
+polygons).
+the polygons. This typically occurs when the camera is closest to
+the city model. Not surprisingly, the inverse relationship between
+frame rate and polygon count is reflected in Figure 14(b). Notice
+that we can achieve drastic simplifications for view points that are
+far away from the city model (frames 1 to 100).
+(a) (b)
+Figure 14: (a) Frame rates; (b) Polygon count
+Figure 15(a) shows the number of pixel errors in images rendered
+using our algorithm compared against images rendered using the
+un-simplified meshes. There are two sets of tests – textured and
+un-textured. The un-textured tests compare the rendered grey-scale
+images between our algorithm and the un-simplified meshes and
+count the number of pixels that have different intensity values. The
+total number of pixel differences (pixel errors) are divided by the
+resolution of the images. For the textured test, the rendered color
+images are compared. However, instead of considering pixels that
+have different RGB values as pixel errors, we define two pixels to
+be the same if their RGB values are within 40 in each of the color
+channels (see Figure 15(c) for two colors that are considered to be
+the same). It can been seen that adding texture to the cluster meshes
+decreases the overall pixel errors. Figure 15(b) shows the pixel
+errors generated using our algorithm and QSlim. In each frame,
+QSlim uses the same number of polygons as our algorithm. It is
+shown here that both algorithms produce approximately the same
+amount of pixel errors (see Section 10 for further discussion).
+(a) (b) (c)
+Figure 15: (a) Pixel errors when compared against original image;
+(b) ? = 100 for our algorithm and QSlim; (c) Demonstrates two
+colors that are different by 40 in each color channel (top: (255, 0,
+0) in RGB, bottom: (215, 40, 40)).
+Table 1 shows the amount of time used to pre-process our data in
+various stages. The most time consuming process is the polyline
+simplification process where intersection tests need to be performed
+for every candidate contraction.
+Atlanta Xinxiang
+Clustering 10.9 73.4
+Merging 13.9 72.2
+Simplification 23.1 243.0
+Texture Generation 21.7 39.2
+Table 1: Pre-processing time for the Atlanta dataset and the Xinxi-
+ang dataset. All measurements are in minutes.
+Lastly, we vary the value of ? in Figure 16 to see the visual effects
+of simplifications. It is clear that paths, edges, districts, nodes and
+landmarks are well preserved with all values of ? in this sequence
+of images. Unless the images are enlarged greatly, it is difficult to
+see the artifacts of the simplifications. The only directly notable
+visual difference is the increasing “darkness” of the images as ? in-
+creases. This is due to the approximations we use when generating
+textures, which generally lead to less of the facades being visible
+than in the original image. The three approximations we use are the
+limited view angles from which we generate our textures, the use
+of orthographic camera, and the limited texture resolution for each
+cluster. The first two approximations can be alleviated by generat-
+ing textures from more view angles, while the last can be alleviated
+by increasing the texture resolution. However, increasing either the
+view angles or the resolution would cause the load time and mem-
+ory requirement to increase as well.
+10 Conclusion and Discussion
+In this paper, we introduce a novel way of simplifying multiple
+2.5D meshes. Instead of the traditional vertex/polygon/edge dec-
+imation or merging, we aggregate meshes into “logical” clusters
+and simplify and texture each cluster separately. We contribute a
+clustering approach, a polyline simplification algorithm, and an al-
+gorithm for landmark preservation designed with the goal of main-
+taining urban legibility. In particular, we demonstrate that using
+single-link hierarchical clustering results in clusters that adhere to
+paths and edges. Polyline merging and simplification create clus-
+ter meshes that maintain districts and nodes. Height discrimination
+during the LOD process ensures that landmark buildings are pre-
+served. Finally, hierarchical textures are applied to strengthen vi-
+sual fidelity while minimizing storage and memory requirements.
+Our system as a whole maintains legibility and understandability
+of a complex urban space using simplified models that allow for an
+interactive environment.
+It is our belief that many applications can benefit from our algo-
+rithm. Google Earth (and other 3D geographical information sys-
+tems) as well as any spatial data visualization applications (includ-
+ing scatter plots) can all use logical, simplified clusters to represent
+large amounts of spatial information. Currently, our implementa-
+tion of both the clustering and simplification processes have com-
+plexities that approach O(n3), making our algorithm inefficient in
+processing an arbitrarily large amount of data. However, the most
+time consuming aspect of these two processes lies in intersection
+detection (which is O(n2)). Incorporating a fast intersection detec-
+tion algorithm into our system should dramatically improve scala-
+bility. In addition, it is likely that very large urban landscapes can
+be successfully partitioned along legible boundaries prior to cluster-
+ing (perhaps with the aid of additional geographical information),
+which will reduce the overall clustering and simplification com-
+plexity to much less than O(n3).
+Evaluation of simplification techniques for city models remains an
+open problem. Figure 15(b) illustrates that pixel error is not a good
+way to compare algorithms for this approach. Although our tech-
+nique provides similar pixel errors to a traditional decimation al-
+gorithm, the visual difference is significant (Figures 12(c) and (d)).
+Unfortunately, quantifying urban legibility is a difficult problem.
+As noted in Section 2, some researchers have tried to understand
+legibility via user studies [Dalton 2002], while others attempted to
+quantify it mathematically [Osmond 2005], but so far there has not
+been a generalized rule that can be applied to evaluate urban legi-
+bility. One promising direction is to develop benchmark localiza-
+tion and navigation tasks to evaluate user performance through user
+studies similar to those presented in [Dalton 2002].
+There are a number of opportunities for improving our algorithm.
+For one thing, our LOD process only considers negative space
+errors, while visual errors created through texture simplification
+should also be considered. Similarly, the clustering process merges
+clusters based on (weighted) Euclidean distances, but we could also
+include other differences such as colors, textures, sizes, and shapes
+in the distance function. Furthermore, it would greatly generalize
+our algorithm to integrate mesh decimation techniques (such as QS-
+lim) in the pre-processing step so that we can accept input meshes
+of detailed geometric complexity. This extension along with im-
+proving our clustering and simplification for very large meshes
+will enable us to address a challenging problem in urban render-
+ing, namely, flying freely over very large urban scenes at birds-eye
+view and then diving in at any time for a detailed close-up of any
+building, with everything unfolding smoothly and naturally
+Lastly, additional user interaction techniques to facilitate clustering
+could be extremely valuable. The user might interactively add roads
+prior to the clustering process to prohibit clusters from two sides of
+the road from being merged together. However, this kind of interac-
+tion only “prohibits” but does not “facilitate” clustering. It is very
+difficult for an expert user to interactively modify clustering results
+based on higher level of understanding of the environment – e.g.,
+the knowledge that a particular district in the city includes an inter-
+state highway running through the center of it (perhaps because the
+interstate is “raised” above ground, and therefore not in the mental
+maps of most inhabitants). Without such knowledge, our algorithm
+would always separate the two sides of such a district around the
+interstate, when in fact, the city might be more “legible” to an ob-
+server if that segment of the interstate is not put into consideration
+during the clustering process. We will explore incorporating such
+user input into our algorithms.
+References
+BERKHIN, P. 2002. Survey of clustering data mining
+techniques. Tech. rep., Accrue Software, San Jose, CA
+(http://citeseer.ist.psu.edu/berkhin02survey.html).
+BORGEAT, L., GODIN, G., BLAIS, F., MASSICOTTE, P., AND
+LAHANIER, C. 2005. GoLD: interactive display of huge colored
+and textured models. Transactions on Graphics 24, 3, 869–877.
+CHHUGANI, J., PURNOMO, B., KRISHNAN, S., COHEN, J.,
+VENKATASUBRAMANIAN, S., JOHNSON, D., AND KUMAR,
+S. 2005. vLOD: A system for high fidelity walkthroughs of
+very large virtual environments. In IEEE Transactions on Visu-
+alization and Computer Graphics, vol. 11, 35–47.
+COORS, V. 2001. Feature-preserving simplification in web-based
+3d-gis. In Proceedings of the International Symposium on Smart
+Graphics 2001, ACM, 22–27.
+Figure 16: Levels of simplification. Left to right: original image (285,039 polygons); ? = 100 ? = 2 (129,883 polygons); ? = 1000 ? = 2
+(53,020 polygons).
+DALTON, R. C. 2002. Is spatial intelligibility critical to the de-
+sign of large-scale virtual environments? In Journal of Design
+Computing 4. Special Issue on Designing Virtual Worlds.
+DOUGLAS, D., AND PEUCKER, T. 1973. Algorithms for the re-
+duction of the number of points required to represent a digitized
+line or its caricature. In The Canadian Cartographer 10, No. 2
+(Dec), 112–122.
+ERIKSON, C., AND MANOCHA, D. 1999. Gaps: general and au-
+tomatic polygonal simplification. In Proceedings of ACM Sym-
+posium on Interactive 3D Graphics, 79–88.
+ERIKSON, C., MANOCHA, D., AND W. V. BAXTER, I. 2001.
+HLODS for faster display of large static and dynamic environ-
+ments. In Proceedings of the 2001 symposium on Interactive 3D
+graphics, ACM, 111–120.
+GARLAND, M., AND HECKBERT, P. 1997. Surface simplification
+using quadric error metrics. In Proceedings of SIGGRAPH 1997,
+ACM, 209–216.
+GARLAND, M., AND ZHOU, Y. 2005. Quadric-based simplifica-
+tion in any dimension. In ACM Transaction on Graphics, Vol.
+24, No. 2, ACM, 209–239.
+GOOGLE, 2005. Google earth. http://earth.google.com.
+HOPPE, H. 1996. Progressive meshes. In Proceedings of SIG-
+GRAPH 1996, ACM, 99–108.
+INGRAM, R., AND BENFORD, S. 1995. Legibility enhancement
+for information visualization. In IEEE Conference on Vizualisa-
+tion.
+INGRAM, R., AND BOWERS, J. 1996. Building virtual cities:
+Applying urban planning principles to the design of virtual envi-
+ronments. In Symposium on Virtual Reality Software and Tech-
+nology, ACM.
+JANG, J., WONKA, P., RIBARSKY, W., AND SHAW, C. 2005.
+Punctuated simplification of man-made objects. Tech. rep.,
+Georgia Institute of Technology GVU Center GIT-GVU-05-04,
+February.
+LINDSTROM, P. 2003. Out-of-core construction and visualiza-
+tion of multiresolution surfaces. In Symposium on Interactive
+3D Graphics, 93–102.
+LOSASSO, F., AND HOPPE, H. 2004. Geometry clipmaps: Terrain
+rendering using nested regular grids. In Proceedings of SIG-
+GRAPH 2004, ACM, 769–776.
+LOW, K.-L., AND TAN, T. 1997. Model simplification using vertex
+clustering. In Proceedings of ACM Symposium on Interactive 3D
+Graphics, 75–82.
+LUEBKE, D. 2001. A developer’s survey of polygonal simplifica-
+tion algorithms. In IEEE Computer Graphics and Applications
+(May/June), 24–35.
+LYNCH, K. 1960. The Image of the City. The MIT Press.
+MACIEL, P., AND SHIRLEY, P. 1995. Visual navigation of large
+environments using textured clusters. In Symposium on Interac-
+tive 3D Graphics, 95–102, 211.
+OSMOND, P. 2005. Evaluating urban ambience - an investigation
+into quantifying the qualities of the walkable city. In The 6th
+International Conference on Walking in the 21st Century.
+ROSSIGNAC, J., AND BORREL, P. 1993. Multi-resolution 3d ap-
+proximations for rendering complex scenes. In Geometric Mod-
+eling in Computer Graphics, 455–465.
+SCHAUFLER, G., DORSEY, J., DECORET, X., AND SILLION, F.
+2000. Conservative volumetric visibility with occluder fusion. In
+Proceedings of SIGGRAPH 2000, ACM Press, K. Akeley, Ed.,
+229–238.
+SILLION, F., DRETTAKIS, G., AND BODELET, B. 1997. Effi-
+cient impostor manipulation for real-time visualization of urban
+scenery. vol. 16, C207–C218.
+TOUSSAINT, G. 1991. Anthropomorphic polygons. In American
+Mathematical Monthly, 31–35.
+VTP, 2006. Virtual terrain project. http://earth.vterrain.org.
+WAND, M., FISCHER, M., PETER, I., AUF DER HEIDE, F. M.,
+AND STRASSER, W. 2001. The randomized z-buffer algorithm:
+Interactive rendering of highly complex scenes. In SIGGRAPH
+2001, Computer Graphics Proceedings, ACM Press / ACM SIG-
+GRAPH, E. Fiume, Ed., 361–370.
+WEIBEL, R. 1997. Generalization of spatial data: Principles
+and selected algorithms. In Algorithmic Foundations of GIS,
+Springer-Verlag, M. Kreveld, J. Nievergelt, T. Roos, and P. Wid-
+mayer, Eds., Lecture Notes in Computer Graphics, vol. 1340,
+99–152.
+WONKA, P., WIMMER, M., AND SCHMALSTIEG, D. 2000.
+Visibility preprocessing with occluder fusion for urban walk-
+throughs. In Proceedings of the Eurographics Workshop on Ren-
+dering Techniques 2000, Springer-Verlag, London, UK, 71–82.
+

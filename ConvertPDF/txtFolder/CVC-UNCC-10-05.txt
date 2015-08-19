@@ -1,0 +1,849 @@
+Eurographics/ IEEE-VGTC Symposium on Visualization 2010
+G. Melançon, T. Munzner, and D. Weiskopf
+(Guest Editors)
+Volume 29 (2010), Number 3
+An Interactive Visual Analytics System for Bridge
+Management
+Submission # 326
+Abstract
+Bridges deteriorate over their life cycles and require continuous maintenance to ensure their structural integrity,
+and in turn, the safety of the public. Maintaining bridges is a multi-faceted operation that requires both domain
+knowledge and analytics techniques over large data sources. Although most existing bridge management systems
+(BMS) are very efficient at data storage, they are not as effective at providing analytical capabilities or as flexible
+at supporting different inspection technologies. In this paper, we present a visual analytics system that extends the
+capability of current BMSs. Based on a nation-wide survey and our interviews with bridge managers, we designed
+our system to be customizable so that it can provide interactive exploration, information correlation, and domain-
+oriented data analysis. When tested by bridge managers of the U.S. Department of Transportation, we validated
+that our system provides bridge managers with the necessary features for performing in-depth analysis of bridges
+from a variety of perspectives that are in accordance to their typical workflow.
+Categories and Subject Descriptors (according to ACM CCS): I.3.3 [Computer Graphics]: Picture/Image
+Generation—Line and curve generation
+1. Introduction
+Bridges are an important component of the U.S. transporta-
+tion system, and maintaining their structural integrity is cru-
+cial to the safety of millions of people. However, bridges de-
+teriorate over the course of their designed life cycles. The
+steel corrodes, the concrete spalls, and the stone cracks.
+Without proper maintenance, these deteriorations may cause
+severe damages that might lead to potential catastrophes.
+In theory, bridge engineers can predict the service life of
+bridges based on computing each bridge’s deterioration rate
+and establish a suitable maintenance plan [DET06]. How-
+ever, since the presumed service conditions of a bridge may
+change, the bridge’s deterioration rate often varies from its
+theoretical expectations. In practice, it has been observed
+that deterioration rates of similar bridges can vary signifi-
+cantly due to their local weather environments, traffic pat-
+terns, etc. [DET06]. Therefore, to ensure the integrity of a
+bridge and to prevent severe deteriorations, it is very impor-
+tant to establish regular inspections and to provide necessary
+bridge maintenances [Bri93] [MRG?01].
+Since 1968, the U.S. Department Of Transportation (US-
+DOT) has committed to monitoring and maintaining all
+bridges across the states. Currently, bridge inspections are
+typically completed over a 2-year cycle. According to the
+federal inspection coding guidance [Wes04], these inspec-
+tions focus on assessing bridges from both structural and ex-
+ternal factors, including physical structure conditions, traffic
+volume and patterns, surrounding environments, etc. At the
+end of a typical bridge inspection, over one hundred data
+items are often recorded and stored in a bridge management
+system (BMS) [Hea07]. This collected data subsequently
+serves as input to most bridge managers’ maintenance plan-
+ning processes.
+Given the importance of bridges, one would hope that
+most bridges are maintained in a timely manner. However,
+according to the 2009 American Society of Civil Engi-
+neers report, currently more than 26 percent of the nation’s
+599,766 bridges are either structurally deficient or function-
+ally obsolete [Ame09]. Furthermore, given the limited bud-
+get and other resources, not all of the bridges can be main-
+tained immediately. In order to utilize the limited budget
+and resource effectively, most bridge managers develop their
+own strategies to prioritize and determine the order in which
+bridges should be maintained.
+While these strategies have largely balanced the limited
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2010)
+2 Submission # 326 / An Interactive Visual Analytics System for Bridge Management
+Figure 1: This is the overview of the entire system, including views for Microsoft Virtual Earth(center), Parallel Coordinates
+(top corners), Scatter Plots (middle left), Temporal Analysis (third row right), and the original data (bottom row). Per-Bridge
+Detail View(middle right). Several items are highlighted with colors.
+resources with the upkeep of bridges across the country, the
+collapse of the I-35 bridge in Minneapolis during August
+2007 serves as a devastating reminder that the complex-
+ity of bridge management still demands novel techniques
+and proper tools to interpret and understand bridge data.
+Therefore, soon after the tragedy, members of our university
+formed a research partnership with the USDOT, the North
+Carolina State Department of Transportation (NCDOT), and
+the American Association of State Highway and Transporta-
+tion Officials (AASHTO) to investigate novel approaches in
+assisting the bridge management process.
+One of our first actions under this research partnership
+was to conduct a nation-wide survey [CRR09] to understand
+the usage of current BMSs and to identify potential areas
+of improvement. 35 out of 50 state DOTs responded to our
+survey, and the result indicates that the current bridge man-
+agement systems are often insufficient in supporting bridge
+analysis. As reported by several state DOTs, the current
+BMSs are very efficient at data storage, but they are not as
+effective in providing efficient data explorations and analy-
+sis. In addition, some state DOTs further indicated that these
+BMSs are rigid in structure and cannot be easily adapted to
+support individual bridge manager’s routines. In summary,
+almost all states expressed the need of having a management
+system that enables them to be more effective at analyzing
+their bridges, and the system needs to be customizable for
+assisting their individual workflows.
+Based on their feedback, we identified three types of
+bridge analyses that are often essential in bridge manager’s
+decision-making process, namely, structural analysis, tem-
+poral analysis and geospatial analysis. While the use of these
+three analysis processes and their usage patterns may vary in
+each bridge manager’s workflow, we have found these anal-
+ysis steps to be necessary for bridge managers to analyze the
+bridge data, understand the severity of deteriorations, and to
+make further maintenance decisions.
+Using these three analysis processes as foundation, we de-
+signed and developed an interactive, exploratory visual ana-
+lytics system for analyzing bridge data. Our system encodes
+the three processes as a group of four coordinated visual-
+izations and allows the bridge manager to choose different
+combinations of visualizations and to customize them to fit
+into their own analysis workflow. To evaluate the system,
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2010)
+Submission # 326 / An Interactive Visual Analytics System for Bridge Management 3
+we conducted expert evaluations with bridge managers from
+NCDOT and found that most managers believed our system
+to be useful and complimentary to their existing analysis
+processes. We further identified ways in which our system
+could be quickly incorporated into their daily routines.
+The remainder of this paper is structured as follows: Sec-
+tion 2 characterizes the analysis processes of domain experts
+and describes our system’s targeted users. Section 3 provides
+more detail about the limitations of current BMSs. Section
+4 presents our visual analytics system. Section 5 provides
+several scenarios in which our system can facilitate bridge
+management. In Section 6, we present our evaluation with
+domain experts and our discussion for advancing from cur-
+rent stage, and we conclude our paper in Section 7.
+2. Domain Characterization
+Bridge maintenance workflow is a process of deciding
+the severity, trending, relevance, and benefits of mainte-
+nance work on a specific bridge as well as a network of
+bridges. According to AASHTO’s asset management guide-
+lines [AAS03], the first step in this process is to gather rele-
+vant data about a particular bridge, including its known dam-
+ages, previous maintenance histories, and typical deteriora-
+tion patterns. Bridge managers will then start analyzing the
+obtained information, identifying the needs for maintenance
+and coming up with proper maintenance plans.
+According to bridge managers from NCDOT, it is fairly
+common for a bridge manager to be responsible for hun-
+dreds of bridges. Since federal guideline dictates that bridges
+are inspected on a biennially basis, approximately 50% of
+the bridges are inspected in a given year. However, in that
+same year, only a portion of the bridges, approximately
+20% - 25%, would require any maintenance attention. Even
+fewer bridges (around 10%) may actually receive mainte-
+nance work. Given the complexity of these inspection re-
+sults, compounded with external constraints on budget and
+resources, a bridge manager needs to have complete under-
+standing of all bridges under his jurisdiction when making
+maintenance decisions.
+It is therefore necessary to have a BMS that monitors and
+analyzes the conditions of bridges in a way that allows a
+bridge manager to maintain an overview of all bridges and
+yet retain the capability to inspect detailed information of a
+particular bridge. Currently, there are a few available BMSs
+such as Pontis [WR03] and BRIDGIT [Haw98] that promise
+analytical capabilities. However, there exist many limita-
+tions and issues with these BMSs (some of which will be
+described in detail in the following section), many bridge
+managers, including a few from NCDOT, still rely on using
+simple spreadsheets such as Microsoft Excel to perform their
+analyses.
+3. Identifying the Limits in Current BMSs
+Together with USDOT, we conduced a nation-wide survey
+to analyze the current usage of BMSs [CRR09]. Our sur-
+vey focused on collecting information about the utilization
+of BMS in each state, and asked for feedback on the utilities
+of those systems. As listed in the following table, our survey
+was centered around these three substantive questions:
+1 What do you see as the most important next step in the
+further development of your agency’s BMS ?
+2 What do you see as the necessity of expanding current
+BMSs?
+3 What are the biggest barriers in your department in im-
+plementing innovations that may strengthen your BMS?
+Table 1: The three substantive questions for all the state
+DOTs in the U.S.
+Of the 50 state DOTs that we contacted, 35 of them re-
+sponded. The result of the survey indicates that while the
+BMSs used at these state DOTs are very efficient at data stor-
+age, they are not as effective in providing data exploration
+or domain-specific data analysis. Based on the response of
+these state DOTs, we categorize the limitations of existing
+BMSs into three major areas:
+• BMSs have not provided effective support for bridge
+managers’ decision-making processes. Many states
+have reported that they mainly utilize BMSs as data stor-
+age software. Although some BMSs have certain auto-
+matic decision making support capability [WR03], their
+analysis tools are not appropriate or adequate to be incor-
+porated in to a bridge manager’s analysis process.
+• BMSs are rigid in structure and cannot be easily
+adapted to support individual bridge manager’s task
+routines. Many states have reported that it is difficult for
+them to customize BMSs to suite their own analytical ap-
+proaches. These states have also indicated that it is very
+difficult for them to implement additional features within
+these BMSs.
+• BMSs have not provided abilities to incorporate local
+inspection technologies. Many states have their own in-
+spections results that are complementary to the national
+standard inspections. However, as reported by state DOTs,
+it is often difficult to import such information into the data
+structure that these BMSs provide.
+In summary, almost all state DOTs have expressed the
+need of having a BMS that enables them to be more effective
+at analyzing their bridges. Additionally, they have helped us
+identify their domain problems and encouraged us to design
+a system that can assist their decision-making processes.
+4. Characterizing the domain problems
+As indicated by the result of the survey, there are three chal-
+lenges in existing BMSs: the insufficient support for analyt-
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2010)
+4 Submission # 326 / An Interactive Visual Analytics System for Bridge Management
+ical processes, the restrictions in personalizing analysis rou-
+tines, and the difficulties in integrating heterogenous data.
+Therefore, the primary goal of our system is to address these
+challenges in accordance to the needs of the bridge man-
+agers at these state DOTs. The detailed characterization of
+these three challenges, as well as how they are addressed in
+our system are described in the following sections.
+4.1. Providing effective support for bridge manager’s
+decision-making processes
+As the state DOTs noted, current BMSs are effective at stor-
+ing data, but are insufficient at supporting analysis processes.
+In order to address this shortcoming and to provide support
+for bridge analysis, we worked with bridge managers at NC-
+DOT to identify three analyses that are often essential to
+their decision-making process: structural analysis, temporal
+analysis, and geospatial analysis. According to these bridge
+managers, these analyses help them analyze bridge data from
+different perspectives and are integral to their daily work-
+flows.
+• Dynamic Geospatial Analysis: Bridges exist in a dy-
+namic environment with changing surroundings. There-
+fore, rather than using a static map, bridge managers of-
+ten need to adapt to new situations and analyze bridges
+with additional information such as traffic patterns, flood-
+ing regions, and population densities. According to bridge
+managers, supporting dynamic geo-exploration is a pri-
+mary area for bridge analysis.
+• High Dimensional Structural Analysis: Typically, the
+data representing bridge structures are high in dimen-
+sionality. Federal regulation requires bridge inspection to
+record nearly 130 structural variables biennially. Given
+the complexity of the data, a tool that could assist bridge
+managers’ comprehension of these variables would be es-
+sential. Specifically, on a high level, bridge managers need
+to detect and identify causal relationships and trends in
+these variables so that they could identify phenomenons
+that are affecting all bridges. On a detailed level when in-
+specting a single bridge, bridge managers need to examine
+the overall structure integrity of a bridge across multiple
+variables and to focus on particular structural components
+inside that bridge.
+• Scalable Temporal Analysis: Through analyzing the
+temporal changes of a bridge’s condition, bridge man-
+agers can compute the deterioration rate of the bridge.
+In addition, bridge managers can adjust the future main-
+tenance plans by assessing the outcomes from previous
+work. Therefore, the ability to capture the temporal infor-
+mation is of great value to bridge managers when plan-
+ning for future maintenances. However, temporal anal-
+ysis in most existing BMSs is limited to analysis on a
+per bridge basis. Having an overview that could help the
+bridge managers spot bridges with abnormal temporal be-
+haviors would be very beneficial.
+4.2. Supporting individual manager’s task routine
+Our survey also suggested that current BMS are quite rigid
+in supporting individual bridge manager’s task routines.
+As noted in section 2 bridge managers often need to de-
+velop their own analysis routines. Depending on available
+resources, a bridge manager’s strategy can be very differ-
+ent from his peers’, and would require a different combi-
+nation of the above analysis processes. In addition, some-
+times even the same manager need to take alternative ana-
+lytical approaches due to changes in priorities. At the heart
+of these individual routines are the different combinations
+and sequences of the above analytical processes. Therefore,
+it is rather important for a system to provide bridge managers
+with the flexibility to combine and sequence these analytical
+processes to fit their own workflows.
+4.3. Supporting integration of local inspection
+technologies
+While this is an important issue for the bridge managers,
+solving it begins with designing new data structures for the
+BMS. Currently, given the rigid nature of existing BMSs,
+supporting data integration would require an overhaul of the
+designs of these BMSs. We have begun discussions with
+AASHTO to improve the capabilities of BMSs in provid-
+ing such integrations, but it is outside of the scope of this
+project.
+5. The Visual Analytics System
+Based on the requests of state DOTs as described above,
+we design an interactive visual analytics system (Figure 1)
+that supports a bridge manager’s decision-making process
+and remains customizable to fit an individual manager’s task
+routine. The design of our system is based on coordinated
+multiple views (CMV) [Rob07], as well as a modular soft-
+ware architecture that supports customization of the system
+depending on the bridge manager’s preference.
+5.1. Supporting Decision-Making Process through
+Multiple Coordinated Visualization
+In order to provide bridge managers with analytical capa-
+bility, our system encodes the three analyses processes de-
+scribed in the previous section into a set of coordinated vi-
+sualizations. In the following sections, we describe how each
+process is depicted in our system.
+5.1.1. High Dimensional Structural Analysis
+Our system includes three views for helping bridge man-
+agers to analyze bridge structures on both a high-level
+overview and a low-level detail view. On the high level, our
+system utilizes both a parallel coordinate view (PCView,see
+Figure 1 (A)) [Mol05] and a scatter plot view (SPView see
+Figure 1 (B)) [Tuf90] to help bridge managers detect and
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2010)
+Submission # 326 / An Interactive Visual Analytics System for Bridge Management 5
+identify causal relationships and trends in the data variables.
+The nature of parallel coordinates limits the number of di-
+mensions that can be effectively displayed at a time. Our im-
+plementation therefore provides control panels to allow the
+user to select the dimensions of interest (Figure 1 (D)). Us-
+ing this view, bridge managers can find correlations in the
+bridges’ attributes.
+On the other hand, the SP view is designed to depict re-
+lationships between bridges across two specific dimensions.
+The spatial layout of the view allows the user to see clus-
+ters and clearly identify outliers, and is a slightly more in-
+tuitive interface than the potentially complex PC view. In
+addition, given the importance of time in bridge analysis,
+our system also extends the ability to see temporal changes
+in both views. Similar to the trails and animation used by
+Robertson et al [RFF?08], both SPView and PCView allow
+the user to explore the time dimension, which in turn allows
+bridge managers to interactively explore and compare infor-
+mation from different inspection cycle. Together, these two
+visualizations give bridge managers the ability to see high-
+level trends and patterns in the data’s variables.
+Figure 2: The Detail View for Bridge (A) An interactive
+Bridge Schematic Diagram; (B) A Line graph for monitor-
+ing temporal changes for major bridge structures; (C) Im-
+age Analysis Results for cracks on pavements, the Pavement
+is shown on the left; (D) Inspection Imageries that suggests
+the structural damage of the supporting piles of this bridge.
+On a detailed level, when inspecting a single bridge,
+bridge managers need to examine both the overall struc-
+tural integrity of a bridge across multiple variables, as well
+as focusing on particular structural components inside that
+bridge. Therefore, we design a structural detail view to auto-
+matically link information between each bridge component
+and provide bridge managers with an intuitive visualization
+to interactively analyze the corresponding structural infor-
+mation.
+Based on existing bridge design guidelines [DET06], we
+model general bridge components into an interactive bridge
+schematic diagram (see Figure 2 (A)). In this diagram,
+bridge managers can directly select the major bridge struc-
+tures, and analyze each component individually. In addi-
+tion, a line graph enables bridge managers to monitor tem-
+poral changes for individual bridge structures. Associated
+with overall temporal information presented in the small
+multiples view, this structural temporal component helps
+bridge managers to gain insight into the affects of struc-
+tural changes, and to efficiently identify the key factors in
+the overall deteriorations.
+5.1.2. Small Multiples For Temporal Analysis
+Bridge managers have expressed the need of having a tool
+to help them analyze the temporal changes of bridge data.
+They want to be able to perform analysis over time on a
+large number of bridges as well as one bridge at a time.
+Thus, we design a small multiples view [Tuf90] to help
+them achieve temporal analysis of large number of bridges.
+Our design is based on small multiples views in the litera-
+ture [RFF?08, KERC09] - similar to the work by Robertson
+et al [RFF?08], our small multiples view shows deterioration
+changes of each bridge using trend lines.
+Figure 3: The Small Multiples view with Squarified Treemap
+layout. Bridges are grouped by their main structure types.
+For each cell, the x axis represents different inspection cy-
+cles and the y axis represents the structural attribute values
+selected by the user.
+As shown in Figure 3, each cell in this view represents
+a single bridge, while the inside line graph represents the
+bridge’s overall rating in all inspection cycles. These cells
+are further sorted based on the standard deviations of the y
+axes in the line graph to determine the color of the cells,
+with warmer color representing sharper changes over time.
+We note that in this approach, bridges with either downward
+and upward trending in structural attributes will be colored
+with warmer colors.
+Additionally, since it is often necessary for bridge man-
+agers to understand the temporal patterns for a certain group
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2010)
+6 Submission # 326 / An Interactive Visual Analytics System for Bridge Management
+of bridges, we applied a customizable Treemap [BHW00]
+spatial layout to group the small multiples based on partic-
+ular structures. For example, figure 3 shows the bridges di-
+vided based on their construction material (note the black
+lines separating regions of the treemap). In this example, the
+layout enables bridge managers to discover the uncommon
+temporal pattern where several recently built, known-to-last,
+concrete structure bridges show significant deterioration. It
+is therefore mentioned by bridge managers that the capa-
+bility in finding such insight is not only valuable for their
+maintenance decisions, but also can help optimize their fu-
+ture construction planning.
+5.1.3. Geospatial Analysis
+Extensive research on geospatial visualization [AAR?09,
+BDW?08,TG02] have shown the benefits of utilizing online
+map systems such as Google Maps and Microsoft Virtual
+Earth. Similar to work by Fisher et al. [Fis07], we also utilize
+Microsoft Virtual Earth (MSVE [Mic09]) to provide bridge
+managers with dynamic and interactive geospatial analysis
+(see Figure 1 (C)). By placing the bridges onto the scalable
+map, detailed geographic relationships and patterns immedi-
+ately become apparent.
+By adopting online map systems such as MSVE, our sys-
+tem can have the most up-to-date geospatial information
+such as road structures and 3D building models. However,
+we further extended MSVE in our system to overlay large
+amounts of (proprietary) geo-coordinated information over
+the map, such as traffic distribution patterns and satellite im-
+ages, and can utilize that information to perform extensive
+geospatial analysis.
+5.2. Supporting Customization of the System
+To adapt to the development of emerging domain technolo-
+gies, our system is built on top of a modular architecture
+that allows bridge managers to extend the system to incor-
+porate advanced visualizations and more effective data mod-
+els. This is made possible largely because inspections and
+analysis results are tightly associated using a unique bridge
+identification number.
+Therefore, each visualization component integrated in our
+current system is designed to be interchangeable with other
+equivalent visualizations if they both use the bridge identifi-
+cation numbers. Using our architecture, if bridge managers
+suggest new suitable visualizations for their analysis, our
+system would be ready to incorporate those visualizations
+to provide additional functionalities.
+Furthermore, this approach enables bridge managers to
+combine the traditional National Bridge Inspection Stan-
+dards (NBIS) dataset with their locally collected informa-
+tion. As of the paper, we have helped NCDOT bridge man-
+agers to associate bridge structural information with exten-
+sive data collected in the North Carolina region. This ex-
+tensive information includes, as shown in Figure 1 (F), field
+inspections imageries, LIDAR scans for each structure, and
+pavement crack analysis results.
+6. Example Scenario
+Figure 4: (A) A significant downward temporal trending in-
+dicates an unusual pattern (B) Using PCView to compare
+different structural attributes (C) Examining certain bridge
+on SPView, indicating this is the earliest constructed bridge
+in the database (D) The Geospatial view shows that this
+bridge is constructed on top of a river stream.
+Identifying and understanding the cause of bridge deteri-
+oration is a key step for bridge managers to come up with
+corresponding maintenance strategies. It has been observed
+that there are generally three stages in achieving this step,
+namely, selecting bridge candidates, detailed examination,
+and identifying potential causes for damage. The following
+scenario was identified together with Charlotte DOT’s bridge
+management team for their annual bridge maintenance plan-
+ning.
+Our system was initialized with data from previous
+three inspection cycles: years 2000, 2004, and 2006. The
+bridge management team started the maintenance process
+by searching for bridges with significant changes in suffi-
+ciency rating in the previous years. They utilized the small
+multiples view to see if any interesting bridge changing pat-
+terns could be identified. As shown in Figure 1 (E), the team
+found a set of bridges with warmer colors in the small mul-
+tiples view, and they also identified several bridges with sig-
+nificant downward trends in the past years. By highlighting
+these bridges in the scatter plot view (see Figure 4 (C)), the
+team noticed that one of them was actually the oldest bridge
+in the Charlotte area. Suggested by both the small multiple
+view and the scatter plot view, this bridge actually shared the
+lowest overall rating in that year and had had drastic deteri-
+orations since 2004.
+To have a closer look at the bridge, the team used our
+geospatial view and zoomed into the bridge to check its
+surrounding environments. As shown in Figure 4 (D), this
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2010)
+Submission # 326 / An Interactive Visual Analytics System for Bridge Management 7
+bridge was constructed over a river stream, and had sup-
+ported high traffic volume because it had been chosen as
+a part of a detour route for a major interstate highway.
+These findings immediately raised several questions: could
+the bridge’s deterioration be caused by water erosion, over-
+loaded traffic, or flood damage? Although these were all pos-
+sible causes of the deterioration, bridge managers had no
+definitive answers to confirm these hypotheses by looking
+at the geospatial view alone.
+Trying to verify their hypotheses, the management team
+started to find clues from the structural reports of that bridge.
+By plotting the corresponding criteria in the parallel co-
+ordinate view, they found that the traffic amount on that
+bridge had not changed significantly in the previous years,
+and therefore ruled out the possibility of traffic pattern be-
+ing the cause of the deterioration. However, the PC view
+showed that the water adequacy rating had dropped signifi-
+cantly during the past two inspections, suggesting the bridge
+had undergone severe water damage. To extract more detail,
+the team brought up the bridge’s detailed structural view. As
+shown in Figure 2 (D), the supporting pillar for this bridge
+had shown heavy warping, and the bridge showed clear
+marks of water erosion near the bottom of the pillar. A quick
+reference check on the county’s flood history confirmed that
+three significant flooding took place in years 2003, 2005, and
+2006 around that area, which gave the bridge managers sig-
+nificant reasons to conclude that water damage, especially
+flooding, was a key factor in causing the deterioration of this
+bridge.
+Given the poor condition of its supporting structure, the
+bridge managers concluded that this bridge definitely needed
+maintenance attention. After the exercise, the management
+team commended the effectiveness of our system in assisting
+the identification of the deficient bridge, as well as the cause
+of the deterioration. Although simple, this scenario demon-
+strates a successful application of our tool in a real-world
+analysis application.
+7. Expert Evaluation
+In this section, we report the feedback from evaluations con-
+ducted with bridge managers at both NCDOT and City of
+Charlotte DOT (CDOT). Our evaluations were conducted by
+first demonstrating the design of the system and the utilities
+of each visualization. Then, we invited bridge managers to
+perform in-depth analyses using the system. Although the
+degree and depth of analyses differed in each evaluation ses-
+sion, the bridge managers generally agreed that our system
+provided more analytical capability than any existing BMSs,
+and that it is flexible enough for them to quickly incorporate
+the use of our system into their daily routine.
+7.1. Visual facilitation of decision-making processes
+One benefit of our system that was noted by all bridge man-
+agers was that it provided a visual exploration environment
+to help them analyze information from multiple aspects. The
+capability of being able to perform not only geo-temporal
+analysis, but also structural analysis was of great value to
+bridge managers’ decision-making process. One of the man-
+agers commented that, “[the] linked visualizations provide
+me with a cohesive understanding about the data that I am
+working on. It reduces the time I spent on manually search-
+ing for information, and helps me focus more on the task
+itself.”
+As demonstrated in the scenario (see section 6), our sys-
+tem helped bridge managers to effectively analyze their data
+across multiple dimensions and assist them in determining
+the cause of deterioration. All the bridge managers found
+the system practical, and believed that the system would be
+valuable in their daily routines. One of the managers from
+NCDOT noted that, “...using your system, I can see correla-
+tions that I normally wouldn’t be able to see. This is much
+easier than making the similar observation from using our
+current system.”
+In particular, many bridges managers pointed out that the
+temporal analysis in our system provided them with the
+capability to effectively monitor changes in bridge condi-
+tions and identify maintenance candidates. In addition, many
+bridge managers noted that the capability to examine bridge
+structures from multiple levels (overview and detailed view)
+could effectively guide them from examining large amounts
+of data to inspecting bridges one at a time.
+In summary, one bridge manager from USDOT com-
+mented that, “...using your system, we can now see what
+we normally can’t see. We also could have a cohesive un-
+derstanding about our bridge assets. This would be helpful
+for us to identify and prioritize bridges...”. This confirms the
+utilities of our system.
+7.2. The flexibility to assist individual workflow
+At the heart of our system is a modular software architec-
+ture. This design provides bridge managers with the flexibil-
+ity to customize system, and allows them to only utilize the
+necessary visualizations in their practices. As pointed out by
+a manager from CDOT, “[your system] will greatly shorten
+the catch-up time between my learning to use the system and
+my actual use of it.”
+Additionally, this modular design also allows our system
+to keep up with the development of the bridge inspection
+technologies. We are currently working with NCDOT to in-
+tegrate their extensive inspection data into the system and
+customize the system for their needs. According to a bridge
+manager from USDOT, “true to the goal of the project, this
+system allows us to think about how we could have more
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2010)
+8 Submission # 326 / An Interactive Visual Analytics System for Bridge Management
+practical impacts with integration of other technologies. As
+such, it gives us an opportunity to deploy the system to other
+state DOTs”.
+8. Discussion
+In this section, we discuss the current limitations of our sys-
+tem and future research directions.
+8.1. Visualizations to Facilitate the Prioritization
+Process
+While data analysis using our system can assist bridge man-
+agers in identifying candidate bridges that are structurally
+deficient, finding these bridges is just the first step in achiev-
+ing overall maintenance decisions. There is an important pri-
+oritization process to decide which bridge actually receives
+maintenance that takes place after the candidates have been
+identified . As noted in section 2, this prioritization process is
+necessary due to limited resources such as budget and con-
+struction timings. Due to such constraints, bridge manager
+often need to find a balance between limited resources and
+maintenance requirements to maximize the overall stability
+of the transportation system as well as the safety of the pub-
+lic.
+Unfortunately, such an optimization process is often not
+well defined, and the maintenance decisions vary depend-
+ing on the goal of individual bridge managers. For example,
+some managers may focus on repairing supporting structures
+of bridges, which they believe is crucial to the bridges’ struc-
+tural integrity, while others may spend the resources on fix-
+ing the bridge deck where visible damages occur. Although
+there are always uncertainties and variations in this process,
+it is clear that bridge managers need to have adequate strate-
+gies and tools to help them find the most optimal solution.
+Our current system mainly focuses on providing data
+analysis, but not prioritization. According to bridge man-
+agers, it would be quite useful to extend our system’s ability
+to support both stages and help them optimize maintenance
+decisions. We have started discussing the possibility of ex-
+tending our system with bridge managers, and the design of
+a constraint-based interactive visual analytics system would
+be one interesting future direction of our project.
+8.2. Externalize the bridge manager’s domain
+knowledge
+Analysis of high-dimensional bridge data is generally per-
+formed by bridge managers who have a great deal of ex-
+perience and special training, both of which are valuable
+domain knowledge. It is therefore interesting to consider
+whether externalizing such domain knowledge and reap-
+plying it into customized visualizations would be feasi-
+ble for enhancing bridge maintenance decisions. Although
+there is no definitive way to achieve complete knowledge
+transfer, existing research has that have demonstrated how
+to incorporate visualization with domain specific knowl-
+edge [XGH06,GNRM08]. To achieve similar knowledge ex-
+ternalization, we propose a tight integration of the visualiza-
+tion with an ontological knowledge structure that could in-
+teractively capture and store the user’s interactions and trans-
+late them into domain knowledge [WJD?09]. This external-
+ization could further be used in training new managers, com-
+municating with others, and reporting decisions.
+8.3. Combine decision-making model with visual
+analytics system
+Although our system has been very well received by DOTs
+of all levels, there have been some discussions in using auto-
+mated analysis tool versus explorative visual analytical tool.
+In bridge management, existing BMSs such as Pontis in-
+clude automated method like Markov models to predict the
+rate of bridge deterioration. While most bridge managers
+have rejected such methods because of concerns with accu-
+racy, some bridge managers have also raised the question of
+how repeatable and reliable interactive visual analytics sys-
+tem can be given the subjective nature of open exploration.
+We acknowledge that the challenge of making explo-
+rations in visual analytical systems is an important one for
+the entire visualization community. However, in the context
+of bridge management, we propose that the solution is likely
+an integration of interactive techniques with automated ones.
+The challenge of such integration are the roles and relation-
+ships between the two components. At this point we do not
+have a clear outline on how to accomplish such integration
+that would leverage the strengths of both methods, but this
+challenge is an important one that we will look to address in
+the near future.
+9. Related Work
+US and state DOTs have had a long history of adopting
+visualizations. As summarized in a recent survey by R.G.
+Hughes [Hug08], transportation visualizations can be gener-
+ally categorized into two groups: (1) 3D visualizations that
+support design simulation and planning and (2) geographic
+information visualization that helps with data analysis and
+managing.
+There is an extensive literature devoted to the use of visu-
+alization to support transportation simulation and planning.
+For example, both VISSIM [Vis08] and CORSIM [Uni06]
+are widely used to visualize traffic simulations and micro-
+scopic traffic controls. Also, 3D visualizations have been
+adopted to depict transportation designs and maintenance
+processes, such as NC3D [New09], a 3D visualization tool
+for designing high-speed railroads.
+The field of geospatial visualization is a well-established
+area of research, especially in the field of Geographical In-
+formation Systems (GIS). Commercial GIS systems have
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2010)
+Submission # 326 / An Interactive Visual Analytics System for Bridge Management 9
+also been developed to specifically help depict transporta-
+tion data, such as GeoTrAMS [Int05], which is designed
+to manage train and rail assets, and TransCAD [Cap09],
+which focuses on road management. In visualization com-
+munity, there are also extensive research on geospatial anal-
+ysis. In addition to the systems we have referenced in sec-
+tion 5, examples for geospatial research also include Geo-
+Vista by Takatsuka et al. [TG02] and GeoTime by Kapler et
+al. [KW04].
+On the other hand, the use of visualization to perform
+bridge data analysis and bridge management is still in a pre-
+liminary stage. Although some simulation-based highway
+management systems have been developed [PTSR98], the
+main focus in this line of research is on depicting and ex-
+tending knowledge of the geospatial nature in transportation
+information. Another notable analytical tool that partially in-
+cludes bridge analysis is the work by Wongsuphssawat et
+al. [WPF?09] which performs data analysis of federal high-
+way incidents. While both of these system concentrate on
+analyzing transpiration information, our system focuses on
+the interactive exploration and analysis of the relationships
+within the bridge data.
+10. Conclusion
+Maintaining bridges is a multi-faceted operation that re-
+quires both domain knowledge and analytics techniques over
+large data sources. Although current bridge management
+systems are very efficient at data storage, they are not as ef-
+fective at providing analytical capabilities. In this paper, we
+present our interactive visual analytics system that extends
+the capabilities of current BMSs. As shown in Figure 1,
+our system was designed in collaboration with bridge man-
+agers in national, state, and local DOTs, and has been im-
+plemented specifically to provide them with interactive data
+exploration, cohesive information correlation and domain-
+oriented data analyses. Our system enables bridge man-
+agers to customize the visualization and data model to fit
+each individual’s task routines. In our expert evaluations,
+bridge managers expressed their interest in using our analy-
+sis system and confirmed its novelty and utility over existing
+BMSs. With such encouraging feedbacks from domain ex-
+perts, we are planning to deploy our system to multiple state
+DOTs and put our system in to real-world environments.
+References
+[AAR?09] ANDRIENKO G., ANDRIENKO N., RINZIVILLO S.,
+NANNI M., PEDRESCHI D., GIANNOTTI F.: Interactive visual
+clustering of large collections of trajectories. In Visual Analytics
+Science and Technology, 2009. VAST 2009. IEEE Symposium on
+(Oct. 2009), pp. 3–10. 6
+[AAS03] AASHTO: Transportation Asset Management Guide.
+Tech. rep., NCHRP Project 20-24, January 2003. 3
+[Ame09] AMERICAN SOCIETY OF CIVIL ENGINEERS: 2009 re-
+port card for america’s infrastructure on bridges, 2009. 1
+[BDW?08] BUTKIEWICZ T., DOU W., WARTELL Z., RIB-
+ARSKY W., CHANG R.: Multi-focused geospatial analysis using
+probes. Visualization and Computer Graphics, IEEE Transac-
+tions on 14, 6 (Nov.-Dec. 2008), 1165–1172. 6
+[BHW00] BRULS M., HUIZING K., WIJK J. J. V.: Squarified
+treemaps. In In Proceedings of the Joint Eurographics and IEEE
+TCVG Symposium on Visualization (2000), Eindhoven Univer-
+sity of Technology, Press, pp. 33–42. 6
+[Bri93] BRINCKERHOFF PARSONS; SILANO L. G. (Ed.): Bridge
+inspection and rehabilitation: a practical guide. John Wiley and
+Sons, 1993. 1
+[Cap09] CAPLIPER CORPORATION: TransCAD, a transportation
+planning software. Tech. rep., Capliper Corporation, 2009. 9
+[CRR09] COREY RICE XIAOYU WANG R. C., RIBARSKY W.:
+A survey about the current usage of BMSs across the U.S. Tech.
+rep., Univeristy of North Carolina at Charlotte, 2009. 2, 3
+[DET06] DEMETRIOS E. TONIAS J. J. Z.: Bridge engineering.
+McGraw Hill, 2006. 1, 5
+[Fis07] FISHER D.: Hotmap: Looking at geographic attention.
+Visualization and Computer Graphics, IEEE Transactions on 13,
+6 (Nov.-Dec. 2007), 1184–1191. 6
+[GNRM08] GARG S., NAM J., RAMAKRISHNAN I., MUELLER
+K.: Model-driven visual analytics. In Visual Analytics Sci-
+ence and Technology, 2008. VAST ’08. IEEE Symposium on (Oct.
+2008), pp. 19–26. 8
+[Haw98] HAWK HUGH; SMALL E. P.: The bridgit bridge man-
+agement system. Structural Engineering International Volume 8
+(1998), 309–314. 3
+[Hea07] HEARN G.: Bridge Inspection Practices. Tech. rep., Uni-
+versity of Colorado, Boulder, 2007. 1
+[Hug08] HUGHES R. G.: Research agenda for visualization
+in transportation. In SIGGRAPH ’08: ACM SIGGRAPH 2008
+classes (New York, NY, USA, 2008), ACM, pp. 1–5. 8
+[Int05] INTERGRAPH CORPORATION: Geographisches Trans-
+port Anlagen Management System. Tech. rep., Intergraph Cor-
+poration, 2005. 9
+[KERC09] KEEFE D., EWERT M., RIBARSKY W., CHANG R.:
+Interactive coordinated multiple-view visualization of biome-
+chanical motion data. IEEE Transactions on Visualization and
+Computer Graphics 15, 6 (2009), 1383–1390. 5
+[KW04] KAPLER T., WRIGHT W.: Geotime information visual-
+ization. In INFOVIS ’04: Proceedings of the IEEE Symposium on
+Information Visualization (Washington, DC, USA, 2004), IEEE
+Computer Society, pp. 25–32. 9
+[Mic09] MICROSOFT CORPORATION: Mircrosoft Virtual Earth.
+Tech. rep., Microsoft Corporation, 2009. 6
+[Mol05] MOLLER T.: A parallel coordinates style interface for
+exploratory volume visualization. IEEE Transactions on Visual-
+ization and Computer Graphics 11, 1 (2005), 71–80. 4
+[MRG?01] MOORE M., ROLANDER D., GRAYBEAL B.,
+PHARES B., WASHER G.: Highway bridge inspection: State-
+of-the-practice survey. Transportation Research Record: Journal
+of the Transportation Research Board 1749 (2001), 73–81. 1
+[New09] NEWLANDS COMPANY: NC3D, Transportation and
+Urban Design System. Tech. rep., Newlands Company, 2009.
+8
+[PTSR98] PLAISANT C., TARNOFF P., SARAF A., ROSE A.:
+Understanding transportation management systems performance
+with a simulation-based learning environment. Tech. rep., Pro-
+ceedings of ITS’99, Annual Meeting of the Intelligent Transpo-
+ration Society of America, 1998. 9
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2010)
+10 Submission # 326 / An Interactive Visual Analytics System for Bridge Management
+[RFF?08] ROBERTSON G., FERNANDEZ R., FISHER D., LEE
+B., STASKO J.: Effectiveness of animation in trend visualization.
+IEEE Transactions on Visualization and Computer Graphics 14,
+6 (2008), 1325–1332. 5
+[Rob07] ROBERTS J. C.: State of the art: Coordinated and mul-
+tiple views in exploratory visualization. In Fifth International
+Conference on Coordinated and Multiple Views in Exploratory
+Visualization (2007), pp. 61–71. 4
+[TG02] TAKATSUKA M., GAHEGAN M.: Geovista studio: a
+codeless visual programming environment for geoscientific data
+analysis and visualization. Comput. Geosci. 28, 10 (December
+2002), 1131–1144. 6, 9
+[Tuf90] TUFTE E. R.: Envisioning Information. Graphics Press,
+May 1990. 4, 5
+[Uni06] UNIVERSITY OF FLORIDA MCTRANS CENTER: Mc-
+Trans, a transportation planning software. Tech. rep., University
+of Florida McTrans Center, 2006. 8
+[Vis08] VISUAL SOLUTIONS INC.: VisSim, a block diagram lan-
+guage for creating complex nonlinear dynamic systems. Tech.
+rep., Visual Solutions Inc., 2008. 8
+[Wes04] WESEMAN W. A.: Recording and Coding Guide for the
+Structure Inventory and Appraisal of the Nations Bridges. Tech.
+rep., Federal Highway Administration, 2004. 1
+[WJD?09] WANG X., JEONG D. H., DOU W., LEE S.-W., RIB-
+ARSKY W., CHANG R.: Knowledge assisted visualization:
+Defining and applying knowledge conversion processes to a vi-
+sual analytics system. Comput. Graph. 33, 5 (2009), 616–623.
+8
+[WPF?09] WONGSUPHASAWAT K., PACK M., FILIPPOVA D.,
+VANDANIKER M., OLEA A.: Visual analytics for transporta-
+tion incident datasets. TRB 88th Annual Meeting Compendium
+of Papers DVD (2009). 9
+[WR03] W ROBERT A MARSHALL R. S.: Pontis bridge man-
+agement system: state of the practice in implementation and de-
+velopment. In 9th International Bridge Management Conference
+(Jan 01, 2003). 3
+[XGH06] XIAO L., GERTH J., HANRAHAN P.: Enhancing visual
+analysis of network traffic using a knowledge representation. In
+Visual Analytics Science and Technology, 2008. VAST ’08. IEEE
+Symposium on (31 2006-Nov. 2 2006), pp. 107–114. 8
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2010)
+

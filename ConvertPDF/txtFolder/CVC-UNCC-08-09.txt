@@ -1,0 +1,1508 @@
+IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 10, NO. 2, FEBRUARY 2008 167
+Mining Multilevel Image Semantics
+via Hierarchical Classification
+Jianping Fan, Yuli Gao, Hangzai Luo, and Ramesh Jain
+Abstract—In this paper, we have proposed a novel framework
+for mining multilevel image semantics via hierarchical classifica-
+tion. To bridge the semantic gap more successfully, salient objects
+are used to characterize the intermediate image semantics effec-
+tively. The salient objects are defined as the connected image re-
+gions that capture the dominant visual properties linked to the cor-
+responding physical objects in an image. To achieve a more reliable
+and tractable concept learning in high-dimensional feature space, a
+novel algorithm called product of mixture-experts (PoM) is proposed
+to reduce the size of training images and speed up concept learning.
+A novel hierarchical concept learning algorithm is proposed by in-
+corporating concept ontology and multitask learning to enhance
+the discrimination power of the concept models and reduce the
+computational complexity for learning the concept models for large
+amount of image concepts, which may have huge intra-concept
+variations and inter-concept similarities on their visual properties.
+A hyperbolic image visualization algorithm has been developed for
+allowing users to specify their queries easily and assess the query
+results interactively. Our experiments on large-scale image collec-
+tions have also obtained very positive results.
+Index Terms—Adaptive EM algorithm, concept ontology, hy-
+perbolic visualization, image classification, multitask learning,
+product of mixture-experts, salient objects, variational method.
+I. INTRODUCTION
+AS high-resolution digital cameras become more afford-able and widespread, online digital images are growing
+exponentially. Image classification is now emerging as a dis-
+tinct research area for supporting more effective indexing and
+retrieval of large-scale image archives [1], [2]. Because of the
+semantic gap between the low-level visual features and the
+high-level human interpretations of image semantics [6]–[8],
+three inter-related issues should be addressed simultaneously
+for image classification and annotation: 1) image analysis to
+achieve a good representation of intermediate image semantics;
+2) bridging the semantic gap between the low-level visual
+features and the high-level human interpretations of image
+semantics; and 3) multilevel image semantics interpretation
+(i.e., hierarchical image classification).
+Manuscript received January 22, 2007; revised August 30, 2007. This work
+was supported by the National Science Foundation under 0601542-IIS and
+0208539-IIS. The associate editor coordinating the review of this manuscript
+and approving it for publication was Dr. Zhongfei (Mark) Zhang.
+J. Fan, Y. Gao, and H. Luo are with the Department of Computer Science,
+University of North Carolina, Charlotte, NC 28223 USA.
+R. Jain is with the School of Information and Computer Sciences, University
+of California, Irvine, CA 92697 USA.
+Color versions of one or more of the figures in this paper are available online
+at http://ieeexplore.ieee.org.
+Digital Object Identifier 10.1109/TMM.2007.911775
+To address the first issue, the underlying visual patterns for
+image content representation and feature extraction should be
+able to characterize the intermediate image semantics at the
+object level (i.e., semantics for interpreting the corresponding
+real-world physical objects in an image) [3]–[5]. To address the
+second issue, machine learning techniques should be used to
+successfully learn more reliable mapping functions between the
+low-level visual features and the high-level human interpreta-
+tions of image semantics [6]–[8], and such mapping functions
+may not be obvious because of huge intra-concept variations
+and inter-concept similarities on visual properties. One single
+image may contain various meanings at multiple semantic levels
+[9], [10], thus hierarchical image classification is needed for ad-
+dressing the third issue successfully.
+In this paper, we have developed a novel scheme for hierar-
+chical image classification and multilevel annotation. Our pro-
+posed scheme significantly differs from other earlier works in
+multiple respects. a) Salient objects are used for image content
+representation and feature extraction [21], [22]. The salient ob-
+jects are defined as the connected image regions that capture the
+dominant visual properties linked to the corresponding physical
+objects in an image, thus they can achieve a good representa-
+tion of intermediate image semantics and bridge the semantic
+gap more successfully. b) Multiple approaches are integrated
+to automatically detect large amount of salient objects which
+may have diverse visual properties. c) The concept ontology is
+integrated for hierarchical image concept organization, where
+the image concepts at the first level of the concept ontology are
+defined as atomic image concepts with the smallest intra-con-
+cept variations on visual properties. d) A new algorithm called
+product of mixture-experts (PoM) is proposed to model the con-
+textual relationships between the atomic image concepts and
+various co-appearance patterns of the relevant salient objects,
+which can reduce the size of training images and speed up con-
+cept learning significantly. e) By integrating concept ontology
+and multitask learning to exploit the strong inter-concept corre-
+lations, our hierarchical concept learning algorithm can signifi-
+cantly enhance the discrimination power of the concept models
+and reduce the computational complexity for learning the con-
+cept models for large amount of image concepts, which may
+have huge intra-concept variations and inter-concept similari-
+ties on their visual properties. f) A new algorithm is proposed
+to achieve hyperbolic visualization of large-scale concept on-
+tology and images, so that users can specify their queries easily
+and assess the query results interactively.
+The paper is organized as follows. Section II reviews the re-
+lated work; Section III introduces a new scheme for hierarchical
+image concept organization and presents our experimental re-
+sults on automatic salient object detection; Section IV describes
+1520-9210/$20.00 © 2008 IEEE
+168 IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 10, NO. 2, FEBRUARY 2008
+Fig. 1. One image may consist of multiple classes of salient objects: (a) original images and (b) detection results for different classes of salient objects in an image.
+our new algorithm for hierarchical concept learning; Section V
+introduces our algorithm for hierarchical image classification
+and annotation; Section VI presents our new framework for hy-
+perbolic image visualization; Section VII introduces algorithm
+and system evaluation; and we conclude in Section VIII.
+II. RELATED WORK
+In this section, we review the most relevant work according to
+three key issues for achieving hierarchical image classification.
+To address the first issue for image classification (i.e., image rep-
+resentation and feature extraction), three approaches have been
+developed: 1) image-based approach that extracts the visual fea-
+tures from whole image [14], [15]; 2) region-based approach
+that extracts the visual features from homogeneous image re-
+gions or image grids (i.e., regular image partitions) [11]–[13],
+[20]; 3) object-based approach that extracts the visual features
+from semantic image objects [16]–[19].
+The major problem with the image-based approach is that
+the global visual features may not be able to effectively char-
+acterize the intermediate image semantics at the object level.
+The major problem with the region-based approach is that the
+homogeneous image regions or image grids may not correspond
+to the underlying real-world physical objects in an image, and
+thus it cannot characterize the intermediate image semantics at
+the object level effectively and efficiently. On the other hand,
+the object-based approach is able to effectively characterize the
+intermediate image semantics at the object level and the contex-
+tual relationships between the image objects (i.e., pictorial struc-
+tures) can further be extracted to achieve more accurate image
+classification at the concept level [15]. However, automatic de-
+tection of a large amount of image objects with diverse visual
+properties is still an open problem for computer vision.
+To provide an alternative paradigm for semantic-sensitive
+image content representation, Fan et al. have developed a new
+framework by using salient objects to achieve a good repre-
+sentation of intermediate image semantics [21], [22], [31]. The
+salient objects are defined as the connected image regions that
+can be used to characterize the dominant visual properties for
+the corresponding physical objects in an image. For simplicity,
+each class of salient objects is named with the same name of the
+corresponding physical object class. As shown in Fig. 1, one
+single image may consist of multiple classes of salient objects
+Fig. 2. Comparison between image regions and salient object: (a) original
+image; (b) image regions; (c) detection result for salient object “blue sky”.
+with diverse visual properties, and detecting the salient objects
+can achieve a good representation of intermediate image se-
+mantics. Even precise segmentation of the real-world physical
+objects in the images is not achieved, one can observe that the
+salient objects are still able to characterize the dominant visual
+properties of the corresponding physical objects efficiently
+and effectively. Obviously, the salient objects are definitely
+different from homogeneous image regions. As shown in
+Figs. 2–4, one single class of salient objects in an image may be
+partitioned into multiple homogeneous image regions because
+of over-segmentation.
+To address the second issue for image classification (i.e.,
+bridging the semantic gap), four approaches are widely used
+FAN et al.: MINING MULTILEVEL IMAGE SEMANTICS VIA HIERARCHICAL CLASSIFICATION 169
+Fig. 3. Comparison between image regions and salient object: (a) original image; (b) image regions; (c) detection result for salient object “grass”.
+to learn the mapping functions between the low-level visual
+features and the high-level human interpretations of image
+semantics (i.e., image concepts): 1) Gaussian mixture model
+(GMM) approach uses GMMs to approximate the class distri-
+butions of image data [32]–[35]; 2) support vector machines
+(SVM) -based approach uses SVMs to maximize the margins
+between the positive images and the negative images [36]–[38].
+(3) MIL-based approach uses multi-instance learning (MIL)
+to maximize the diverse density or the soft margins between
+the negative images and the positive images, and each image
+is treated as a bag of keywords [62]–[66]. (4) LDA-based ap-
+proach uses Latent Dirichlet Allocation and Graphical models
+to learn a joint distribution model for a set of keywords and
+image regions [29], [30], [67], [68].
+The major advantage of the GMM-based approach is that
+prior knowledge can be incorporated for learning more reliable
+concept models. Due to the diversity and richness of image
+contents, GMM models may contain hundreds of parameters
+in a high-dimensional feature space, and thus large amount
+of labeled images are needed to achieve reliable concept
+learning. The SVM-based approach is known by its smaller
+generalization error rate in high-dimensional feature space.
+However, searching the optimal model parameters (i.e., SVM
+parameters) is computationally expensive, and its performance
+is very sensitive to the adequate choices of kernel functions
+[38]. The major advantage of the MIL-based approach is that
+automatic feature selection can be achieved simultaneously
+in the concept learning process. One major problem for the
+MIL-based approach is that searching the high diverse density
+points in high-dimensional feature space is not a trivial task. The
+major advantage for the LDA-based approach is that learning
+a joint concept model for a set of image concepts can reduce
+the computational cost than learning their concept models
+independently. One major problem for the LDA-based approach
+170 IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 10, NO. 2, FEBRUARY 2008
+Fig. 4. Comparison between image regions and salient object: (a) original image; (b) image regions; (c) detection result for salient object “sea water”.
+is that a hidden aspect variable is used and thus it is hard to
+intuitively interpret the contextual relationships between the
+image regions and the keywords. However, supporting intuitive
+interpretation of the contextual relationships is very important
+for applying such LDA-based tools for image classification
+and annotation.
+One common problem for these existing concept modeling
+approaches is that they are too expensive to be used for learning
+the concept models of the high-level image concepts, which
+have larger intra-concept variations on visual properties and the
+corresponding hypothesis spaces for concept learning may be
+too large to be approximated precisely by using a single concept
+model. When a large amount of image concepts come into
+view, the problem of huge inter-concept similarities on visual
+properties should be addressed to enhance the discrimination
+power of the concept models. Unfortunately, all these existing
+approaches have not provided a good solution for tackling
+this inter-concept visual similarity problem effectively.
+To address the third issue for image classification (i.e.,
+multilevel image semantics interpretation), hierarchical image
+classification has recently received enough attentions [23]–[31],
+[40]–[43]. The hierarchical image classification approach has
+at least two advantages: 1) learning the concept models for the
+high-level image concepts with larger intra-concept variations
+on visual properties can be achieved by combining the concept
+models for the relevant low-level image concepts which have
+smaller intra-concept variations on visual properties and 2)
+the computational complexity for learning the concept models
+for large amount of image concepts can be reduced through
+exploiting their strong inter-concept correlations.
+MediaNet has been developed to represent the contextual re-
+lationships between image/video concepts and achieve hierar-
+chical concept organization [40]. Barnard et al. [29], [30], Fan
+et al. [27], and Vasconcelos et al. [24], [25] have incorporated
+hierarchical mixture models and concept hierarchy for semantic
+image classification. Fei-Fei et al. have also incorporated prior
+knowledge to improve hierarchical image classification [28].
+Li et al. have proposed an automatic linguistic structure for
+image database indexing, classification, and annotation [26].
+Recently, Naphade et al. have integrated factor graph and multi-
+jects for semantic video classification [41]. The major problem
+with these existing hierarchical approaches is that the classifi-
+cation errors may be transmitted among different concept levels
+(i.e., inter-level error transmission) [27].
+III. CONCEPT ONTOLOGY CONSTRUCTION AND AUTOMATIC
+SALIENT OBJECT DETECTION
+We have developed a novel scheme by incorporating concept
+ontology for hierarchical image concept organization [43]. Fol-
+lowing our idea for automatic concept ontology construction
+introduced in [39], a hierarchical tree is used to represent the
+concept ontology. In this hierachical tree, each node represents
+either one specific image concept at one semantic level or one
+specific salient object class. We define the former nodes as the
+concept nodes because they are used to represent the seman-
+tics of the whole image, and the latter ones are defined as the
+content nodes because they are used to represent the interme-
+diate image semantics (salient objects for interpreting the se-
+mantics of the salient image components). The concept nodes
+at the first level of the concept ontology are defined as atomic
+FAN et al.: MINING MULTILEVEL IMAGE SEMANTICS VIA HIERARCHICAL CLASSIFICATION 171
+Fig. 5. Concept ontology for hierarchical image concept organization.
+image concept nodes, which are used to interpret the most spe-
+cific image semantics with the smallest intra-concept variations
+on visual properties. They can further be assigned to the most
+relevant image concepts at the higher level of the concept on-
+tology, which are used to interpret more general subjects of
+image semantics with larger intra-concept variations on visual
+properties. The concept ontology for our test image sets is given
+in Fig. 5.
+To enable computational interpretation of image semantics,
+a hierarchical scheme is proposed to bridge the semantic gap
+(between the users’ real image needs and the low-level visual
+features) more successfully in four steps as shown in Fig. 6. 1)
+The gap between the salient image components (i.e., real-world
+physical objects in an image) and the low-level visual features
+(i.e., Gap 1) is bridged by using salient objects [21], [22] for in-
+termediate image semantics representation. 2) The gap between
+the atomic image concepts and the salient objects (i.e., Gap 2) is
+bridged by using product of mixture-experts to exploit the strong
+correlations (i.e., contextual relationships) between the atomic
+image concepts and the co-appearances of the relevant salient
+objects. 3) The gap between the high-level image concepts and
+the atomic image concepts (i.e., Gap 3) is bridged by incorpo-
+rating concept ontology and multitask learning to exploit their
+strong inter-concept correlations for hierarchical image classi-
+fier training. 4) The gap between the perceptual image concepts
+for image semantics interpretation and the users’ real image
+needs (i.e., Gap 4) is bridged by using hyperbolic visualization
+to visually acquaint the users with which the keywords are used
+to annotate and index the images.
+To achieve a good representation of intermediate image
+semantics, we have integrated three approaches for automatic
+salient object detection: a) segmentation-based approach [21];
+b) grid-based approach [22]; and c) part-based approach [18],
+[19], [22]. The segmentation-based approach works well when
+the salient objects roughly correspond to some connected ho-
+mogeneous image regions that can faithfully be obtained by the
+image segmentation algorithms. Examples for such salient ob-
+ject classes include “sky”, “grass” and “water” that are widely
+distributed in natural images [21]. The grid-based approach
+normally performs better than the segmentation-based approach
+when the salient objects are textural and has a regular shape
+[22]. Therefore, the grid-based approach is more suitable for the
+man-made salient object classes with relatively fixed geometry
+such as “building” and “road”. The part-based approach, on
+Fig. 6. Flowchart for bridging the semantic gap hierarchically.
+the other hand, performs better when the salient objects can
+be partitioned into a set of distinct object compounds with
+variable geometric structures [18], [19], [22], [31]. Therefore,
+the part-based approach is more suitable for the salient object
+classes with distinct parts and variable geometric configurations
+such as “pedestrian”. We have also compared the performance
+of these three approaches on detecting the same salient object
+class. Some detection results for different salient object classes
+are given in Figs. 7 and 8.
+Using salient objects for image content representation can
+provide at least four significant benefits: (a) the salient objects
+can effectively characterize the dominant visual properties of
+the corresponding real-world physical objects in an image [21],
+[22], thus they can be treated as semantic building blocks to
+increase the expressiveness of the intermediate image semantics
+and bridge the semantic gap more successfully; b) the salient
+objects are not necessarily the accurate segmentation of the
+corresponding real-world physical objects in an image [21],
+[22], thus both the computational cost and the detection error
+rate can be reduced significantly; c) detecting the salient objects
+rather than the real-world physical objects in an image is
+able to achieve a good balance between the computational
+complexity and the detection accuracy; d) similar images are
+not necessarily similar in all their salient image components,
+thus partitioning the images into a set of salient objects can also
+172 IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 10, NO. 2, FEBRUARY 2008
+Fig. 7. Comparison results of detecting the salient object “traffic sign” by using different approaches: (a) segmentation-based approach; (b) grid-based
+approach; (c) part-based approach.
+support partial image matching for achieving more effective
+image classification.
+After the salient objects are detected, 139-dimensional visual
+features are extracted to characterize their diverse visual proper-
+ties: 12-bin color histogram, 2-dimensional mean and variance
+of the dominant colors, 62-dimensional texture feature from
+Gabor filter bank, 7-dimensional Tamura texture, and 56-di-
+mensional scale-invariant feature transform (SIFT) features for
+the interest points to characterize the local visual properties of
+the salient objects. Using high-dimensional multimodal visual
+features for image classifier training can tackle the problem of
+huge intra-concept variations on visual properties effectively,
+and thus it can significantly enhance the discrimination power
+of the concept models. However, using high-dimensional mul-
+timodal visual features may require large amount of labeled
+training images for reliable concept learning. Thus these 139-di-
+mensional visual features are automatically partitioned into nine
+feature subsets, where each of these nine feature subsets is used
+to characterize one particular type of visual properties of the
+salient objects.
+IV. HIERARCHICAL MODELING OF IMAGE CONCEPTS
+To bridge the semantic gap more successfully, it is very im-
+portant to develop a new algorithm for learning more reliable
+mapping functions between the low-level visual features and the
+high-level human interpretations of image semantics. Such map-
+ping functions should be able to tackle both the problem of huge
+intra-concept variations on visual properties and the problem of
+huge inter-concept similarities on visual properties simultane-
+ously.
+The image concepts at different semantic levels are depen-
+dent and such dependencies can be characterized effectively by
+using the concept ontology. Therefore, what is already learned
+for one given image concept can be transferred to improve the
+concept learning for its parent concept node and its sibling con-
+cept nodes under the same parent node. Thus, isolating the image
+conceptsand learning theirconceptmodels independentlyarenot
+appropriate. Multitask learning is one promising solution to this
+problem [44]–[51], but its success largely depends on the related-
+ness between multiple learning tasks. One of the most important
+openproblemsformultitasklearningistobettercharacterizewhat
+the related tasks are [48]. Based on these observations, we have
+proposeda bottom-up scheme by incorporating conceptontology
+and multitask learning for hierarchical concept learning.
+A. Semantic Modeling of Atomic Image Concepts
+We have developed a new framework to model the contextual
+relationships between the atomic image concepts and the co-ap-
+FAN et al.: MINING MULTILEVEL IMAGE SEMANTICS VIA HIERARCHICAL CLASSIFICATION 173
+Fig. 8. Comparison results of detecting the salient object “mouse pad” by using different approaches: (a) segmentation-based approach; (b) grid-based
+approach; (c) part-based approach.
+Fig. 9. Contextual relationship between the atomic image concept and the
+co-appearance patterns of the salient objects.
+pearances of the relevant salient objects. As shown in Fig. 9, the
+co-appearances of multiple salient objects can be used to pre-
+dict the appearance of the relevant atomic image concept, and
+such contextual relationships are well defined by our concept
+ontology. Due to the diversity and richness of the patterns of
+the co-appearances of the salient objects (i.e., the semantically
+similar images may consist of different numbers and classes of
+salient objects), it is very important to learn the contextual rela-
+tionships between the atomic image concepts and all these po-
+tential co-appearance patterns of the relevant salient objects.
+If the appearance of one given atomic image concept is
+relevant to the appearances of classes of salient objects, the
+total number of such co-appearance patterns for all these rele-
+vant classes of salient objects can be determined as
+(1)
+Because each atomic image concept is related to only a limited
+number of salient object classes, as shown in Fig. 5, is very
+small. For each of these co-appearance patterns, its concept
+model can be learned automatically for interpreting one par-
+ticular type of the contextual relationships between the given
+atomic image concept and the relevant salient objects. In ad-
+dition, the diverse visual properties for each of these co-ap-
+pearance patterns are further characterized by the 139-dimen-
+sional visual features which are partitioned into nine feature
+subsets.
+For a given th co-appearance pattern of the relevant salient
+objects under the th feature subset , GMM is used to model
+its contextual relationship with the atomic image concept
+(2)
+In the above expression, , , is the th mix-
+ture component to interpret one relevant image class for
+the th co-appearance pattern under the th feature subset
+. is the parameter tuple that in-
+cludes the model structure (i.e., optimal number of mixture
+components) , model parameters , and weights ,
+, is the
+model parameters (mean and covariance ) for th mixture
+component, is the relative weights
+among these mixture components.
+174 IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 10, NO. 2, FEBRUARY 2008
+For the given th co-appearance pattern of the relevant salient
+objects, its concept model is defined as the PoM
+(3)
+where is a global normalization factor (partition function) and
+it is defined as
+(4)
+where is the total number of co-appearance
+patterns of the relevant salient objects.
+Traditional mixture models such as GMM employ a “divide
+and conquer” strategy with different “experts” being used to
+model different subsets of the training images [32]–[35]. On the
+other hand, different mixture experts in our PoM model spe-
+cialize in different feature subsets and different co-appearance
+patterns of the salient objects. There are mixture-experts,
+and each of these mixture-experts specializes in one par-
+ticular type of the contextual relationships between the given
+atomic image concept and the relevant salient objects.
+The idea behind of our PoM framework is to model high-di-
+mensional probability distributions by taking the product of the
+distributions of multiple mixture-experts, where each mixture-
+expert focuses on one particular type of the contextual relation-
+ships between the given atomic image concept and the relevant
+salient objects. Because the high-dimensional feature space is
+partitioned into nine low-dimensional feature subsets, the size
+of the training images (that are required for achieving reliable
+concept learning) is relatively smaller. For one particular co-ap-
+pearance pattern of the salient objects, the same set of training
+images can simultaneously be used to learn the GMM models
+for all these nine feature subsets. Thus, our PoM framework can
+learn more reliable concept models by using a smaller number
+of training images. While most existing methods suffer from the
+curse of dimensionality, our PoM framework can take advantage
+of high dimensionality by learning the mixture-experts for dif-
+ferent feature subsets independently and combining them via a
+product of mixture-experts.
+B. Parameter Estimation for Gaussian Mixture Models
+The optimal parameters (i.e., model structure, weights, and
+model parameters), , for the mixture-ex-
+pert (Gassian mixture model for one given co-appearance pat-
+tern under one particular feature subset) are determined by
+(5)
+where
+is the objective function,
+is the likelihood function, and
+is the minimum description length
+(MDL) term to penalize the complex models [32], [52], [53],
+is the total number of training images, and is the dimensions
+of visual features for the th feature subset .
+The estimation of maximum likelihood described in (5) can
+be achieved by using the EM algorithm [52], [53]. Unfortu-
+nately, the EM iteration needs the knowledge of the model struc-
+ture (i.e., number of mixture components), and a “suitable”
+value of is usually pre-defined. However, pre-defining the
+model structure is not acceptable because different atomic
+image concepts may be related to different numbers of salient
+objects, and thus their class distributions should be character-
+ized by using different numbers of mixture components.
+To incorporate negative images for achieving discriminative
+learning of mixture-experts, we have proposed an adaptive
+EM algorithm by taking advantage of the concept ontology
+for model parameter estimation, where the mixture-experts for
+multiple sibling atomic image concepts are learned jointly.
+Thus the positive images for one given atomic image concept
+can be used as the negative images for its sibling atomic image
+concepts under the same parent node.
+To achieve more accurate model selection and parameter
+estimation, our adaptive EM algorithm performs automatic
+merging, splitting, and death to re-organize the distribution of
+mixture components and modify the optimal number of mixture
+components according to the class distribution of the available
+training images [52], [53].
+To accurately model the contextual relationships between the
+atomic image concept and the relevant salient objects, we
+start from a large value of . In addition, -mean clustering
+technique is used to select the reasonable and robust initial
+values for the model parameters (i.e., mean and covariance
+for each cluster). To determine the underlying optimal model
+structure, we use two criteria to perform automatic splitting,
+merging, and death of mixture components: a) fitness between
+each mixture component and the local distribution of training
+images and b) overlapping between the mixture components
+from different concept models for the sibling atomic image
+concepts under the same parent node.
+In our current implementation, we use Gaussian functions
+and -distrbutions as the mixture components. Kurtosis is
+widely used to characterize the relative peakedness or flatness
+of a distribution function compared with Gaussian functions.
+Thus, Kurtosis is a good measurement to characterize the
+fitness between one given mixture component (i.e., represented
+as Gaussian function or -distribution) and the relevant local
+distribution of training images. The kurtosis of a random vari-
+able (i.e., one particular feature subset for a given training
+image) is defined as
+(6)
+where and are the mean and stardard variance of .
+To characterize the fitness between the mixture component
+(i.e., the mixture component
+can be characterized by ) and the local dis-
+tribution of training images, each image is weighted by the
+posterior probability
+(7)
+FAN et al.: MINING MULTILEVEL IMAGE SEMANTICS VIA HIERARCHICAL CLASSIFICATION 175
+where is the posterior probability for the
+training image .
+To achieve discriminative learning of mixture-experts, the
+concept models for the sibling atomic image concepts under the
+same parent node are trained jointly, where the positive images
+for a given atomic image concept can be used as the negative im-
+ages for its sibling atomic image concepts under the same parent
+node. To maximize the margins between the concept models for
+the sibling atomic image concepts, we use Kullback-Leibler di-
+vergence to characterize the overlapping between the mixture
+components from different concept models.
+The criterion for splitting one given mixture component
+is then defined as
+(8)
+where is a constant to normalize and , ,
+is used to characterize the fitness between the mixture com-
+ponent and the local distribution of training
+images, is the Kullback-Leibler divergence that is
+used to quantify the overlapping between two mixture compo-
+nents and from two dif-
+ferent concept models for the sibling atomic image concepts
+and . Through the criterion for splitting, the mixture com-
+ponents, which are supported by the training images located
+at the boundaries of the concept model but strongly overlap
+with the mixture components from other concept models, are
+splitted into two new mixture components. One of these two
+mixture components with larger value of fitness is used
+to achieve more accurate approximation of the class distribi-
+tion of the training images located at the boundaries of the con-
+cept model, and another one is the mixture component which is
+strongly overlapped with the mixture components from other
+concept models. The overlapped mixture component will be
+eliminated by the death operation [see (10)].
+The criterion for merging two overlapped mixture compo-
+nents, and from the same
+concept model, is defined as
+(9)
+where is the Kullback-Leibler divergence that is
+used to quantify the overlapping between two mixture compo-
+nents and from the concept
+model for the same atomic image concept .
+The criterion for eliminating the overlapped mixture com-
+ponents (i.e., death), and
+from two different concept models, is defined as
+(10)
+The normalization constant is automatically determined by
+(11)
+By optimizing these three operations (merging, splitting, and
+death) jointly, our adaptive EM algorithm is able to automat-
+ically select the optimal model structure and re-organize the
+distribution of mixture components for capturing the essential
+structure of the contextual relationships between the given
+atomic image concept and the relevant salient objects, and thus
+more accurate estimation of model paramters can be achieved.
+Integrating the negative images for concept model learning
+can significantly enhance the discrimination power of the
+mixture-experts by maximizing the margins between them.
+C. Parameter Estimation for Product of Mixture-experts
+One way to initialize a PoM is to learn each mixture-expert
+(Guassian mixture model for one particular co-appearance pat-
+tern of the salient objects under one given feature subset) sep-
+arately and force all these mixture-experts to be different
+(i.e., focusing on different co-apperance patterns under different
+feature subsets). Once all these mixture-experts have been
+initialized separately, their probability distributions are raised to
+a fractional power to create the initialization of PoM.
+The parameters for the product of mixture-experts
+can be obtained by maximizing the log likeli-
+hood [57]–[59]
+(12)
+The log likelihood is defined as
+(13)
+where is the concept model for the th mixture-expert
+and its model parameters can be initialized by using our adap-
+tive EM algorithm,
+is the set of the model parameters for these mixture-experts.
+By introducing a variational distribution [57]–[59]
+and Jensen’s inequality, the problem of maximizing the log like-
+lihood , can be refined as
+(14)
+It is easy to see that maximizing the log likelihood is
+equivalent to minimizing the Kullback-Leibler (KL) divergence
+176 IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 10, NO. 2, FEBRUARY 2008
+between the model distribution and the variational distribution.
+Thus, the lower bound of can be defined as
+(15)
+The optimal model parameters are then obtained by maxi-
+mizing this lower bound function .
+We have incorporated EM iteration to maximize this lower
+bound function with respect to the variational distribution
+and the model parameters . Starting from the
+initial values of the model parameters (the model parame-
+ters for each mixture-expert are initialized by our adaptive EM
+algorithm), the th EM iteration consist of the following
+two steps:
+(16)
+(17)
+By performing such EM iterations, the optimal model parame-
+ters can be obtained automatically.
+D. Semantic Modeling of High-Level Image Concepts
+Because of the inherent complexity of the task, automatic
+detection of the high-level image concepts with larger intra-con-
+cept variations on visual properties is still beyond the ability
+of the state-of-the-art techniques. Learning the concept models
+for the high-level image concepts hierarchically can reduce
+the training cost significantly by partitioning the underlying
+hypothesis space into multiple smaller ones for their children
+image concepts. However, such hierarchical approach may
+seriously suffer from the inter-level error transmission problem
+[27]. Thus, there is an urgent need to develop new scheme for
+hierarchical concept learning by tackling the problem of huge
+intra-concept variations and inter-concept similarities on visual
+properties effectively.
+In this paper, we have proposed a novel algorithm by incorpo-
+rating concept ontology, and multitask learning for hierarchical
+concept learning. First, the concept ontology is used to identify
+the related tasks, e.g., learning the concept models for the sib-
+ling image concepts under the same parent node. Second, such
+task relatedness is used to determine the transferable knowledge
+and common features among the concept models for the sib-
+ling image concepts and generalize their concept models from
+fewer training images. Because the concept models for the sib-
+ling image concepts under the same parent node are used to char-
+acterize both their individual visual properties and the common
+visual properties shared among them, their outputs are strongly
+correlated and can be used to learn a bias mixture-expert for
+their parent node.
+For a given second-level image concept , its children
+image concepts (i.e., the sibling atomic image concepts under
+) are strongly correlated and share some common visual
+properties, and such common visual properties shared among
+the sibling image concepts can further be used to characterize
+the principal visual properties of their parent concept node .
+Therefore, multitask learning can be used to simultaneously
+train the concept models for the sibling atomic image concepts
+under the same parent node [45]–[51]. Because the related
+tasks are characterized effectively by the concept ontology, our
+hierarchical concept learning algorithm can provide a good
+environment to enable more effective multitask learning.
+To integrate multitask learning for simultaneously learning
+the concept models of multiple sibling image concepts under
+the same parent node , the model parameters are obtained by
+optimizing their joint log likelihood function
+(18)
+where is the set of model parameters
+for sibling atomic image concepts under the same parent node
+, and the joint log likelihood function is defined as
+(19)
+where is the individual log likelihood function for
+the atomic image concept .
+Because the sibling atomic image concepts under the same
+parent node are strongly correlated, their concept models may
+share some transferable knowledge and common features. Thus,
+their log likelihood functions can be partitioned into two parts:
+a) common part, which is used to represent our belief on what
+model parameters are preferred, and the relevant bias mixture-
+expert can be used to quantify the transferable knowledge and
+common features shared among the sibling atomic image con-
+cepts; b) individual part, which is used to represent the log like-
+lihood for each atomic image concept, and the relevant product
+of mixture-experts can be used to characterize its individual vi-
+sual properties.
+(20)
+where is the common part shared between the sibling
+atomic image concepts, and the relevant common model param-
+eters can be obtained by using the training images from all
+these sibling atomic image concepts. On the other hand,
+is the individual part which should be optimized by using only
+the training images from the given atomic image concept .
+The joint set of the model parameters of the concept models
+for these sibling atomic image concepts
+can be obtained simultaneously by maximizing
+(21)
+Given the labeled training images for all these sibling
+atomic image concepts under the same parent node :
+, the optimal
+parameter set can be obtained
+FAN et al.: MINING MULTILEVEL IMAGE SEMANTICS VIA HIERARCHICAL CLASSIFICATION 177
+Fig. 10. Contextual relationship between the parent image concept and its
+sibling children image concepts and bias mixture-expert for characterizing the
+common visual properties.
+automatically by using the variational method as introduced
+above.
+Because the common model parameters, , can be obtained
+by using the training images from multiple sibling image con-
+cepts, thus our multitask learning algorithm can significantly
+reduce the size of training images which are required to achieve
+reliable concept learning. By estimating the common model
+parameters jointly, our proposed algorithm is able to address
+the potential inter-concept similarity on visual properties effec-
+tively and thus it can enhance the discrimination power of the
+concept models significantly.
+The common model parameters , which are used to char-
+acterize the common visual properties shared among the sibling
+atomic image concepts (i.e., inter-concept similarity), can fur-
+ther be used to generate a bias mixture-expert for learning the
+concept model of their parent node (i.e., the second-level image
+concept ), as shown in Fig. 10. Setting such bias mixture-ex-
+pert is able to exploit the strong correlations between the sibling
+atomic image concepts for reducing the training cost. We can de-
+fine such bias mixture-expert as . As shown in Fig. 10,
+the concept model for the given second-level image concept
+is then defined as the product of mixture-experts
+(22)
+where is the total number of sibling atomic image concepts
+under the same parent node , is the bias mix-
+ture-expert for characterizing the common visual properties, and
+is the mixture-experts from the atomic image
+concept .
+After the concept models for the sibling second-level image
+concepts are available, they can further be integrated to generate
+the concept model for their parent node at the third level of the
+concept ontology. Through such hierarchical approach, the con-
+cept models for the image concepts at the higher levels of the
+concept ontology can be obtained automatically.
+V. HIERARCHICAL IMAGE CLASSIFICATION AND ANNOTATION
+After our hierarchical concept models are available, a top-
+down approach is used to classify the test images into the most
+relevant image concepts at different semantic levels. Our hier-
+archical image classification scheme takes the following steps:
+a) for a given test image, the underlying salient objects are au-
+tomatically detected by using our salient object detection func-
+tions and the 139-dimensional visual features are extracted; b)
+Fig. 11. Result for hierarchical image classification and annotation.
+for the given test image, the co-appearance pattern of the un-
+derlying salient objects is determined automatically according
+to the detection results of the salient objects; c) based on the
+co-appearance pattern of the detected salient objects, Bayes rule
+is used to classify the given test image into the most relevant
+image concepts hierarchically with the maximum values of pos-
+terior probabilities; (d) the keywords for interpreting the rel-
+evant image concepts are automatically assigned to the given
+test image to achieve multilevel image semantics interpretation.
+Some results on hierarchical image classification and multilevel
+image annotation are given in Figs. 11 and 12.
+In our hierarchical image classification scheme, the initial
+classification of a test image is critical because the concept
+models at the subsequent levels cannot recover from the mis-
+classification of the test image that may occur at a higher
+concept level, and this misclassification can be propagated to
+the terminal concept node (i.e., inter-level error transmission)
+[27]. We have integrated two innovative solutions seamlessly
+to address such inter-level error transmission problem: 1)
+integrating multitask learning to enhance the discrimination
+power of the concept models for the image concepts at the
+higher levels of the concept ontology, so that they can classify
+the images more accurately at the beginning and 2) integrating
+search to detect the misclassification path early and take
+appropriate actions for automatic error recovery.
+Three significant respects of our hierarchical image classi-
+fication scheme are able to address the inter-level error trans-
+mission problem effectively. 1) Multitask learning is seamlessly
+integrated to learn the concept models for the sibling image
+concepts at the same semantic level of the concept ontology,
+and thus the margins between these concept models are maxi-
+mized and their discrimination power is enhanced significantly
+by tackling the problem of huge inter-concept similarities on
+visual properties. Therefore, the test images can be classified
+more accurately at the beginning, i.e., image concepts at the
+higher levels of the concept ontology. 2) The classification deci-
+sion for each test image is determined by a voting from multiple
+multitask concept models for the sibling image concepts at the
+same semantic level to make their errors to be transparent. 3)
+178 IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 10, NO. 2, FEBRUARY 2008
+Fig. 12. Some results for hierarchical image classification and annotation.
+An overall probability is calculated to determine the best path
+for hierarchical image classification.
+For a given test image, an optimal classification path should
+provide maximum value of the overall probability among all
+the possible classification paths. The overall probability
+for the optimal classification path (from one certain higher level
+image concept to the most relevant lower level image con-
+cept ) is defined as [61]
+(23)
+where is the posterior probability for the given test
+image to be classified into the current image concept at
+the higher level of the concept ontology, is the posterior
+probability for the given test image to be classified into the
+children image concept of , is the maximum
+posterior probability for the given test image to be classified
+into the most relevant children concept node . Thus, a good
+classification path should achieve higher posterior probabilities
+for both the high-level concept node and the most relevant
+children concept node. By using the overall probability, it is
+able for us to detect the incorrect classification path early and
+take appropriate actions for automatic error recovery.
+It is important to note that once a test image is classified, the
+keywords for interpreting the salient object classes (what are
+visible in the images) and the relevant image concepts (what the
+images are about and what can be evoked by the visible salient
+objects) at different levels of the concept ontology are used to
+interpret the underlying image semantics more sufficiently.
+VI. USER-SYSTEM INTERACTION VIA
+HYPERBOLIC VISUALIZATION
+Many algorithms have even been developed for image clas-
+sification and annotation, supporting more effective search over
+large-scale annotated images is still a challenging issue. On one
+hand, users may not be able to find suitable text terms (key-
+words) to formulate their image needs precisely or they may
+not even know what to look for. On the other hand, effective
+query formulation is possible only when the users are already
+familiar with large-scale image collections (i.e., Gap 4). How-
+ever, users may not know which the keywords are used for image
+annotation, and thus there may have a variety of inconsistencies
+between the keywords for user query formulation and the text
+terms for image annotation. It would be easier for users to select
+the keywords from the underlying concept ontology rather than
+requiring them to find the keywords for query formulation, thus
+we have developed a new framework to address such inconsis-
+tencies by visualizing large amount of image topics and their
+contextual relationships (i.e., concept ontology for representing
+the basic vocabulary of keywords that are used for image anno-
+tation).
+Another issue for users to access large-scale annotated im-
+ages is to develop more effective solution for query result as-
+sessment. Page-by-page ranked list is widely used to display
+the images returned by the same keyword-based query. Because
+the keyword-based query may return large amount of semanti-
+cally-similar images, it is very time-consuming for users to as-
+sess the relevance between the returned images and their real
+query intentions (i.e., users have to browse so many pages to
+find some images of interest). On the other hand, visualization
+can allow users to see a good global overview of large amount
+of images at once [54], [55], thus it is very attractive to incor-
+porate image visualization for assisting users on query result
+assessment (i.e., when I see it, then I know it).
+A. Interactive Query Specification
+Most existing content-based image retrieval (CBIR) systems
+have not provided an intuitive representation of which the key-
+words are used for image annotation, and thus it is very hard for
+naive users to figure out the suitable keywords for query speci-
+fication. The mismatching between the keywords for user query
+formulation and the text terms for image annotation may make
+users to feel frustrated and give up quickly. This problem be-
+comes more critical when large-scale image collections (with
+huge diversity on semantics and visual properties) come into
+view. Therefore, query specification, which is the most critical
+step for users to harvest the research achievements of CBIR
+community, is still an open problem.
+Thus, developing more comprehensive framework for query
+specification is critical to achieve more effective access of large-
+scale image collections, but it is also a problem without a good
+solution so far. The problem, in essence, is also about how to
+present a good global view of large-scale image collections to
+users, so that users can have better knowledge of the keywords
+which are used for image annotation and can be used for query
+formulation. In this paper, we have incorporated the concept
+ontology to obtain a good global overview and summarization
+of large-scale image collections at the concept level. Thus, it is
+very important to develop more comprehensive framework for
+concept ontology visualization, so that users can easily find the
+keywords to formulate their queries.
+FAN et al.: MINING MULTILEVEL IMAGE SEMANTICS VIA HIERARCHICAL CLASSIFICATION 179
+Fig. 13. One view of our hyperbolic visualization of concept ontology.
+Fig. 14. Another hyperbolic view of the same concept ontology via change of focus.
+Our approach for concept ontology visualization exploits hy-
+perbolic geometry [39], [43]. Because of the size limitation for
+the display screen, the change of focus is used for achieving in-
+teractive exploration and navigation of large-scale concept on-
+tology, which allows users to zoom into different image con-
+cepts of interest when they change their focuses. The change
+of focus is implemented by changing the mapping of the image
+concept nodes from the hyperbolic plane to the unit disk for dis-
+play, and the positions of the image concept nodes in the hyer-
+bolic plane need not to be altered during focus manipulation
+[39], [43]. Users can change their focus of image concepts by
+clicking on any visible image concept node to bring it into focus
+at the center, or by dragging any visible image concept node in-
+teractively to any other location without losing the contextual
+relationships between the image concept nodes.
+Through supporting change of focus, our hyperbolic concept
+ontology visualization framework can assign more spaces for
+the concept node in current focus and ignore the details for the
+residual concept nodes on the concept ontology. Thus, it can
+address the overlapping problem interactively and can theoreti-
+cally visualize large amount of image concepts and allow users
+to see the details of the concepts of interest. Different views
+of the layout results of our concept ontology visualization are
+given in Figs. 13 and 14. Our online demo for hyperbolic con-
+cept ontology visualization is available at: http://www.cs.uncc.
+edu/~jfan/image.html.
+180 IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 10, NO. 2, FEBRUARY 2008
+B. Interactive Query Result Assessment
+Because each image concept may consist of large amount of
+semantically-similar images, thus keyword-based queries may
+return large amount of images and it is too expensive for users
+to assess the relevance between the returned images and their
+real query intentions. To incorporate interactive image visual-
+ization for assisting users on query result assessment, we have
+developed a new image visualization algorithm that is able to
+preserve the visual similarity structure of the returned images
+in high-dimensional feature space. Thus, the images that are re-
+turned by the same keyword-based query are projected onto a
+hyperbolic plane by using Kernel Principle Component Anal-
+ysis (KPCA) according to their diverse visual similarities [60].
+The kernel PCA is obtained by solving the eigenvalue equation
+(24)
+where denotes the eigenvalues and
+denotes the corresponding complete set
+of eigenvalues, is the number of returned images, and is a
+kernel matrix and its component is defined as
+(25)
+where is the underlying kernel function to charac-
+terize the visual similarity between two images with the visual
+features and .
+To allow users to assess the query results interactively, the
+returned images are then projected onto a 2-D visualization
+display unit according to their kernel-based visual similarities.
+There may have many potential projections from high-dimen-
+sional feature space to a 2-D display space, thus the optimal
+KPCA-based projection of the images is obtained by
+(26)
+where is the number of images returned by the same keyword-
+based query, is the kernel-based similarity distance
+between two images with the visual features and , and
+is the distance between the corresponding images
+with the location positions and on the display unit. The
+advantage of our KPCA-based projection algorithm is that it can
+precisely preserve the original visual similarity relationships be-
+tween the returned images. Therefore, such KPCA-based pro-
+jection can give a faithful representation of the underlying vi-
+sual similarity relationships between the returned images. Thus
+users can easily judge the relevance between the returned im-
+ages and their real query intentions.
+After such KPCA-based projection of the returned images
+is obtained, Poincare disk model is used to map the returned
+images on the hyperbolic plane onto a 2-D display coordinate
+(disk unit). Each image is assigned a location within
+the display unit disk, which represents its Poincare coordinates.
+By treating the location of the image as a complex number, we
+can define such a mapping as an isometric transformation [56]
+(27)
+where and are the complex numbers, and ,
+and is the complex conjugate of . This isometric transfor-
+mation indicates a rotation by around the origin following by
+moving the origin to (and to the origin).
+To incorporate such isometric transformation for hyperbolic
+image visualization, the layout routine is structured as a recur-
+sion. For a given image , we set to be the hyperbolic distance
+between and the center of the hyperbolic plane for image pro-
+jection, and be the distance between and the center of the
+display unit circle. The relationship between their derivatives is
+described by
+(28)
+An example of this hyperbolic visualization is shown in Fig. 15,
+where the 2800 semantically similar images for the image con-
+cept “nature scene” are layouted according to their diverse vi-
+sual similarities by using KPCA-based projection [60]. One can
+observe that such 2-D hyperbolic visualization of the semanti-
+cally similar images can provide more intuitive interpretation of
+their diverse visual similarities.
+In real-word situations, the similarity between the images is
+not in a universal property, but depends on the specific prefer-
+ences of the users. Thus, it is very attractive to involve users for
+selecting more significant visual features according to their per-
+sonal preferences. In our interactive image visualization frame-
+work, various types of visual features are used to characterize
+the diverse visual similarities between the images, users can se-
+lect different types of visual features for image similarity char-
+acterization, and thus different views of the same set of returned
+images can be personalized according to the users’ personal
+preferences of visual features. Our experimental results on in-
+teractive selection of visual features for image visualization are
+given in Fig. 16, where different view of the same set of returned
+images shown in Fig. 15 is generated by selecting different vi-
+sual features for image similarity characterization. Thus, users
+can easily control the presentation and visualization of a large
+amount of images and take different perspectives on the same
+image set by selecting different visual features for image simi-
+larity characterization.
+Our hyperbolic visualization framework can display the visu-
+ally-similar images closely according to their kernel-based vi-
+sual similarity. Therefore, users are allowed to manipulate not
+only the images, but also their diverse visual similarity relation-
+ships. As shown in Fig. 17, we have also displayed the hyper-
+bolic visualization result of the returned images for the key-
+word-based query “street”. The returned images on the left side
+are related to the co-appearance patterns of the salient objects,
+“trees”, “road”, and “cloud sky”. On the other hand, the returned
+images on the right side are related to the co-appearance pat-
+terns of the salient objects, “buildings”, “road”, and “sky”. One
+can observe that our KPCA-based image projection algorithm
+can preserve the visual clusters for large amount of semantically
+similar images, where each visual cluster consist of one partic-
+ular co-appearance pattern of the salient objects. Through such
+interactive exploration of visual similarities between the images,
+users can easily assess the relevance between the returned im-
+ages and their real query intentions.
+FAN et al.: MINING MULTILEVEL IMAGE SEMANTICS VIA HIERARCHICAL CLASSIFICATION 181
+Fig. 15. Hyperbolic visualization of the returned images for the keyword-based query “nature scene”.
+Fig. 16. Different view of the returned images for the same keyword-based query “nature scene” by using different feature subset for similarity
+characterization and visualization.
+The change of focus is also implemented for users to navigate
+the returned images according to the underlying directions
+of their diverse visual similarities. Users can change their
+focuses of the images by clicking on any visible image to
+bring it into focus at the screen center, or by dragging any
+visible image interactively to any other screen location without
+losing their visual similarity relationships, where the rest of the
+images transform appropriately as shown in Fig. 18. With the
+power of high interaction and rapid response for exploring
+and navigating a large amount of images, our hyperbolic
+framework for similarity-based image visualization can support
+more effective solution for users to interactively assess the
+182 IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 10, NO. 2, FEBRUARY 2008
+Fig. 17. Hyperbolic visualization of the returned images for the keyword-based query “street”.
+Fig. 18. Different view of the returned images for the same keyword-based query “nature scene” by change of focus: (a) focus on the images at
+left side and (b) focus on the images at right side.
+relevance between the returned images and their query purposes
+via change of focus.
+After users find some images of interest via interactive
+exploration, our system can also allow users to zoom into
+the images of interest and obtain some additional images of
+interest as shown in Fig. 19. By navigating a large amount
+of returned images interactively via change of focus, users
+can also select one or multiple returned images as query
+exmaple to look for more particular images effectively according
+to their visual similarity as shown in Fig. 20. Because the
+interpretations of image semantics largely depends on users’
+personal understanding and the keyword vocabulary given by the
+concept ontology may be limited, it is impossible to provide all
+the annotations for the images. On the other hand, a limited set of
+keywords for query formulation may not be able to describe
+the users’ real query intentions effectively and efficiently,
+thus supporting user-system interaction for query example
+selection and query-by-example can significantly improve the
+performance (accuracy and efficiency) of our CBIR system.
+Therefore, keyword-based query and example-based query are
+integrated seamlessly and they can compensate each other in
+our new CBIR framework.
+VII. ALGORITHM AND SYSTEM EVALUATION
+We carry out our experimental studies of our proposed algo-
+rithms by using three public image databases: LabelMe, Corel
+Images, Google Images, because of their publicity and diver-
+sity of image contents. For LabelMe image database, it contains
+more than 25 000 images according to the statistics collected
+at April 2006, and our experiments are done on a snapshot of
+this database downloaded at April 2006. For the Corel image
+database, we have also included 2800 images for natural scenes.
+For Google images, we have included 58 000 outdoor images.
+As shown in Fig. 21, we have incorporated our alogorithms for
+kernel-based image clustering and hyperbolic visualization to
+automatically filter out the junk images from Google Images.
+Our online system for junk image filtering is released on our
+web page: http://www.cs.uncc.edu/~jfan/google_demo/
+FAN et al.: MINING MULTILEVEL IMAGE SEMANTICS VIA HIERARCHICAL CLASSIFICATION 183
+Fig. 19. (a) Hyperbolic visualization of the returned for the keyword-based query “nature scene”, (b) Zoom-in view of the returned images in the black circle.
+Fig. 20. Our system for interactive query result assessment: (a) returned images for the keyword-based query “parks”, where the image in black is selected as
+query example for searching some particular images and (b) similar images for query by the selected exmaple image.
+Fig. 21. Our online system for filtering junk images from Google Images, where the keyword “sunset” is used for Google image search and most junk images are
+projected on the right-bottom corner.
+184 IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 10, NO. 2, FEBRUARY 2008
+To achieve more reliable concept learning, 150 images are
+labeled for each atomic image concept at the first level of the
+concept ontology. These 150 labeled training images are related
+to the same atomic image concept, but they consist of different
+co-appearance patterns of the salient objects. For each co-ap-
+pearance pattern of the salient objects, 139-dimensional visual
+features are extracted to characterize the diverse visual proper-
+ties, and they are further partitioned into nine feature sunset for
+achieving more reliable concept learning.
+The benchmark metric for classifier evaluation includes pre-
+cision and recall . They are defined as
+(29)
+where is the set of true positive images that are related to the
+corresponding image concept and are classified correctly, is
+the set of true negative images that are irrelevant to the cor-
+responding image concept and are classified incorrectly, and
+is the set of false positive images that are related to the corre-
+sponding image concept but are misclassified.
+A. Different Approaches for Model Parameter Estimation
+In our adaptive EM algorithm, multiple operations, such as
+merging, splitting, and death, have been integrated to re-orga-
+nize the distrbution of mixture components, select the optimal
+number of mixture components and construct more flexible de-
+cision boundaries among the sibling image concepts according
+to the real class distributions of the training images. Thus, our
+adaptive EM algorithm is expected to have better performance
+than the traditional EM algorithm and its recent variants [52],
+[53].
+In order to evaluate the real benefits of the integration of these
+three operations (i.e., merging, splitting, and death), we have
+tested the performance differences of our adaptive EM algo-
+rithm with different combinations of these three operations. As
+shown in Fig. 22, we have tested the performances of the con-
+cept models under different combinations of three operations:
+three operations by starting from a large value of (i.e., Multi-
+Full), three operations by starting from a small value of (i.e.,
+MultiRaw), merging and death operations by starting from a
+large value of (i.e., MergeFull), splitting and death operations
+by starting from a small value of (i.e., SplitFull), only merging
+operation (i.e., MergeRam and MergeMML), only splitting op-
+eration (i.e., BormanF), splitting and merging by starting from a
+small value of (i.e., SMRaw), and only splitting and merging
+by starting from a large value of (i.e., SMFull).
+From Fig. 22, one can find that our adaptive EM algorithm
+can significantly improve the classification performance of the
+concept models. The death operation is able to incorporate the
+negative images to maximize the margins among the the con-
+cept models for the sibling image concepts and thus it is able
+to enhance the discrimination power of the concept models. On
+the other hand, PCA can reduce the dimensions of visual fea-
+tures, and thus more reliable concept learning can be achieved
+by using a limited number of training images.
+Fig. 22. Relationship between the classification performance (i.e., precision
+100) and our adaptive EM algorithm with different operations. The red bar
+represents that PCA is not performed, and the blue bar means that PCA is per-
+formed.
+TABLE I
+CLASSIFICATION ACCURACY (I.E., PRECISION/RECALL)
+FOR SOME IMAGE CONCEPTS
+B. Hierarchical Approach Versus Flat Approach
+By using salient objects for intermediate image semantics
+representation, we have compared the performance differences
+between two approaches by using the same sets of training im-
+ages and visual features for concept learning: flat approach (i.e.,
+the concept model for each image cocept is learned indepen-
+dently) versus our hierarchical approach. Table I gives the preci-
+sion and recall of the concept models for some image concepts.
+From these experimental results, one can observe that our hi-
+erarchical concept learning scheme can improve the classifica-
+tion accuracy for the high-level image concepts. Such improve-
+ment on the classification accuracy benefits from three com-
+ponents: 1) The concept models for the high-level image con-
+FAN et al.: MINING MULTILEVEL IMAGE SEMANTICS VIA HIERARCHICAL CLASSIFICATION 185
+cepts with larger intra-concept variations on visual properties
+are trained hierarchically by combining the concept models for
+the relevant low-level image concepts with smaller intra-con-
+cept variations on visual properties, and thus the hypothesis
+space for concept learning is reduced significantly which can
+generalize the concept models effectively from fewer training
+images. 2) For a given high-level image concept, the strong cor-
+relations between its children image concepts are exploited ef-
+fectively by using multitask learning to tackle the hugh intra-
+concept variations and inter-concept similarities on visual prop-
+erties simultaneously. Thus, our hierarchical concept learning
+algorithm can learn not only the reliable concept models but also
+the bias, i.e., learn how to generalize. 3) The final prediction re-
+sults for the concept models of the high-level image concepts are
+obtained by a voting procedure according to the concept models
+at the same semantic level to make their prediction errors to be
+transparent, and thus the inter-level error transmission problem
+can be addressed effectively.
+For the atomic image concepts at the first level of the concept
+ontology, our proposed hierarchical concept learning scheme
+can also obtain higher classification accuracy, because the
+strong correlations between the sibling atomic image concepts
+under the same parent node are exploited by using multitask
+learning to tackle hugh inter-concept similarities on visual prop-
+erties. In addition, our hierarchical concept learning scheme has
+provided a good environment to enable more effective multitask
+learning, i.e., learning the concept models simultaneously for
+the strongly correlated and sibling image concepts under the
+same parent node. Through multitask learning, the risk for
+overfitting the common part between multiple concept models
+is significantly reduced and the problem of inter-concept sim-
+ilarity on visual properties can be addressed more effectively,
+which can result in higher classification accuracy.
+C. Different Approaches for Multitask Learning
+Our proposed algorithm can significantly outperform the tra-
+ditional techniques such as multiclass boosting and multitask
+boosting [44], [45]. The multiclass boosting techniques do not
+explicitly exploit the transferable knowledge and common fea-
+tures among the classifiers to enhance their classification per-
+formance [44]. The multitask boosting algorithms have recently
+been proposed to enable multiclass object detection by sharing
+the common features among the classifiers [45]. Rather than in-
+corporating the transferable knowledge and common features to
+learn a biased classifier, the ensemble classifier for each object
+class is simply composed by the classifiers that are trained for
+all the pair-wise object class combinations [45]. Therefore, the
+multitask boosting algorithm may seriously suffer from the fol-
+lowing problems: (a) the decision boundaries of these pair-wise
+classifiers may not exactly be in the same place of the high-di-
+mensional sparse feature space, thus such simple combinations
+may not be able to achieve a reliable ensemble classifier for the
+new task; (b) the tasks for detecting multiple object classes are
+parallel at the same semantic level, thus the strong output cor-
+relations between the classifiers cannot be exploited effectively;
+(c) training the pair-wise classifiers which have larger hypoth-
+esis variances may increase the computational complexity dra-
+matically. On the other hand, our proposed algorithm can inte-
+Fig. 23. Comparison results on classification accuracy between our proposed
+algorithm, multiclass boosting, and multitask boosting.
+grate the transferable knowledge and common features to en-
+hance all these single-task concept models at the same semantic
+level simultaneously, exploit their strong correlations to learn a
+bias mixture-expert, and learn a product of mixture-experts for
+their parent node with higher discrimination power. As shown
+in Fig. 23, one can find that our proposed algorithm can signif-
+icantly outperform the traditional techniques such as multiclass
+boosting and multitask boosting.
+VIII. CONCLUSIONS AND FUTURE WORK
+In this paper, we have proposed a novel algorithm for mining
+multilevel image semantics via hierarchical classification. The
+salient objects are automatically detected and are used to char-
+acterize the intermediate image semantics at the object level.
+To achieve more reliable concept learning in high-dimensional
+feature space, a novel product of mixture-experts algorithm is
+proposed. To reduce the computational complexity for learning
+the concept models for large amount of image concepts, a novel
+algorithm is proposed by incorporating concept ontology and
+multitask learning to tackle the hugh intra-concept variations
+and inter-concept similarities on visual properties. A new hy-
+perbolic visualization algorithm is proposed for allowing users
+to specify their queries easily and assess the query results inter-
+actively. Our experiments on large-scale image collections have
+also obtained very positive results.
+Images are taken under various environmental conditions
+and unconstrained contents, thus learning the reliable map-
+ping functions between the low-level visual features and the
+high-level image concepts is not a trivial task. On the other
+hand, the training images may not be representative for large
+amount of unseen images (i.e., test images) and the labels for
+the training images may be incomplete and inconsistent. Thus,
+our future work will focus on: a) developing more effective
+algorithm for automatic image classification and annotation,
+which are robust to various image capturing conditions; b)
+developing new algorithm for integrating unlabeled images
+and active learning for incremental concept model training;
+c) developing a multipath image classification algorithm be-
+cause most images may have multiple interpretations of the
+underlying semantics; and d) developing new algorithms for
+supporting personalized image recommendation according to
+users’ preferences.
+186 IEEE TRANSACTIONS ON MULTIMEDIA, VOL. 10, NO. 2, FEBRUARY 2008
+ACKNOWLEDGMENT
+The authors would like to thank the reviewers for their in-
+sightful comments and suggestions to make this paper more
+readable. They also want to thank the Guest Editor Z. (Mark)
+Zhang for handling the review process of their paper, and J. Yang
+and B. Ribarsky at UNCC for useful discussion on visualization.
+REFERENCES
+[1] A. W. M. Smeulders, M. Worring, S. Santini, A. Gupta, and R.
+Jain, “Content-based image retrieval at the end of the early years,”
+IEEE Trans. Pattern Anal. Mach. Intell., vol. 22, pp. 1349–1380,
+2000.
+[2] Y. Rui, T. S. Huang, and S. F. Chang, “Image retrieval: Past, present,
+and future,” J. Vis. Comm. Image Repres., vol. 10, pp. 39–62, 1999.
+[3] T. P. Minka and R. W. Picard, “Interactive learning using a society of
+models,” Proc. IEEE Conf. Computer Vision and Pattern Recognition,
+1996.
+[4] D. A. Forsyth and M. M. Fleck, “Body plan,” Proc. IEEE Conf. Com-
+puter Vision and Pattern Recognition, 1997.
+[5] A. Jaimes and S.-F. Chang, “Model-based classification of visual in-
+formation for content-based retrieval,” SPIE: Storage and Retrieval for
+Image and Video Databases, 1999.
+[6] R. Zhao and W. Grosky, “Narrowing the semnatic gap-Improved text-
+based web document retrieval using visual features,” IEEE Trans. Mul-
+timedia, vol. 4, no. 2, pp. 189–200, Jun. 2002.
+[7] J. S. Hare, P. H. Lewis, P. G. B. Enser, and C. J. Sandom, “Mind the
+gap: Another look at the problem of the semantic gap in image re-
+trieval,” Proc. SPIE, vol. 6073, 2006.
+[8] A. Jaimes, M. Christel, S. Gilles, R. Sarukkai, and W.-Y. Ma, “The
+MIR 2005 panel: Multimedia information retrieval: What is it, and why
+isn’t anyone using it,” in ACM Multimedia Workshop on MIR, 2005, pp.
+3–8.
+[9] J. Lim, Q. Tian, and P. Mulhem, “Home photo content modeling for
+personalized event-based retrieval,” IEEE Multimedia, vol. 10, no. 4,
+pp. 100–110, Oct.–Dec. 2003.
+[10] M. Naphade, J. R. Smith, J. Tesic, S.-F. Chang, W. Hsu, L. Kennedy,
+A. Hauptmann, and J. Curtis, “Large-scale concept ontology for
+multimedia,” IEEE Multimedia, vol. 13, no. 3, pp. 86–91, Jul.–Sep.
+2006.
+[11] J. Z. Wang, J. Li, and G. Wiederhold, “Simplicity: Semantic-sensitive
+integrated matching for picture libraries,” IEEE Trans. Pattern Anal.
+Mach. Intell., vol. 23, no. 9, pp. 947–963, Sep. 2001.
+[12] M. R. Boutell, J. Luo, and C. M. Brown, “Scene parsing using region-
+based generative models,” IEEE Trans. Multimedia, vol. 9, no. 1, pp.
+136–146, Jan. 2007.
+[13] R. Zhang and Z. Zhang, “Hidden semantic concept discovery in region
+based image retrieval,” Proc. IEEE Conf. Computer Vision and Pattern
+Recognition, 2004.
+[14] A. B. Torralba and A. Oliva, “Semantic organization of scenes using
+discriminant structural templates,” Proc. ICCV, 1999.
+[15] P. Lipson, E. Grimson, and P. Sinha, “Configuration based scene and
+image indexing,” Proc. CVPR, 1997.
+[16] R. Fergus, P. Perona, and A. Zisserman, “Object class recognition by
+unsupervised scale-invariant learning,” Proc. IEEE Conf. Computer Vi-
+sion and Pattern Recognition, 2003.
+[17] D. J. Crandall and J. Luo, “Robust color object detection using spatial-
+color joint probability functions,” Proc. IEEE Conf. Computer Vision
+and Pattern Recognition, pp. 379–385, 2004.
+[18] D. G. Lowe, “Distinctive image features from scale-invariant key-
+points,” Proc. IEEE Int. Conf. Computer Vision, 2004.
+[19] P. Viola and M. Jones, “Rapid object detection using a boosted cascade
+of simple features,” Proc. IEEE Conf. Computer Vision and Pattern
+Recognition, 2001.
+[20] J. Jeon and R. Manmatha, “Using maximum entropy for automatic
+image annotation,” Proc. Int. Conf. Image and Video Retrieval, pp.
+24–32, 2004.
+[21] J. Fan, Y. Gao, and H. Luo, “Multi-level annotation of natural scenes
+using dominant image compounds and semantic concepts,” ACM Mul-
+timedia, 2004.
+[22] Y. Gao, J. Fan, H. Luo, X. Xue, and R. Jain, “Automatic image annota-
+tion by incorporating feature hierarchy and boosting to scale up SVM
+classifiers,” in ACM Multimedia. Santa Barbara, CA: , 2006.
+[23] J. Huang, S. R. Kumar, and R. Zabih, “An automatic hierarchical image
+classification scheme,” in ACM Multimedia. Bristol, U.K.: 1998.
+[24] N. Vasconcelos and A. Lippman, “A Bayesian framework for semantic
+content characterization,” Proc. IEEE Conf. Computer Vision and Pat-
+tern Recognition, 1998.
+[25] N. Vasconcelos, “Image indexing with mixture hierarchies,” Proc.
+IEEE Conf. Computer Vision and Pattern Recognition, 2001.
+[26] J. Li and J. Z. Wang, “Automatic linguistic indexing of pictures by a
+statistical modeling approach,” IEEE Trans. Pattern Anal. Mach. In-
+tell., vol. 25, no. 9, pp. 1075–1088, Sep. 2003.
+[27] J. Fan, H. Luo, Y. Gao, and M.-S. Hacid, “Mining image databases on
+semantics via statistical learning,” ACM SIGKDD, 2005.
+[28] L. Fei-Fei and P. Perona, “A Bayesian hierarchical model for learning
+natural scene categories,” Proc. IEEE Conf. Computer Vision and Pat-
+tern Recognition, 2005.
+[29] K. Barnard and D. Forsyth, “Learning the semantics of words and
+pictures,” Proc. IEEE Int. Conf. Computer Vision, pp. 408–415,
+2001.
+[30] K. Barnard, P. Duygulu, N. d. Freitas, D. Forsyth, D. Blei, and M. I.
+Jordan, “Matching words and pictures,” J. Mach. Learn. Res., vol. 3,
+pp. 1107–1135, 2003.
+[31] Y. Gao and J. Fan, “Incorporate concept ontology to enable proba-
+bilistic concept reasoning for multi-level image annotation,” in ACM
+MIR. Santa Barbara, CA: , 2006.
+[32] A. Vailaya, M. Figueiredo, A. K. Jain, and H. J. Zhang, “A Bayesian
+framework for semantic classification of outdoor vacation images,”
+Proc. SPIE, vol. 3656, 1998.
+[33] Y. Li, L. G. Shapiro, and J. A. Bilmes, “A generative/discriminative
+learning algorithm for image classification,” Proc. IEEE Int. Conf.
+Computer Vision, 2005.
+[34] R. Zhang, Z. Zhang, M. Li, W.-Y. Ma, and H.-J. Zhang, “A proba-
+bilistic semantic model for image annotation and multi-modal image
+retrieval,” Proc. IEEE Int. Conf. Computer Vision, 2005.
+[35] J. Fan, Y. Gao, H. Luo, and G. Xu, “Statistical modeling and con-
+ceptualization of natural scenes,” Pattern Recognit., vol. 38, no. 6, pp.
+865–885, 2005.
+[36] E. Chang, K. Goh, G. Sychay, and G. Wu, “CBSA: Content-based an-
+notation for multimodal image retrieval using Bayes point machines,”
+IEEE Trans. Circuits Syst. Video Technol., vol. 13, no. 1, pp. 26–38,
+Jan. 2002.
+[37] S. Tong and E. Chang, “Support vector machine active learning for
+image retrieval,” ACM Multimedia, 2001.
+[38] V. Vapnik, The Nature of Statistical Learning Theory. New York:
+Springer-Verlag, 1995.
+[39] J. Fan, H. Luo, Y. Gao, and R. Jain, “Incorporating concept ontology
+for hierarchical video classification, annotation and visualization,”
+IEEE Trans. Multimedia, vol. 9, no. 5, pp. 939–957, Sep. 2007.
+[40] A. B. Benitez, J. R. Smith, and S.-F. Chang, “MediaNet: A multimedia
+information network for knowledge representation,” Proc. SPIE, vol.
+4210, 2000.
+[41] M. Naphade and T. S. Huang, “A probabilistic framework for semantic
+video indexing, filterig and retrieval,” IEEE Trans. Multimedia, vol. 3,
+no. 1, pp. 141–151, Jan. 2001.
+[42] M. Naphade and J. R. Smith, “A hybrid framework for detecting the
+semantics of concepts and context,” Proc. Int. Conf. Image and Video
+Retrieval, pp. 196–205, 2003.
+[43] J. Fan, Y. Gao, and H. Luo, “Hierarchical classification for automatic
+image annotation,” in ACM SIGIR, Amsterdam, The Netherlands,
+2007, pp. 111–118.
+[44] J. Friedman, T. Hastie, and R. Tibshirani, “Additive logistic regression:
+A statistical view of boosting,” Ann. Statist., vol. 28, no. 2, pp. 337–374,
+2000.
+[45] A. Torralba, K. P. Murphy, and W. T. Freeman, “Sharing features: Effi-
+cient boosting procedures for multiclass object detection,” Proc. IEEE
+Conf. Computer Vision and Pattern Recognition, 2004.
+[46] W. Jiang, S.-F. Chang, and A. C. Loui, “Context-based concept fusion
+with boosted conditional fields,” proc. IEEE ICASSP, 2007.
+[47] J. Zhang, R. Jin, Y. Yang, and A. G. Hauptmann, “Modified logistic
+regression: An approximation to SVM and its applications in large-
+scale text categorization,” Proc. ICML, 2003.
+[48] S. Thrun, “Is learning the n-th thing any easier than learning the first?,”
+Proc. Neural Information Processing Systems Conf., pp. 640–646,
+1996.
+[49] K. Yu, A. Schwaighofor, V. Tresp, W.-Y. Ma, and H. J. Zhang, “Col-
+laborative ensemble learning: Combining content-based information
+filtering via hierarchical Bayes,” in Proc. Int. Conf. on Uncertainty in
+Artificial Intelligence (UAI), 2003.
+[50] R. Caruana, “Multi-task learning,” Mach. Learn., vol. 28, pp. 41–75,
+1997.
+FAN et al.: MINING MULTILEVEL IMAGE SEMANTICS VIA HIERARCHICAL CLASSIFICATION 187
+[51] T. Evgeniou, C. A. Micchelli, and M. Pontil, “Learning multiple tasks
+with Kernel methods,” J. Mach. Learn. Res., vol. 6, pp. 615–637, 2005.
+[52] G. McLachlan and T. Krishnan, The EM Algorithm and Extensions.
+New York: Wiley, 2000.
+[53] B. Zhang, C. Zhang, and X. Yi, “Competitive EM algorithm for finite
+mixture models,” Pattern Recog., vol. 37, 2004.
+[54] Y. Rubner, C. Tomasi, and L. Guibas, “A metric for distributions with
+applications to image databases,” Proc. IEEE Int. Conf. Computer Vi-
+sion, pp. 59–66, 1998.
+[55] B. Moghaddam, Q. Tian, N. Lesh, C. Shen, and T. S. Huang, “Visual-
+ization and user-modeling for browsing personal photo libraries,” Int.
+J. Comput. Vis., vol. 56, pp. 109–130, 2004.
+[56] J. Lamping and R. Rao, “The hyperbolic browser: A focus + content
+technique for visualizing large hierarchies,” J. Vis. Lang. and Comput.,
+1996.
+[57] M. Welling, M. Rosen-Zvi, and G. Hinton, “Exponential family har-
+moniums with an application to information retrieval,” Proc. Neural
+Information Processing Systems Conf., pp. 1481–1488, 2004.
+[58] M. J. Beal and Z. Ghahramani, “Variational Bayesian learning of di-
+rected graphical models with hidden variables,” Bayesian Anal., vol. 1,
+no. 4, pp. 793–832, 2006.
+[59] T. S. Jaakola, “Variational Methods for Inference and Estimation in
+Graphical Models,” Ph.D. dissertation, MIT, Cambridge, MA, 1997.
+[60] K. Grauman and T. Darrell, The Pyramid Match Kernel: Discrimina-
+tive Classification With Sets of Image Features MIT, Cambridge, MA,
+2006, MIT-CSAIL-TR-2006-20.
+[61] D. E. Knuth, “The art of computer programming,” in Sorting and
+Searching. Reading, MA: Addison-Wesley, 1978, vol. 3.
+[62] O. Maron and T. Lozano-Perez, “A framework for multiple-instance
+learning,” Proc. Neural Information Processing Systems Conf., 1998.
+[63] Q. Zhang and S. Goldman, “EM-DD: An improved multiple-instance
+learning technique,” Proc. Neural Information Processing Systems
+Conf., 2001.
+[64] Y. Chen, J. Bi, and J. Z. Wang, “MILES: Multiple-instance learning via
+embedded instance selection,” IEEE Trans. Pattern Anal. Mach. Intell.,
+vol. 28, no. 12, pp. 1931–1947, Dec. 2006.
+[65] Y. Chen and J. Z. Wang, “Image categorization by learning and rea-
+soning with regions,” J. Mach. Learn. Res., vol. 5, pp. 913–939, 2004.
+[66] G. Carneiro, A. Chan, P. Moreno, and N. Vasconcelos, “Supervised
+learning of semantic classes for image annotation and retrieval,” IEEE
+Trans. Pattern Anal. Mach. Intell., vol. 29, no. 3, pp. 394–410, Mar.
+2007.
+[67] J. Jeon, V. Lavrenko, and R. Manmatha, “Automatic image annotation
+and retrieval using cross-media relevance models,” ACM SIGIR, pp.
+119–126, 2003.
+[68] F. Monay and D. Gatica-Perez, “Modeling semantic aspects for cross-
+media image indexing,” IEEE Trans. Pattern Anal. Mach. Intell., vol.
+29, no. 10, pp. 1802–1817, Oct. 2007.
+Jianping Fan received the M.S. degree in theory
+physics from Northwestern University, Xian, China,
+in 1994 and the Ph.D. degree in optical storage and
+computer science from Shanghai Institute of Optics
+and Fine Mechanics, Chinese Academy of Sciences,
+Shanghai, China, in 1997.
+He was a Researcher at Fudan University,
+Shanghai, during 1998. From 1998 to 1999, he was
+a Researcher with the Japan Society of Promotion of
+Science (JSPS), Department of Information System
+Engineering, Osaka University, Osaka, Japan. From
+September 1999 to 2001, he was a Researcher in the Department of Computer
+Science, Purdue University, West Lafayette, IN. In 2001, he joined the Depart-
+ment of Computer Science, University of North Carolina at Charlotte, as an
+Assistant Professor, and then became an Associate Professor. His research in-
+terests include content-based image/video analysis, classification and retrieval,
+surveillance videos, and statistical machine learning.
+Yuli Gao received the B.S. degree in computer
+science from Fudan University, Shanghai, China, in
+2002 and the Ph.D. degree in information technology
+from the University of North Carolina at Charlotte
+in 2007.
+He then joined Hewlett Packard Labs, Palo Alto,
+CA. His research interests include computer vision,
+image classification and retrieval, and statistical ma-
+chine learning.
+Dr. Gao received an award from IBM as an
+emerging leader in multimedia in 2006.
+Hangzai Luo received the B.S. degree in computer
+science from Fudan University, Shanghai, China, in
+1998 and the Ph.D. degree in information technology
+from the University of North Carolina at Charlotte.
+He joined Fudan University as Lecturer in 1998.
+In 2007, he joined East China Normal University as
+an Associate Professor. His research interests include
+computer vision, video retrieval, and statistical ma-
+chine learning.
+Dr. Luo received a second-place award from the
+Department of Homeland Security in 2007 for his ex-
+cellent work on video analysis and visualization for homeland security applica-
+tions.
+Ramesh Jain is the Bren Professor of Information
+and Computer Science, the Department of Computer
+Science, University of California at Irvine. He has
+been an active researcher in multimedia information
+systems, image databases, machine vision, and
+intelligent systems. While he was at the University
+of Michigan, Ann Arbor, and the University of
+California, San Diego, he founded and directed
+artificial intelligence and visual computing labs. He
+has co-authored more than 250 research papers. His
+current research is in experiential systems and their
+applications.
+Dr. Jain was also the founding Editor-in-Chief of IEEE Multimedia Magazine
+and of the Machine Vision and Applications journal and serves on the editorial
+boards of several magazines in multimedia, business and image and vision pro-
+cessing. He has been elected as a Fellow of ACM, IAPR, AAAI, and SPIE.
+

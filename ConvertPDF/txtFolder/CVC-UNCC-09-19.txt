@@ -1,0 +1,961 @@
+Incorporate Visual Analytics to Design a
+Human-Centered Computing Framework for
+Personalized Classifier Training and Image Retrieval
+Yuli Gao1, Chunlei Yang2, Yi Shen2, Jianping Fan2
+1 Hewlett-Packard Labs, Palo Alto, CA 94304, USA
+yuli.gao@hp.com
+2 Dept. of Computer Science, UNC-Charlott, NC 28223, USA
+{cyang36, yshen9, jfan}@uncc.edu
+Abstract. Human has always been a part of the computational loop. The goal
+of human-centered multimedia computing is to explicitly address human factors
+at all levels of multimedia computations. In this chapter, we have incorporated a
+novel visual analytics framework to design a human-centered multimedia com-
+puting environment. In the loop of image classifier training, our visual analytics
+framework can allow users to obtain better understanding of the hypotheses, thus
+they can further incorporate their personal preferences to make more suitable
+hypotheses for achieving personalized classifier training. In the loop of image
+retrieval, our visual analytics framework can also allow users to gain a deep in-
+sights of large-scale image collections at the first glance, so that they can specify
+their queries more precisely and obtain the most relevant images quickly. By sup-
+porting interactive image exploration, users can express their query intentions
+explicitly and our system can recommend more relevant images adaptively.
+Key words: hypotheses visualization, similarity-based image visualization and
+exploration, personalized classifier training, visual analytics.
+1 Introduction
+The last few years have witnessed enormous growth in digital cameras and online high-
+quality digital images, thus there is an increasing need of new techniques to support
+more effective image retrieval. The image seeking process is necessarily initiated by
+an image need on user’s side, thus the success of an image retrieval system largely
+depends on its ability to allow user to communicate his/her image needs effectively.
+Unfortunately, most existing image retrieval systems focus on extracting low-level vi-
+sual features for image content representation and indexing, which completely ignore
+the users’ real information needs. Thus there is an urgent need to develop a new human-
+centered computing framework to involve users in the loop of image retrieval without
+putting much burden on them.
+The major problem for most existing image retrieval systems is the semantic gap
+between the low-level visual features for image content representation and the key-
+words for high-level image semantics interpretation [12-14]. One potential solution to
+2 Yuli Gao, Chunlei Yang, Yi Shen, Jianping Fan
+bridge the semantic gap is to support semantic image classification (i.e., learning the
+mapping functions between the low-level visual features and the high-level image con-
+cepts). However, such the mapping functions between the low-level visual features and
+the high-level image concepts could be very complex, and thus it is necessary to de-
+velop new frameworks for visualizing such the mapping functions and the underlying
+hypotheses for image classifier training, so that users can gain deep insights rapidly and
+even update the hypotheses according to their personal preferences to achieve person-
+alized image classifier training. Unfortunately, it is not a trivial task : (1) most existing
+techniques for classifier training may not be scalable to the sizes of image collections,
+e.g., their computational complexity may increase exponentially with the sizes of image
+collections; (2) images are normally represented by high-dimensional visual features
+and their visual properties are heterogeneous, but most existing techniques focus on
+single-modal image representation and implicitly assume that the visual properties of
+the images are homogeneous in the high-dimensional feature space; (3) users may not
+be the experts on computer vision and machine learning, but most existing techniques
+for classifier training have not provided a good environment to enable visual-based com-
+munication between the users and the systems, thus users cannot assess the effectiveness
+of the underlying hypotheses and the correctness of image classifiers effectively.
+Visual analytics [1], which can seamlessly integrate data analysis and visualiza-
+tion to enable visual-based communication between the users and the systems, is very
+attractive for addressing these problems. In addition, the interpretations of the image se-
+mantics are user-dependent, thus it is very important to incorporate human expertise and
+their powerful capabilities on pattern recognition for interactive hypotheses assessment
+and refinement. Therefore, one of the goals of human-centered multimedia computing
+is to bridge the semantic gap through involving users explicitly or implicitly in the loop
+of image classifier training.
+Different users have different image needs, thus it is very important to develop new
+techniques to allow an image retrieval system to understand the user needs and learn
+user models through user-system interaction. On the other hand, users may not be able
+to find the most suitable keywords to formulate their image needs precisely or they may
+not even know what to look for (i.e., I do not know what I am looking for, but I will
+know when I find it) [12-18]. In addition, there may have a vocabulary discrepancy
+between the keywords for users to formulate their queries and the text terms for image
+annotation, and such a vocabulary discrepancy may further result in null returns for
+the mismatching queries. Thus users may seriously suffer from both the problem of
+query formulation and the problem of vocabulary discrepancy and null returns. One of
+the goals of human-centered multimedia computing is to tackle the problems of query
+formulation and vocabulary discrepancy through supporting human-system interaction.
+Vision provides the most significant source of information to sighted humans and
+plays major roles in information seeking tasks, thus it is very important to involve users
+in the loops of classifier training and image retrieval. In this chapter, we have developed
+a novel visual analytics framework for bridging the semantic gap and the vocabulary
+discrepancy more effectively. In section 2, we present a brief introduction of visual an-
+alytics. In section 3, a novel visual analytics framework is developed to enable interac-
+tive hypotheses visualization, assessment and refinement in the loop of image classifier
+Title Suppressed Due to Excessive Length 3
+training. In section 4, a new visual analytics framework is develop to summarize and
+visualize large-scale image collections for tackling the problems of query formulation
+and vocabulary discrepancy in the loop of image retrieval. We conclude this paper at
+section 5.
+2 Visual Analytics for Bridging Semantic Gap
+In order to incorporate visual analytics for improving image understanding, it is very
+important to develop more effective visualization frameworks for assisting users on
+assessing the hypotheses for classifier training and evaluating the correctness of the
+learned image classifiers. Most existing techniques for classifier training focus on using
+precision and recall rates to evaluate the correctness of the learned classifiers. However,
+the precision and recall rates may not have exact correspondence with the effectiveness
+of the underlying hypotheses for classifier training. Thus it is very attractive to develop
+new framework for assessing the effectiveness of the hypotheses and the correctness of
+the learned classifiers visually.
+Some pioneer works have been done by incorporating multivariate data analysis and
+multi-dimensional scaling for supporting large-scale data visualization and exploration
+[1]. Even visualization can allow users to see large amounts of data items at once, visu-
+alizing large amounts of data items on a size-limited display screen may seriously suffer
+from the overlapping problem. Because of the lack of suitable tools for adaptive data
+sampling and the shortage of a natural way to support change of focus, all these existing
+techniques are unsuitable for dealing with large-scale image collections. In addition, it
+is not a trivial task to obtain a good similarity-preserving projection of large amounts
+of images from the high-dimensional multi-modal feature space to a two-dimensional
+display space. To incorporate visualization for assisting users on assessing the derived
+knowledge and the hypotheses for classifier training, new frameworks should be devel-
+oped to achieve adaptive image sampling and similarity-preserving image projection.
+In this chapter, we focus on developing a novel visual analytics framework (shown
+in Fig. 1) to enable better communication between the users and the systems, so that
+they can assess the underlying hypotheses for classifier training and evaluate the cor-
+rectness of image classifiers. As shown in Fig.1, our visual analytics framework consists
+of three key components for bridging the semantic gap: (a) automatic image analysis
+for feature extraction, kernel-based image similarity characterization and automatic im-
+age classifier training; (b) hypotheses visualization and interactive assessment; and (c)
+human-computer interaction for hypotheses refinement and classifier re-training.
+3 Interactive Hypotheses Visualization, Assessment and
+Refinement for Personalized Classifier Training
+With the exponential growth of online high-quality digital images, there is an urgent
+need to support content-based image retrieval (CBIR) over large-scale image archives
+[7-8]. Many CBIR systems have been developed in the last 10 years, but only low-level
+visual features are used for image indexing and retrieval. Because of the semantic gap
+between the high-level image concepts and the low-level visual features, many image
+classification techniques have been developed to learn the mapping functions between
+4 Yuli Gao, Chunlei Yang, Yi Shen, Jianping Fan
+Fig. 1. The major components for our visual analytics framework.
+the low-level visual features and the high-level image concepts [7-8]. Unfortunately,
+it is difficult for novice users to understand such the complex mapping functions and
+evaluate the underlying hypotheses for image classifier training. Thus it is very hard if
+not impossible for novice users to incorporate their personal preferences for learning
+their personalized image classifiers for some specific purposes.
+Based on these observations, we have developed a novel visual analytics framework
+to enable interactive hypotheses visualization, assessment and refinement, so that users
+can change the hypotheses for image classifier training and learn their personalized im-
+age classifiers easily. Our visual analytics framework consists of six key components:
+(a) a set of low-level visual features are extracted for image content representation;
+(b) multiple basic kernels are combined for characterizing the diverse similarity be-
+tween the images more accurately; (c) an initial image classifier with low accuracy rate
+is learned automatically by using a hidden weak hypothesis; (d) hyperbolic image vi-
+sualization is incorporated for visualizing the learned mapping function (i.e., margin
+between the positive and negative images/videos for SVM image classifier); (e) users
+are allowed to explore large amounts of training images interactively and update the hy-
+pothesis for image classifier training according to their personal preferences or specific
+purposes; (f) a new image classifier with higher accuracy rate is learned automatically
+according to the given new hypothesis.
+The visual properties of the training images and their visual similarity relationships
+are very important for users to assess the correctness and effectiveness of the underly-
+ing hypothesis for image classifier training. We have developed a new framework for
+fast feature extraction to achieve a good balance between the effectiveness for image
+content representation and the computational cost for feature extraction and image sim-
+ilarity assessment. To characterize the diverse visual properties of the images efficiently
+and effectively, both the global visual features and the local visual features are extracted
+for image content representation and similarity characterization. The global visual fea-
+tures such as color histogram can provide the global image statistics and the perceptual
+properties of entire images, but they may not be able to capture the object information
+within the images [2-3]. On the other hand, the local visual features such as SIFT (scale
+Title Suppressed Due to Excessive Length 5
+invariant feature transform) features can allow object recognition against the cluttered
+backgrounds [4-5]. In our current implementations, the global visual features consist
+of 16-bin color histogram and 62-dimensional texture features from Gabor filter banks.
+The local visual features consist of a number of interest points and their SIFT features.
+As shown in Fig. 2, one can observe that our feature extraction operators can effectively
+characterize the principal visual properties for the images.
+Fig. 2. Visual feature extraction for image content representation: (a) original images; (b)
+interest points and SIFT vectors; (c) wavelet transformation.
+To achieve more accurate approximation of the diverse visual similarity relation-
+ships between the images, different kernels should be designed for various feature sub-
+sets because their statistical properties of the images are very different. Unfortunately,
+most existing machine learning tools use one single kernel for diverse image similarity
+characterization and fully ignore the heterogeneity of the statistical properties of the
+images in the high-dimensional multi-modal feature space [12]. Based on these obser-
+vations, we have studied the particular statistical property of the images under each
+feature subset, and the gained knowledge is then used to design the most suitable kernel
+for each feature subset. Thus three basic image kernels (color histogram kernel, wavelet
+filter bank kernel, interest point matching kernel) are first constructed to characterize
+the diverse visual similarity relationships between the images, and a linear combination
+of these three basic image kernels (i.e., mixture-of-kernels) can further form a family
+of mixture-of-kernels for characterizing the diverse image similarities more accurately
+[12].
+In this chapter, we have incorporated three basic descriptors to characterize various
+visual and geometrical properties of the images: (a) global color histogram; (b) texture
+histograms for wavelet filter banks; (c) local invariant feature point set. The first two
+descriptors are computed from every pixel of the whole image; while the third descriptor
+is computed from the localized interesting image patches.
+The histogram kernel function KC(x, y), which is used to characterize the visual
+similarity between the color histograms u and v for two images x and y, is defined as:
+KC(x, y) = e
+??2(u,v)/? =
+16?
+i=1
+e??
+2
+i (u(i),v(i))/?i (1)
+where ? = [?1, · · · , ?16] is set to be the mean value of the ?2 distances between all the
+images in our experiments, u(i) and v(i) are the ith component for two color histograms
+u and v.
+6 Yuli Gao, Chunlei Yang, Yi Shen, Jianping Fan
+The texture kernel functionKT (x, y) can be decomposed as a product of component
+kernels for different wavelet filter banks e??2i (hi(x),hi(y))/?i :
+KT (x, y) =
+n?
+i=1
+e??
+2
+i (hi(x),hi(y))/?i (2)
+where the component kernel e??2i (hi(x),hi(y))/?i is used to characterize the similarity
+between two images x and y according to the ith wavelet filter bank, hi(x) and hi(y)
+are the histograms of the ith wavelet filter bank for two images x and y.
+The interest point matching kernel KI(x, y), which is used to characterize the sim-
+ilarity between two interest point sets Q and P for two images x and y, is defined as:
+KI(x, y) = e
+?D(Q,P )/? (3)
+where ? is set as the mean value of D(Q,P ) of all the images in our experiments,
+D(Q,P ) is defined as the Earth Mover’s distance (EMD) between two interest point
+sets Q and P for two images x and y [12].
+The diverse visual similarities between the returned images are characterized more
+effectively and efficiently by using a linear combination of these three basic image
+kernels (i.e., mixture-of-kernels) [12]:
+?(x, y) =
+3?
+i=1
+?iKi(x, y),
+3?
+i=1
+?i = 1 (4)
+where ?i ? 0 is the importance factor for the ith basic image kernel Ki(x, y) for image
+similarity characterization. Because multiple kernels are seamlessly integrated to char-
+acterize the heterogeneous statistical properties of the images in the high-dimensional
+multi-modal feature space, our mixture-of-kernels algorithm can achieve more effec-
+tive classifier training and can also provide a natural way to add new feature subsets
+and their basic kernels incrementally.
+In this chapter, we have developed an incremental framework to incorporate users’
+feedbacks and inputs for determining the optimal values of the importance factors for
+kernel combination: (1) The importance factors for all these three feature subsets (three
+basic image kernels) are initially set as ?1 = ?2 = ?1 = 13 , i.e., all these three basic
+image kernels are equally important for image similarity characterization (i.e., hidden
+weak hypothesis for classifier training); (2) An incremental kernel learning algorithm
+is developed to integrate the users’ feedbacks for updating the importance factors adap-
+tively (i.e., updating the underlying hypothesis for classifier training); (3) The updated
+combination of these three basic image kernels (i.e., new hypothesis) are used to create
+more accurate partition between the positive images and the negative images and learn
+more reliable image classifier.
+To allow users to assess the effectiveness and correctness of the underlying hypoth-
+esis, the training images are projected onto a hyperbolic plane by using the kernel PCA
+[11]. The kernel PCA is obtained by solving the eigenvalue equation:
+Kv = ?Mv (5)
+Title Suppressed Due to Excessive Length 7
+where ? = [?1, · · · , ?M ] denotes the eigenvalues and v = [??v1 , · · ·, ??vM ] denotes the
+corresponding complete set of eigenvectors, M is the number of the training images, K
+is a kernel matrix and its component is defined as Kij = ?(xi, xj).
+The optimal KPCA-based image projection is obtained by:
+min
+??
+?
+M?
+i=1
+M?
+j=1
+|?(xi, xj)? d(x
+?
+i, x
+?
+j)|
+2
+??
+? (6)
+where ?(xi, xj) is the original kernel-based similarity distance among the training im-
+ages with the visual features xi and xj , d(x?i, x?j) is the distance between their locations
+x?i and x?j on the display unit disk which can be obtained by using kernel PCA for image
+projection.
+After such KPCA-based projection of the training images is obtained, Poincaré disk
+model is used to map the training images on the hyperbolic plane onto a 2D display co-
+ordinate [6]. By incorporating hyperbolic geometry for image visualization, our visual
+analytics framework can support change of focus more effectively, which can support
+interactive image exploration and navigation effectively. If let ? be the hyperbolic dis-
+tance and ? be the Euclidean distance, of one certain image with the visual features x
+to the center of the unit circle, the relationship between their derivative is described by:
+d? =
+2
+1? ?2
+· d? (7)
+Intuitively, this projection makes a unit Euclidean distance correspond to a longer hy-
+perbolic distance as it approaches the rim of the unit circle. In other words, if the images
+are of fixed size, they would appear larger when they are closer to the origin of the unit
+circle and smaller when they are further away. This property makes it very suitable for
+hypotheses visualization (i.e., visualizing the margin between the positive images and
+the negative images). Such a non-uniformity distance mapping creates an emphasis for
+the training images which are in current focus, while de-emphasizing those training
+images that are further form the focus point.
+The initial combination of the basic image kernels (with equal importance factors)
+at the first run of hypothesis making or the kernel combination may not be good enough
+to characterize the diverse visual similarities between the training images accurately.
+In this paper, the users’ feedbacks are translated for determining more accurate com-
+bination of these basic image kernels (i.e., making new hypothesis for image classifier
+training).
+For a given image concept Ck, its SVM classifier can be learned incrementally:
+min
+{
+1
+2
+?W ?W0?
+2 + C
+m?
+l=1
+[1? Yl(W
+T · ?(Xl) + b)]
+}
+(8)
+whereW0 is the regularization term which is obtained by using equal importance factors
+for kernel combination at the first run of hypothesis making, (Xl, Yl), l = 1, · · · ,m
+are the new labeled images according to the users’ feedbacks in the current run of the
+classifier training loop.
+8 Yuli Gao, Chunlei Yang, Yi Shen, Jianping Fan
+The regularization termW0 is learned from the labeled images, (Xi, Yi), i = 1, · · · , N ,
+which have been obtained by the previous runs of classifier training.
+W0 =
+N?
+i=1
+??i Yi?(Xi) (9)
+The kernel function for diverse image similarity characterization is defined as:
+?(X,Xj) = ?(X)
+T?(Xj) =
+3?
+i=1
+?iKi(X,Xj),
+3?
+i=1
+?i = 1 (10)
+The dual problem for Eq. (8) is solved by:
+min
+{
+1
+2
+m?
+l=1
+m?
+h=1
+?l?hYlYh?(Xl,Xh)?
+m?
+l=1
+?l
+(
+1? Yl
+N?
+i=1
+??i Yi?(Xi,Xl)
+)}
+(11)
+subject to:
+?ml=1 : 0 ? ?l ? C,
+m?
+l=1
+?lYl = 0
+The optimal solution of Eq. (11) satisfies:
+W = W0 +
+m?
+l=1
+??l Yl?(Xl) =
+N?
+i=1
+??i Yi?(Xi) +
+m?
+l=1
+??l Yl?(Xl) (12)
+where ?? is the optimal value of the weighting factors of the images to optimize the
+Eq.(11). Thus the new SVM classifier under the new hypothesis can be determined as:
+fCk(X) = W
+T?(X) + b =
+N?
+i=1
+??i Yi?(X,Xi) +
+m?
+l=1
+??l Yl?(X,Xl) (13)
+To obtain the updating rule of the importance factors ? for these three basic image
+kernels, the objective function J(?) is defined as:
+J(?) =
+1
+2
+m?
+l=1
+m?
+h=1
+?
+?
+l ?
+?
+hYlYh
+3?
+i=1
+?iKi(Xl, Xh)?
+m?
+l=1
+?
+?
+l
+(
+1? Yl
+N?
+i=1
+?
+?
+i Yi
+3?
+i=1
+?iKi(Xi, Xl)
+)
+(14)
+For computing the derivatives of J(?) with respect to ?, we assume that the optimal
+value of ?? does not depend on ?. Thus the derivatives of the objective function J(?)
+can be computed as:
+?3i=1 :
+?J(?)
+??i
+=
+1
+2
+m?
+l=1
+m?
+h=1
+??l ?
+?
+hYlYhKi(Xl,Xh) +
+m?
+l=1
+N?
+i=1
+??l ?
+?
+i YlYiKi(Xi,Xl)
+(15)
+Title Suppressed Due to Excessive Length 9
+The objective function J(?) is convex and thus our gradient method for computing the
+derivatives of J(?) can guarantee to converge. In addition, the importance factors ? for
+these three basic image kernels are updated while ensuring that the constraints on ? are
+satisfied.
+The importance factors ? for these three basic image kernels are updated as:
+?
+3
+i=1 : ?
+t+1
+i = ?
+t
+i+?t
+[
+1
+2
+m?
+l=1
+m?
+h=1
+?
+?
+l ?
+?
+hYlYhKi(Xl, Xh) +
+m?
+l=1
+N?
+j=1
+?
+?
+l ?
+?
+i YlYjKi(Xj , Xl)
+]
+(16)
+where ?t is the step size for the ith run of the classifier training loop, ?t+1 and ?t are
+the importance factors for the current run and the previous run of hypothesis making
+in the loop of incremental classifier training. The step size ?t is selected automatically
+with proper stopping criterion to ensure global convergence. Our incremental classifier
+training framework is performed until a stopping criterion is met. This stopping crite-
+rion can be eithor based on a maximal number of iterations or the variation of ? between
+two consecutive steps.
+Fig. 3. The experimental results for the image concept “Allen Watch": (a) Images for clas-
+sifier training; (b) hyperbolic visualization of the training images; (c) hyperbolic image vi-
+sualization after first run; (d) hyperbolic image visualization after second run.
+10 Yuli Gao, Chunlei Yang, Yi Shen, Jianping Fan
+The updated combination of these three basic image kernels (i.e., new hypothesis)
+is then used to learn a new image classifier, obtain more accurate partition of positive
+images and negative images, and achieve more precise hypothesis visualization (i.e.,
+margin between the positive images and the negative images). As shown in Fig. 3,
+the effectiveness of our incremental classifier training algorithm is obvious. From this
+example, one can observe that the image classifiers with better partition of the positive
+images and the negative images can be obtained after few runs of hypotheses making
+and refinement.
+To evaluate the generalization of the hypotheses for image classifier training, the
+benchmark metric for classifier evaluation includes precision ? and recall %. They are
+defined as:
+? =
+
++ ?
+, % =
+
++ ?
+(17)
+where  is the set of true positive images that are related to the corresponding image
+concept and are classified correctly, ? is the set of true negative images that are irrel-
+evant to the corresponding image concept and are classified incorrectly, and ? is the
+set of false positive images that are related to the corresponding image concept but are
+misclassified. The performances of our SVM image classifiers are given in Fig. 4, one
+can observe that the classification accuracies on unseen images for different image con-
+cepts are significantly improved by incorporating incremental hypotheses making and
+refinement.
+It is worth noting that our interactive framework is also very attractive for online
+junk image filtering, we have extended our incremental classifier training algorithm for
+filtering the junk images from Google Images. Our similarity-based image visualiza-
+tion framework can also allow users to see large amounts of returned images and their
+diverse visual similarity relationships at the first glance, and thus users can obtain more
+significant insights, assess the query results easily and provide their feedbacks more
+intuitively. As shown in Fig. 5, one can observe that our proposed framework can filter
+out the junk images effectively.
+Fig. 4. The performance comparison between our incremental hypotheses refinement
+framework and the tradtional fixed-hypothesis approach for image classifier training.
+Title Suppressed Due to Excessive Length 11
+Our visual analytics framework can have the following advantages: (a) It can allow
+users to label the training images incrementally in the loop of classifier training; (b) It
+can allow users to assess the underlying hypotheses for image classifier training visu-
+ally and update the hypotheses interactively according to their personal preferences or
+specific purposes; (c) It can allow users to evaluate the correctness of the learned image
+classifiers visually and enable personalized image classifier training.
+Fig. 5. Junk image filtering: (a) the images returned by the keyword-based search “red rose"
+and the images in blue boundaries are selected as the relevant images by users; (b) the
+filtered images after the first run of relevance feedback.
+4 Bridging Vocabulary Discrepancy for Image Retrieval
+When large-scale Flickr image collections with diverse semantics come into view, it
+is very important to enable image summarization at the semantic level, so that users
+can get a good global overview (semantic summary) of large-scale image collections
+at the first glance. In this paper, we have developed a novel visual analytics scheme to
+incorporate a topic network to summarize and visualize large-scale collections of Flickr
+images at a semantic level. The topic network consists of two components: (a) image
+topics; and (b) their inter-topic contextual relationships (which are very important for
+supporting interactive exploration and navigatiion of large-scale image collections at a
+semantic level). Visualizing the topic network can also allow users to easily select more
+suitable keywords for query formulation.
+After the images and the associated users’ manual annotations are downloaded from
+Flickr.com, the text terms which are relevant to the image topics (text terms for image
+topic interpretation) are separated automatically by using standard text analysis tech-
+niques, and the basic vocabulary of image topics (i.e., keywords for image topic inter-
+pretation) are determined automatically.
+The inter-topic semantic context ?(Ci, Cj) between two image topics Ci and Cj
+consists of two components: (a) flat inter-topic semantic context ?(Ci, Cj) because
+of their co-occurrences in large-scale image collections [9], e.g., higher co-occurrence
+probability P (Ci, Cj) corresponds to stronger inter-topic context ?(Ci, Cj); (b) hier-
+archical inter-topic semantic context %(Ci, Cj) because of their inherent correlation
+defined by WordNet [10], e.g., stronger inherent correlation (i.e., closer on WordNet)
+corresponds to stronger inter-topic context ?(Ci, Cj).
+12 Yuli Gao, Chunlei Yang, Yi Shen, Jianping Fan
+The flat inter-topic semantic context ?(Ci, Cj) between two image topics Ci and
+Cj is defined as:
+?(Ci, Cj) = ?
+P (Ci, Cj)
+logP (Ci, Cj)
+(18)
+where P (Ci, Cj) is the co-occurrence probability of the image topics Cj and Ci in
+the Flickr image collections. From this definition, one can observe that higher co-
+occurrence probability P (·, ·) of the image topics corresponds to stronger flat inter-topic
+semantic context ?(·, ·).
+Fig. 6. One portion of our topic network for indexing and summarizing large-scale collections of
+Flickr images at the topic level.
+The hierarchical inter-topic semantic context %(Ci, Cj) between two image topics
+Ci and Cj is defined as:
+%(Ci, Cj) = ?P (Ci, Cj) log
+L(Ci, Cj)
+2 ·D
+(19)
+whereL(Ci, Cj) is the length of the shortest path between the text terms for interpreting
+the image topics Ci and Cj in an one-drection IS-A taxonomy, D is the maximum
+depth of such one-direction IS-A taxonomy [10], and P (Ci, Cj) is the co-occurrence
+probability of the text terms for interpreting the image topics Cj and Ci. From this
+definition, one can observe that closer between the text terms for interpreting the image
+Title Suppressed Due to Excessive Length 13
+topics (i.e., smaller value of L(·, ·)) on the taxonomy corresponds to stronger inter-topic
+semantic context %(·, ·).
+Both the flat inter-topic semantic context ?(Ci, Cj) and the hierarchical inter-topic
+semantic context %(Ci, Cj) are first normalized into the same interval [0, 1]. The inter-
+topic semantic context ?(Ci, Cj) is then defined as:
+?(Ci, Cj) = ? ·
+e%(Ci,Cj) ? e?%(Ci,Cj)
+e%(Ci,Cj) + e?%(Ci,Cj)
++?·
+e?(Ci,Cj) ? e??(Ci,Cj)
+e?(Ci,Cj) + e??(Ci,Cj)
+, ?+? = 1 (20)
+where the first part is used to measure the contribution from the hierarchical inter-
+topic semantic context %(Ci, Cj), the second part indicates the contribution from the
+flat inter-topic semantic context ?(Ci, Cj), ? and ? are the weighting parameters. In a
+collaborative image tagging space (such as Flickr), the flat inter-topic semantic context
+is more popular for defining the inter-topic context than the hierarchical inter-topic
+semantic context, thus we set ? = 0.4 and ? = 0.6 in our experiments. In our definition,
+the strength of the inter-topic semantic context is normalized within the interval [0, 1]
+and it increases adaptively with the flat inter-topic semantic context and the hierarchical
+inter-topic semantic context.
+It is well-accepted that the visual properties of the images are very important for
+image retrieval, thus we have also extracted both the global visual features and the local
+visual features to characterize various visual properties of the images more precisely. As
+described above, both the global visual features and the local visual features are used to
+characterize one certain type of visual properties of the images [12], and the underlying
+visual similarity relationships between the images are characterized by using a mixture-
+of-kernels.
+The inter-topic visual context may also play an important role in generating more
+precise topic network. The visual context ?(Ci, Cj) between the image topics Ci and
+Cj can be determined by performing canonical correlation analysis [19] on their image
+sets Si and Sj :
+?(Ci, Cj) =
+max
+?, ?
+?T?(Si)?(Sj)??
+?T?2(Si)? · ?T?2(Sj)?
+(21)
+where ? and ? are the parameters for determining the optimal projection directions to
+maximize the correlations between two image sets Si and Sj for the image topicsCi and
+Cj , ?(Si) and ?(Sj) are the kernel functions for characterizing the visual correlations
+between the images in the same image sets Si and Sj .
+?(Si) =
+?
+xl,xm?Si
+?(xl, xm), ?(Sj) =
+?
+xh,xk?Sj
+?(xh, xk) (22)
+where the visual correlation between the images is defined as their kernel-based visual
+similarity ?(·, ·) in Eq. (4).
+The parameters ? and ? for determining the optimal projection directions are ob-
+tained automatically by solving the following eigenvalue equations:
+?(Si)?(Si)? ? ?
+2
+??(Si)?(Si)? = 0, ?(Sj)?(Sj)?? ?
+2
+??(Sj)?(Sj)? = 0 (23)
+where the eigenvalues ?? and ?? follow the additional constraint ?? = ??.
+14 Yuli Gao, Chunlei Yang, Yi Shen, Jianping Fan
+The inter-topic visual context ?(Ci, Cj) is first normalized into the same interval as
+the flat inter-topic semantic context ?(Ci, Cj) and the hierarchical inter-topic seman-
+tic context %(Ci, Cj). The inter-topic semantic context and the inter-topic visual con-
+text are further integrated to achieve more precise characterization of their cross-modal
+inter-topic similarity context ?(Ci, Cj):
+?(Ci, Cj) =  · ?(Ci, Cj) + ? ·
+e?(Ci,Cj) ? e??(Ci,Cj)
+e?(Ci,Cj) + e??(Ci,Cj)
+, + ? = 1 (24)
+where the first part denotes the semantic context between the image topics Cj and Ci,
+the second part indicates their inter-topic visual context, ?(Ci, Cj) is the visual context
+between the image sets for the image topics Ci and Cj ,  and ? are the importance
+factors for the inter-topic semantic context and the inter-topic visual context.
+Fig. 7. The visualization of the same topic network as shown in Fig. 6 via change of focus.
+Unlike the one-direction IS-A hierarchy [10], each image topic can be linked with
+all the other image topics on the topic network, thus the maximum number of such
+inter-topic associations could be T (T?1)2 , where T is the total number of image topics
+on the topic network. However, the strength of the associations between some image
+topics may be very weak (i.e., these image topics may seldomly co-occur in Flickr
+image collections), thus it is not necessary for each image topic to be linked with all the
+other image topics on the topic network. Based on this understanding, each image topic
+is automatically linked with the most relevant image topics with larger values of the
+inter-topic contexts ?(·, ·) (i.e., their values of ?(·, ·) are above a threshold ? = 0.25).
+The topic network for our test image set (Flickr) is shown in Fig. 6 and Fig. 7,
+where each image topic is linked with multiple relevant image topics with larger values
+Title Suppressed Due to Excessive Length 15
+of ?(·, ·). It is worth noting that different image topic can have different numbers of
+the most relevant image topics on the topic network. Our hyperbolic visualization algo-
+rithm is performed to layout the topic network according to the strengths of the inter-
+topic contexts ?(·, ·), where the inter-topic contexts are represented as the weighted
+undirected edges and the length of such weighted undirected edges are inversely pro-
+portional to the strengths of the corresponding inter-topic contexts ?(·, ·). Thus the
+geometric closeness between the image topics is related to the strengths of their inter-
+topic contexts, so that such graphical representation of the topic network can reveal a
+great deal about how these image topics are correlated and how the relevant keywords
+for interpreting multiple inter-related image topics are intended to be used jointly for
+image tagging.
+Through change of focus, users can change their focuses of image topics by click-
+ing on any visible image topic node to bring it into focus at the screen center, or by
+dragging any visible image topic node interactively to any other screen location with-
+out losing the semantic contexts between the image topic nodes, where the rest of the
+layout of the topic network transforms appropriately. Users can directly see the topics of
+interest in such interactive topic network navigation and exploration process, thus they
+can build up their mental query models interactively and specify their queries precisely
+by selecting the visible image topics on the topic network directly. By supporting in-
+teractive topic network exploration, our hyperbolic topic network visualization scheme
+can support personalized query recommendation interactively, which can address both
+the problem of query formulation and the problem of vocabulary discrepancy and null
+returns more effectively. Such interactive topic network exploration process does not
+require the user profiles, thus our system can also support new users effectively.
+The same keyword may be used to tag many semantically-similar images, thus each
+image topic at Flickr may consist of large amount of semantically-similar images with
+diverse visual properties (i.e., some topics may contain more than 100,000 images
+at Flickr). Unfortunately, most existing keyword-based image retrieval systems tend
+to return all these images to the users without taking their personal preferences into
+consideration. Thus query-by-topic via keyword matching will return large amounts
+of semantically-similar images under the same topic and users may seriously suffer
+from the problem of information overload. In order to tackle this problem in our sys-
+tem, we have developed a novel framework for personalized image recommendation
+and it consists of three major components: (a) Topic-Driven Image Summarization and
+Recommendation: The semantically-similar images under the same topic are first par-
+titioned into multiple clusters according to their nonlinear visual similarity contexts,
+and a limited number of images are automatically selected as the most representative
+images according to their representativeness for a given image topic. Our system can
+also allow users to define the number of such most representative images for relevance
+assessment. (b) Context-Driven Image Visualization and Exploration: Kernel PCA and
+hyperbolic visualization are seamlessly integrated to enable interactive image explo-
+ration according to their inherent visual similarity contexts, so that users can assess the
+relevance between the recommended images (i.e., most representative images) and their
+real query intentions more effectively. (c) Intention-Driven Image Recommendation: An
+interactive user-system interface is designed to allow the user to express his/her time-
+16 Yuli Gao, Chunlei Yang, Yi Shen, Jianping Fan
+varying query intentions easily for directing the system to find more relevant images
+according to his/her personal preferences.
+Fig. 8. Our representativeness-based sampling technique can automatically select 200 most
+representative images to achieve precise visual summarization of 48386 semantically-
+similar images under the topic “orchids".
+It is worth noting that the processes for kernel-based image clustering, topic-driven
+image summarization and recommendation (i.e., most representative image recommen-
+dation) and context-driven image visualization can be performed off-line without con-
+sidering the users’ personal preferences. Only the processes for interactive image ex-
+ploration and intention-driven image recommendation should be performed on-line and
+they can be achieved in real time.
+The optimal partition of the semantically-similar images under the same topic is
+then obtained by minimizing the trace of the within-cluster scatter matrix, S?w. The
+scatter matrix is given by:
+S?w =
+1
+N
+k?
+l=1
+N?
+i=1
+?li
+(
+?(xi)? µ
+?
+l
+)(
+?(xi)? µ
+?
+l
+)T
+(25)
+where ?(xi) is the mapping function and ?(xi, xj) = ?(xi)T?(xj) =
+?3
+j=1 ?jKj(xi, xj)
+in Eq. (4), N is the number of images and k is the number of clusters, µ?l is the center
+of the lth cluster and it is given as:
+µ
+?
+l =
+1
+Nl
+N?
+i=1
+?li?(xi) (26)
+Title Suppressed Due to Excessive Length 17
+The trace of the scatter matrix S?w can be computed by:
+Tr
+(
+S?w
+)
+=
+1
+N
+k?
+l=1
+N?
+i=1
+?li
+(
+?(xi)? µ
+?
+l
+)T (
+?(xi)? µ
+?
+l
+)
+(27)
+Searching the optimal values of the elements ? that minimizes the expression of the
+trace in Eq. (27) can be achieved effectively by an iterative procedure.
+After the semantically-similar images under the same topics are partitioned into
+k clusters, our representativeness-based image sampling technique has exploited three
+criteria for selecting the most representative images: (a) Image Clusters: Our kernel-
+based image clustering algorithm has provided a good global distribution structure (i.e.,
+image clusters and their relationships) for large amounts of semantically-similar im-
+ages under the same topic. Thus adaptive image sampling can be achieved by selecting
+the most representative images to summarize the visually-similar images in the same
+cluster. (b) Coverage Percentage: Different clusters may contain various numbers of
+images, and thus more images should be selected from the clusters with bigger cover-
+age percentages. Obviously, the relative numbers of their most representative images
+can be optimized according to their coverage percentages. (c) Outliers: Even the out-
+liers may have much smaller coverage percentages, some representative images should
+prior be selected from the outliers for supporting serendipitous discovery of unexpected
+images.
+For the visually-similar images in the same cluster, the representativeness scores of
+the images depend on their closeness with the cluster centers. The representativeness
+score ?(x) for the given image with the visual features x can be defined as:
+?(x) = max
+{
+e??l(?(x)?µ
+?
+l )
+T
+(?(x)?µ?l ), l ? Cj
+}
+(28)
+where µ?l is the center of the lth cluster of the image topic Cj . Thus the images, which
+are closer to the cluster centers, have larger values of ?(·). The images in the same
+cluster can be ranked precisely according to their representativeness scores, and the
+most representative images with larger values of ?(·) can be selected to generate the
+similarity-based summary of the images for the corresponding image topic.
+Only the most representative images are selected to generate the visual summary
+of the images for each image topic, and large amounts of redundant images, which
+have similar visual properties with the most representative images, are eliminated au-
+tomatically. By selecting the most representative images to summarize large amounts
+of semantically-similar images under the same topic, the inherent visual similarity con-
+texts between the images can be preserved accurately and thus it can provide sufficient
+visual similarity contexts to enable interactive image exploration.
+Our visual summarization (i.e., the most representative images) results for the image
+topics “orchids" and “rose" are shown in Fig. 8 and Fig. 9, where 200 most represen-
+tative images for the image topics “orchids” and “rose" are selected for representing
+and preserving the original visual similarity contexts between the images. One can ob-
+serve that these 200 most representative images can provide an effective interpretation
+and summarization of the original visual similarity contexts among large amounts of
+18 Yuli Gao, Chunlei Yang, Yi Shen, Jianping Fan
+semantically-similary images under the same topic. The underlying the visual similarity
+contexts have also provided good directions for users to explore these most representa-
+tive images interactively.
+Fig. 9. Our representativeness-based sampling technique can automatically select 200 most
+representative images to achieve precise visual summarization of 53829 semantically-
+similar images under the topic “rose".
+To support interactive exploration of the most representative images for a given
+image topic, it is very important to enable similarity-based image visualization by pre-
+serving the nonlinear similarity structures between the images in the high-dimensional
+feature space. Thus the most representative images are projected onto a hyperbolic plane
+by using the kernel PCA to preserve their nonlinear similarity structures [11].
+After such similarity-preserving image projection on the hyperbolic plane is ob-
+tained, Poincaré disk model is used to map the most representative images on the hy-
+perbolic plane onto a 2D display coordinate. By incorporating hyperbolic geometry for
+image visualization, our visual analytics framework can support change of focus more
+effectively, which is very attractive for interactive image exploration and navigation.
+Through change of focus, users can easily control the presentation and visualization of
+large amounts of images according to the inherent visual similarity contexts.
+It is important to understand that the system alone cannot meet the users’ sophis-
+ticated image needs. Thus user-system interaction plays an important role for users to
+express their image needs, assess the relevance between the returned images and their
+real query intentions, and direct the system to find more relevant images adaptively.
+Based on these understandings, our system can allow users to zoom into the images
+Title Suppressed Due to Excessive Length 19
+of interests interactively and select one of these most representative images to express
+their query intentions or personal preferences.
+After such the user’s time-varying query interests are captured, the personalized in-
+terestingness scores for the images under the same topic are calculated automatically,
+and the personalized interestingness score ?p(x) for a given image with the visual fea-
+ture x is defined as:
+?p(x) = ?(x) + ?(x)× e??(x,xc) (29)
+where ?(x) is the original representativeness score for the given image, ?(x, xc) is the
+kernel-based visual similarity correlation between the given image with the visual fea-
+tures x and the clicked image with the visual features xc which belong to the same
+image cluster. Thus the redundant images with larger values of the personalized inter-
+estingness scores, which have similar visual properties with the clicked image (i.e., be-
+longing to the same cluster) and are initially eliminated for reducing the visual complex-
+ity for image summarization and visualization, can be recovered and be recommended
+to the users adaptively as shown in Fig. 10, Fig. 11 and Fig. 12. One can observe that
+integrating the visual similarity contexts for personalized image recommendation can
+significantly enhance the users’ ability on finding some particular images of interest
+even the low-level visual features may not be able to carry the semantics of the image
+contents directly. Thus integrating the visual similarity contexts between the images
+for personalized image recommendation can significantly enhance the users’ ability on
+finding some particular images of interest. With a higher degree of transparency of
+the underlying image recommender, users can achieve their image retrieval goals (i.e.,
+looking for some particular images) with a minimum of cognitive load and a maximum
+of enjoyment. By supporting intention-driven image recommendation, users can maxi-
+mize the amount of relevant images while minimizing the amount of irrelevant images
+according to their personal preferences.
+Fig. 10. Our interactive image exploration system: (a) the most representative images for
+the image topic “pets", where the image in blue box is selected; (b) more images which are
+relevant to the user’s query intentions of “dog".
+By focusing on a small number of images which are most relevant the users’ per-
+sonal preferences, our interactive image exploration technique can help users to obtain
+better understanding of the visual contents of the images, achieve better assessment of
+20 Yuli Gao, Chunlei Yang, Yi Shen, Jianping Fan
+the inherent visual similarity contexts between the images, and make better decisions on
+what to do next according to the inherent visual similarity contexts between the images.
+Through such a user-system interaction process, users can explore large-scale collec-
+tions of images interactively and discover some unexpected images serendipitously.
+5 Conclusions
+In this chapter, we have developed a novel human-centered multimedia computing
+framework to enable personalized image classifier training and bridge the vocabulary
+discrepancy more effectively. To achieve more accurate characterization of the diverse
+visual similarity between the images, multiple kernels are integrated for similarity char-
+acterization. Hyperbolic visualization is incorporated to enable interactive assessment
+and refinement of the hypotheses for image classifier training, so that users’ personal
+preferences can be included for personalized image classifier training. To bridge the
+vocabulary discrepancy, the topic network is used to summarize large-scale image col-
+lections at the semantic level, so that users can gain the deep insights rapidly and specify
+their queries more precisely. By involving users in the loop of classifier training without
+putting much burden on them, our visual analytics framework can enhance the accuracy
+of image classifiers significantly. By incorporating topic network visualization and ex-
+ploration to involve users in the loop of image retrieval, our visual analytics framework
+can help users make better decisions where they should focus attention during image
+seeking.
+Fig. 11. Our interactive image exploration system: (a) the most representative images for
+the image topic “planes", where the image in blue box is selected; (b) more images which
+are relevant to the user’s query intentions of “plane in blue sky".
+Acknowledgment
+The authors want to thank Prof. Ras and Prof. Ribarsky for their kindly invitation to
+present their research work in this book. The authors would like to thank Prof. Daniel
+Keim at University of Konstanz for his encouragements. This work is supported by
+National Science Foundation under 0601542-IIS and 0208539-IIS.
+Title Suppressed Due to Excessive Length 21
+Fig. 12. Our interactive image exploration system: (a) the most representative images rec-
+ommended for the topic-based query “towers", where the image in blue box is clicked by
+the user (i.e., query intention); (b) more images which are similar with the accessed image
+are recommened adaptively according to the user’s query intentions of “tower building".
+References
+1. J. Thomas, K.A. Cook, Illuminating the Path: The Research and Development Agenda for
+Visual Analytis, IEEE, ISBN-7695-2323-4, 2005.
+2. W-Y. Ma, B. S. Manjunath, “Texture features and learning similarity", Proc. IEEE CVPR,
+pp.425-430, 1996.
+3. T. Chang, C.Kou, “Texture analysis and classification with tree-structured wavelet transform”,
+IEEE Trans. on Image Processing, vol.2, 1993.
+4. D. Lowe, “Distinctive image features from scale invariant keypoints", Intl Journal of Com-
+puter Vision, vol.60, pp.91-110, 2004.
+5. P. Quelhas, F. Monay, J.-M. Odobez, D. Gatica-Perez, T. Tuytelaars, L. J. Van Gool, “Model-
+ing scenes with local descriptors and latent aspects", Proc. IEEE ICCV, 883-890, 2005.
+6. J. Lamping, R. Rao, “The hyperbolic browser: A focus+content technique for visualizing large
+hierarchies", Journal of Visual Languages and Computing, vol.7, pp.33-55, 1996.
+7. A.W.M. Smeulders, M. Worring, S. Santini, A. Gupta and R. Jain, “Content-based image
+retrieval at the end of the early years”, IEEE Trans. on PAMI, 2000.
+8. Y. Rui, T. S. Huang, and S.-F. Chang, “Image retrieval: Current techniques, promising direc-
+tions and open issues", Journal of Visual Communication and Image Representation, Vol. 10,
+pp.39-62, 1999.
+9. S. Brin, L. Page, “The anatomy of a large-scale hypertextual web search engine", WWW,
+1998.
+10. C. Fellbaum, WordNet: An Electronic Lexical Database, MIT Press, Boston, MA, 1998.
+11. B. Scholkopf, A. Smola, K.R. Muller, “Nonlinear component analysis as a kernel eigenvalue
+problem", Neural Computation, vol.10, no.5, pp.1299-1319, 1998.
+12. J. Fan, Y. Gao, H. Luo, “Integrating concept ontology and multi-task learning to achieve
+more effective classifier training for multi-level image annotation", IEEE Trans. on Image
+Processing, vol. 17, no.3, 2008.
+13. J. Fan, Y. Gao, H. Luo, R. Jain, “Mining multi-level image semantics via hierarchical classi-
+fication", IEEE Trans. on Multimedia, vol. 10, no.1, pp.167-187, 2008.
+14. J. Fan, H. Luo, Y. Gao, R. Jain, “Incorporating concept ontology to boost hierarchical clas-
+sifier training for automatic multi-level video annotation", IEEE Trans. on Multimedia, vol. 9,
+no.5, pp. 939-957, 2007.
+22 Yuli Gao, Chunlei Yang, Yi Shen, Jianping Fan
+15. J. Fan, D.K.Y. Yau, A.K. Elmagarmid, W.G. Aref, “Automatic image segmentation by inte-
+grating color edge detection and seeded region growing", IEEE Trans. on Image Processing,
+vol.10, no.10, pp.1454-1466, 2001.
+16. H. Luo, J. Fan, J. Yang, W. Ribarsky, S. Satoh, “Large-scale new video classification and
+hyperbolic visualization", IEEE Symposium on Visual Analytics Science and Technology
+(VAST’07), pp.107-114, 2007.
+17. H. Luo, J. Fan, J. Yang, W. Ribarsky, S. Satoh, “Exploring large-scale video news via
+interactive visualization", IEEE Symposium on Visual Analytics Science and Technology
+(VAST’06), pp. 75-82, 2006.
+18. J. Fan, D.A. Keim, Y. Gao, H. Luo, Z. Li, “JustClick: Personalized image recommendation
+via exploratory search from large-scale Flickr images", IEEE Trans. on Circuits and Systems
+for Video Technology, vol. 18, no.8, 2008.
+19. D.R. Hardoon, S. Szedmak, J. Shawe-Taylor, “Canonical correlation analysis: An overview
+with application to learning methods", Technical Report, CSD-TR-03-02, University of Lon-
+don, 2003.
+

@@ -1,0 +1,928 @@
+TSINGHUA SCIENCE AND TECHNOLOGY
+I S S N l l 1 0 0 7 - 0 2 1 4 l l 0 1 / 1 2 l l p p 1 - 1 6
+Volume 17, Number 4, August 2012
+RiskVA: A Visual Analytics System for Consumer Credit Risks
+Analysis?
+Xiaoyu Wang, Dong Jeong, Remco Chang and William Ribarsky
+Charlotte Visualization Center, UNC Charlotte, Charlotte, USA, 28223
+Abstract: Consumer credit risk analysis plays a significant role in stabilizing a bank’s investments and in maximizing
+its profits. As a large financial institution, Bank of America relies on effective risk analyses to minimize the net credit
+loss resulting from its credit products (e.g. mortgage and credit card loans). Due to the size and complexity of the
+data involved in this process, analysts are facing challenges in monitoring the data, comparing its geospatial and
+temporal patterns, and developing appropriate strategies based on the correlation from multiple analysis perspec-
+tives. To address these challenges, we present RiskVA, an interactive visual analytics system that is tailored to
+support credit risk analysis. RiskVA provides interactive data exploration and correlation, and visually assists them
+in depicting market fluctuations and temporal trends of the targeted credit product. When evaluated by analysts
+from Bank of America, RiskVA was appreciated for its effectiveness in facilitating the bank’s risk management.
+Key words: Risk management, Visual analytics
+Introduction
+Credit risk management, in general, refers to the pro-
+cess in which the investors assess the risk of loss aris-
+ing from a borrower who does not make payments as
+promised [3]. For most banks and financial institutions,
+loans and credit products are the largest and most obvi-
+ous source of risk. In order for a bank to profit from
+a large consumer base, it must invest in credit prod-
+ucts (e.g. credit cards, mortgages) that are reasonable
+to customers. However, the bank must strike a balance
+between the investments and the substantial amount of
+capital in its reserve; so that investments would be prof-
+itable yet sustain the bank’s financial stability.
+Therefore, the assessment of credit risk is crucial for
+banks to position themselves to profit through balancing
+credit investments and returns;it is also critical for the
+stability of an entire financial market. Inadequate risk
+Received: ; Accepted:
+? To whom correspondence should be addressed.
+E-mail: xwang25@uncc.edu Tel: 01+7046877741
+management can result in severe consequences for com-
+panies as well as individuals. As shown in their study
+of the correlations between recessions and banking cri-
+sis, Bloom et al.[4] suggested that the credit investment
+strategies were directly associated with the stability of
+the entire financial market; an unexpected credit crunch
+would lead to the complete disarray of the financial mar-
+kets. For example, the loose credit risk management of
+financial firms was determined to be one of the factors
+that triggered the recession in 2008.
+As a large institution, Bank of America (BOA) con-
+stantly faces the challenge of managing its credit risk.
+Their stability relies on the effective risk analyses to
+minimize the net credit loss resulted from its credit
+products, and to determine profitable market strategies.
+Given BOA’s wide range of credit investments, how-
+ever, analyzing risk in such diversified portfolio has be-
+come an overwhelming process. This demands that ana-
+lysts evaluate credit risks both temporally (i.e. identify-
+ing market turning points before and after the recession)
+and across credit markets (e.g. comparing product per-
+formances in major cities). Exacerbating this challenge
+2 Tsinghua Science and Technology, August 2012, 15(4): 000-000
+is the increasing size and complexity of the collected
+credit data that each analyst needs to examine. This
+places an extra burden on each individual analysis pro-
+cess in terms of the efforts needed to acquire the most
+appropriate information. This is exacerbated further by
+the need to gather information from heterogeneous data
+sources and bring it into a common picture. Current
+analytical tools are not designed specifically to address
+these challenges and can’t help analysts to comprehend
+the trends and patterns of markets from the necessary
+analytical perspectives.
+To alleviating these challenges, we formed a research
+partnership with Bank of America to investigate novel
+analysis technologies. One of our first actions under
+this partnership was to observe and characterize the an-
+alysts’ analytical workflow. Such domain characteriza-
+tion granted us the opportunity to closely identify the
+key perspectives in risk analysis, and helped us gain in-
+sights on the design elements that are needed.
+In this paper, we present RiskVA, an interactive vi-
+sual analytics system that is tailored to support credit
+risk analysis. RiskVA addresses the aforementioned
+challenges by supporting interactive data exploration
+and information correlation over a large corpus of credit
+data. It aids the analysts in depicting and comparing
+the performance of the credit products via visually re-
+vealing market fluctuations and temporal trends of the
+targeted credit products. RiskVA further supports indi-
+vidual analysis workflow and allows the analysts to cus-
+tomize the visual interface based on their preferences.
+To evaluate the efficacy of the system, we have con-
+ducted expert evaluations with analysts from BOA. We
+found that most analysts considered RiskVA to be use-
+ful and complimentary to their analysis needs. We fur-
+ther identified analysis scenarios for which our system
+could provide analysts with insights to develop appro-
+priate risk management strategies. Given these results,
+this work presents substantial qualitative advances over
+current practices in consumer risk analysis.
+• It provides a visual exploratory environment to
+handle scalable, multi-channel risk-related data
+over any given periods of time.
+• It provides highly coordinated interactive visual-
+izations to enhance both tactical and strategic anal-
+yses that are essential in depicting emerging risks.
+• It provides customizable workspaces that support
+the individual analyst’s analysis routines.
+The remainder of this paper is structured as follows:
+Section 1 characterizes the analysis processes and de-
+scribes our targeted users. Section 2 provides more de-
+tails about the limitations of current analysis practices.
+Section 3 presents RiskVA, and Section 4 provides sev-
+eral scenarios in which RiskVA can facilitate. Section 5
+shows our evaluation with domain analysts and discus-
+sions. We conclude the paper in Section 6.
+1 Domain Characterization: Credit Risk
+Analysis and its Challenges
+In this section, we describe the current practice in credit
+risk analysis. By discussing these in detail, we intend
+to shed light on the characteristic of existing challenges
+and how an interactive visual analytics system can pro-
+vide substantial improvements in risk management.
+The importance of credit risk analysis, as part of fi-
+nancial risk analysis, originates from the New Basel
+Capital Accord. Credit risk analysis generally referred
+to the process of establishing standards for investors
+and counterparties, assessing the portfolios of the ex-
+isting credit products, and preventing deterioration in
+the credit standing of a bank’s counterparties[3]. Fi-
+nancial companies typically use risk models to evalu-
+ate the insolvency risk caused by credits that enter into
+default. The tradition in consumer credit has been to
+take performance data over a fixed time interval for a
+sample of consumers. Then each consumer is ranked by
+performance, where unsatisfactory performance is often
+equated with being 60 or 90 days overdue with repay-
+ments. This historical information is reviewed by risk
+analysts and is then used to model internal risk strate-
+gies based on the characteristics of each consumer. The
+modeled strategy is then applied to new consumer to
+determine whether they are above the cut-off level to be
+accepted to open a line of credit.
+Fig. 1 This is a typical risk analysis workflow observed and
+summarized from risk analysts in BOA.
+As shown in Fig. 1, the credit risk analyses workflow
+are based on the following considerations:
+• Requires for assessing the performance of credit
+products. For example, if the net loss of a credit
+product exceeds a certain threshold, the analysts
+Xiaoyu Wang et al.: A Visual Analytics System for Consumer Credit Risks Analysis 3
+need to evaluate the associated potential risk.
+• Shifts in general credit investment strategy. For in-
+stance, in the change of market focuses (i.e. fo-
+cus shifts from high-end to mid-range consumers),
+the existing credit products would need to be re-
+evaluated in order to accommodate the changes.
+• Optimization of the portfolio of consumers or mar-
+kets: e.g. analysts need to minimize credit loss and
+increase the product revenues. The analysts need
+to operate under a sound credit-granting process.
+Thus, it is obvious that the determination of the credit
+risk relates to multiple intertwined factors. While a set
+of SQL queries can be used to retrieve delinquency pat-
+terns matching a limited set of existing hypotheses, in-
+specting risky behaviors or hidden investment opportu-
+nities are less straightforward. They are determined by
+a dynamic analysis context influenced by various fac-
+tors, such as the markets’ geospatial distributions, the
+prior investment strategies, and the competitors’ behav-
+iors. Hence, risk analysts often need to construct elab-
+orated queries over multiple facets of a large body of
+credit data, searching for certain statistical values that
+indicates high risk. Manually correlating these informa-
+tion channels is overwhelming: a single-focused analy-
+sis that only analyze the known risks might the hidden
+investment opportunity; whereas only retaining portfo-
+lios with very low delinquency rates could harm their
+relationships with clients or regulatory agencies.
+Exacerbating this challenge is the increasing size and
+complexity of the collected credit data that each analyst
+needs to examine. Millions of detailed consumer inci-
+dences are aggregated monthly to represent the market
+behaviors. This includes information about the banks
+and their competitors, the consumer demographics, and
+the third party credit ratings. Thus, to comprehend the
+trends and patterns of a market and identify the invest-
+ment opportunities, risk analysts are responsible for de-
+veloping methods to utilize that large data corpus and
+predict the likelihood that a client who borrows money
+from a financial institution will default or fall behind on
+a loan payment. This places an extra burden on the anal-
+ysis process in terms of the efforts needed to acquire the
+most appropriate information. At present, analysts do
+not have the capability to investigate all the activities,
+not to mention conducting thorough temporal analyses.
+In summary, credit risk analysis is an important yet
+challenging process, due to the increasing size and com-
+plexity of the data. Effective analysis tools are needed
+to address these challenges. Such tools must be tailored
+to specific analysis practices based upon the nature of
+the credit data. The tools must also enable comprehen-
+sive analysis of a large body of data to help verify hy-
+potheses as well as allow discovery of hidden features.
+2 Related Work
+In recent years the idea of using visualization to support
+financial analysis has gained a lot of interest. The fore-
+front of visual analysis within the financial market can
+be categorized in several main sectors, namely temporal
+analysis, market analysis, and investment analysis. For
+temporal analysis, several efforts have previously inves-
+tigated representing and analyzing changes in financial
+data[1,2,8]. Particularly, recent work by Ziegler et al.[20]
+presented useful clustering techniques to help visualize
+the temporal financial changes.
+To support market analysis, Keim et al.[9] have pre-
+sented pixel-based visualization techniques showing the
+performance of individual stocks in high detail. In
+addition, the tree-map-based Map of the Market by
+Wattenberg[17] had introduced an effective way to ex-
+amine and compare market and stock performances.
+Finally, much research emphasized the integration of
+visualizations and mathematics in maximizing invest-
+ment profits[11,16]. A representative work by Maciejew-
+ski et al.[13], combines the Winner’s and Loser’s Curse
+to reach optimal investment decisions.
+Given the complexity of aforementioned risk analy-
+sis, these individual systems are not particularly suited
+for depicting multidimensional data on their own. How-
+ever, these visualizations can be integrated into systems
+handling multidimensional data by using multiple co-
+ordinated views[12] in conjunction with highly interac-
+tive exploratory techniques. Systems for integrating
+large data source, such as JigSaw[15] PatentVis[10] and
+IRSV[19], enhance analysis tasks by providing an inte-
+grated visual environments for direct data manipulation.
+Moreover, another significant aspect in consumer risk
+analysis is its time-critical nature, which requires a con-
+cise yet dynamic visual interface to effectively perfor-
+mance both tactical and strategic analyses on emerg-
+ing risks. Examples for systems that intend to address
+such analysis are GTDVis[18] and WireVis[7]. Compared
+to GTDVis, which reveals global terrorist attacks pat-
+terns based on individual attributes, our system empha-
+sizes revealing the combined impacts to the credit mar-
+4 Tsinghua Science and Technology, August 2012, 15(4): 000-000
+Fig. 2 This is an overview of RiskVA, including the Entity Heatmap view (A), the Product Comparison view (B) and the Trend
+Analysis view (C). Here, analysts examine the 30-day delinquency rate (late payment) in Market C across a range of consumers.
+kets based on associating multi-channel risk informa-
+tion. While both RiskVA and WireVis present concise
+visualizations for large financial datasets, RiskVA also
+supports a customization mechanism to support dynam-
+ically rule generation and workspaces creation.
+In the following sections, we detail the challenges
+of the current risk analysis process, and describe our
+visual analytics system, which is designed to address
+these challenges by encoding the essential analyses into
+a cohesive visual analysis environment.
+3 Identifying Analytical Requirements in
+Risk Analysis Processes
+To design a visual analytics system that is tailored to the
+risk analytical workflow in Bank of America, we es-
+tablished a long-term collaboration with its Consumer
+Credit Risk Solution divisions and grounded our inves-
+tigation on a field study conducted within the bank.
+During the design phase, we communicated with an-
+alysts from this division on their current practices as
+well as their needs for good analysis of consumer credit
+risks. We carried out multiple interviews and discus-
+sions to observe the day-to-day operations performed
+by the team. The interviewees held a broad range of
+positions, including analysts who focused on analyzing
+credit products and risk managers who were in charge
+of business plans and management strategies.
+The interview data collected was used to characterize
+the task activities, and further used to develop the de-
+sign requirements for a visual analytics system. Inter-
+views with members from this team revealed their ana-
+lytical needs, including fusing multiple streams of data,
+retrieving information for context-dependent tasks, and
+analyzing the findings. In general, our user group con-
+stantly needs to respond to market changes and conduct
+analyses involving the assessment of asset quality, the
+adequacy of provisions and reserves, and the balance of
+delinquency and investment.
+As specified in Fig. 1, the analytical tasks of con-
+ducting risk analysis often include requirement specifi-
+cation, data aggregation, information organization and
+correlation, and result sharing. To analyze risk of a
+credit product, an analyst often starts by gathering rel-
+evant content from multiple data sources for a compre-
+hensive view of that product. This aggregated dataset
+not only includes BOA’s own data, such as the delin-
+quency (late-payment) rating for a product, but also data
+from credit rating agencies, such as credit scores. To
+improve their own assessments of risk, the analysts then
+filter this large collection of data and attempt to orga-
+nize it in a clear and consistent manner to support the
+awareness and sense-making process.
+Tools, in this context, are considered as a means to
+transform their hypotheses into desired task actions.
+Currently, the risk analysts primarily use tools, like
+SQL databases and Excel, to produce and communi-
+cate analysis outcomes. In the process, their prior ex-
+periences (i.e. knowledge of a potentially deteriorat-
+ing credit product) are used, and further task actions are
+taken in their analytical process. Although these ana-
+lysts currently use a number of different tools, we found
+Xiaoyu Wang et al.: A Visual Analytics System for Consumer Credit Risks Analysis 5
+that they were lacking tools actually designed to support
+their analysis workflows and helps them effectively per-
+form necessary tasks.
+Therefore, the goal of our system is to address these
+challenges in accordance with the analytical require-
+ments of the risk analysis team. A detailed character-
+ization of these three challenges, as well as how they
+are addressed in our system are described as follows.
+3.1 Support the Identification of Emerging Risks
+Consumer risk analysis requires analysts to ”know your
+customers”. This includes knowing the performance of
+credit products for the customers individually, in com-
+mercial markets, and statistically. An important part of
+knowing the customers is the assessment of their over-
+all activities in terms of risk. Certain credit products
+(e.g., loans as they are unsecured debt without collat-
+eral) are inherently riskier. A financial institution must
+know where and how its credit investment is being spent
+in order to accurately assess the emerging risk. Yet, per-
+forming this comprehensive risk analysis with the less
+tailored tools is not easy. Specifically, the analysts re-
+quire tools that focuses on the following aspects:
+Market Analysis: The trends of a credit market have
+significant influences on a bank’s investment strate-
+gies. Typical markets are metropolitan areas where the
+bank focuses its credit products. The analyses of these
+markets concentrate more on the performance across
+geospatial regions and the health of a credit market.
+Temporal Analysis: The temporal changes of a
+credit product is of great value in revealing the dete-
+rioration rate of a credit product and its related net loss.
+Risk analysts rely on this analysis to adjust their future
+product investments. However, temporal analysis in ex-
+isting tools is limited to a per-product basis. Having a
+complete picture of the temporal changes of products
+in all markets will help spotting abnormal investment
+behaviors is very crucial to analysts.
+Product-Comparison Analysis: The bank invests in
+a wide range of credit products to maximize its invest-
+ment profit. While current query-based analysis can
+help follow the changes of a single product, it has dif-
+ficulties in scale up the analysis. Given the diversity of
+the products, tools that could assist in comparing the
+behaviors of these products would be very significant.
+In practice, the risk analysts often examine a mixture
+of these analyses, such as depicting the trends in the
+markets through both market and temporal analysis, or
+examining a product’s impacts to the markets using both
+market and product comparison analysis.
+3.2 Support More Strategic than Tactical Analysis
+Due to the burdensome necessity of analyzing multi-
+channel credit information, analysts often think nar-
+rowly about their investigative tasks. In particular, they
+think in terms of known patterns or activities that have
+been identified previously rather than in terms of what
+the patterns in the data are revealing to them. In ad-
+dition, credit analysis requires knowing the patterns of
+market changes for individual clients as well as the en-
+tire market. However, the analyses are often hindered
+by the tools, the time, or the sufficiency of evidences in
+revealing more broad nature of credit products.
+Therefore, careful thought must be given to gather-
+ing information to assist the analyst in providing ob-
+jective, fully reasoned assessments backed by evidence
+and avoiding inevitable pitfalls and biases. Hence, ana-
+lytical tools must be able to help effectively sift through
+noise and irrelevant data, explore a large body of credit
+data, and combine information from multi-channel in-
+formation sources into a strategic risk analysis.
+4 RiskVA: A Visual Analytics System for
+Analyzing Credit Risks
+In response to these identified analytical requirements,
+we designed RiskVA, an interactive visual analytics sys-
+tem that helps domain analysts in depicting and compar-
+ing the performance of the credit products through vi-
+sually revealing market fluctuations and temporal trends
+of the targeted credit products. Throughout the system
+design and implementation phase, we maintained close
+communication with the consumer credit risk solution
+group and routinely showed our progress and received
+feedback for our prototypes. In the following sections,
+we first explain the data integration process that en-
+ables RiskVA to effectively combine multiple informa-
+tion channels, and then describe how each of the ana-
+lytical requirements is depicted in our system. For pri-
+vacy and proprietary reasons, details about the market
+information, bank associations and consumer informa-
+tion have all been anonymized in the following sections
+and in the figures. Of course, when the bank analysts
+use RiskVA, all this information is depicted.
+4.1 Data Integration
+At the heart of RiskVA is a data cube structure[14] that
+is customized to handle the large-size and complex
+credit data. Shown in Fig. 3, our design of a three-
+6 Tsinghua Science and Technology, August 2012, 15(4): 000-000
+Fig. 3 This is the system pipeline for RiskVA.
+dimensional cube structure provided our collaborators
+with a means to correlate multiple credit information.
+On the conceptual level, our cube structure is spec-
+ified to accommodate the risk analysts’ tasks, present-
+ing the rules of the desired credit information. Particu-
+larly, such rules are constructed around the key analy-
+sis elements, including credit entity (e.g. FICO scores,
+wealth level, market ID), temporal information, and
+credit products (e.g. credit loans, mortgage).
+The use of rules (e.g. market A & bank B & Time
+C) in the cube structure can effectively help analysts to
+navigate through a large body of high-dimensional data
+and locate the desired information. For example, the
+rules help answer question like, ”What’s the consumer
+behavior in market M, with credit score below 690?”
+In addition, rules can be recorded and reused in differ-
+ent analysis scenarios, making it possible for RiskVA to
+trace individual’s analytical process and share the out-
+comes between analysts. The ease of creating rules pro-
+vides the flexibility to customize the credit information
+and fit it with individual analyst’s workflows. Finally,
+the rules are an essential part in the constructions of the
+visual representation. They inform the views to filter
+unnecessary data elements and to present the analyst
+with most relevant information. RiskVA further uses
+these rules to coordinate and update the visualizations.
+On the implementation level, this data cube follows
+the previous work[14] on creating an effective structure
+for slice-and-dice data from multiple aspects. As illus-
+trated in Fig. 3, to optimize the memory usage, the cube
+structure is disseminated into three parts: the meta-
+cubes that stores the rules, the virtual-cubes, which
+enable the comparison of credit products over a large
+dataset, and the physical data cube that points to the ac-
+tual credit data. Due to page limits, the details of the
+implementation are beyond the scope of this paper.
+4.2 Design Interactive Visualizations to Support the Identi-
+fication of Emerging Risks
+Given the complexity of the related information, no sin-
+gle view could fulfill all the analytical requirements and
+show all the necessary data. Therefore, RiskVA is de-
+signed as system of coordinated views that would allow
+the analysts to see different data, while being able to un-
+derstand the connections between the views easily. In
+particular, RiskVA encodes the three essential analyses
+as described with a set of visualizations, each of which
+correspond to facilitate market analysis, temporal anal-
+ysis and comparison analysis, respectively.
+4.2.1 Depict market behaviors with Entity Heatmap view
+Fig. 4 This is the overview of the Entity Heatmap view.
+Each Horizontal bar corresponds to a user-created rule.
+RiskVA utilizes entity heatmap to display the statisti-
+cal measurements associating investment markets (e.g.
+population in the US West with credit scores less than
+690) and credit products, as the former influences the
+behaviors of the latter. As shown in Fig. 7, the heatmap
+is based on a grid where columns are the timestamps,
+and whose rows are rules that indicate the market per-
+formance of different credit products. This design aims
+to provide the analysts are direct sense of how the mar-
+kets’ performances over time. At the intersection of a
+particular column and row, the cell is color-coded with
+a value derived from the combination of market/credit
+card in that time-period. Such values are associated
+with a particular credit performance indicator (e.g late-
+payment rates). Depending on the choice of mathemat-
+ical measurements (e.g., difference value granularity),
+RiskVA enables the user to interactively apply various
+color schemes (e.g., colors based on the min/max val-
+ues) to depict some significant market trends, informing
+the overall strategies about the targeted markets.
+Using the heatmap view, risk analysts can now spot
+the markets that perform worse than the others, relat-
+ing to a given credit product. As shown in Fig. 4, this
+view is also enhanced with user-configurable rules that
+make it possible for analysts to visually compare pat-
+Xiaoyu Wang et al.: A Visual Analytics System for Consumer Credit Risks Analysis 7
+terns of product behaviors across different markets. For
+example Fig. 7 (right) shows the comparison of overall
+market fluctuations between two financial institutions in
+the period of the 2007-2010. The heatmap view clearly
+indicates the performance variation between two insti-
+tutions, where the lower late-payment rate (blue) sug-
+gests one has more stable products than the other. The
+heatmap view is also highly interactive that enables in-
+teractively selection, highlights, and sort of credit in-
+formation. It further allows analysts to apply statisti-
+cal analysis over a particular time period or investment
+market for vertical and horizontal analysis.
+Once general understandings about a particular credit
+product are established, RiskVA further facilitate in
+deepening the understanding of the impact of that credit
+product to the market. It enables analysts to interac-
+tively parameterize the heatmap view with more fo-
+cused rules, and helps them depict the market impacts
+with finer analytical context. In many cases, this en-
+ables the dissemination of market trends into multiple
+populations, revealing the strategies based on the risks
+associated with each population. Fig. 7 (left) shows a
+further analysis of the lesser-performing institution in-
+dicates that the population with less than 620 score and
+larger debt tends to pose higher risks than others.
+4.2.2 Reveal temporal patterns by Trend Analysis view
+Fig. 5 The overview of Trend analysis.
+The ability to examine the stability of a credit market
+over a period of time is of great value to the risk ana-
+lysts, especially during a market turbulence. This can
+help identify the most vulnerable consumer credit prod-
+ucts, and depict the possible causes. Through manually
+examining the changes of all the credit products prior
+to that time frame, the analysts may eventually be able
+to identify a weak product. However, current practices
+still limit such crucial temporal analysis to a per-product
+basis. RiskVA utilizes a coordinated interface to effec-
+tively reveal these temporal patterns.
+The trend analysis view (Fig. 5) is designed to sup-
+port such analysis. It shows the overall temporal perfor-
+mances of each credit product, and allows the analysts
+to compare the stability of that product in different mar-
+kets. The x-axis here shows the progression of time, and
+the y-axis shows the performance of a product in a par-
+ticular market. Such performance can be actual invest-
+ment amount (e.g. total/average investment of mortgage
+loan), or it can be the trend that is calculated to indicate
+the stability of that product (i.e. the numerical differ-
+ences between investment cycles).
+In particular, each bubble in Fig. 2 (C) represents a
+30-day credit late-payment rate; its transparency shows
+the temporal trail for that market. The more opaque, the
+closer that data is to the current time. If a market shares
+less drastic changes, such as the green bubbles to the
+left, the pattern resides in a more clustered group. How-
+ever, if the market is like the one shown on the red dots
+in Fig. 2 (C), as it is less grouped, this market is less
+stable. Specifically, the late-payment ratings (i.e. the
+dots) in that market changed drastically over the years.
+To facilitate efficient interactions with the temporal
+analysis, RiskVA enables quickly selection of a spe-
+cific market or product by hovering the labels. Analysts
+can further examine the details of a specific time period
+and/or certain product/market, through interactively fil-
+tering to the desired analysis items.
+4.2.3 Compare products in Product-Comparison view
+Fig. 6 This is the Product-Comparison View. Here shows
+the comparison between in two invested consumer groups.
+RiskVA uses an interactive bar chart view to present the
+comparisons between credit products (Fig. 6). In this
+view, the credit products are grouped and represented
+in horizontal bars, which are directly associated with the
+rule in the heatmap view. Different products are distin-
+guished by the assigned colors. The length of each bar
+corresponds to the actual investment values of that prod-
+uct, and can be further customized based on aggregation
+methods such as summation or average. By placing the
+different products side-by-side, RiskVA enables direct
+comparison between the performances of these invest-
+ments for various populations. As shown above, the an-
+alysts can clearly verify the well-being of the targeted
+market, given the fact that the credit investments in that
+8 Tsinghua Science and Technology, August 2012, 15(4): 000-000
+market are distributed proportionally to the consumers’
+credit scores (e.g. the bank invests more on consumers
+with higher credit scores and less on consumers with
+lower scores). To further examine the details of these
+credit products, the analysts can mouse over each bar
+and correlate it with the information in the heatmap.
+4.3 Create Customizable Workspaces to Support individual
+analysis routines
+RiskVA further presents customizable workspaces to
+support the diversified analysis goals. We define
+workspace as a user-configurable combination of the
+above three visualizations that provides a particular
+analysis context. Much like a probe system[5], each
+workspace builds upon the data cube structure and em-
+powers the ability to depict multiple-channels informa-
+tion simultaneously. For example, the analysts can ex-
+amine and compare two market performances datasets
+via different analysis contexts (see Fig. 7). In addi-
+tion, the utilization of entity rules provides a founda-
+tion for RiskVA to coordinate between the three views
+and workspaces. Since the underlying structure for data
+cubes (e.g. meta-cubes and virtual-cubes) is the same,
+the information passing between these view represen-
+tations becomes straightforward. RiskVA handles two
+levels of coordination mechanism, within workspace
+coordination and between view coordination. This
+helps cross-comparison of individual products in differ-
+ent analysis context (e.g. credit load performance in
+US West v.s. US East ). If there are matching entities
+(e.g. date, market, or rules), RiskVA can further link the
+multiple workspaces using this information and provide
+analysts a coherent understanding about the risks that
+are embedded in different analysis contexts.
+RiskVA also enables the analysts to have full control
+of the creation of a workspace. Given their analytical
+needs, analysts can directly branch off their analysis by
+duplicating the existing workspaces or construct a com-
+pletely new workspace with a different set of data. Such
+a branching mechanism enables them to easily shift fo-
+cuses while still maintaining the train of thought em-
+bodied in the branching structure. In addition, RiskVA
+also helps the analysts to customize their workspaces by
+providing them the flexibility to combine and sequence
+the analytical components to fit their own workflow (i.e.
+remove or hide certain visualizations or apply specific
+statistical analysis equations).
+To help analysts maintain their train of thought and
+resume or repeat their previous analysis processes,
+RiskVA automatically records the history of the users’
+workspace usages. It logs the time when a workspace
+is created, branched off, and closed. It also records the
+above system customizations (user’s view preferences
+during a particular analysis). Thus, at any given time,
+the analysts can use RiskVA to revisit their previous
+workspaces and to continue their analyses.
+5 Analysis Scenarios
+Understanding the cause of market deterioration is a
+key step for risk analysts to develop corresponding in-
+vestment strategies. To conduct an unbiased risk analy-
+sis, it is necessary for analysts to monitor and compare
+credit products from both the competitors and their own.
+Based on our discussions at BOA, we have observed
+that the analysis of a market typically follows three
+analysis stages, namely identifying risky markets, com-
+paring product performance between banks, and identi-
+fying potential causes for the fluctuation. The follow-
+ing scenario was identified with the risk analysis team
+at their regular strategy meeting. The agenda for this
+meeting was to discuss the bank’s credit product per-
+formances in several major investment markets using
+RiskVA. As observers, we documented their analysis
+processes and helped them become familiar with the
+system. We also provided explanations about certain
+features in our system during their exploration.
+To pursue this scenario, as shown in Fig. 2, RiskVA
+was initialized with credit data from year 2007 to 2010.
+To depict the performances of individual markets, the
+risk analysis team utilized the entity heatmap view to
+check if any interesting fluctuation pattern could be
+identified. The team found a set of markets with high
+30-day delinquency rates (warmer colors in Fig. 2 (A))
+over the entire time span, which indicated a large body
+of late payments and the potential net losses for the
+bank. To get a clearer picture of the behavior of those
+markets, the analyst turned to the trend analysis view
+to examine the development of these markets. As il-
+lustrated by the clusters in Fig. 2 (C), the analysts
+noticed that one investment market (red bubbles) was
+particularly vulnerable (i.e. the cluster scattered over
+the time), suggesting an unstable product performance
+since the beginning of the credit crunch in late 2007 un-
+til recently. Given that the general investment market is
+recovering since 2009, the analysis team decided to first
+take a closer look at unusual market behavior.
+Instead of directly drilling down to that market, the
+Xiaoyu Wang et al.: A Visual Analytics System for Consumer Credit Risks Analysis 9
+Fig. 7 This presents comparison analysis between information from two customized workspaces.
+team utilized the built-in workspaces to branch off their
+current analysis to keep track of their analysis pro-
+cesses. As shown in Fig. 7, the team created a new
+workspace to compare the performance of the bank’s
+own credit products with other competitors in that mar-
+ket. A quick glance at Fig. 7 indicates that the compet-
+ing banks on average invested more in that market and
+maintained a quite healthy performance. This finding
+immediately raised several questions: could the client
+base affect the market performance? Or was it caused
+by the unbalanced or sudden increase of investments
+in that market (e.g. mortgage v.s. credit loans)? Al-
+though these were all possible causes of the market de-
+terioration, the risk analysts had no definitive answers
+or evidence to confirm their hypotheses by looking at
+the product comparison view alone.
+Trying to verify these hypotheses, the team started to
+search for clues from the investment history of that mar-
+ket. By using fine-grain rules, they found that the invest-
+ment in that market had always been a steady amount,
+and a reasonable proportion between secured and unse-
+cured credit products. This therefore rules out the pos-
+sibility if investments patterns being the cause of this
+fluctuation. However, a closer examination of client
+bases in the heatmap view suggested a different story.
+Fig. 2 (B) showed that, compared to the typical strat-
+egy of pursuing consumers with higher credit scores,
+these markets invested on a fair amount of population
+with lower credit scores but with long credit histories.
+A quick check on the trend analysis view (Fig. 5) fur-
+ther indicated that, the trend of this consumer group has
+peaked since 2008. A quick reference to the recent fi-
+nancial news around that market confirmed that there
+was an increasing amount of unemployment in market,
+which gave the risk analysts reasons to conclude that the
+changing in client bases may be a key factor in causing
+the fluctuation of this market.
+Given the unsatisfactory market performance and
+concerns for losing more investment, the risk analyst
+team indicated that this market needed more attentions
+to bring its performance back on track. They also de-
+cided they needed some strategies to alleviate the pres-
+sure imposed on the customers and to help revive the
+market. After this exercise, the risk analyst commented
+on the effectiveness of RiskVA in helping them to ex-
+plore the credit markets, as well as in identifying possi-
+ble cause of market fluctuations. Although simple, the
+scenario has demonstrated the usefulness of RiskVA in
+support of strategic risk analysis.
+6 Expert Evaluation: Visual Facilitation on
+Tactical and Strategic Analyses
+To assess the efficacy of our system, we conducted ex-
+pert evaluations with end-users from Bank of America.
+Our goal is to perform summative evaluation to mea-
+sure how well RiskVA could facilitate their analyses.
+During several on-site visits, we demonstrated the de-
+sign of RiskVA and the utilities of each visualization to
+a total number of 8 managers and analysts from or re-
+lated to the risk analysis team. We invited analysts to
+perform their standard analyses in a think-aloud man-
+ner using RiskVA. We observed and documented the
+10 Tsinghua Science and Technology, August 2012, 15(4): 000-000
+details about their analysis processes. Finally, we con-
+cluded the evaluation by gathering their feedback and
+comments. Since RiskVA has been deployed to this
+team, we also conducted email follow-ups to see if there
+were additional comments they would like to share.
+One of the benefits of RiskVA that was noted by all
+risk analysts was its visual exploration environment that
+enables them to perform more strategic rather than tac-
+tical analyses. All analysts considered the ability to in-
+teractively perform the aforementioned three analyses
+simultaneously is powerful in portraying the detailed,
+dynamic nature of emerging risks. To support tacti-
+cal analysis, RiskVA allows the analysts to utilize their
+prior knowledge about the market to verify known risk
+patterns. It further helps pursue analysts’ tactical goals
+using resources at hand. In RiskVA, rules are used to fa-
+cilitate the interactive filtration and analysis of the credit
+information at different granularities.
+When this capability was presented to the risk ana-
+lysts, they spontaneously formulated a variety of rules
+to identify credit information. They were generally sat-
+isfied with the efficiency and appreciated the flexibility
+to perform customized analysis. Specifically, one of the
+seasoned analysts commented that the ability of such in-
+teractive analysis served two roles in supporting his tac-
+tical analysis. On the one hand, he considered RiskVA
+as an efficient environment to slice and dice market in-
+formation and to test hypotheses. On the other hand, he
+thought the ability to interactively construct rule helped
+him match and confirm his expectations with the visual
+representations, and gain confidence in using the sys-
+tem. This helped addressing another important aspect
+in risk analysis practices: the need to verify and vali-
+date the accuracy of new technologies.
+In assessing its efficacy in handle strategic risk anal-
+ysis, many analysts considered RiskVA to be advanta-
+geous in identifying the emerging risks. Particularly, it
+reduced the amount of data noise and help analysts to
+see a broader picture and home in on suspicious out-
+liers. It further enables them to explore possible risk
+patterns that were previously unidentified. As demon-
+strated in the above scenario, RiskVA helped effectively
+analyze sizable credit data and lead to the depiction of
+the cause of market deterioration. All the analysts found
+the system practical and believed it would be useful in
+perform more strategic analysis. As summarized in one
+comment, [RiskVA] first provides me the general idea
+of what’s going on with the market. And quickly let
+me navigate into a specific analysis segments...It allows
+me to get more hands-on analysis, and to check what I
+might have missed in analyzing the data.
+One suggestion was to provide additional geospatial
+analysis with more regional risk entities. Analyst would
+like to see incorporated information like distances, den-
+sities, and areas in analysis as possible explanatory vari-
+ables. One participant suggested that some higher res-
+olution geospatial view can be used to drill down be-
+low the census Bureau’s Core Based Statistical Area
+(CBSA) level, or create a geographical segmentation of
+the US that’s independent of CBSA or ZIP. Then we can
+compare our performance in these new entities.
+7 Discussion and Future Work
+We undertook this research to design a system that fa-
+cilitates the risk analysts’ tactical and strategic analy-
+ses. To this end, we presented RiskVA, an interactive
+visual analytics system that demonstrated unique and
+effective capabilities for a class of problems in risk anal-
+yses. The design of RiskVA is grounded in the task
+analysis results of a group of analysts from Bank of
+America. These results provide us clear identification
+of general domain analysis process, including fine-grain
+task activities, task flows, and overall analysis objec-
+tives. We further disseminated this general analysis pro-
+cess into individual analytical requirements, and trans-
+formed them into the specific system implementations
+through iterative prototyping with the analysts.
+There are limitations to our research that should be
+addressed. Specifically, our research characterized the
+domain analytical workflow through interviews, which
+generally are self-reported by participants. This method
+could be limited, in that it modeled the workflow
+from a retrospective viewpoint, whereas Brows et al.[21]
+demonstrated that problem spaces and solutions are es-
+tablished and changed dynamically in interactions with
+people and the environment. Therefore, our understand-
+ing of domain task flow may be constrained to the risk
+analysts’ general way of performing tasks. One way we
+used to alleviate this constrain is enable the risk analysts
+to customize RiskVA to fit their own workflows.
+In addition, our research is limited by its evaluations
+with domain experts. Given the privacy and propri-
+etary considerations in BOA, we only evaluated RiskVA
+through expert evaluations. While the results are posi-
+tive, we believe much can be learnt if alternative meth-
+ods were available. In particular, we would like to eval-
+uate the analysts’ knowledge gain from using our sys-
+Xiaoyu Wang et al.: A Visual Analytics System for Consumer Credit Risks Analysis 11
+tem. However, developing evaluation strategies to accu-
+rately assess the effectiveness of a visual analytics sys-
+tem is challenging yet beyond the scope of this paper.
+At this point we do not have a clear outline on the best
+evaluation approach; the design of guidelines for sys-
+tematically evaluating a visual analytic system would
+be one interesting future direction for our research.
+8 Conclusions
+In this paper, we presented RiskVA, an interactive vi-
+sual analytics system that demonstrated effective capa-
+bilities for credit risk analyses. RiskVA supports a thor-
+ough analysis of sizable credit data from financial insti-
+tutions and permit them to better make their own assess-
+ments of risk, independent of, and more focused than,
+assessments they get from ratings agencies that may not
+be suitable for the their situations. By placing analysts
+in the center of the processes, RiskVA provides inter-
+active environment to perform data exploration and to
+correlate information over a large corpus of data. In our
+expert evaluations, analysts confirmed the novelty and
+utility of RiskVA in performing risk assessments, and
+further expressed interests in using it in their daily tasks.
+These results indicate the efficacy of the cognitive task
+analysis process we undertook at the beginning. It is
+essential that this task analysis be carried out and also
+be made flexible to support exploration and unforeseen
+analyses. RiskVA and other tools we have developed
+indicate that this process is general. It is certainly clear
+that RiskVA is a tool for emerging risk analysis and is
+applicable across financial institutions.
+References
+[1] J. Allebach. Binary display of images when spot size ex-
+ceeds step size. Applied Optics, 15:25132519, August
+1980.
+[2] M. Ankerst, D.A. Keim, H.-P. Kriegel, Circle Segments: A
+Technique for Visually Exploring Large Multidimensional
+Data Sets, in Proc. of Visualization 96, Hot Topics Session,
+1996.
+[3] Basel Committee for Banking Supervision.
+www.bis.org/bcb.
+[4] Nick Bloom (2007), The Impact of Uncertainty
+Shocks’,National Bureau of Economic Research Working
+Paper No. W13385,also available as CEP Discussion.
+[5] T. Butkiewicz ; W. Dou; Z. Wartell; W. Ribarsky;
+R. Chang, ”Multi-Focused Geospatial Analysis Using
+Probes,” Visualization and Computer Graphics, IEEE
+Transactions on , vol.14, no.6, pp.1165-1172, Nov.-Dec.
+2008.
+[6] E. Catmull. A tutorial on compensation tables. In Com-
+puter Graphics, volume 13, pages 17. ACM SIGGRAPH,
+1979.
+[7] R. Chang.; M. Ghoniem.; R. Kosara; W. Ribarsky,; Y. Jing
+; E. Suma, C. Ziemkiewicz,; D. Kern; A. Sudjianto, ”Wire-
+Vis: Visualization of Categorical, Time-Varying Data
+From Financial Transactions,” Visual Analytics Science
+and Technology, 2007. VAST 2007. IEEE Symposium on,
+vol., no., pp.155-162, Oct. 30 2007-Nov. 1 2007.
+[8] D.A. Keim, Pixel-Oriented Visualization Techniques for
+Exploring Very Large Databases, Journal of Computa-
+tional and Graphical Statistics, Vol 5, pp. 58 -77, 1996.
+[9] D.A. Keim, T. Nietzschmann, N. Schelwies, J. Schnei-
+dewind, T. Schreck, and H. Ziegler. A Spectral Visualiza-
+tion System for Analyzing Financial Time Series Data. in
+Proc. of Eurographics/IEEE-VGTC Symposium on Visu-
+alization (EUROVIS’06), pp. 195-200, 2006.
+[10] S. Koch, H. Bosch; M. Giereth, T. Ertl; , ”Iterative integra-
+tion of visual insights during patent search and analysis,”
+Visual Analytics Science and Technology, 2009. VAST
+2009. IEEE Symposium on , vol., no., pp.203-210, 12-13
+Oct. 2009.
+[11] J. Lin, M. Vlachos, E. Keogh, and D. Gunopulos, Itera-
+tive Incremental Clustering of Time Series, Advances in
+Database Technology - EDBT 2004, 9th Intl. Conference
+on Extending Database Technology, 2004.
+[12] J. Roberts. State of the art: Coordinated & multiple views
+in exploratory visualization. In Fifth International Confer-
+ence on Coordinated and Multiple Views in Exploratory
+Visualization, 2007. CMV ’07, pages 6171, July 2007.
+[13] A. Savikhin, R. Maciejewski and David S. Ebert. Applied
+Visual Analytics for Economic Decision-Making. IEEE
+Symposium on Visual Analytics Science and Technology
+(VAST), pp. 107-114, 2008.
+[14] C. Stolte, D. Tang, and P. Hanrahan. 2003. Multiscale Vi-
+sualization Using Data Cubes. IEEE Transactions on Visu-
+alization and Computer Graphics 9, 2 (April 2003), 176-
+187.
+[15] John Stasko, Carsten Gorg, and Zhicheng Liu, ”Jigsaw:
+Supporting Investigative Analysis through Interactive Vi-
+sualization”, Information Visualization, Vol. 7, No. 2,
+Summer 2008, pp. 118-132.
+[16] S. Rudolpn, A. Savikhin, and D.S. Ebert,; FinVis: Applied
+visual analytics for personal financial planning, Visual An-
+alytics Science and Technology, 2009. VAST 2009. IEEE
+Symposium on , vol., no., pp.195-202, 12-13 Oct. 2009.
+[17] M. Wattenberg. Visualizing the stock market. CHI Ex-
+tended Abstracts on Human Factors in Computing Sys-
+tems, pp. 188 189, 1999.
+[18] X. Wang, E. Miller., K. Smarick, W. Ribarsky, and R.
+Chang (2008), Investigative Visual Analytsis of Global
+Terrorism. Computer Graphics Forum, 27:919-926.
+[19] X. Wang, W. Dou, S. Chen, W. Ribarsky, and R. Chang,
+”An Interactive Visual Analytics System for Bridge Man-
+agement”, presented at Computer. Graph. Forum, 2010,
+pp.1033-1042.
+[20] H. Ziegler; M. Jenny; T. Gruse; D.A. Keim.; Visual market
+sector analysis for financial time series data, Visual Ana-
+lytics Science and Technology (VAST), 2010.
+

@@ -1,0 +1,1197 @@
+1Value and Relation Display: Interactive Visual
+Exploration of Large Datasets with Hundreds of
+Dimensions
+Jing Yang
+Dept of Computer Science
+UNC Charlotte
+jyang13@uncc.edu
+Daniel Hubball
+Dept of Computer Science
+University of Wales Swansea
+csdan@swansea.ac.uk
+Matthew Ward
+Dept of Computer Science
+Worcester Polytechnic Institute
+matt@cs.wpi.edu
+Elke Rundensteiner
+Dept of Computer Science
+Worcester Polytechnic Institute
+rundenst@cs.wpi.edu
+William Ribarsky
+Dept of Computer Science
+UNC Charlotte
+ribarsky@uncc.edu
+Abstract—Few existing visualization systems can handle large
+datasets with hundreds of dimensions, since high dimensional
+datasets cause clutter on the display and large response time in
+interactive exploration. In this paper, we present a significantly
+improved multi-dimensional visualization approach named Value
+and Relation (VaR) display that allows users to effectively and
+efficiently explore large datasets with several hundred dimen-
+sions. In the VaR display, data values and dimension relationships
+are explicitly visualized in the same display by using dimension
+glyphs to explicitly represent values in dimensions and glyph
+layout to explicitly convey dimension relationships. In particular,
+pixel-oriented techniques and density-based scatterplots are used
+to create dimension glyphs to convey values. Multi-dimensional
+scaling, Jigsaw map hierarchy visualization techniques, and
+an animation metaphor named Rainfall are used to convey
+relationships among dimensions. A rich set of interaction tools
+have been provided to allow users to interactively detect patterns
+of interest in the VaR display. A prototype of the VaR display
+has been fully implemented. The case studies presented in this
+paper show how the prototype supports interactive exploration of
+datasets of several hundred dimensions. A user study evaluating
+the prototype is also reported in this paper.
+Index Terms—Multi-dimensional visualization, high dimen-
+sional datasets, visual analytics.
+I. INTRODUCTION
+Large datasets with hundreds of dimensions are common
+in applications such as image analysis, finance, bioinformatics
+and anti-terrorism. For example, in order to detect the semantic
+contents of large image collections, it is common to analyze
+hundreds of low level visual attributes of the images. It is
+a challenge to make decisions based on these datasets, since
+they are hard to analyze due to the dimensionality curse [5],
+i.e., the lack of data separation in high dimensional space.
+Using multi-dimensional visualization techniques to present
+this data to analysts and allowing them to interactively explore
+and understand the datasets are an important approach to
+addressing this challenge. However, most traditional multi-
+dimensional visualization techniques suffer from visual clutter
+and only scale up to tens of dimensions. Up to now, few multi-
+dimensional visualization systems have claimed to be scalable
+to datasets with hundreds of dimensions. In this paper, we
+present such a system, called the Value and Relation (VaR)
+display, which is an improved version of a technique reported
+in an earlier paper [27].
+Our work is based on multiple concepts proposed and
+explored in prior efforts toward visual exploration of large
+datasets in the Information Visualization field. They include:
+• Using condensed displays to provide as much information
+as possible to users. Typical approaches include pixel-
+oriented techniques [12], [13] and density-based displays
+[9], [24]. For example, in pixel-oriented techniques, infor-
+mation is so condensed that each pixel presents a single
+data value.
+• Examining relationships among dimensions to discover
+lower dimensional spaces with significant features. Ex-
+ample approaches include ranking low dimensional pro-
+jections by their features such as linear relationships [19],
+and placing dimensions in a layout revealing their rela-
+tionships to help users construct meaningful subspaces
+[28].
+• Providing a rich set of interactions to allow users to
+explore datasets from multiple coordinated views. In
+these views, different subsets of dimensions and/or data
+items can be examined at different levels of detail us-
+ing different visualization techniques. Examples of such
+approaches include the Hierarchical Parallel Coordinates
+[10] and the VIS-5D system [11].
+The concepts above are significant features of the VaR
+display since its initial version [27]. In the first version (see
+figures 1a and b), pixel-oriented displays were used to show
+data values and group them into dimension glyphs representing
+individual dimensions. The dimension glyphs were then po-
+sitioned on the screen using a fast Multi-dimensional scaling
+(MDS) algorithm [4] according to dimension correlations to
+reveal their inter-relationships (dimension correlation is used
+since it is a typical measure of dimension relationships, but
+other relationship measures can also be used). A rich set
+of interactions were provided to facilitate navigation in the
+display and generate lower dimensional spaces of interest. To
+differentiate the first version from the improved version, we
+call it the Pixel MDS VaR display.
+In the improved version of VaR presented in this paper,
+these features are significantly strengthened. A density-based
+scatterplot [9], [24] has been added to the system as an alter-
+nate approach to generating dimension glyphs. A Jigsaw map
+layout [23] and the Rainfall metaphor have been added into the
+system as alternate dimension glyph layout approaches. The
+new version also supports a broader range of interaction tools
+than the original version, including a new data item selection
+2Fig. 1. (a) Illustration of the VaR display. On the left is the spreadsheet of a 4-dimensional dataset with each column representing a dimension. On the
+bottom is a matrix that records the pair-wise relationships (such as correlations) among the dimensions. In the middle is the glyph of the fourth dimension.
+On the right is the VaR display of the dataset. (b) The Pixel MDS VaR display of the Image-89 dataset (89 dimensions, 10,417 data itmes). (c) The X-Ray
+scatterplot MDS VaR display of the same dataset.
+and highlighting tool. The labeling issue, which was ignored in
+the initial version, is addressed in this version. A case study is
+included in this paper involving the visual analysis of a dataset
+with 838 dimensions. A user study comparing the VaR display
+with the rank-by-feature framework [19], [20] is also reported.
+This paper is organized as follows. Section II reviews
+related work. Section III briefly introduces the original Pixel
+MDS VaR display. Section IV presents the approach of us-
+ing density-based scatterplots to generate dimension glyphs.
+Section V describes the new Jigsaw and Rainfall dimension
+glyph layout strategies. Section VI summarizes the correlation
+calculation algorithm used in the VaR display. Section VII
+presents the interaction tools. Section VIII addresses the
+labeling issue. Section IX describes the implementation of
+the VaR display and addresses the scalability issue.Section X
+discusses visual exploration approaches with the VaR display.
+Section XI presents a case study and Section XII presents
+a user study for the VaR display. Section XIII presents our
+conclusions and future work.
+II. RELATED WORK
+Many techniques exist for generating condensed displays
+for large datasets. The work most related to our work is pixel-
+oriented techniques and scatterplots. Pixel-oriented visualiza-
+tion techniques [12], [13] are a family of multi-dimensional
+display techniques that map each data value to a pixel on
+the screen and arrange the pixels into subwindows to convey
+relationships. The patterns of the subwindows may reveal
+clusters, trends, and anomalies. Pixel-oriented techniques are
+one among several options to create the dimension glyph in
+the VaR display.
+Scatterplots visualize 2-D datasets or 2-D projections of
+multi-dimensional datasets. In a scatterplot, there is a hori-
+zontal axis and a vertical axis, which are associated with two
+dimensions (X and Y). The data items are plotted onto the
+display according to their coordinates on X and Y. Scatterplots
+are widely used since they provide rich information about the
+relationship between two dimensions, such as strength, shape
+(line, curve, etc), direction (positive or negative), and presence
+of outliers [18]. Density-based scatterplots [24], [9] scale to
+large datasets by using intensity of the spot in a scatterplot
+to indicate the data density in that spot. We use the density-
+based scatterplot as an option for generating the dimension
+glyph and treat the areas with no data items in a scatterplot in
+a different way from existing approaches due to the possible
+overlaps among the scatterplots.
+Scatterplots of multi-dimensional datasets are often orga-
+nized together to show multiple 2D projections of the datasets.
+Scatterplot matrices [7] organize the scatterplots of all N x (N-
+1)/2 2-D projections of an N-dimensional dataset into a matrix.
+Scatterplot matrices easily get cluttered when the number of
+dimensions increases. Rather than displaying all 2D projec-
+tions, we display N scatterplots between all dimensions and
+a focus dimension and position them in a manner conveying
+dimension relationships in our density-based scatterplot VaR
+option.
+There exist multiple visualization approaches to examining
+relationships among dimensions to discover lower dimen-
+sional spaces with significant features. The rank-by-feature
+framework [19] ranks 1D or 2D axis-parallel projections of
+multi-dimensional datasets using statistical analysis to help
+users detect 1D or 2D projections with desired features such
+as linearly related dimensions. [16] visualizes correlations
+between each pair of dimensions in a matrix and allows users
+to interactively select dimensions from the matrix to con-
+struct lower dimensional spaces. The interactive hierarchical
+dimension reduction approach [28] visually conveys dimension
+relationships using a dimension hierarchy to facilitate lower
+dimensional space construction. The VaR display is different
+from these approaches since it integrates data value visual-
+ization with dimension relationship visualization in the same
+display to use screen space more efficiently.
+Multi-dimensional Scaling (MDS) [4], [15] is an itera-
+tive non-linear optimization algorithm for projecting multi-
+3dimensional data down to a reduced number of dimensions.
+It is often used to convey relationships among data items
+of a multi-dimensional dataset. For example, IN-SPIRE [25]
+uses MDS to map data items from a document dataset to
+a 2D space. It generates a Galaxies display as a spatial
+representation of relationships within the document collection.
+In our approach, MDS is used in a different way, namely to
+convey relationships among dimensions rather than data items.
+The Jigsaw map [23] is a recent space filling hierarchy
+layout method. By placing the leaf nodes of a hierarchy into
+a 1D layout using a depth first traversal and mapping the
+1D layout into a rectangular 2D mesh using space-filling
+curves, this method creates hierarchy displays of nicely shaped
+regions, good continuity and stability. When all leaf nodes are
+of the same size, a Jigsaw map can draw all leaf nodes without
+any distortion in shape, namely, they can be all equal-sized
+squares. This property of the Jigsaw map makes it a perfect
+option for us to lay out dimensions organized into a hierarchy
+on a 2D mesh, with each dimension drawn as a square glyph.
+The similarity based dimension arrangement proposed in
+[1] also addressed the problem of arranging pixel oriented
+subwindows (dimensions) on a 2D mesh. It aimed to place
+similar dimensions close to each other on the 2D mesh. The
+Jigsaw map dimension layout is different in that it aims to
+use the dimension layout to convey the hierarchical structure
+among the dimensions. As a consequence, not only similar
+dimensions but also outlier dimensions are revealed.
+[29] presents a multi-dimensional visualization technique
+called Dust & Magnet. It represents dimensions as magnets
+and data items as dust particles and attracts dust particles using
+magnets to reveal data item values in the dimensions. The
+Rainfall metaphor proposed in this paper was inspired by Dust
+& Magnet. The difference is that the Rainfall metaphor attracts
+dimensions using dimensions, while Dust & Magnet attracts
+data items using dimensions.
+III. PIXEL MDS VAR DISPLAY
+Figure 1a illustrates the approach to generating a Pixel
+MDS VaR display. First, a dimension glyph, called a glyph in
+short, is generated to represent data values in each dimension,
+i.e., values in the same column in the spreadsheet, using
+pixel oriented techniques [13]. In particular, each value is
+represented by a pixel whose color indicates a high or low
+value, and pixels representing values from the same dimension
+are grouped together to form a glyph. In a glyph, each pixel
+occupies a unique position without overlap. In the original
+version, a spiral pixel layout was used. Rows in the spreadsheet
+are ordered according to their values in one dimension (Note:
+actually any 1D order can be used). Data values in each
+column are positioned into a spiral according to this order. In
+all glyphs, pixels representing values in the same row occupy
+the same position so that glyphs can be associated with each
+other.
+Second, the correlations among the dimensions are cal-
+culated and recorded into an N x N matrix (where N is
+the dimensionality of the dataset). In order to calculate the
+correlations, different approaches can be used according to
+different purposes. For example, if users are most interested
+in linearly related dimensions, Pearson’s correlation coeffi-
+cient can be used to capture the linear relationships among
+dimensions. We proposed a scalable and flexible correlation
+calculation algorithm [27] and applied it in the VaR display.
+We will briefly introduce it in Section VI for the purpose of
+completeness.
+Third, the N x N relationship matrix is used to generate N
+positions in a 2-D space, one position for each dimension. The
+proximity among the positions reflects relationships among
+the dimensions, i.e., closely related dimensions are spatially
+close to each other, and unrelated dimensions are positioned
+far way from each other. In particular, a multi-dimensional
+scaling algorithm [4] is used to create the 2-D positions upon
+the relationship matrix.
+Finally, the dimension glyphs are placed in the 2-D space
+in their corresponding positions to form the VaR display.
+Figure 1b shows an example of the VaR display. It shows
+the Image-89 dataset of 89 dimensions and 10,417 data items.
+It is a real dataset containing 88 low level visual attributes
+and classification information for 10,417 image segments
+generated by an image analysis approach [8]. In the figure,
+each block is a dimension glyph and there are 89 glyphs.
+In each glyph, data values of the dimension are mapped to
+colors of pixels, and pixels are ordered in a spiral manner. The
+closeness of the glyph positions reveals the correlations among
+the dimensions calculated by the underlying algorithm. For
+example, several clusters of closely correlated dimensions and
+a few dimensions that are distinct from most other dimensions
+can be detected from the glyph positions in Figure 1b.
+The above approach can be summarized as dimension glyph
+generation and layout. Glyphs explicitly convey data values
+and their layout explicitly conveys dimension relationships.
+Moreover, dimension relationships are also revealed by the
+patterns of the glyphs. Similarity among glyph patterns in-
+dicates dimension relationships, whether there is a linear or
+non-linear relationship, or they are partially correlated (such
+as dimensions for which a subset of the data items is closely
+related). Since humans are good at pattern recognition, the
+patterns of the glyphs provide straightforward and intuitive
+comparison of the dimensions. On the one hand, the layout
+approach brings related dimensions close to each other to make
+the pattern comparison easier. On the other hand, the patterns
+allow users to confirm or refute the relationships suggested by
+the layout using their eyes, and reveal how the dimensions are
+related in detail.
+Besides the techniques used in the original VaR display,
+there are other approaches to creating glyphs and laying them
+out, which will be introduced in the following sections. Since
+glyph generation and layout are independent from each other,
+they can be combined freely to form various VaR displays.
+IV. DIMENSION GLYPH ALTERNATIVE: X-RAY
+SCATTERPLOTS
+The glyph generation approach used in the original VaR
+display is not the only approach for creating dimension glyphs.
+For example, different layouts of the pixels within a glyph
+4reveal different patterns. As an example, organizing pixels
+into a calendar pattern according to the time stamps of the
+data items can reveal time-dependant patterns among the data
+items. Since these techniques have been widely studied in
+pixel-oriented techniques [12] and they can be integrated
+into the VaR display easily by replacing the original pixel-
+oriented dimension glyph generation approach, they will not
+be discussed in this paper. Instead, we present our work
+on customizing a density-based scatterplot glyph (called an
+X-Ray glyph) generation approach. This approach has been
+introduced into the improved version (see Figure 1c for an
+example VaR display using the scatterplot approach).
+In the VaR display, a scatterplot is generated for each
+dimension. The Y dimension of a scatterplot dimension glyph
+is the dimension it represents, while all of the glyphs have the
+same X dimension. We choose to use the same X dimension
+since it will be hard for users to associate different dimension
+glyphs if both X and Y dimensions change from one glyph
+to another. Although this causes information loss, users can
+always interactively change the X dimension guided by the
+semi-automatic selection tool (see Section VII) and their visual
+exploration (see Section XI).
+The VaR display is targeted at large datasets. It is time
+consuming to draw the projection of each data item on each
+of the N scatterplots. Also, the large number of projections
+would clutter the glyph. In order to avoid clutter and increase
+scalability, we store each glyph as an M X M pixel matrix,
+where M is an adjustable integer, and divide the 2D space
+within the value range of the dataset into M X M equal-
+size bins. The number of projections falling into each bin
+is recorded and translated into the color of its corresponding
+pixel in the pixel matrix. In particular, the intensity of the pixel
+is proportional to data density of the area it represents.
+Fig. 2. X-Ray Scatterplots (a) The first solution (b) The second solution (c)
+The X-Ray scatterplot solution.
+The first image (Figure 2a) we generated is disappointing,
+since it is hard to differentiate unoccupied area (areas with
+zero data items) from areas with a few data items. In order
+to solve this problem, we assign a different hue to the pixels
+representing unoccupied areas. In the image generated (Figure
+2b), there are no data items in the blue area. We then observed
+that, in contrast to glyphs generated using pixel-oriented
+techniques where every pixel represents a data value, there
+are often large contiguous unoccupied areas in a scatterplot
+glyph, especially when the X and Y dimensions are closely
+related. Recalling that some glyph layout approaches, such
+as MDS, could cause overlaps among different glyphs, we
+made the unoccupied areas semi-transparent so that users can
+see hidden glyphs through the unoccupied areas of the hiding
+glyphs. Figure 2c shows this final solution. Since in the figure
+the glyphs look very much like X-Ray photos, we named
+this VaR display the X-Ray scatterplot VaR display. To give
+users more flexibility, we allow them to interactively choose
+the color and transparency of the unoccupied areas. If users
+dislike the semi-transparent unoccupied areas, they are able to
+set them to opaque.
+V. DIMENSION LAYOUT ALTERNATIVES: JIGSAW MAP
+LAYOUT AND RAINFALL
+A. Jigsaw Map Glyph Layout
+The MDS approach is effective in conveying dimension
+relationships. However, using the MDS approach, the positions
+of two glyphs could be very close to each other if they are
+closely related. Glyphs might overlap in this case, which is
+sometimes undesired by the users. Besides allowing the users
+to reduce overlaps in the MDS layout using interactions (see
+Section VII), we propose a Jigsaw Map dimension layout
+based on the recently proposed Jigsaw map [23]. In this
+approach, dimensions are grouped into a dimension hierarchy.
+The Jigsaw map, which is a space-filling hierarchy visualiza-
+tion method, is then used to lay the dimensions on a grid.
+This approach not only prevents glyphs from overlapping, but
+also conveys the hierarchical structure among the dimensions.
+Figure 3 shows VaR displays with a Jigsaw layout.
+The motivation of this approach is that grouping dimensions
+of high dimensional datasets into dimension hierarchies makes
+it easy to capture the relationships among the dimensions.
+In a dimension hierarchy, dimensions are organized into a
+hierarchy of clusters. Dimensions within a cluster have closer
+relationships among each other than with dimensions outside
+the cluster. Clusters in different levels of the hierarchy divide
+the dimensions into groups of different granularity. With the
+dimension relationship matrix, it is convenient to generate
+a dimension hierarchy using existing hierarchical clustering
+approaches. In the hierarchy, each leaf node is a dimension in
+the high dimensional dataset.
+In order to turn the dimension hierarchy into the dimension
+layout, we examined existing hierarchy visualization tech-
+niques. The basic requirements are 1) the layout should be
+space efficient since our target is high dimensional datasets
+and 2) each dimension should be assigned a space of the
+same size, shape and orientation since it is difficult for users
+to compare and associate glyphs with different sizes, shapes,
+or orientations. Since node-linked diagrams do not use space
+efficiently, we only considered the space-filling hierarchy
+visualization techniques [3], [21], [23]. Among them, only
+the Jigsaw map [23] and quantum treemaps [3] are capable
+since all other techniques assign areas of different shapes or
+orientations to leaf nodes. We chose the Jigsaw map since it
+generates layouts of nicely shaped regions and is stable with
+regards to changing tree structures and leaf nodes [23].
+To generate the Jigsaw map layout, we first hierarchically
+cluster the N dimensions in a dataset based on their pair-
+wise distances (a pair of more closely related dimensions
+5Fig. 3. The Image-838 dataset (838 dimensions, 11,413 data items). (a) The Pixel Jigsaw map VaR display with separated dimensions selected and labeled
+(b) The X-Ray scatterplot Jigsaw map VaR display with dimension Coarseness as the X dimension. The X dimension is in a pink frame and labeled. (c)
+The X-Ray scatterplot Jigsaw map VaR display with dimension angle 135 as the X dimension. The X dimension is at the left bottom corner of the map and
+dimensions closely related to it are in red frames. (d) A zoomed in display of the selected dimensions with their labels shown.
+has a smaller distance than a pair of less related dimensions)
+using the minimum single linkage metrics [17]. Then, the N
+dimensions are ordered into a 1-D sequence according to their
+positions in the hierarchy using a depth-first traversal of the
+hierarchy, and then the sequence is mapped to a 2-D L x K (
+L x K >= N) mesh by applying a space-filling curve called
+an H curve (please refer to [23] for more details). Figure 3a
+shows an example of the Jigsaw layout. In this figure, similar
+dimensions are close to each other and significant boundaries
+of groups of closely related dimensions, such as the group of
+dimensions in the left bottom part of the map, can be detected.
+Outlier dimensions, such as the dimensions on the left top part
+of the map, are also distinguishable since their textures look
+different from their neighbors.
+B. Rainfall Metaphor
+When exploring a high dimensional dataset, users are often
+interested in the relationships between a single dimension of
+interest with all other dimensions. Beside the X-Ray scatter-
+plot, which reveals the relationships using glyph textures, we
+6Fig. 4. The Rainfall Metaphor. (a) At the beginning of the rain. Dimensions more closely related to the dimension of interest in the bottom are falling in a
+faster acceleration than less related dimensions. (b) The rain continues. The dimensions with different correlations to the dimension of interest are separated.
+It can be seen that there are roughly three levels of association between the dimension of interest and other dimensions. (c) The Rain is close to its end.
+Dimensions significantly distinct from the dimension of interest are revealed. The dataset is the Image-89 dataset. The glyphs are pixel-oriented glyphs (pixels
+are ordered in a line by line (horizontal lines) manner.
+provide a simple animation approach to dynamically illustrate
+the relationships by changing glyph positions. This approach is
+named the Rainfall Metaphor since it imitates rain (see Figure
+4 for an example).
+In the beginning of the animation, the dimension of interest
+is placed in the center bottom of the display (the ground) and
+all other dimensions (raindrops) are placed in the top of the
+display (the sky). The horizontal positions of the raindrops
+are randomly generated. After the rain starts, a raindrop falls
+toward the ground in an acceleration that is proportional to
+its correlation with the dimension of interest. Thus, a raindrop
+moves toward the ground faster than another raindrop if it has
+a closer relationship to the dimension of interest. A raindrop
+stops its movement after it hits the ground. There is a timer
+that starts from the beginning of the rain and ends when
+all raindrops hit the ground. Users can interactively play the
+animation by moving the slider representing the timer. Users
+can also interactively select the dimension of interest for the
+animation.
+Figure 4a-c shows some screen captures of the Rainfall
+layout. Using this metaphor, users can focus on the relation-
+ships between the dimension of interest and other dimensions,
+without being distracted by relationships among the other
+dimensions. In different moments of the rain, either similar
+dimensions or distinct dimensions to the dimension on the
+ground attract the users’ attention.
+VI. CORRELATION CALCULATION
+In the VaR display, a binning based correlation calculation
+algorithm is used. We only briefly introduce it here since
+it has been presented in full detail in [27]. We claim that
+any relationship calculation algorithm can be used in the VaR
+display as long as it scales to large datasets. The layout of
+the glyphs reflects the type of relationship calculated by the
+underlying algorithm.
+In our algorithm, distribution of the value differences (be-
+tween the different dimensions for the same data item) is
+recorded into bins. In particular, the possible range of value
+differences between a pair of dimensions is divided into a
+sequence of bins. The number of data items whose value
+differences between these two dimensions fall into the bins is
+recorded. For an N dimensional dataset, N x (N-1)/2 sequences
+of bins (one sequence for each pair of dimensions) are created.
+A pair of dimensions is considered to be closely related if
+a large number of data items fall info a small number of
+bins (K) in its sequence. With a given K, the correlations
+can be calculated in this way: sort the bins in the sequence
+according to their populations, and sum up the populations
+of K bins with the highest populations. The sum divided by
+the total population of the data items is proportional to the
+correlation between the dimensions. K is selected to be the
+number of bins that make the global variance of correlations
+for all dimensions maximum. This algorithm scales to a large
+number of data items. Except for the first scan, which can
+be done with minimal cost when inserting the dataset into
+the database, its efficiency is only related to the number of
+dimensions.
+The above algorithm is a heuristic approach whose purpose
+is to maximize the visibility of the structure of the MDS and
+Jigsaw layout. There are many other optimization problems
+in the VaR display, such as selecting a dimension ordering
+the pixel-oriented display in the initial view to provide the
+maximum information to users at a first glance. A detailed
+discussion of such problems is presented in [27] and not
+repeated here.
+VII. INTERACTIVE TOOLS IN THE VAR DISPLAY
+A rich set of interaction tools has been developed for the
+VaR display. Navigation tools help users reduce clutter in the
+display and discover information about the dataset. Automatic
+and manual dimension selection tools allow users to perform
+7human-driven dimension reduction by selecting subsets of
+dimensions for further exploration in the VaR display as well
+as other multi-dimensional visualizations. Data item selection
+tools allow users to select subsets of data items for further
+exploration. In addition, the data item masking tool allows
+users to examine details of selected data items within the
+context of unselected data items.
+Most of the interactive tools make no special assumption
+about the glyph positioning and generation strategies, i.e., they
+can be applied to any realization of the VaR display. These
+tools are called general tools. Unless specifically noted, an in-
+teraction tool is a general tool in the following sections, where
+details of each navigation and selection tool are presented.
+A. Tools for Glyph Layout
+The MDS dimension layout causes overlaps among the
+glyphs. Overlaps emphasize close relationships among the
+dimensions because glyphs overlap only if their dimensions
+are closely related. However, overlaps can prevent a user
+from seeing details of an overlapped glyph. We provide the
+following operations to overcome this problem (see [27] for
+more detail).
+• Showing Names: By putting the cursor on the VaR
+display, the dimension names of all glyphs under the
+cursor position are shown in a message bar. Thus a user
+can be aware of the existence of glyphs hidden by other
+glyphs.
+• Layer Reordering: With a mouse click, a user can force
+a glyph to be displayed in front of the others. In this
+way he/she can view details of a glyph that is originally
+overlapped. Users can also randomly change the ordering
+of all dimension glyphs by clicking a button in the control
+frame. In addition, selected dimensions are automatically
+brought to the front of the display.
+• Manual Relocation: By holding the control key, a user
+can drag and drop a glyph to whatever position he/she
+likes. In this way a user can separate overlapping glyphs.
+• Extent Scaling: Extent scaling allows a user to interac-
+tively decrease the sizes of all the glyphs proportionally to
+reduce overlaps, or to increase them to see larger glyphs.
+• Dynamic Masking: Dynamic masking allows users to
+hide the glyphs of unselected dimensions from the VaR
+display.
+• Automatic Shifting: This operation automatically re-
+duces the overlaps among the glyphs by slightly shift-
+ing the positions of the glyphs. There are many more
+advanced overlap reducing algorithms that can be used,
+such as those listed in [22].
+• Distortion: Users can interactively enlarge the size of
+some glyphs while keeping the size of all other glyphs
+fixed. In this way users are allowed to examine details
+of patterns in the enlarged glyphs within the context
+provided by the other glyphs.
+• Zooming and Panning: Users can zoom in, zoom out
+and pan the VaR display. For example, in order to reduce
+overlaps, sometimes the size of the glyphs has to be set
+very small when there are a large number of dimensions.
+Zooming into the display will enlarge the glyphs so that
+the user can have a clear view of the patterns in the
+glyphs.
+• Refining: A refined VaR display can be generated for
+a selected subset of dimensions and a selected subset
+of data items. The selected dimensions and data items
+are treated as a new dataset. The relationship calculation,
+glyph generation and positioning are applied to the new
+dataset.
+B. Tools for Glyph Regeneration
+In the Pixel-Oriented dimension glyphs, the dimension used
+to sort the data items affects the glyph patterns significantly.
+Clusters in subspaces including this dimension can be easily
+detected while clusters in other subspaces are not. Similarly, in
+the X-Ray scatterplot dimension glyphs, relationships between
+other dimensions and the X dimension are easier to detect
+than relationships among other dimensions. We allow users to
+interactively select the sorting dimension in the pixel-oriented
+mode and the X dimension in the X-Ray scatterplot mode
+by clicking the mouse button on the glyph of the desired
+dimension or selecting from a combo-box.
+In addition, a comparing mode can be used in the pixel-
+oriented glyphs in order to compare the dimensions with a
+dimension of interest. In this mode, except the glyph of the
+base dimension, the pixels of all other glyphs will be colored
+according to the differences between the values of the base
+dimension and their dimensions. A figure of the comparing
+mode can be found in [27].
+C. Dimension Selection Tools
+Dimension selection tools enable users to select dimen-
+sions of interest for further exploration using other multi-
+dimensional visualization techniques. They can also be used
+as a filter to reduce the number of glyphs displayed in a VaR
+display, since we allow users to hide glyphs of unselected
+dimensions using dynamic masking (see Section VII-A). The
+selection tools we provide to users include automatic selec-
+tion tools for closely related dimensions and well separated
+dimensions, in addition to manual selection.
+The automatic selection tool for related dimensions
+takes a user-assigned dimension and correlation threshold as
+input. Here we assume that a pair of more closely related
+dimensions has a larger correlation measure than a pair of
+less related dimensions. Users pick the assigned dimension by
+clicking its glyph and adjust the threshold through a slider. The
+tool automatically selects all dimensions whose correlation
+measures to the input dimension are larger than the threshold
+by traversing the dimension relationship matrix. This tool
+enables the users to select a set of closely related dimensions.
+The automatic selection tool for separated dimensions
+takes a user-assigned dimension and correlation threshold
+as input and returns a set of dimensions that describe the
+major features of the dataset. The assigned dimension will
+be included in the returned set of dimensions. Between each
+pair of dimensions in the result set, the correlation measure is
+smaller than the threshold. For any dimension that is not in
+8Fig. 5. Masking of Unselected Data Items. Unselected data items are covered by a mask with adjustable color and transparency. (a) No mask or fully
+transparent mask. (b) Opaque mask. (b) Semi-transparent mask. The dataset is the Image-89 dataset. The glyphs are pixel-oriented glyphs (pixels are ordered
+in a line by line (vertical lines) manner.
+the result set, there is at least one dimension in the result set
+whose correlation measure with it is larger than the threshold.
+Using this tool, a user is able to select a set of dimensions
+to construct a lower dimensional subspace revealing the major
+features of the dataset without much redundancy. In Figure 1b
+separated dimensions selected automatically are labeled.
+The following algorithm can be used for automatic selection
+of separated dimensions:
+1) Get the assigned dimension and the selection threshold.
+2) Set the assigned dimension as “selected” and all other
+dimensions as “unselected”.
+3) Find all unselected dimensions whose correlation mea-
+sures to all existing selected dimensions are smaller than
+the threshold. Mark them as “candidates”.
+4) If there is no candidate dimension, go to step 5. Else, set
+one candidate dimension as “selected” and every other
+candidates as “unselected”. Go back to step 3.
+5) Return all dimensions marked as “selected”.
+It is interesting that it is not defined how to pick one dimen-
+sion among the candidate dimensions in step 4. Thus it can
+be customized according to the task of interest. For example,
+in Section VIII, this approach is customized to reduce the
+clutter among the labels of the selected dimensions for a good
+labeling result. Here we present another customization.
+When users start to explore an unknown dataset, it is often
+desired to find dimension groups containing large numbers of
+closely related dimensions. Thus a heuristic approach can be
+used in step 4: setting a threshold, for each candidate dimen-
+sion counting the number of dimensions having correlation
+measures to it that are larger than the threshold, and selecting
+the dimension with the highest count. Using this approach
+dimensions with a larger number of closely related dimensions
+have higher priority to be selected.
+Manual selection allows a user to manually select a dimen-
+sion by clicking its corresponding glyph. The user can unselect
+the dimension by clicking the glyph again. The combination of
+manual and automatic selection makes the selection operation
+both flexible and easy to use.
+D. Data Item Selection and Masking Tools
+Rather than allowing a user to select data items directly from
+the glyphs in the VaR display (which is hard when glyphs
+are small), we allow the user to select data items from a
+dialog. Firstly, the user selects a dimension name from a name
+list in the dialog. Then a brief summary of the dimensions
+will be provided to help the user set up the selection criteria
+for the selected dimension. If the dimension is a categorical
+dimension, the distinct values in that dimension as well as the
+number of data items for each value will be provided. The user
+can then select the desired distinct values. If the dimension is
+a numeric dimension, a histogram of the dimension will be
+provided. The user then set up a minimum value and maximum
+value for the selection using two sliders. The user can set the
+selection ranges for multiple dimensions.
+After the user sets the selection criteria, he/she can click a
+button in the dialog to trigger the selection. A problem here is
+how to highlight the selected data items. In most visualization
+systems, selected data items are highlighted using either a
+special color, or a surrounding box around the selected items.
+However, in the VaR display with pixel-oriented techniques,
+color has been used to represent the values, and it is hard
+to put a surrounding box in a condensed glyph, especially if
+the selected data items are not adjacent to each other in the
+glyphs.
+A straightforward solution to this problem is to display only
+the selected data items. This is a general solution suitable for
+all realizations of the VaR display. However, a drawback of
+this approach is that the context provided by unselected data
+items is lost. Such a context is often useful. For example, the
+users might want to compare the selected data items with the
+unselected data items among the dimensions.
+In order to overcome this drawback, we developed an
+approach called data item masking. This approach is only
+useful for VaR displays using pixel-oriented techniques. In
+9Fig. 6. Labeling Solutions (a) All dimensions are labeled with names (b) Dimensions selected by the labeling algorithm are labeled. Clutter is reduced. (c)
+Angled text is used to label all dimensions in the Jigsaw map layout. The dataset is the Image-89 dataset.
+this approach, both selected and unselected data items are
+drawn on the screen. Unselected data items are covered by
+a mask. Users can interactively change the color of the mask,
+and adjust the transparency of the mask though a slider. When
+the mask is opaque, as shown in Figure 5b, unselected data
+items are hidden. When the mask is fully transparent, as shown
+in Figure 5a, the selected data items are not highlighted. When
+the mask is semi-transparent, as show in Figure 5c, the selected
+data items are highlighted within the context provided by
+the unselected data items. Users can interactively change the
+transparency of the mask to adjust the strength of the context.
+The implementation of this masking operation is simple.
+First, a mask is generated using an approach similar to the
+generation of a normal dimension glyph. The only difference
+is that the pixels are set to be transparent for selected data
+items and with user assigned color and transparency for
+unselected data items. Our mask generation mechanism has
+no dependency on the order of the data items, i.e., it is
+not necessary for the selected data items to be adjacent to
+each other in the glyphs. Since the color and shape of the
+masks are the same for all the glyphs, the mask is only
+generated once, stored as a texture object, and pasted in the
+front of all the glyphs. Since the texture mapping operation is
+efficient in OpenGL, displaying masks has minimal effect on
+the rendering of a VaR display.
+VIII. LABELING
+In the original version of the VaR display, dimension names
+are labeled horizontally in the middle top region above the
+dimension glyph for all dimensions shown on the screen (see
+Figure 6a). The labels clutter the screen seriously for a high
+dimensional dataset, thus we did not provide the labeling
+option to users. Rather, when users moved the cursor over
+a glyph, the glyph name showed in the message bar below
+the display. However, users complained that finding dimension
+names in this way was tiring. They argued that the VaR display
+without dimension labels is much less meaningful than one
+with names labeled. In order to solve this problem, we chose to
+label a subset of dimensions on the screen for the MDS layout
+(see Figure 6b). The dimensions to be labeled are selected
+according to the following two heuristic criteria: 1) they should
+be distinct dimensions, i.e., two similar dimensions should
+not be labeled at the same time. Dimensions distinct from all
+other labeled dimensions should be labeled. 2). they should be
+separated from each other as much as possible to avoid clutter
+on the screen. In addition, we allow users to interactively
+change the number of dimensions labeled to get a less cluttered
+view or to see more labels.
+Criterion 1 is exactly the criterion used for automatic se-
+lection of separated dimensions (see Section VII-C). Criterion
+2 adds more constraints to the selection. Recall that there is
+some freedom in step 4 of the selection algorithm, i.e., any
+dimensions in the candidate dimension set can be selected; we
+modified the algorithm for labeling as follows:
+1) Assign a dimension and a selection threshold.
+2) Set the assigned dimension as “selected” and all other
+dimensions as “unselected”.
+3) Find all unselected dimensions whose correlations with
+all existing selected dimensions are smaller than the
+threshold. Mark them as “candidates”.
+4) If there is no candidate dimension, go to step 5. Else, set
+the candidate dimension which is the most far way on
+the screen from its closest existing selected dimension
+as “selected” and other candidates as “unselected”. Go
+back to step 3.
+5) Return all dimensions marked as “selected” and label
+them.
+When calculating the screen distance between two dimen-
+sions in step 4, we must consider the fact that horizontal labels
+are used. Their lengths are much larger than their widths.
+Assume that labels have 5 characters on average and the
+characters have equal height and width, the screen distance
+between two dimensions d1 and d2 D(d1, d2) = fabs((d1.x
+- d1.x)) + 5 * fabs((d1.y - d2.y)), where x and y are the
+screen coordinates of the dimensions. The equation means that
+we prefer dimensions separated in the vertical direction than
+the horizontal direction. Figure 6b shows the same display as
+Figure 6a with selected dimensions labeled using the above
+algorithm.
+The same labeling approach can be applied to the Jigsaw
+10
+map layout. In addition, since the glyphs are placed in a regular
+mesh in the Jigsaw map, applying an angle on all the labels
+greatly reduces the clutter on the screen even when all labels
+are shown. Figure6c shows the Image-89 datasets in the Jigsaw
+map layout with all dimension names displayed at a 20 degree
+angle. Almost all of the dimension names can be distinguished
+from this display.
+In our prototype we bind labeling with selections, i.e.,
+users have the option to show labels of selected dimensions
+only. When a user chooses this option and uses the automatic
+selection tool for separated dimensions, it is exactly the above
+clutter-reducing labeling approach. When a user uses the
+selection tool for related dimensions, the dimensions closely
+related to the user-assigned dimensions are labeled (see Figure
+3d for an example).
+IX. IMPLEMENTATION AND SCALABILITY ISSUE
+When there are several hundred dimensions, the datasets
+can easily contain millions of data values even if they only
+contain thousands of data items. Datasets often have a higher
+number of data items. Such large datasets not only cause large
+response time during interactions and problems in storing the
+data structures in a visualization system, but also cause clutter
+on the display. Scalability is a critical issue for visualization
+systems aimed at high dimensional datasets.
+We have implemented a fully working prototype of the VaR
+display. The biggest dataset that has been successfully loaded
+into the VaR display so far is an image classification dataset
+containing 838 dimensions and 11413 data items, which means
+over 9 million data values (see Figure 3 for its VaR display).
+Most interactions can be processed within a few seconds on a
+typical PC for this dataset. This dataset is the biggest dataset
+we currently have. In the future, we will test larger datasets
+on the prototype.
+The critical techniques we used in the prototype for increas-
+ing scalability are texture mapping, binning, and sampling
+techniques. Using the texture mapping techniques provided by
+OpenGL, our prototype stores all dimension glyphs (including
+the mask in the masking operation) as texture objects and
+pastes them on the screen as needed. As long as the glyph
+textures do not change, the dataset does not need to be
+rescanned, which is time consuming for large datasets. By
+keeping the texture objects small (such as hundreds of pixels),
+which is reasonable since each dimension glyph will not be
+too big on the screen in order to reduce clutter, the system can
+draw hundreds of dimension glyph textures on the screen in
+almost real time. This approach greatly reduces the response
+time for most interactions because, except for reordering for
+pixel-oriented glyphs and resetting the X dimension for X-Ray
+scatterplot glyphs, almost all other interactions do not change
+the glyph textures. Rather, they refresh, resize, reposition, or
+reorder the glyphs.
+According to our experience, drawing fonts in OpenGL is
+a time consuming task. Our prototype stores all dimension
+name labels as texture objects. These texture labels are created
+one time, and can be quickly pasted on the screen until users
+change the contents or colors of the labels. The texture labels
+can be scaled and rotated easily on the screen.
+Binning, i.e., using buckets to stored statistic information
+about groups of values rather than recording them individually,
+is an approach widely used in data mining techniques for large
+datasets. We use binning techniques to increase the speed of
+the correlation calculation algorithm (see section VI) and the
+X-Ray scatterplot glyph generation (see section IV).
+The prototype stores datasets in an Oracle database server.
+It dynamically requests data from the server when needed,
+making use of the sorting and query functions provided by
+the database server. When generating a VaR display for a
+dataset containing a large number of data items, we use a
+random sampling approach to reduce the response time for
+fetching data items from the server, as well as the number
+of values to be processed. In particular, the system keeps a
+default maximum number. When the number of data items
+contained in a dataset exceeds it, a uniform random sampling
+is performed on the dataset to only fetch the maximum number
+of data items. Users are allowed to interactively adjust the
+maximum number in order to trade between the response time
+and visualization accuracy.
+Random sampling is easy to implement. However, it has
+the big drawback that a large sampling rate is needed in order
+to reduce small group loss in the samples [6]. In order to
+overcome this problem, many solutions have been proposed,
+such as biased sampling [14] or dynamic sample selection
+[2]. It has been shown in the literatures that these approaches
+successfully reduce small group loss. We will explore these
+approaches in the future.
+X. DISCUSSION
+The VaR display can serve as an overview tool for a high
+dimensional dataset. Starting from the VaR display, other
+visualization techniques can be used for more detailed visual
+analysis. For example, the VaR display is coordinated with
+parallel coordinates, star glyphs, and scatterplot matrix views
+in our prototype. Although these techniques could not handle
+hundreds of dimensions, they work well in examining data
+items and dimensions selected by the VaR display. Recently,
+we completed an interesting project in coordinating the VaR
+display with an image exploration interface. The VaR display
+was used to show the high dimensional image content anno-
+tations. Users were allowed to select images by contents from
+the VaR display. The images were then examined in detail in
+an image exploration interface. This work is described in [26].
+The MDS and Jigsaw map glyph layout approaches have
+their advantages and disadvantages. From its nature, MDS
+is better in capturing high dimensional relationships than the
+hierarchical approach. However, the non-overlap feature of the
+Jigsaw map layout makes it a popular approach for users of
+the VaR display thus far.
+Although the pixel-oriented glyphs are mentioned less than
+the X-Ray scatterplot glyphs in this paper, this is only because
+the usage of the pixel-oriented techniques has been widely
+studied and their effectiveness has been shown in many papers.
+Compared to scatterplots, the pixel-oriented glyphs are more
+effective in pixel usage since they make use of each pixel.
+However, it is easier to compare the relationship between a
+11
+Fig. 7. (a) The Pixel MDS VaR display of the Image-838 dataset with separated dimensions selected and labeled. (b)(c) The X-Ray scatterplot Jigsaw map
+VaR display of the Image-89 dataset. The dimension in a yellow frame is non-linearly related to the X dimension. (c) The X-Ray scatterplot Jigsaw map VaR
+display with another X dimension (the dimension highlighted by the yellow frame in (b)).
+dimension of interest and all other dimensions using the scat-
+terplot glyphs. Users find it difficult to compare the patterns
+of pixel-oriented glyphs if they are far from each other.
+Compared to scatterplot matrices, the X-Ray scatterplot VaR
+display has its advantages and disadvantages. For datasets with
+a small number of dimensions, scatterplot matrices might be
+preferred since all possible axis-parallel 2-D projections are
+provided in them. However, for datasets with tens, hundreds
+or thousands of dimensions, the X-Ray scatterplot VaR display
+might be preferred since it causes less clutter. Its disadvantage
+that only part of possible 2-D projections are displayed is
+leveraged by two facts: first, dimension relationships conveyed
+by the VaR display give strong hints on the shapes of the
+undisplayed 2-D projections; second, users can interactively
+access 2-D projections of interest through interactions.
+Compared to approaches that rank the 1D or 2-D projections
+according to their features and allow users to examine detail
+of a projection by selecting it from diagrams or lists conveying
+the ranking (such as the rank-by-feature framework [19]),
+the VaR display also has its advantages and disadvantages.
+Obviously for tasks such as finding the most linearly corre-
+lated dimensions the ranking approaches are better choices.
+However, the VaR display is better in helping users grasp the
+global relationships among the dimensions.
+XI. CASE STUDY
+We have explored several real datasets using the VaR dis-
+play, including the Image-838 dataset [8] with 838 dimensions
+and 11,413 data items and the Image-89 dataset [8] with 89
+dimensions and 10,471 data items. They all contain low level
+visual attributes for image classification. Image analysts are
+interested in finding outlier dimensions that are uncorrelated to
+most other dimensions, and dimensions representing a group of
+correlated dimensions (a dimension cluster) in order to reduce
+the number of low level visual attributes used in the image
+classification process.
+For both datasets, we selected a Pixel MDS VaR display
+with all dimensions displayed as the initial view, since the
+pixel-oriented glyphs have a higher pixel usage efficiency
+and the MDS display conveys dimension relationships more
+accurately than the Jigsaw map layout. Figure 7a and Figure 1b
+show the Pixel MDS VaR displays of the Image-838 dataset
+and the Image-89 dataset respectively. From the figures, we
+found that there are dimension outliers and clusters in both
+datasets. We then applied automatic selections for separated
+dimensions. Both outlier dimensions and dimensions repre-
+senting dimension clusters were selected.
+Then, we switched to the Jigsaw map layout. Figure 3a
+shows the Pixel Jigsaw map VaR display of the Image-838
+dataset. There are several distinguishable regions that can be
+seen in the map where adjacent glyphs in the regions have
+similar patterns. For example, there is a distinguishable region
+composed of bright blue glyphs at the left bottom of the
+map. If only one dimension is selected in such a region, it
+means that the neighbors of the selected dimension are closely
+related to it, since selection for separated dimensions was used.
+Thus they are a dimension cluster and the selected dimension
+can represent the cluster. The selected and labeled dimension
+angle 135 at the left bottom corner is such a representative
+dimension. Meanwhile, selected dimensions crowded together,
+such as the selected dimensions in the left top of the map,
+are potential outliers since they are distinct from their closest
+neighbors. The selected and labeled dimension Coarseness at
+the left top corner is such suspicious outlier.
+In order to examine if dimension Coarseness is an outlier,
+an X-Ray scatterplot VaR display was created using it as
+the X dimension (see Figure 3b). From scatterplots in Figure
+3b it can be seen that no other dimensions show strong
+correlations with dimension Coarseness. Thus it is confirmed
+that dimension Coarseness is an outlier dimension.
+Figure 3c examines if dimension angle 135 is a repre-
+sentative dimension. The X dimension of the scatterplots is
+dimension angle 135 and dimensions closely correlated to
+dimension anagle 135 are selected and highlighted. It can be
+seen that a large number of dimensions are selected and they
+all contain a clear diagonal pattern which indicates a strong
+12
+linear correlation. Figure 3d shows a zoomed in display of the
+selected dimensions in which their labels are shown.
+A similar exploration approach was conducted for the
+Image-89 dataset. An interesting pattern in this dataset was
+found when we were examining dimension Channel Energy 5
+using the X-Ray scatteplot Jigsaw map VaR display (Figure
+7b): there was a glyph with a curved band (the glyph with a
+yellow frame, the frame was manually added into the figure
+for highlighting). It seemed that this dimension was non-
+linearly related to the target dimension. It raised our interest
+and became our next target.
+We clicked this dimension to set it as the X dimension in
+the X-Ray scatterplots and got Figure 7c. It is labeled in
+Figure 7c as Texture Brightness DC. Figure 7c shows that
+dimension Texture Brightness DC is non-linearly related to
+most dimensions in this dataset. The curved bands are fairly
+thin in some dimensions, which means strong non-linear
+relationships.
+XII. USER STUDY
+A user study has been conducted to evaluate the VaR display
+by comparing it to the Rank-by-Feature feature of HCE [19].
+To form a comparable study, we considered the X-Ray scat-
+terplot glyph style of VaR and the scatterplot prism from the
+HCE system, namely its 2D projection ranking, selection and
+visualization feature. In HCE, 2D projections are ranked by
+features such as strength of linear relationship or least square
+error for curvilinear regression. The ranking is visualized in
+both a matrix and a list. A window beside the ranking windows
+shows the scatterplot of the 2D projection selected by the user.
+Our assumption was that the VaR display would better help
+users grasp global relationships among the dimensions in a
+high dimensional dataset. The reason is that VaR provides a
+detailed view of all dimensions at the same time while users
+of HCE need to take efforts to associate multiple dimensions
+since they can only examine a few detailed views at the same
+time.
+Eight subjects participated in the user study. The subjects
+vary in educational backgrounds: one was a psychology grad-
+uate student, two were computer science undergraduate stu-
+dents, three were graduate students in the field of visualization,
+and two were researchers/post-doctorates in visualization. The
+subjects completed the user study one by one on the same
+computer with the same instructor. Each subject tested both
+systems. The order of using VaR and HCE was alternated for
+the subjects.
+The study began with a 10 minute training session using
+both VaR and HCE and a further 10 minutes to allow subjects
+to explore the tools and ask the instructor questions. A set of
+tasks were then completed by the subjects using both tools. A
+post-test survey to find user preferences and a discussion were
+conducted immediately following the completion of the tasks.
+We used the Image-89 dataset of 89 dimensions and 10,471
+data items. As shown in the case study (Section XI), there
+are some strong linearly related dimensions and some strong
+non-linearly related dimensions in the Image-89 dataset.
+The first task was to describe relationships between a
+given dimension and each of the other dimensions using the
+scatterplot displays by approximating the numbers of different
+scatterplot shapes involved with the given dimension. Samples
+of typical shapes, such as diagonal thin straight bands for lin-
+ear relations, curved bands for non-linear relations, and evenly
+distributed scatterplot indicating unrelated dimensions were
+provided to users. The second task required users to describe
+relationships among five randomly assigned dimensions using
+their scatterplot shapes.
+The majority of users performed the first task quicker and
+evaluated the task to be easier using the VaR display. The
+average time was 3.2 minutes and the standard deviation was
+0.5 minutes for VaR, and the average time was 4.7 minutes
+and the standard deviation was 3.2 minutes for HCE. On a
+scale of 0 (hard) to 5 (easy), the mean scores of 3.5 and 2.1
+were given to VaR and HCE respectively. A similar trend was
+identified in the second task: the average time was 3.5 minutes
+and the standard deviation was 0.4 minutes for VaR, and the
+average time was 8.5 minutes and the standard deviation was
+2.9 minutes for HCE. The scores are 3.6 for VaR and 1.0 for
+HCE. Results from these tasks highlighted the advantage of
+the VaR display in providing a global view of the dimension
+relationships.
+Qualitative results and qualitative feedback from the post-
+test survey were also encouraging. Users typically preferred
+using VaR over HCE for the given tasks. The reasons given
+by each user were generally similar and can be summarized by
+the ability to examine details of multiple relations on a single
+display. One user in the study preferred HCE over VaR due to
+the more detailed and visible scatterplots in the HCE system.
+Users were also asked if they agreed with the statement “this
+tool is useful for exploring high dimensional data”. On a scale
+of 0 (disagree) to 5 (agree), users responded with a mean score
+of 4.3 and 3.5 for VaR and HCE respectively.
+A number of comments and suggestions were made by the
+users regarding both systems. Positive feedback from VaR
+included an intuitive interface, the instantaneous global view
+and ability to quickly select the X dimension of all scatterplots.
+Improvements suggested by the users involved ranking the
+dimensions by features, and using color and best-fit-lines to
+enhance the scatterplot displays which were considered too
+dense. In addition, users suggested ordering the dimension
+glyphs according to the shapes of the scatterplot using au-
+tomatic image analysis techniques. For the HCE system, users
+preferred the ranking features and the scatterplot display with
+rich features and interactions. Users suggested that the global
+view provided by the prism in HCE lacked details compared
+to the VaR display. Future work may benefit by combining the
+best features of these two systems.
+XIII. CONCLUSION
+In this paper, the VaR display, which allows users to inter-
+actively explore large datasets with hundreds of dimensions,
+was presented. The essential idea of the VaR display is
+to represent each dimension in a high dimensional dataset
+using an information-rich glyph, and arranging the glyphs to
+reveal the relationships among the dimensions. By integrating
+existing techniques such as MDS, Jigsaw map, pixel-oriented
+13
+techniques, and scatterplots, and allowing users to interactively
+explore large datasets according to their interests, the VaR
+display provides a rich metaphor for interactive exploration
+of high dimensional datasets. The case studies and user study
+conducted proved that the VaR display is an effective approach
+with high scalability.
+Although work presented in this paper has greatly extended
+the functionality of the original VaR display [27], we believe
+that the VaR display still has much potential for further
+development. Time-dependant dimension glyph generation or
+layout, the ability to convey spatial information, and the ability
+to visualize dynamically changing data streams, are future
+directions we want to explore in the VaR display. In addition,
+detecting features by analyzing and comparing textures of
+dimension glyphs using automatic image analysis techniques
+is also an appealing future work. Another important future
+work is to conduct user studies to evaluate different options
+provided by the VaR display.
+ACKNOWLEDGMENT
+We gratefully thank Dr. Daniel A. Keim for giving many
+valuable suggestions for this work, Dr. Jianping Fan, Yuli Gao,
+and Hangzai Luo for providing us the datasets, and the users
+who participated in the user study.
+This work was performed with partial support from NSF
+grant IIS-0119276 and the National Visualization and Ana-
+lytics Center (NVAC(tm)), a U.S. Department of Homeland
+Security Program, under the auspices of the Southeastern Re-
+gional Visualization and Analytics Center. NVAC is operated
+by the Pacific Northwest National Laboratory (PNNL), a U.S.
+Department of Energy Office of Science laboratory.
+REFERENCES
+[1] M. Ankerst, S. Berchtold, and D.A. Keim. Similarity clustering of
+dimensions for an enhanced visualization of multidimensional data.
+Proc. IEEE Symposium on Information Visualization, pages 52–60,
+1998.
+[2] B. Babcock, S. Chaudhuri, and G. Das. Dynamic sample selection
+for approximate query processing. Proc. ACM SIGMOD International
+Conference on Management of Data, pages 539–550, 2003.
+[3] B. Bederson, B. Shneiderman, and M. Wattenberg. Ordered and quantum
+treemaps: Making effective use of 2d space to display hierarchies. ACM
+Transactions on Graphics, 21(4):833–854, 2002.
+[4] C.L. Bentley and M.O. Ward. Animating multidimensional scaling
+to visualize n- dimensional data sets. Proc. IEEE Symposium on
+Information Visualization, pages 72–73, 1996.
+[5] K. Beyer, J. Goldstein, R. Ramakrishnan, and U. Shaft. When is “nearest
+neighbor” meaningful? Lecture Notes in Computer Science, 1540:217–
+235, 1999.
+[6] S. Chaudhuri, R. Motwani, and V. Narasayya. Random sampling for
+histogram construction: how much is enough? Proc. ACM SIGMOD
+International Conference on Management of Data, pages 436–447, 1998.
+[7] W.S. Cleveland and M.E. McGill. Dynamic Graphics for Statistics.
+Wadsworth, Inc., 1988.
+[8] J. Fan, Y. Gao, and H. Luo. Multi-level annotation of natural scenes
+using dominant image components and semantic image concepts. Proc.
+ACM international conference on Multimedia, pages 540 – 547, 2004.
+[9] J.-D. Fekete and C. Plaisant. Interactive information visualization of
+a million items. Proc. IEEE Symposium on Information Visualization,
+pages 117–124, 2002.
+[10] Y. Fua, M.O. Ward, and E.A. Rundensteiner. Hierarchical parallel
+coordinates for exploration of large datasets. Proc. IEEE Visualization,
+pages 43–50, Oct. 1999.
+[11] B. Hibbard and D. Santek. The vis-5d system for easy interactive
+visualization. Proc. IEEE Visualization, pages 28–35, 1990.
+[12] D.A. Keim. Designing pixel-oriented visualization techniques: Theory
+and applications. IEEE Transactions on Visualization and Computer
+Graphics, 6(1):1–20, January-March 2000.
+[13] D.A. Keim, H.-P. Kriegel, and M. Ankerst. Recursive pattern: a
+technique for visualizing very large amounts of data. Proc. IEEE
+Visualization ’95, pages 279–286, 1995.
+[14] G. Kollios, D. Gunopulos, N. Koudas, and S. Berchtold. Efficient
+biased sampling for approximate clustering and outlier detection in large
+data sets. IEEE Transactions on Knowledge and Data Engineering,
+15(5):1170–1187, 2003.
+[15] J.B. Kruskal and M. Wish. Multidimensional Scaling. Sage Publications,
+1978.
+[16] A. MacEachren, X. Dai, F. Hardisty, D. Guo, and G. Lengerich. Explor-
+ing high-d spaces with multiform matrices and small multiples. Proc.
+IEEE Symposium on Information Visualization, pages 31–38, 2003.
+[17] F. Murtagh. A survey of recent advances in hierarchical clustering
+algorithms. Computer Journal, 26(4):354–359, 1983.
+[18] NetMBA.
+http://www.netmba.com/statistics/plot/scatter/.
+[19] J. Seo and B. Shneiderman. A rank-by-feature framework for un-
+supervised multidimensional data exploration using low dimensional
+projections. Proc. IEEE Symposium on Information Visualization, pages
+65–72, 2004.
+[20] J. Seo and B. Shneiderman. A rank-by-feature framework for inter-
+active exploration of multidimensional data. Information Visualization,
+4(2):96–113, 2005.
+[21] B. Shneiderman. Tree visualization with tree-maps: A 2d space-filling
+approach. ACM Transactions on Graphics, 11(1):92–99, Jan. 1992.
+[22] M.O. Ward. A taxonomy of glyph placement strategies for multidi-
+mensional data visualization. Information Visualization, 1(3-4):194–210,
+2002.
+[23] M. Wattenberg. A note on space-filling visualizations and space-filling
+curves. Proc. IEEE Symposium on Information Visualization, pages 181–
+186, 2005.
+[24] E.J. Wegman and Q. Luo. High dimensional clustering using parallel
+coordinates and the grand tour. Computing Science and Statistics,
+28:361–368, 1997.
+[25] J.A. Wise, J.J. Thomas, K. Pennock, D. Lantrip, M. Pottier, A. Schur,
+and V. Crow. Visualizing the non-visual: Spatial analysis and interaction
+with information from text documents. Proc. IEEE Symposium on
+Information Visualization, pages 51–58, 1995.
+[26] J. Yang, J. Fan, D. Hubball, Y. Gao, H. Luo, W. Ribarsky, and
+M. Ward. Semantic image browser: Bridging information visualization
+with automated intelligent image analysis. Proc. IEEE Symposium on
+Visual Analytics Science and Technology, pages 191–198, 2006.
+[27] J. Yang, A. Patro, S. Huang, N. Mehta, M. Ward, and E. Rundensteiner.
+Value and relation display for interactive exploration of high dimensional
+datasets. Proc. IEEE Symposium on Information Visualization, pages
+73–80, 2004.
+[28] J. Yang, M.O. Ward, E.A. Rundensteiner, and S. Huang. Visual
+hierarchical dimension reduction for exploration of high dimensional
+datasets. Eurographics/IEEE TCVG Symposium on Visualization, pages
+19–28, 2003.
+[29] J. Yi, R. Melton, J. Stasko, and J. Jacko. Dust & magnet: Multivariate
+information visualization using a magnet metaphor. Information Visual-
+ization, 4:239–256, 2005.
+

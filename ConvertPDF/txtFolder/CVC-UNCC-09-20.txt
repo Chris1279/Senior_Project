@@ -1,0 +1,878 @@
+Integrating Visual and Semantic Contexts for Topic
+Network Generation and Word Sense Disambiguation
+Jianping Fan
+Dept of Computer Science
+UNC-Charlotte
+Charlotte, NC 28223, USA
+jfan@uncc.edu
+Hangzai Luo
+Software Engineering Institute
+East China Normal University
+Shanghai, 200062, China
+hluo@sei.ecnu.edu.cn
+Yi Shen, Chunlei Yang
+Dept of Computer Science
+UNC-Charlotte
+Charlotte, NC 28223, USA
+yshen9,cyang36@uncc.edu
+ABSTRACT
+To support more effective searches in large-scale weakly-
+tagged image collections, we have developed a novel algo-
+rithm to integrate both the visual similarity contexts be-
+tween the images and the semantic similarity contexts be-
+tween their tags for topic network generation and word sense
+disambiguation. First, a topic network is generated to char-
+acterize both the semantic similarity contexts and the vi-
+sual similarity contexts between the image topics more suf-
+ficiently. By organizing large numbers of image topics ac-
+cording to their cross-modal inter-topic similarity contexts,
+our topic network can make the semantics behind the tag
+space more explicit, so that users can gain deep insights
+rapidly and formulate their queries more precisely. Second,
+our word sense disambiguation algorithm can integrate the
+topic network to exploit both the visual similarity contexts
+between the images and the semantic similarity contexts be-
+tween their tags for addressing the issues of polysemes and
+synonyms more effectively, thus it can significantly improve
+the precision and recall rates for image retrieval. Our exper-
+iments on large-scale Flickr and LabelMe image collections
+have provided very positive results.
+Keywords
+Topic network, semantic and visual contexts, word sense
+disambiguation.
+1. INTRODUCTION
+Collaborative image tagging has become a very popular
+way for people to share and annotate images. In a collabora-
+tive image tagging system [17-19], people can tag the images
+according to their social or cultural backgrounds, personal
+expertise and perception. We call such the collaboratively-
+tagged images as weakly-tagged images because their so-
+cial tags may not be strongly related to the underlying im-
+age semantics. With the exponential growth of such the
+weakly-tagged images, it has become increasingly impor-
+tant to have mechanisms that can support more effective
+Permission to make digital or hard copies of all or part of this work for
+personal or classroom use is granted without fee provided that copies are
+not made or distributed for profit or commercial advantage and that copies
+bear this notice and the full citation on the first page. To copy otherwise, to
+republish, to post on servers or to redistribute to lists, requires prior specific
+permission and/or a fee.
+CIVR ’09 July 8-10, 2009, Santorini, GR
+Copyright 2009 ACM 978-1-60558-480-5/09/07 ...$10.00.
+searches in large-scale weakly-tagged image collections. Un-
+fortunately, searching from large-scale weakly-tagged image
+collections is not a trivial task because of the following chal-
+lenging problems: (1) there is a vocabulary discrepancy be-
+tween the keywords for query formulation and the text terms
+for image tagging (i.e., image annotators and users may not
+think of the same tags); and (2) without controlling the
+word vocabulary, many text terms for image tagging may
+be synonymous or polysemous (e.g., which may result in low
+precision and recall rates for image retrieval).
+To assist users on query formulation, a tag cloud [12] has
+been used to provide a list of the most popular tags and sup-
+port tag space exploration. Inter-tag contexts can be used
+to support more effective tag space navigation and achieve
+more precise characterization of the interestingness of the
+tags (i.e., like page linkages for characterizing the impor-
+tance of web pages [2]), but the tag cloud completely ig-
+nores such the inter-tag contexts. Concept ontology [3-5] has
+been recently used to exploit the hierarchical inter-concept
+semantic contexts (i.e., namely the parent, siblings and chil-
+dren concepts) for large-scale text/image organization and
+navigation. However, such a concept ontology may not be
+suitable for organizing large-scale weakly-tagged image col-
+lections because there are no explicit hierarchical inter-tag
+semantic contexts in a collaborative image tagging space [17-
+19, 22-28].
+To support more effective searches in large-scale weakly-
+tagged image collections, there is an urgent need to develop
+new algorithms for addressing the following problems more
+effectively:
+(a) Automatic Topic Network Generation: Because
+only the inter-concept semantic context is exploited for con-
+cept ontology construction [3-4], the concept ontology can-
+not allow users to navigate large-scale weakly-tagged image
+collections according to their visual properties. It is well-
+accepted that the visual properties of the images are very
+important for users to search for images [1, 13-16]. Thus it is
+necessary to exploit both the inter-topic semantic contexts
+and the inter-topic visual contexts for generating a more
+precise topic network.
+(b) Synonymous Tags: Different people may use dif-
+ferent tags, which have the same or close meanings (syn-
+onyms), to tag semantically-related or visually-related im-
+ages. For example, car, auto, and automobile are a set of
+synonyms. The synonyms will result in incomplete returns
+of relevant images in the image search side (i.e., with a low
+recall rate). Tag clustering [22-28] has been used to tackle
+Figure 1: Visual properties of the relevant images may
+be helpful for tackling the synonyms.
+the issue of synonyms by exploiting the inter-tag seman-
+tic contexts. However, not much work has been done by
+considering the visual properties of the relevant images for
+tag clustering [9]. As shown in Fig. 1, visual similarities
+between the relevant images may provide an alternative in-
+formation source for achieving more accurate tag clustering
+in a collaborative image tagging space.
+(c) Polysemous (ambiguous) Tags: Collaborative im-
+age tagging is an ambiguous process. People may tag an
+image based on: (1) an object in the image; (2) all objects
+in the image; (3) an overall “look”of the image; (4) an image
+event (i.e., human and object actions); or (5) image capture
+time and location [20-21]. Without controlling the vocab-
+ulary, different people may apply the same tag in different
+ways (i.e., the same tag may have different meanings un-
+der different contexts), which may result in imprecise and
+ambiguous results in the image search side. For example,
+the text term “bank” can be used to tag “bank office”, “river
+bank” and “cloud bank”. Forcing people to resolve the am-
+biguity of tagging terms at the image sharing time would
+be difficult and may prevent them from sharing and tagging
+their images. Word sense disambiguation is one potential
+solution for addressing this ambiguity issue [6-8], but ex-
+ploiting only the semantic contexts between the nearby text
+terms may not be able to tackle the issue of polysemes effec-
+tively [9]. As shown in Fig. 2, the visual properties of the
+relevant images may offer an alternative information source
+for dealing with this ambiguity issue more effectively, but
+there is no comprehensive framework that can incorporate
+the visual similarity contexts between the relevant images
+for word sense disambiguation.
+Some pioneering work has been done to combine both the
+visual contents of the images and the keywords for image
+concept modeling when the relationships between the key-
+words for image semantics interpretation and the visual con-
+tents of the images are explicit [14-16]. Because of the pol-
+ysemes, the relationships between the social tags and the
+visual contents of the images are less clear in a collabora-
+Figure 2: Visual properties of the relevant images may
+be helpful for tackling the polysemes.
+tive image tagging space. Thus these existing techniques for
+image concept modeling cannot be extended for addressing
+the issue of polysemes effectively.
+In this paper, we have developed a novel algorithm to
+incorporate the topic network for addressing the issues of
+polysemes and synonyms in a collaborative image tagging
+space. The paper is organized as follows. In section 2, an in-
+teresting algorithm is introduced for automatic image topic
+extraction. In section 3, an automatic topic network gen-
+eration algorithm is introduced, where both the semantic
+similarity contexts between the image topics and the visual
+similarity contexts between their images are exploited. In
+section 4, a novel cross-modal tag clustering algorithm is in-
+troduced for addressing the issue of synonyms. In section 5,
+a new cross-modal image clustering algorithm is developed
+for addressing the issue of polysemes. The algorithm evalu-
+ation results are given in section 6. We conclude this paper
+at section 7.
+2. IMAGE TOPIC EXTRACTION
+Each image in a collaborative tagging system is associated
+with the image holder’s taggings of the underlying image
+contents and other users’ taggings or comments. It is worth
+noting that entity extraction can be done more effectively
+in a collaborative image tagging space. In this paper, we
+first focus on extracting the social tags which are strongly
+related to the underlying image semantics. The social tags,
+which are related to image capture time, are also very at-
+tractive for searching in large-scale weakly-tagged image col-
+lections [21], but they are beyond the scope of this paper.
+Thus the image tags are first partitioned into two categories:
+noun phrases versus verb phrases. The noun phrases are fur-
+ther partitioned into two categories automatically: content-
+relevant tags (i.e., tags that are relevant to image contents)
+and content-irrelevant tags. The verb phrases are further
+partitioned into two categories automatically: event-relevant
+tags (i.e., tags that are relevant to image events) and event-
+irrelevant tags.
+The occurrence frequency for each content-relevant tag
+and each event-relevant tag is counted automatically by us-
+ing the number of relevant images. The misspelling tags
+may have low frequencies (i.e., different people may make
+different types of tagging mistakes), thus it is easy for us to
+correct such the misspelling tags and their images are added
+into the relevant tags automatically. Two tags, which are
+used for tagging the same image, are considered to co-occur
+once without considering their order. A co-occurrence ma-
+trix is obtained by counting the frequencies of such pairwise
+tag co-occurrences.
+The content-relevant tags and the event-relevant tags are
+further partitioned into two categories according to their in-
+terestingness scores: interesting tags and uninteresting tags.
+In this paper, multiple information sources have been ex-
+ploited for determining the interesting tags more accurately.
+For a given tag C, its interestingness score ?(C) depends
+on: (1) its occurrence frequency t(C) (e.g., higher occur-
+rence frequency corresponds to higher interestingness score);
+(2) its co-occurrence frequency ?(C) with any other tag in
+the vocabulary (e.g., higher co-occurrence frequency corre-
+sponds to higher interestingness score); and (3) users’ query
+frequency ?(C) (e.g., higher query frequency corresponds
+to higher interestingness score). The occurrence frequency
+t(C) for a given tag C is equal to the number of images that
+are tagged by the given tag C. The co-occurrence frequency
+?(C) for the given tag C is equal to the number of images
+that are tagged jointly by the given tag C and any other tag
+in the vocabulary.
+Thus the interestingness score ?(C) for a given tag C
+is defined as:
+?(C) = ?· e
+t(C) ? e?t(C)
+et(C) + e?t(C)
++?· e
+?(C) ? e??(C)
+e?(C) + e??(C)
++?· e
+?(C) ? e??(C)
+e?(C) + e??(C)
+(1)
+where ?+?+? = 1, the first part is used to characterize the
+interestingness score of the given tag C gained from its oc-
+currence frequency t(C) in large-scale image collections, the
+second part is used to characterize the interestingness score
+gained from its co-occurrence frequency ?(C) with any other
+tag in the vocabulary, and the third part is used to charac-
+terize the interestingness score gained from users’ query fre-
+quency ?(C), ?, ? and ? are the relative importance factors.
+In our definition, the interestingness score is normalized
+within the interval [0, 1]. The content-related tags and the
+event-related tags, which have larger values of the interest-
+ingness scores, are identified as the interesting tags.
+To enlarge the vocabulary of the interesting tags, a new
+algorithm is developed for discovering latent interesting tags,
+so that users can have more choices on query formulation.
+The co-occurrences of each uninteresting tag and the inter-
+esting tags are first counted. The ?2-measure is used to
+characterize the degree of the bias of the co-occurrence dis-
+tribution between the interesting tags and the uninteresting
+tags. If an uninteresting tag appears frequently with a par-
+ticular subset of the interesting tags in large-scale weakly-
+tagged image collections, it will be likely to be very impor-
+tant and should be treated as the latent interesting tag for
+image topic extraction.
+All the interesting tags and the latent interesting tags are
+treated as image topics of interest in a collaborative im-
+age tagging space. Rather than using only the query fre-
+quencies and the tag frequencies for image topic extraction
+Figure 3: Topic network for Flickr image set.
+(as done by a tag cloud), multiple alternative information
+sources (i.e., co-occurrence frequencies and latent interesting
+tags) are exploited for discovering more meaningful image
+topics. By mapping the images and their social tags onto a
+conceptual space, our image topic extraction algorithm can
+create a new form to support more effective representation
+and access of large-scale weakly-tagged image collections.
+3. TOPIC NETWORK GENERATION
+Our topic network consists of two key components: (1)
+large numbers of image topics; and (2) their cross-modal
+inter-topic similarity contexts. The cross-modal inter-topic
+similarity contexts consists of both the inter-topic semantic
+contexts and the inter-topic visual contexts.
+In this paper, multiple criteria (both flat and hierarchi-
+cal semantic contexts) are considered to achieve more pre-
+cise characterization of the inter-topic semantic contexts in a
+collaborative image tagging space. For two image topics Ci
+and Cj , their inter-topic semantic context ?(Ci, Cj) consists
+of two components: (1) the flat inter-topic semantic context
+because of their co-occurrences in large-scale weakly-tagged
+image collections (e.g., higher co-occurrence probability cor-
+responds to stronger inter-topic semantic context); and (2)
+the hierarchical inter-topic semantic context because of their
+inherent correlation defined by WordNet (e.g., stronger in-
+herent correlation (i.e., closer on WordNet [5]) corresponds
+to stronger inter-topic semantic context).
+For two image topics Ci and Cj , their inter-topic semantic
+context ?(Ci, Cj) is defined as:
+?(Ci, Cj) = ?? · ?(Ci, Cj)
+log ?(Ci, Cj)
+? ? · ?(Ci, Cj) · log L(Ci, Cj)
+2 ·D
+(2)
+where ?+ ? = 1, the first part is used to characterize the flat
+inter-topic semantic context according to their concurrence
+in large-scale image collections, the second part is used to
+characterize the hierarchical inter-topic semantic context, ?
+and ? are the relative importance factors, ?(Ci, Cj) is the
+co-occurrence probability for the image topics Ci and Cj ,
+L(Ci, Cj) is the number of nodes between the text terms for
+interpreting the image topics Ci and Cj on WordNet, D is
+the maximum number of nodes from root node to leaf node
+on WordNet.
+Our inter-topic semantic context measure ?(·, ·) can simul-
+taneously consider both the flat inter-topic semantic context
+and the hierarchical inter-topic semantc context in a collab-
+orative image tagging space.
+It is well-accepted that the visual properties of the im-
+ages are very important for image retrieval [1, 34], thus the
+inter-topic visual contexts may also play an important role
+in generating a more precise topic network. To achieve more
+sufficient characterization of various visual properties of the
+images, both global and local visual features are extracted
+for image content representation. The following visual fea-
+tures are extracted for image content representation: (1)
+36-bin RGB color histogram to characterize the global color
+distributions of the images; (2) 48-dimensional texture fea-
+tures from Gabor filter banks to characterize the global vi-
+sual properties (i.e., global structures) of the images; and (3)
+a number of interest points and their SIFT (scale invariant
+feature transform) features to characterize the local visual
+properties of the underlying salient image components.
+The high-dimensional visual features are first partitioned
+automatically into multiple feature subsets and each feature
+subset is used to characterize one certain type of the visual
+properties of the images. For each feature subset, a suitable
+base kernel is designed for image similarity characterization.
+For a given image topic Cj in the vocabulary, different
+base image kernels may play different roles on characteriz-
+ing the diverse visual similarity relationships between the
+images. Thus the diverse visual similarities between the im-
+ages are characterized more precisely by using a mixture-of-
+kernels [29-32]:
+?(x, y) =
+??
+l=1
+?l?l(x, y),
+??
+l=1
+?l = 1 (3)
+where ? is the number of feature subsets (i.e., the number
+of base image kernels), ?l ? 0 is the importance factor for
+the lth base image kernel ?l(x, y).
+The inter-topic visual contexts may also play an impor-
+tant role in generating a more precise concept network. The
+inter-topic visual context ?(Ci, Cj) between the image top-
+ics Ci and Cj can be determined by performing canonical
+correlation analysis [33] on their image sets Si and Sj :
+?(Ci, Cj) =
+max
+?, ?
+?T?(Si)?(Sj)??
+?T?2(Si)? · ?T?2(Sj)?
+(4)
+where ? and ? are the parameters for determining the op-
+timal projection directions to maximize the correlations be-
+tween two image sets Si and Sj for the image topics Ci and
+Cj , ?(Si) and ?(Sj) are the cumulative kernel functions for
+characterizing the visual correlations between the images in
+the same image sets Si and Sj .
+?(Si) =
+?
+xl,xm?Si
+?(xl, xm), ?(Sj) =
+?
+xh,xk?Sj
+?(xh, xk)
+(5)
+where the visual correlation between the images is defined
+as their kernel-based visual similarity ?(·, ·) in Eq.(5).
+The parameters ? and ? for determining the optimal pro-
+jection directions are obtained automatically by solving the
+following eigenvalue equations:
+?(Si)?(Si)? ? ?2??(Si)?(Si)? = 0
+?(Sj)?(Sj)?? ?2??(Sj)?(Sj)? = 0 (6)
+where the eigenvalues ?? and ?? follow the additional con-
+straint ?? = ??.
+The inter-topic visual context ?(Ci, Cj) is first normalized
+into the same interval as the inter-topic semantic context
+?(Ci, Cj). The inter-topic semantic context and the inter-
+topic visual context are further integrated to achieve more
+precise characterization of their cross-modal inter-topic sim-
+ilarity context ?(Ci, Cj):
+?(Ci, Cj) = ²· e
+?(Ci,Cj) ? e??(Ci,Cj)
+e?(Ci,Cj) + e??(Ci,Cj)
++?· e
+?(Ci,Cj) ? e??(Ci,Cj)
+e?(Ci,Cj) + e??(Ci,Cj)
+(7)
+where ²+? = 1, the first part denotes the semantic similarity
+context between the image topics Cj and Ci, the second
+part indicates their inter-topic visual context, ?(Ci, Cj) is
+the visual similarity context between the image sets for the
+image topics Ci and Cj .
+When large numbers of image topics and their cross-modal
+inter-topic similarity contexts are available, they are used to
+construct a topic network. Unlike the one-direction IS-A hi-
+erarchy [3-5], each image topic can be linked with all the
+other image topic on the topic network, thus the maximum
+number of such inter-topic associations could be T (T?1)
+2
+,
+where T is the total number of image topics on the topic
+network. However, the strength of the associations between
+some image topics may be very weak, thus it is not necessary
+for each image topic to be linked with all the other image
+topics on the topic network. Eliminating the weak inter-
+topic links can increase the visibility of the image topics of
+interest dramatically, but also allow users to concentrate on
+the most significant cross-modal inter-topic similarity con-
+texts. Based on this understanding, each image topic is au-
+tomatically linked with the most relevant image topics with
+larger values of the inter-topic similarity contexts ?(·, ·) (i.e.,
+their values of ?(·, ·) are above a threshold ? = 0.25). The
+value of the threshold is determined by making a tradeoff
+between the computational complexity for interactive topic
+network exploration and the effectiveness for characterizing
+the most significant inter-topic contexts.
+The topic networks for our test image sets (LabelMe and
+Flickr) are shown in Fig. 3 and Fig. 4, where each im-
+age topic is linked with multiple relevant image topics with
+larger values of ?(·, ·). It is worth noting that different image
+topic can have different numbers of the most relevant image
+topics on the topic network. By visualizing large numbers
+of image topics according to their cross-modal inter-topic
+similarity contexts, our topic network can make the seman-
+tics behind the tag space more explicit and can allow users
+to navigate large-scale weakly-tagged image collections ef-
+fectively according to their semantic and visual similarity
+contexts. By supporting interactive context-driven topic
+network exploration and navigation, users can gain deep in-
+sights rapidly, build up their mental query models interac-
+tively, and exploit their background knowledge and strong
+pattern recognition capability to select the visible image
+topics on the topic network for query formulation. Thus
+the user’s image needs can be efficiently translated into the
+available image topics on the topic network.
+4. COMBINING SYNONYMOUS TOPICS
+Some image topics on the topic network may be synony-
+mous (i.e., multiple image topics share the same meaning),
+which may result in incomplete returns of images in the
+search side (i.e, with a low recall rate). In this paper, a cross-
+modal tag clustering algorithm is developed to combine the
+synonymous topics, which may significantly increase the re-
+call rate for image retrieval.
+Figure 4: Topic network for LabelMe image set.
+Our cross-modal tag clustering algorithm consists of two
+critical components: (1) distance or similarity measures for
+characterizing the pairwise tag similarity; and (2) optimiza-
+tion criteria for tag grouping according to their pairwise
+similarity measures. Since the pairwise similarity measure
+is fundamental to the definition of a tag cluster, the topic
+network is incroporated to define a more accurate similarity
+measure for tag clustering.
+Because image topics and their cross-modal inter-topic
+similarity contexts are indexed coherently by the topic net-
+work, a constraint-driven clustering algorithm is developed
+to achieve more accurate cross-modal tag clustering. For
+two image topics Ci and Cj on the topic network, their con-
+strained cross-modal similarity context ?(Ci, Cj) depends
+on two issues: (1) cross-modal inter-topic similarity context
+?(Ci, Cj) (e.g., similar image topics should have larger val-
+ues of ?(·, ·)); and (2) constraint and linkage relatedness on
+the topic network (e.g., similar image topics should be closer
+on the topic network). The constrained cross-modal similar-
+ity context ?(Ci, Cj) between two image topics Ci and Cj
+is defined as:
+?(Ci, Cj) = ?(Ci, Cj)×
+????? e
+? l
+2(Ci,Cj)
+?2 , if l(Ci, Cj) ? ?
+0, otherwise
+(8)
+where the first part ?(Ci, Cj) denotes the cross-modal inter-
+topic similarity context between Ci and Cj , the second part
+indicates the constraint and linkage relatedness between Ci
+and Cj on the topic network, l(Ci, Cj) is the distance be-
+tween the physical locations for the image topics Ci and
+Cj on the topic network, ? is the variance of their physical
+location distances, and ? is a pre-defined threshold which
+largely depends on the size of the nearest neighbors to be
+considered. In this paper, the first-order nearest neighbors
+is considered as shown in Fig. 5, ? = 1.
+After such the constrained cross-modal inter-topic simi-
+larity contexts are obtained, graph-cut algorithm is used for
+tag clustering [11]. Thus the synonymous topics, which have
+large values of the constrained cross-modal inter-topic simi-
+larity contexts, are grouped into the same cluster and can be
+combined as one super-topic. The images for these synony-
+mous topics in the same cluster are assigned to the super-
+Figure 5: The first-order nearest neighbors of “beach”
+in Flickr image set.
+topic automatically, so that users can obtain more compre-
+hensive returns of the relevant images (i.e., with a higher
+recall rate). Multiple tags for interpreting these synony-
+mous topics are combined as one union phrase for tagging
+the super-topic, so that users can have more flexible choices
+on query formulation (i.e., any part of such a union phrase
+can be used as the query term).
+When multiple synonymous image topics {c1, · · · , cn} are
+integrated as one super-topic Cs, the inter-topic similarity
+contexts between one given image topic on the topic net-
+work and the super-topic Cs largely depend on its inter-topic
+similarity contexts with all these synonymous image topics
+{c1, · · · , cn}. Based on this understanding, a novel algo-
+rithm is developed for calculating the aggregated similarity
+contexts between the super-topic Cs and other image topics
+on the topic network more effectively. Thus the aggregated
+semantic context ?ˆ(Cs, Cj) between the super-topic Cs and
+the image topic Cj on the topic network is obtained by us-
+ing Eq. (2) with the cumulative probabilities ?ˆ(Cs, Cj) and
+?ˆ(Cs) and a new inherent correlation Lˆ(Cs, Cj). The cumu-
+lative co-occurrence probability ?ˆ(Cs, Cj), the cumulative
+occurrence probability ?ˆ(Cs), and the new inherent correla-
+tion Lˆ(Cs, Cj) is defined as:
+?ˆ(Cs, Cj) =
+n?
+l=1
+?(cl, Cj), ?ˆ(Cs) =
+n?
+l=1
+?(cl)
+Lˆ(Cs, Cj) = min{L(cl, Cj)|l = 1, · · · , n} (9)
+where ?(cl, Cj) is the co-occurrence probability for the syn-
+Figure 6: The precision and recall for our system to
+support image retrieval.
+onymous image topic cl and the image topic Cj , ?(cl) is the
+individual occurrence probability of the synonymous image
+topic cl, L(cl, Cj) is the inherent correlation between the
+synonymous image topic cl and the image topic Cj on Word-
+Net.
+The aggregated visual context ?ˆ(Cs, Cj) between the super-
+topic Cs and the image topic Cj on the topic network is
+defined by using Eq. (4), where the image set Ss for the
+super-topic Cs is defined as an union of the image sets for the
+synonymous image topics {c1, · · · , cn}: Ss = S1 ? · · · ? Sn.
+By incorporating the topic network to achieve more accu-
+rate cross-modal tag clustering, our algorithm can address
+the issue of synonyms more effectively and may result in
+a higher recall rate for image retrieval. By merging the
+synonymous topics, our algorithm can offer more coherent
+representation of the topic network, thus it can reduce the
+users’ perceptual cost significantly for interactive topic net-
+work exploration and allow them to gain the deep insights
+rapidly for query formulation.
+5. SPLITTING POLYSEMOUS TOPICS
+Some image topics on the topic network may be polyse-
+mous, which may result in large numbers of weakly-related
+images (i.e., with a low precision rate). To address the pol-
+ysemes, automatic image clustering is performed to split the
+polysemous topics, so that users can obtain more precise re-
+turns of the relevant images (i.e., with a higher precision
+rate). Thus a new algorithm is developed for partitioning
+the images under the same polysemous topic into multiple
+groups automatically and each group may correspond to one
+certain sub-topic of the same polysemous topic.
+Each image consists of two information sources: (1) vi-
+sual properties; and (2) multiple tags for image semantics
+interpretation. The visual similarity context between the
+images is characterized by using a mixture-of-kernels, and
+the semantic similarity context between their tags is char-
+acterized by using a semantic kernel.
+To determine the cross-modal similarity contexts between
+the images, both the visual similarity context (i.e., mixture-
+of-kernels) and the semantic similarity context (i.e., seman-
+tic kernel) are aligned onto the same kernel space. Second,
+the visual similarity context and the semantic similarity con-
+text are normalized into the same interval, so that they can
+be comparable. Finally, a linear combination of the normal-
+ized visual similarity context and the normalized semantic
+similarity context is used to measure the cross-modal simi-
+larity context between the images ?ˆ(·, ·) [29-32].
+Our kernel alignment approach can achieve more precise
+characterization of the cross-modal similarity contexts be-
+tween the images, thus the images under the same poly-
+semous topic can be partitioned into multiple clusters more
+accurately. The optimal image partition is obtained by min-
+Figure 7: The precision and recall for our system to
+support image retrieval.
+imizing the trace of the within-cluster scatter matrix [10],
+S?w. The trace of the scatter matrix Tr(S
+?
+w) is given by:
+Tr(S?w) =
+1
+N
+??
+l=1
+N?
+i=1
+?li
+(
+?ˆ(xi, xj)? 2
+Nl
+N?
+j=1
+?lj ?ˆ(xi, xj)
++
+1
+N2l
+N?
+j=1
+N?
+m=1
+?lj?lm?ˆ(xj , xm)
+)
+(10)
+where ?ˆ(·, ·) is the cross-modal similarity context between
+two images, N is the total number of images, ? is the num-
+ber of clusters, and Nl =
+?N
+i=1 ?li is the number of im-
+ages for the lth cluster. Searching the optimal values of the
+elements ? that minimizes the trace of the within-cluster
+scatter matrix will be achieved effectively by an iterative
+procedure [10]. Each image cluster may correspond to one
+certain sub-topic for the same polysemous topic.
+Semantic image classification is performed for tagging the
+sub-topics (i.e., image clusters) under the same polysemous
+topic. First, the similarity contexts between the polyse-
+mous topic and its sub-topics is exploited to learn multiple
+inter-related image classifiers more effectively. The similar-
+ity contexts between the polysemous topic and its multiple
+sub-topics are well-defined, thus the image classifiers with
+higher discrimination power can be learned for tagging the
+sub-topics. For the polysemous topic“bank”as shown in Fig.
+2, multiple inter-related image classifiers are learned for tag-
+ging its sub-topics. For example, the “building” classifier is
+used to tag the sub-topic “bank office”, the image classifiers
+for “water”, “sand”, “grass”, and “tree” are integrated to tag
+the sub-topic “river bank”, and the image classifiers for “sky”
+and“cloud”are integrated to tag the sub-topic“cloud bank”.
+When the polysemous topic Cp is split into multiple sub-
+topics {cˆ1, · · · , cˆm}, a novel algorithm is developed to de-
+termine their split inter-topic similarity contexts with the
+residue image topics on the topic network more effectively.
+The split inter-topic semantic context between the sub-topic
+cˆl and any other image topic on the topic network is defined
+by using Eq. (2), where the co-occurrence probability is re-
+placed by the split co-occurrence probability. The split co-
+occurrence probability ?˜(cˆl, Cj), the split occurrence prob-
+ability ?˜(cˆl), and the new inherent correlation L˜(cˆl, Cj) are
+refined as:
+?˜(cˆl, Cj) =
+|Sˆl|
+|Sp|?(Cp, Cj), ?˜(cˆl) =
+|Sˆl|
+|Sp|?(Cp)
+L˜(cˆl, Cj) = L(Cp, Cj) + 1 (11)
+where ?(Cp, Cj) is the co-occurrence probability for the pol-
+ysemous image topic Cp and the image topic Cj , ?(Cp) is the
+occurrence probability for the polysemous image topic Cp,
+|Sˆl| is the size of the image set Sˆl for the sub-topic cˆl, |Sp| is
+Figure 8: The comparison results between our proto-
+type system and Flickr image search engine for some
+polysemous or synonymous image topics.
+the size of the image set Sp for the polysemous image topic
+Cp, |SP | = ?ml=1 |Sˆl|, L(Cp, Cj) is the inherent correlation
+between the polysemous image topic Cp and the image topic
+Cj on WordNet.
+The split inter-topic visual context between the sub-topic
+cˆl and any other image topic on the topic network is de-
+termined automatically according to the visual correlation
+between their images by using kernel CCA. The smaller im-
+age set Sˆl for the sub-topic cˆl is defined as a subset of the
+image set Sp for the polysemous topic Cp (e.g., Sˆl can be
+obtained automatically by our image clustering technique).
+By exploiting multiple cross-modal information sources
+for cross-modal image clustering, our algorithm can address
+the issue of polysemes more effectively and result in a higher
+precision rate for image retrieval. By splitting the polyse-
+mous topics automatically and supporting automatic sub-
+topic tagging, our algorithm can enrich the semantics on the
+topic network significantly, so that users can select more spe-
+cific image topics to formulate their queries more precisely
+and obtain more accurate returns of the relevant images.
+6. ALGORITHM EVALUATION
+We have carried out our experimental studies by using
+large-scale weakly-tagged Flickr and LabelMe images [12-
+13]. We have downloaded more than 1.5 billions Flickr
+images and 1.2 millions LabelMe images and their tagging
+documents. We have generated a topic network with more
+than 4000 most popular image topics (i.e., most popular
+taggings).
+The image seeking process is necessarily initiated by an
+image need on user’s side, thus the success of an image re-
+trieval system depends largely on its ability to allow user
+to communicate his/her image needs effectively [1]. There-
+fore, traditional performance criteria (precision and recall)
+may not be sufficient enough for evaluating the significance
+of our system. Assessing the performance of image retrieval
+systems is partly subjective, therefore we have developed
+new evaluation models to assess our system. In this paper,
+we have incorporated a user study and a new perfor-
+mance metric (i.e., rating score sheet) for evaluating our
+system. Our user study focuses on evaluating the benefits
+of users from using our system in the context of integrat-
+ing the topic network on query formulation and word sense
+disambiguation.
+Our algorithm evaluation work focuses on four criteria:
+(1) how well the topic network summarizes and represents
+large-scale weakly-tagged image collections, (2) how well the
+topic network assists them on query formulation, (3) how
+Figure 9: The comparison results on user study on three
+criteria between our prototype system and Flickr image
+search engine.
+well the image topics on the topic network match the di-
+verse image needs of users, and (4) how well our techniques
+address the issues of polysemes and synonyms. The first
+three criteria are assessed through user study, the last cri-
+terion is assessed by using the precision and recall rates for
+image retrieval.
+For evaluating the effectiveness of our word sense disam-
+biguation algorithm, the benchmark metric includes preci-
+sion ? and recall %. They are defined as:
+? =
+?
+?+ ?
+, % =
+?
+?+ ?
+(12)
+where ? is the set of true positive images that are related to
+the corresponding image topic and are returned correctly, ?
+is the set of true negative images that are irrelevant to the
+corresponding image topic and are returned incorrectly, and
+? is the set of false positive images that are related to the
+corresponding image topic but are returned incorrectly. The
+precision is used to characterize the accuracy of our system
+for finding the particular images of interest, and the recall is
+used to characterize the efficiency of our system for finding
+the particular images of interest.
+Fig. 6 and Fig. 7 give the precision and recall of our
+system for social image retrieval. From these experimental
+results, one can observe that our system can support social
+image retrieval effectively. For some polysemous or synony-
+mous image topics, we have compared the precision and re-
+call rates between our system and a tag cloud-based Flickr
+system as shown in Fig. 8. One can observe that our sys-
+tem can achieve higher precision and recall rates for image
+retrieval, thus our word sense disambiguation algorithm can
+address the issues of polysemes and synonyms effectively.
+Image retrieval is a lucid example of user-centric com-
+puting because both the judgment of image relevance and
+the interpretation of image semantics are user-dependent.
+Based on this observation, user study has been conducted
+by comparing our prototype system with keyword-based im-
+age rerieval system (such as Flickr) on three key issues: 1)
+how well the topic network summarizes and represents large-
+scale weakly-tagged image collections, (2) how well the topic
+network assists them on query formulation, (3) how well the
+image topics on the topic network match the diverse image
+needs of users.
+We have invited 18 students to participate this user study,
+where 10 undergraduate students from database class with-
+out any knowledge on image indexing and retrieval, 5 gradu-
+ate students with some experiences on keyword-based Flickr
+image search engine, 3 graduate students who are familar
+with image retrieval systems. The students are asked to
+score our system and Flickr system. The scores for system
+evaluation are set from 10 (highest) to 1 (lowest). Each stu-
+dent is required to submit 500 queries which are randomly
+sampled from 4000 available image topics, different query
+sets are assigned for different students with some overlap-
+pings for cross validation. Therefore, each image topic is
+searched by at least two students independently. The com-
+parison results are given in Fig. 9, one can observe that our
+proposed prototype system is very competitive.
+7. CONCLUSIONS
+In this paper, we have introduced a new framework to in-
+corporate the topic network for word sense disambiguation.
+First, a topic network is generated to characterize both the
+semantic similarity contexts and the visual similarity con-
+texts between the image topics more sufficiently. To ad-
+dress the issues of polysemes and synonyms and enhance
+the precision and recall rates for image retrieval, a novel
+algorithm is developed by integrating the topic network to
+exploit both the visual similarity contexts between the im-
+ages and the semantic similarity contexts between their tags
+for word sense disambiguation. Our experiments on large-
+scale weakly-annotated Flickr and LabelMe image collec-
+tions have provided very positive results. Our future work
+will focus on making our system available online, so that
+more Internet users can join our user study.
+8. REFERENCES
+[1] A.W.M. Smeulders, M. Worring, S. Santini, A. Gupta
+and R. Jain, “Content-based image retrieval at the end
+of the early years”, IEEE Trans. on PAMI, 2000.
+[2] S. Brin, L. Page, “The anatomy of a large-scale
+hypertextual web search engine”, WWW, 1998.
+[3] M. Naphade, J.R. Smith, J. Tesic, S.-F. Chang, W.
+Hsu, L. Kennedy, A. Hauptmann, J. Curtis,
+“Large-scale concept ontology for multimedia”, IEEE
+Multimedia, 2006.
+[4] M. Sanderson, W. B. Croft, “Deriving concept
+hierarchies from text”, ACM SIGIR, pp.206-213, 1999.
+[5] C. Fellbaum, WordNet: An Electronic Lexical
+Database, MIT Press, Boston, MA, 1998.
+[6] J. Stetina, S. Kurohashi, M. Nagao, “General word
+sense method based on a full sentential context”,
+COLING-ACL Workshop, 1998.
+[7] M. Sussna, “Word sense disambiguation for free-text
+indexing using a massive semantic network”, ACM
+CIKM, pp.67-74, 1993.
+[8] D. Yarowsky, “Unsupervised word sense
+disambiguation rivaling supervised methods”, ACL,
+1995.
+[9] K. Barnard, M. Johnson, ”Word sense disambiguation
+with pictures”, Artificial Intelligence, vol. 167, pp.
+13-30, 2005.
+[10] M. Girolami, “Mercer kernel-based clustering in
+feature space”, IEEE Trans. on Neural networks,
+vol.13, no.3, pp.780-784, 2002.
+[11] J Shi, J Malik, “Normalized cuts and image
+segmentation”, IEEE Trans. on PAMI, 2000.
+[12] Flickr, http://www.flickr.com.
+[13] B. Russell, A. Torralba, W.T. Freeman,
+http://labelme.csail.mit.edu/
+[14] R. Zhang, Z. Zhang, M. Li, W.-Y. Ma, H.-J. Zhang,
+“A probabilistic semantic model for image annotation
+and multi-modal image retrieval”, IEEE ICCV, 2005.
+[15] K. Barnard and D. Forsyth, “Learning the semantics
+of words and pictures”, IEEE ICCV, pp.408-415, 2001.
+[16] J. Jeon, V. Lavrenko, R. Manmatha, “Automatic
+image annotation and retrieval using cross-media
+relevance models”, ACM SIGIR, 2003.
+[17] S. Golder, B. Huberman, “The structure of
+collaborative tagging systems”, HP Lab Report, 2006.
+[18] M. Guy, E. Tonkin, “Folksonomies: Tidying up tags?”,
+D-Lib Magazine, vol.12, 2006.
+[19] A. Mathes, “Folksonomies-Comperative classification
+and communication through shared metadata”, 2004.
+[20] M. Naaman, Y. Song, A. Paepcke, H. Garcia-Molina,
+“Automatic organization for digital photographs with
+geographic coordinates”, ACM/IEEE JCDL, 2004.
+[21] A. Graham, H. Garcia-Molina, A. Paepcke, T.
+Winograd, “Time as essence for photo browsing
+through personal digital libraries”, ACM/IEEE JCDL,
+pp.326U?335, 2002.
+[22] X. Wu, L. Zhang, Y. Yu, “Exploring social annotations
+for the semantic web”, ACM WWW, pp.417-426, 2006.
+[23] C.H. Brooks, N. Montanez, “Improved annotation of
+the blogosphere via autotagging and hierarchical
+clustering”, ACM WWW, 2006.
+[24] S. Bao, X. Wu, B. Fei, G. Xue, Z. Su, Y. Yu,
+“Optimizing web search using social annotations”,
+WWW, pp.501-510, 2007.
+[25] G. Begelman, P. Keller, F. Smadja, “Automated tag
+clustering: Improving search and exploration in the
+tag space”, ACM WWW, 2006.
+[26] J. Gemmell, A. Shepitsen, B. Mobasher, R. Burke,
+“Personalized navigation in folksonomies using
+hierarchical tag clustering”, AAAI Workshop, 2008.
+[27] E. Simpson, “Clustering tags in enterprise and web
+folksonomies”, HPL-2007-190, 2007.
+[28] M. Grineva, M. Grinev, D. Turdakov, P. Velikhov,
+“Harnessing Wikipedia for smart tags clustering”,
+AAAI, 2008.
+[29] M. Varma, D. Ray, “Learning the discriminative
+power-invariance trade-off”, IEEE ICCV, 2007.
+[30] A. Frome, Y. Singer, F. Sha, J. Malik, “Learning
+globally-consistent local distance functions for
+shape-based image retrieval and classification”, IEEE
+ICCV, 2007.
+[31] A. Bosch, A. Zisserman, X. Munoz, “Representing
+shape with a spatial pyramid kernel”, ACM CIVR,
+2007.
+[32] J. Zhang, M. Marszalek, S. Lazebnik, C. Schmid,
+“Local features and kernels for classification of texture
+and object catetories: A comprehensive study”, Intl.
+Journal of Computer Vision, vol.73, no.2, 213-238,
+2007.
+[33] D.R. Hardoon, S. Szedmak, J. Shawe-Taylor,
+“Canonical correlation analysis: An overview with
+application to learning methods”, Technical Report,
+CSD-TR-03-02, University of London, 2003.
+[34] L. Wu, X.-S. Hua, N. Yu, W.-Y. Ma, S. Li, “Flickr
+distance”, ACM Multimedia, 2008.
+

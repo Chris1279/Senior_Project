@@ -1,0 +1,1258 @@
+Leveraging Loosely-Tagged Images and Inter-Object
+Correlations for Tag Recommendation
+Yi Shen
+Dept of Computer Science
+UNC-Charlotte
+Charlotte, NC 28223, USA
+yshen9@uncc.edu
+Jianping Fan
+Dept of Computer Science
+UNC-Charlotte
+Charlotte, NC 28223, USA
+jfan@uncc.edu
+ABSTRACT
+Large-scale loosely-tagged images (i.e., multiple object tags
+are given loosely at the image level) are available on Inter-
+net, and it is very attractive to leverage such loosely-tagged
+images for automatic image annotation applications. In
+this paper, a multi-task structured SVM algorithm is devel-
+oped to leverage both the inter-object correlations and the
+loosely-tagged images for achieving more eective training
+of a large number of inter-related object classiers. To lever-
+age the loosely-tagged images for object classier training,
+each loosely-tagged image is partitioned into a set of image
+instances (image regions) and a multiple instance learning
+algorithm is developed for instance label identication by
+automatically identifying the correspondences between mul-
+tiple tags (given at the image level) and the image instances.
+An object correlation network is constructed for character-
+izing the inter-object correlations explicitly and identifying
+the inter-related learning tasks automatically. To enhance
+the discrimination power of a large number of inter-related
+object classiers, a multi-task structured SVM algorithm is
+developed to model the inter-task relatedness more precisely
+and leverage the inter-object correlations for classier train-
+ing. Our experiments on a large number of inter-related
+object classes have provided very positive results.
+Categories and Subject Descriptors
+I.4.8 [Image Processing and Computer Vision]: Scene
+Analysis-object recognition.
+General Terms
+Algorithms, Measurement, Experimentation
+Keywords
+Multi-task structured SVM, object correlation network, loosely-
+tagged images, multiple instance learning.
+1. INTRODUCTION
+For many image understanding tasks, such as object de-
+tection and scene recognition, machine learning techniques
+are usually involved to learn the classiers from large amounts
+Permission to make digital or hard copies of all or part of this work for
+personal or classroom use is granted without fee provided that copies are
+not made or distributed for profit or commercial advantage and that copies
+bear this notice and the full citation on the first page. To copy otherwise, to
+republish, to post on servers or to redistribute to lists, requires prior specific
+permission and/or a fee.
+MM’10, October 25–29, 2010, Firenze, Italy.
+Copyright 2010 ACM 978-1-60558-933-6/10/10 ...$10.00.
+of training images and the ground-truth labels for the train-
+ing images are usually provided by professionals. Because
+it is labor intensive to hire professionals for labeling large
+amounts of training images, the sizes of such professionally-
+labeled image sets tend to be small. As a result, the classi-
+ers, which are learned from a small set of the professionally-
+labeled training images, may hardly be generalizable. To
+achieve more reliable classier training, the size of the la-
+beled training images must be large due to: (1) the number
+of object classes could be very large; and (2) the learning
+complexity for some object classes could be very high be-
+cause they may have large intra-class visual diversity and
+large inter-class visual similarity (i.e., visual ambiguity).
+One way for us to collect large-scale training images is
+to leverage the advantages of collaborative image tagging
+systems (i.e., leveraging the collaborative eorts of a large
+population of Internet users) [1-2]. To dierentiate such
+collaboratively-tagged images from the professionally-labeled
+images, we call them as loosely-tagged images because
+multiple object tags are loosely given at the image level
+rather than at the object level (i.e., without providing the
+exact object locations in the images).
+Large-scale loosely-tagged images can have multiple ad-
+vantages: (1) they can represent various visual properties
+of the object classes more suciently; (2) they can be ob-
+tained easily by leveraging the collaborative eorts of large
+numbers of Internet users, our fundamental belief is that a
+large group of Internet users with diverse backgrounds can
+do better job than a small team of professionals as illustrated
+by wikipedia; (3) both their tags and their visual properties
+are diverse, thus they can give a real-world point of depar-
+ture for object detection and scene recognition. Therefore, it
+is very attractive to develop new learning frameworks which
+are able to leverage the loosely-tagged images for object clas-
+sier training.
+It is not a trivial task to leverage the loosely-tagged images
+for object classier training because they may seriously suf-
+fer from the critical issue of tag uncertainty (i.e., loose tags
+and multiple tags). In a collaborative image tagging space,
+the object tags are usually given at the image level (i.e., loose
+tags without providing the exact locations for the objects in
+the images) because providing the tags at the image level
+is far less time consuming. On the other hand, one single
+image may be associated with multiple tags (i.e., multi-label
+image) because it may contain multiple objects. When mul-
+tiple tags are frequently used to tag the images jointly, they
+should have strong correlations (i.e., inter-tag correlations),
+but how to leverage such inter-tag (inter-object) correlations
+5
+Figure 1: The owchart of our multi-task structured
+SVM scheme for inter-related classier training.
+for object classier training is still an open issue for the
+multimedia research community [13-18]. Ignoring the inter-
+object correlations may result in the object classiers with
+low discrimination power.
+To leverage both the loosely-tagged images and the inter-
+object correlations for object classier training, it is very
+attractive to develop new frameworks for: (a) ambiguous im-
+age representation which can transform each loosely-tagged
+image into bags of instances and express its semantics ambi-
+guity (i.e., multiple tags) explicitly in the instance space; (b)
+identifying the instance labels automatically when the tags
+are provided only at the image level (i.e., loose tags); and
+(c) structured learning for exploiting the inter-object corre-
+lations to achieve more eective learning of a large number
+of inter-related object classiers.
+As shown in Fig. 1, a multi-task structured SVM algo-
+rithm is developed to leverage both the loosely-tagged im-
+ages and the inter-object correlations to achieve more ac-
+curate training of a large number of inter-related object
+classiers. This paper is organized as follows. Section 2
+reviews the related work briey; Section 3 presents a mul-
+tiple instance learning algorithm to automatically identify
+the labels for the relevant image instances in the positive
+bags; Section 4 introduces an interesting approach to con-
+struct an object correlation network for identifying the inter-
+related learning tasks automatically; Section 5 presents our
+multi-task structured SVM algorithm for inter-related clas-
+sier training; Section 6 describes our work on algorithm
+evaluation; We conclude in Section 7.
+2. RELATEDWORK
+Some pioneering work have been done on multiple instance
+learning [7-10]. Chen et al. [10] have developed an interest-
+ing approach called MILES to enable region-based image
+annotation when the labels are available only at the image
+level. Vijayanarasimhan et al. have developed a multi-label
+multiple instance learning approach to achieve more eective
+learning from the loosely-labeled images [7]. Zhang et al.
+[8] and Maron et al. [9] have incorporated multiple instance
+learning (MIL) techniques to learn the object detectors from
+the loosely-labeled images.
+In order to incorporate multi-label images for classier
+training, some pioneering work have been done by divid-
+ing multi-label learning into a set of binary classication
+problems or transforming multi-label learning into a label
+ranking problem [11-12]. Boutell et al. have addressed the
+issue of multi-label image annotation by learning a set of
+binary classiers [11]. Zhou et al. [12] and Zha et al. [22]
+have integrating multiple instance learning with multi-label
+learning for scene classication by exploiting the inter-label
+correlations at the label space. Because classier training
+is performed in the feature space rather than in the label
+space, it is very attractive to develop new algorithms that
+can directly model the inter-object correlations in the fea-
+ture space.
+Multi-task learning has widely been studied by exploit-
+ing the correlations between multiple learning tasks [13-18].
+Torralba et al. [17] have developed a novel JointBoost algo-
+rithm to support multi-task learning. Jiang et al. [18] have
+extended such JointBoost algorithm for multi-class concept
+detection by sharing common kernels. The boosting algo-
+rithm could be very sensitive to data noise, thus it cannot
+directly be used to leverage the loosely-tagged images with
+large tag uncertainty for classier training. Kumar et al.
+have proposed Discriminative Random Fields (DRF) to ex-
+ploit the inter-patch correlations for object detection [15].
+Yang et al. [16] have recently extended the DRF technique
+for image/video concept detection. Fan et al. have con-
+structed concept ontology for identifying the inter-related
+learning tasks in the concept space and achieving hierarchi-
+cal training of a large number of inter-related image classi-
+ers [13].
+The statistical rules, such as object co-occurrence con-
+texts, have been derived from large-scale image collections
+for supporting context-driven object detection and some pi-
+oneering work have been done recently [19-22]. Qi et al.
+[21], Tang et al. [19] and Liu et al. [20] have exploited
+the correlations between the image/video concepts to en-
+hance automatic image/video annotation, and some inter-
+esting statistical models have been developed to leverage
+such inter-concept contexts for concept classier training.
+In order to leverage both the inter-object correlations and
+the inter-task relatedness for classier training, a multi-task
+structured SVM algorithm is developed in this paper: (1)
+An object correlation network is constructed for representing
+the inter-object correlations explicitly and providing a good
+environment to identify the inter-related learning tasks di-
+rectly in the feature space rather than in the label space. (2)
+A multiple instance learning algorithm is developed for iden-
+tifying the labels of the image instances automatically when
+the labels are only available at the image level. (3) A multi-
+task structured SVM algorithm is developed by incorporat-
+ing the object correlation network, structured SVM [23-24]
+and multi-task learning [13-14, 17-18] to model the inter-task
+relatedness more precisely and leverage the inter-object cor-
+relations for training a large number of inter-related object
+classiers jointly.
+3. MULTIPLE INSTANCE LEARNING
+To address the issues of loose tags and multiple tags si-
+multaneously, two bags of images are labeled for each tag
+of interest: positive bags 
+ versus negative bags 
+. For a
+given tag, its positive bags 
+ consist of a set of multi-label
+images which are loosely related with the given tag, e.g.,
+all these multi-label images are loosely tagged by the given
+tag and other inter-related tags and at least one of their im-
+age instances (i.e., image regions) has exact correspondence
+with the given tag. On the other hand, the negative bags
+
+ consist of a set of multi-label images which are irrelevant
+with the given tag, e.g., the given tag is not used to tag
+all these multi-label images in the negative bags and none
+of their image instances (i.e., image regions) has exact cor-
+respondence with the given tag. One important issue for
+supporting multiple instance learning is how to identify the
+correspondences between multiple tags (given at the image
+level) and the image instances.
+6
+Figure 2: Multiple instances (image regions) for am-
+biguous image representation and feature extraction.
+3.1 Bags of Instances
+For automatic object detection and scene recognition ap-
+plications, a good framework for image content representa-
+tion that can capture more meaningful insights of the im-
+ages may make the classier training task easier to tackle.
+To leverage the loosely-tagged images for classier training,
+having a good framework for ambiguous image representa-
+tion is more important than having a strong learning algo-
+rithm. If a loosely-tagged image is treated as one single in-
+stance as shown in Fig. 2(a), the underlying ambiguous im-
+age semantics which correspond to multiple tags are mixed
+in the instance space, thus it could be very dicult to learn
+reliable classiers by using such loosely-tagged images. On
+the other hand, if the loosely-tagged image is represented
+as a set of instances (image regions) as shown in Fig. 2(b),
+the mixed information (i.e., ambiguous image semantics) in
+the same image can be easier to be detached in the instance
+space, thus it can be less dicult to learn reliable classiers
+by using such image instances.
+As shown in Fig. 2(b), a new scheme is developed for am-
+biguous image representation by using bags of instances:
+(a) each loosely-tagged image is rst partitioned into a set of
+image regions by using JSEG [4] and multiple segmentations
+are integrated to obtain more meaningful image regions (im-
+age instances) for object detection [5]; (b) each image region
+is treated as one instance; and (c) multi-modal visual fea-
+tures are extracted from each image instance to characterize
+its various visual properties more suciently.
+By partitioning the loosely-tagged images into bags of in-
+stances, our ambiguous image representation framework can
+provide multiple advantages: (1) it can provide a good foun-
+dation to tackle the issue of loose tags by automatically iden-
+tifying the correspondences between multiple tags (given at
+the image level) and the image instances (image regions); (2)
+it can provide a natural way to tackle the issue of seman-
+tics ambiguity (i.e., multiple tags) explicitly in the instance
+space, e.g., dierent image instances may relate to dierent
+tags; and (3) it is able to characterize the appearances of
+the objects eectively by integrating multiple segmentation
+results.
+In our current implementations, we have extracted the fol-
+lowing region-based visual features: 12-bins color histogram,
+top 3 dominant colors, 9-bins edge histogram, region shapes,
+region size and location of its center in an image, and Tamura
+textures. Each type of these visual features (i.e., one partic-
+ular feature subset) is used to characterize one certain type
+of the visual properties of the image instances, and a suitable
+base kernel is designed for each type of the visual features
+for characterizing one certain type of the visual similarity
+contexts between the image instances. We skip the details
+for base kernel construction because it is beyond the scope
+of this paper and it can be found from our previous work
+[13].
+For two image instances u and v, their diverse visual sim-
+ilarity contexts are characterized more precisely by using a
+mixture of these base kernels (i.e., mixture-of-kernels) [13].
+(u; v) =
+X
+l=1
+ll(u; v);
+X
+l=1
+l = 1 (1)
+where  is the number of feature subsets (i.e., the number
+of base kernels), l  0 is the importance factor for the lth
+base kernel l(u; v) and it can be obtained automatically.
+For image annotation task, some pioneering work have
+been done on multiple instance learning (MIL) by treating
+each image as a bag of instances [7-10]. Because of the issue
+of multiple tags, our scenarios for multiple instance learning
+are signicantly dierent: (a) each bag of instances (i.e.,
+each multi-label image) is positive for multiple tags; and (b)
+multiple tags could be inter-related rather than independent,
+otherwise they may not be associated with the same image.
+3.2 Image Instance Clustering
+Because the object tags are loosely given at the image
+level, it is very important to develop new algorithms for
+determining the labels for the image instances (i.e., image
+regions) automatically. In order to identify the exact corre-
+spondences between multiple tags and the image instances,
+the image instances in the positive bags and the negative
+bags are rst partitioned into multiple clusters according to
+their visual similarity contexts.
+Our image instance clustering algorithm consists of the
+following steps: (a) The weights for all these  feature sub-
+sets or base kernels are set equally, e.g., 1 = 2 =    , =
+tau =
+1
+
+. (b) The anity propagation algorithm [6] is used
+to achieve more precise instance clustering. For the posi-
+tive bags and the negative bags, a graph is rst constructed
+to organize all the image instances according to their vi-
+sual similarity contexts (; ) [2], where each node on the
+graph is one image instance and an edge between two nodes
+is used to characterize the visual similarity context between
+two image instances. By passing message between the nodes
+in the instance graph through anity propagation, all these
+instances in the positive bags and the negative bags are inde-
+pendently grouped into multiple clusters according to their
+visual similarity contexts. (c) The optimal weights ~ = [^1,
+   , ^ ] for kernel combination are rened automatically
+by maximizing the inter-cluster separability and the intra-
+cluster compactness [2]:
+max
+
+(
+1
+K
+KX
+l=1
+(Gl)
+(Gl)
+)
+(2)
+subject to:
+P
+i=1 i = 1; 8i : i  0
+We further dene X = [X1;    ; Xl;    ;Xk] as the cluster
+indicators, and its component Xl is a binary indicator for
+the appearance of the lth cluster Gl,
+Xl(u) =
+
+1; u 2 Gl
+0; otherwise
+(3)
+For a given instance cluster Gl, its inter-cluster separability
+(Gl) and its intra-cluster compactness (Gl) are dened
+7
+as:
+(Gl) = X
+tr
+l (D  W )Xl; (Gl) = Xtrl WXl (4)
+Wu;v = (u; v); Du;u =
+nX
+v=1
+Wu;v (5)
+The optimal kernel weights ~ = [^1,    , ^ ] are determined
+automatically by solving the following quadratic program-
+ming problem:
+min
+
+(
+1
+2
+~tr
+ 
+KX
+l=1
+
+(Gl)
+(Gl)
+tr
+!
+~
+)
+(6)
+subject to:
+P
+i=1 i = 1, 8i : i  0
+
+(Gl) is dened as:
+
+(Gl) =
+!(Gl)
+(Gl)  !(Gl) (7)
+!(Gl) =
+X
+u2Gl
+X
+v2Gl
+i(u; v); (Gl) =
+nlX
+v=1
+!(Gl) (8)
+(d) These steps are performed repeatedly until convergence.
+The instance clusters in the positive bags can further be
+partitioned into two groups: relevant instance clusters (which
+are strongly related with the given tag and the semantics
+of their instances can be interpreted precisely by the given
+tag) versus irrelevant instance clusters. Obviously, the ra-
+tio between the irrelevant instance clusters and the relevant
+instance clusters could be arbitrarily high.
+3.3 Relevant Cluster Identification
+When large amounts of positive bags are available, the
+relevant clusters may have larger sizes because the relevant
+instances may share some common visual properties for the
+given object class (i.e., the given tag) and they can be as-
+signed into the same cluster. The irrelevant clusters may
+have smaller sizes because the irrelevant image instances
+may belong to many dierent object classes and they may
+have less correlations on their visual properties. On the
+other hand, the image instances in the negative bags can
+also be partitioned into a set of irrelevant clusters.
+For a given instance cluster Gi (it could be either relevant
+cluster or irrelevant cluster) in the positive bags 
+ and a
+given irrelevant clusterGj in the negative bags 
+, their inter-
+cluster visual similarity context is dened as:
+(Gi; Gj) =
+1
+2jGijjGj j
+X
+u2Gi
+X
+v2Gj
+[^(u; v) + (u; v)] (9)
+where jGij and jGj j are the total numbers of the image in-
+stances for the clusters Gi and Gj , ^(u; v) is the pairwise
+visual similarity context between the image instance u from
+Gi and the image instance v from Gj by using the kernel
+weights for the instance cluster Gi, and (u; v) is the pair-
+wise visual similarity context between two image instances
+u and v by using the kernel weights for the instance cluster
+Gj . All these kernel weights are automatically provided by
+the instance clustering process.
+The best-matched cluster pair (Gi; Gk) between the pos-
+itive bags and the negative bags is determined by:
+(Gi; Gk) = max
+
+(Gi; Gj)jGi 2 
+; Gj 2 
+
+	
+(10)
+Figure 3: The F scores for our multiple instance learning
+(instance label identication) algorithm on MSRC image
+set (using ground truth segmentation).
+This process for best-matched cluster pair determination is
+continued until all these instance clusters (they could be
+either relevant clusters or irrelevant clusters) in the positive
+bags have found the best-matched irrelevant cluster in the
+negative bags.
+The instance clusters in the positive bags are then par-
+titioned into two groups according to their pairwise inter-
+cluster visual similarity contexts with the irrelevant clusters
+in the negative bags: positive groups versus negative groups.
+The relevant clusters in the positive bags should be far away
+from the irrelevant clusters in the negative bags (i.e., with
+small values of the inter-cluster similarity contexts (; ))
+[9], they are assigned into the positive groups. On the other
+hand, the irrelevant clusters in the positive bags may be close
+to the irrelevant clusters in the negative bags (i.e., with large
+values of the inter-cluster similarity contexts (; )), they
+can be assigned into the negative groups.
+It is worth noting that some irrelevant clusters in the pos-
+itive bags may not have strong correlations with the irrele-
+vant clusters in the negative bags (i.e., they may belong to
+dierent object classes), thus such irrelevant clusters in the
+positive bags may rst be assigned into the positive groups.
+Compared with the relevant clusters in the positive groups,
+such the irrelevant clusters (which are rst assigned into the
+positive groups) may have smaller sizes, thus they can fur-
+ther be separated from the relevant clusters according to
+their size dierences. For the relevant clusters in the posi-
+tive bags, there is a signicant dierence with the irrelevant
+clusters in the positive bags either on their correlations with
+the irrelevant clusters in the negative bags or on their sizes,
+thus it is easy for us to separate the relevant clusters from
+the irrelevant clusters in the positive bags. When the rele-
+vant clusters are identied from the irrelevant clusters in the
+positive bags, the given tag is treated as the ground-truth
+label for all their image instances in the relevant clusters.
+Through analyzing both the cluster sizes and the values of
+their inter-cluster correlations, we can separate the relevant
+clusters from the irrelevant clusters more precisely and iden-
+tify the exact correspondences between the image instances
+and multiple tags more accurately. As shown in Fig. 3, the
+traditional F score (which is dened as the harmonic mean
+of precision and recall) is used to evaluate the performance
+of our multiple instance learning algorithm for instance la-
+bel identication. The F score for performance evaluation
+is dened as:
+F =
+2 precision recall
+precision+ recall
+(11)
+where precision and recall are the well-known precision and
+recall rates in the literature.
+The image instances in the relevant clusters, which their
+semantics have better correspondence with the given tag,
+8
+Table 1: Inter-object correlations.
+object pair  object pair  object pair  object pair 
+grass-building 0.04 horse-cow 0.31 cat-dog 0.85 car-bicycle 0.53
+bird-aeroplane 0.54 car-aeroplane 0.55 boat-grass 0.02 dog-cow 0.51
+sign-building 0.63 sheep-horse 0.66 body-dog 0.83 body-cat 0.79
+road-building 0.72 road-sign 0.59 boat-aeroplane 0.73 mountain-road 0.62
+cat-grass 0.03 tree-cat 0.72 book-grass 0.06 sky-book 0.02
+boat-sky 0.06 aeroplane-mountain 0.43 mountain-water 0.75 body-sky 0.06
+Figure 4: Part of our object correlation network.
+can be selected as the relevant image instances and be used
+to train the object classier for the given object class (i.e.,
+the given tag). Thus our multiple instance learning algo-
+rithm for instance label identication can allow us to ad-
+dress the issue of loose tags eectively, which can provide a
+good environment to leverage the loosely-tagged images for
+object classier training.
+4. OBJECT CORRELATION NETWORK
+An object correlation network is constructed to character-
+ize the inter-object correlations more precisely and provide
+a good environment to determine the inter-related learning
+tasks directly in the feature space. Our object correlation
+network consists of two key components: object classes and
+their inter-object correlations.
+For two given object classes Ci and Cj , their inter-object
+visual similarity context (Ci; Cj) is determined by:
+(Ci; Cj) =
+1
+2jCijjCj j
+X
+u2Ci
+X
+v2Cj
+[^(u; v) + (u; v)] (12)
+where jCij and jCj j are the total numbers of the image in-
+stances for the object classes Ci and Cj , ^(u; v) is the kernel-
+based similarity context between two image instances u and
+v by using the kernel weights for the object class Ci, and
+(u; v) is the kernel-based similarity context between two
+image instances u and v by using the kernel weights for the
+object class Cj . All these kernel weights are automatically
+provided by the instance clustering process.
+Figure 5: The inter-related object classes for \boat".
+The co-occurrence correlation (Ci; Cj) between two ob-
+ject classes Ci and Cj is dened as:
+(Ci; Cj) =  P (Ci; Cj)log P (Ci; Cj)
+P (Ci) + P (Cj)
+(13)
+where P (Ci; Cj) is the co-occurrence probability for two ob-
+ject classes Ci and Cj in our image collections, P (Ci) and
+P (Cj) are the occurrence probabilities for Ci and Cj .
+For two given object classes Ci and Cj , their visual simi-
+larity context (Ci; Cj) and their co-occurrence correlation
+(Ci; Cj) are rst normalized into the same interval. The
+inter-object correlation (Ci; Cj) between two object classes
+Ci and Cj is nally dened as:
+(Ci; Cj) =   (Ci; Cj) + (1  )  (Ci; Cj) (14)
+where  is the weighting factor and it is determined through
+cross-validation, (Ci; Cj) and (Ci; Cj) are the normalized
+visual similarity context and co-occurrence correlation. The
+weighting factor is set as  = 0:6 in our current implemen-
+tation because the visual similarity contexts are more im-
+portant than the co-occurrence correlations for inter-object
+correlation characterization.
+Some experimental results on the inter-object correlations
+(; ) are given in Table 1. Part of our object correlation
+network for our image sets is shown in Fig. 4, where each ob-
+ject class is linked with multiple most relevant object classes
+with larger values of (; ). One can nd that our object
+correlation network can characterize the correlations among
+the object classes eectively. Our object correlation network
+may have multiple advantages: (a) It can characterize the
+inter-object correlations explicitly and provide a good envi-
+ronment to identify the inter-related learning tasks directly
+in the feature space. (b) It can provide a good environ-
+ment to integrate the training instances from multiple inter-
+related object classes for training their classiers jointly and
+bring more powerful inference schemes to enhance their dis-
+crimination and adaptation power signicantly.
+9
+5. STRUCTURED LEARNING
+The object classes are inter-related and such inter-object
+correlations can be represented explicitly by the object cor-
+relation network and can be represented precisely by the
+strengths of their inter-object correlations (; ). When a
+large number of object classes come into view, directly mod-
+eling of such inter-object correlations over the whole object
+correlation network becomes computationally intractable.
+In this paper, a multi-task structured SVM scheme is de-
+veloped by incorporating the rst-order nearest neighbors
+(i.e., clique for each object class on the object correlation
+network), multi-task learning and structured SVM to lever-
+age the inter-object correlations to achieve more accurate
+training of a large number of inter-related object classiers.
+For a given object class (one example is shown in Fig.
+5), its rst-order nearest neighbors on the object correlation
+network are strongly correlated and their training instances
+may share similar visual properties. Thus isolating these
+inter-related object classes and training their classiers in-
+dependently are not appropriate. In order to leverage the
+inter-object correlations for training the inter-related object
+classiers jointly, it is very important to develop new algo-
+rithms for integrating multi-task learning with structured
+SVM to model the inter-task relatedness more precisely.
+The idea behind multi-task learning is that if multiple inter-
+related learning tasks share a common prediction compo-
+nent, such common prediction component can be estimated
+more accurately by considering these inter-related learning
+tasks together [13-14]. When multiple tags are jointly used
+for image tagging, the corresponding object classes should
+be inter-related rather than independent and thus learning
+the classiers for these inter-related object classes should be
+considered jointly. Our object correlation network can pro-
+vide a good environment for identifying such inter-related
+learning tasks directly in the feature space. The idea behind
+structured SVM [23-24] is to exploit the inter-label correla-
+tions in the label space for supporting structure prediction.
+In this paper, a multi-task structured SVM scheme is
+developed by incorporating the object correlation network,
+multi-task learning and structured SVM to enhance the dis-
+crimination power of a large number of inter-related object
+classiers: (a) The object correlation network is used to
+identify the inter-related learning tasks directly in the fea-
+ture space, e.g., training multiple inter-related object classi-
+ers jointly; (b) The inter-task relatedness is characterized
+explicitly by using the strengths of the inter-object corre-
+lations (; ) and a common prediction component is used
+to model the inter-task relatedness and shared among these
+inter-related object classiers; (c) The structured SVM is
+integrated with multi-task learning to model the inter-task
+relatedness more precisely and estimate the common pre-
+diction component more accurately. By seamlessly integrat-
+ing multi-task learning with structured SVM, our multi-task
+structured SVM algorithm is able to exploit the inter-object
+correlations explicitly in the input space (i.e., the feature
+space for classier training and testing), thus it can pro-
+vide a new approach for inter-related classier training and
+address the issue of multiple tags more eectively.
+In our multi-task structured SVM scheme, a common reg-
+ularization term W0 of the SVM classier is used to model
+the inter-task relatedness among multiple SVM classiers for
+the inter-related object classes. For one given object class
+Cj , its classier is dened as:
+fCj (x) =
+X
+Ct2T
+t(W0 + Vt)
+trt(x) (15)
+where W0 is the common regularization term shared among
+the classiers for multiple inter-related object classes cen-
+tered by Cj as shown in Fig. 5, Vt is the individual reg-
+ularization term for the classier between the given object
+class Cj and its neighbor Ct, t is the weight how class Ct
+contributes the classication of Cj .
+The common regularization term W0 is used to model the
+inter-task relatedness and shared among the classiers for
+multiple inter-related object classes. W0 can be estimated
+more reliably by minimizing their joint objective function J
+for T inter-related learning tasks.
+J =
+1
+2
+(kW0k2 +
+TX
+t=1
+tkVtk2) + c0
+TX
+t=1
+njX
+i=1
+ti +
+TX
+t=1
+ct
+ntX
+i=1
+ti
+(16)
+where ti  0, ti  0, nj and nt are the total number of
+training instances for the object classes Cj and Ct.
+To solve the joint optimization problem, we use the La-
+grangian Principle. We add a dual set of variables, one for
+each constraint and get the Lagrangian L of the optimization
+problem:
+L = J  
+TX
+t=1
+njX
+i
+ti (hW0 + Vt;t(xji)i+ ti   1)
++
+TX
+t=1
+ntX
+i=1
+ti (hW0 + Vt;t(xti)i   ti + 1)
+ 
+TX
+t=1
+njX
+i=1
+titi  
+TX
+t=1
+ntX
+i=1
+titi
+We now seek a saddle point of the Lagrangian L, e.g., the
+partial dierence of L satised:
+@L
+@W0
+= W0  
+TX
+t=1
+njX
+i=1
+tit(xji) +
+TX
+t=1
+ntX
+i=1
+tit(xti)
+@L
+@Vt
+= tVt  
+njX
+i=1
+tit(xji) +
+ntX
+i=1
+tit(xti)
+@L
+@ti
+= c0   ti   ti; @L
+@ti
+= ct   ti   ti
+and we can get:
+W0 =
+TX
+t=1
+njX
+i=1
+tit(xji) 
+TX
+t=1
+ntX
+i=1
+tit(xti)
+Vt =
+1
+t
+ njX
+i=1
+tit(xji) 
+ntX
+i=1
+tit(xti)
+!
+c0 = ti + ti; ct = ti + ti
+The dual form of the problem is then simplied as:
+L =
+TX
+t=1
+njX
+i=1
+ti +
+TX
+t=1
+ntX
+i=1
+ti   1
+2
+ 
+kW0k2 +
+TX
+t=1
+tkVtk2
+!
+10
+Figure 6: Object detection results by our multi-task structured SVM algorithm.
+Given the training image instances for T inter-related ob-
+ject classes on the object correlation network, the margin
+maximization process for object classier training is then
+transformed into a quadratic problem:
+max
+ti; ti
+L =
+TX
+t=1
+njX
+i=1
+ti +
+TX
+t=1
+ntX
+i=1
+ti
+  1
+2
+[
+TX
+t;s=1
+njX
+i=1
+nlX
+l=1
+tislKts(xji; xjl)
+ 
+TX
+t;s=1
+njX
+i=1
+nsX
+l=1
+tislKts(xji; xsl)
+ 
+TX
+t;s=1
+ntX
+i=1
+njX
+k=1
+tiskKts(xti; xkj)
++
+TX
+t;s=1
+ntX
+i=1
+nsX
+k=1
+tiskKts(xti; xsk)
++
+TX
+t=1
+1
+t
+(
+njX
+i;l=1
+titlKt(xji; xjl)
+  2
+njX
+i=1
+ntX
+l=1
+titlKt(xji; xjl)
++
+ntX
+i;l=1
+titlKt(xti; xtl))]
+subject to: 8i : 8t : ti  0, ti  0
+To deal with the structured prediction problem, it is very
+attractive to construct a joint kernel function that is better
+suited to joint-space support estimation. In this paper, a
+tensor products is incorporated to dene the joint kernel
+((xi; yi); (xj ; yj)) as:
+((xi; yi); (xj ; yj)) = (xi; xj)s(yi; yj) (17)
+where (xi; xj) is the mixture-of-kernels for the visual fea-
+tures as dened in Eq. (1) and s(yi; yj) is the semantic
+kernel to characterize the semantic similarity context be-
+tween two object classes and their labels yi and yj (i.e.,
+inter-object correlation on the label space).
+By learning from a joint training image set 
+ = f(xit; yit)ji =
+1,    , n; t = 1,    , Tg for T inter-related object classes on
+the object correlation network, the classier for the given
+object class Cj can be determined as:
+fCj (x) =
+X
+l=1
+l
+TX
+h;t=1
+ts(t; h)
+ njX
+i=1
+hil(xji; x) 
+nhX
+i=1
+hil(xhi; x)
+!
++
+X
+l=1
+TX
+t=1
+lt
+t
+ njX
+i=1
+til(xji; x) 
+ntX
+i=1
+til(xti; x)
+!
+(18)
+One can observe that our classiers for inter-related object
+classes consist of two components: (a) individual prediction
+component; and (b) common prediction component.
+By learning two dierent sets of the kernel coecients 
+and  simultaneously, our multi-task structured SVM al-
+gorithm can automatically determine two separable feature
+subsets, which can eectively characterize both the com-
+mon visual properties shared among all these T inter-related
+object classes and the individual visual properties for each
+particular object class. The feature subsets and their base
+kernels, which are used to construct the common prediction
+component for multiple inter-related object classiers (i.e.,
+with larger values of ), are less important for the individual
+prediction components for these inter-related object classi-
+ers (i.e., with smaller values or even zero values of ).
+By learning two dierent sets of the weights  and  for
+the training instances simultaneously, our multi-task struc-
+tured SVM algorithm can automatically establish two in-
+dependent decision boundaries for both the common pre-
+diction component (shared among the inter-related discrim-
+inant functions) and the individual prediction component
+of the discriminant function for each particular object class.
+The training instances, which are used to construct the com-
+mon prediction component for multiple inter-related object
+classiers (i.e., support vectors with large values of ), are
+less important for the individual prediction components for
+these inter-related object classiers (i.e., with smaller values
+or even zero values of weights ).
+The kernel coecients  and the weights  are xed for all
+these T inter-related discriminant functions to characterize
+their common prediction component. By integrating the
+training instances for multiple inter-related object classes
+to learn a common prediction component and separating
+it from their individual prediction components, our multi-
+task structured SVM algorithm can signicantly enhance
+the discrimination power and the generalization ability of
+the inter-related object classiers.
+11
+Figure 7: ROC curves for performance comparison:
+our multi-task structured SVM (MTS-MLMIL) al-
+gorithm versus other most relevant algorithms.
+The inter-related object classiers for a set of object classes
+are trained in our current implementation. After the object
+classiers are trained, they are further used to identify the
+objects from the test images and recommend the suitable
+tags for automatic image annotation. Our automatic object
+detection and tag recommendation algorithm takes the fol-
+lowing key steps: (a) The test image is rst segmented into
+multiple image regions. (b) Each image region (image in-
+stance) is then classied into the most relevant object class
+with the maximum value of the condence (posterior prob-
+ability). (c) The tags for describing the semantics of these
+object classes are then selected for annotating the given test
+image automatically. Some experimental results on object
+detection (tag recommendation) are given in Fig. 6. One
+can observe that our multi-task structured SVM scheme can
+directly learn the object detectors from the loosely-tagged
+images and precisely localize the objects in the images.
+Most existing algorithms for object detection are often
+handled by combining multiple binary classiers, thus they
+may have square complexity with the number of object classes
+N , i.e., O(N2). On the other hand, our algorithm for ob-
+ject detection can achieve linear complexity with the size of
+the object correlation network N , i.e., O(N), thus it is very
+attractive for dealing with a large number of object classes.
+6. ALGORITHM EVALUATION
+Our experiments are performed on two sets of loosely-
+tagged images: (a) 3; 814 MSRC image instances (image re-
+gions) [3] and 30K Corel images [26]; (b) 1:0 million loosely-
+tagged images which are collected from Flickr [1-2]. Because
+MSRC images and Corel images are easy to obtain, we use
+them as our test image sets, so that other researchers can
+easily assess the real performances of our algorithms. On
+the other hand, Flickr can allow us to collect large-scale and
+realistic loosely-tagged images, it is very attractive to use
+such realistic loosely-tagged images for developing new al-
+gorithms which can tackle the issue of tag uncertainty and
+learn the object classiers reliably. Thus Flickr image set is
+used as the training image set in our experiments [1-2].
+To assess the eectiveness of our proposed algorithms, our
+algorithm evaluation work focuses on comparing the per-
+formance dierences between various approaches for object
+classier training: (a) our multi-task structured SVM (MTS-
+MLMIL) algorithm versus structured SVM algorithm (ex-
+ploiting the inter-label correlations in the output space) [23-
+24]; (b) our multi-task structured SVM (MTS-MLMIL) algo-
+rithm versus MILES (without exploiting the inter-label cor-
+relations explicitly) [10], and (c) our multi-task structured
+SVM (MTS-MLMIL) algorithm versusmulti-label MIL (MLMIL)
+technique developed by Zha et al. [22]. In this paper, AUC
+(area under ROC curve) is adopted to evaluate the classica-
+tion performance [25], which describes the probability that a
+randomly chosen positive image will be ranked higher than
+a randomly chosen negative image.
+By using the same set of multi-modal visual features for
+image content representation, we have compared the per-
+formance dierences between two approaches to integrate
+loosely-tagged images for object classier training: MILES
+approach [10] versus our multi-task structured SVM (MTS-
+MLMIL) algorithm. As shown in Fig. 7 and Fig. 8, one can
+observe that our multi-task structured SVM (MTS-MLMIL)
+algorithm can signicantly improve the accuracy for detect-
+ing the inter-related object classes. The signicant improve-
+ment on the detection accuracy benets from two compo-
+nents: (1) The object classiers for the inter-related object
+classes are trained jointly by leveraging their inter-object
+correlations for object classier training, thus our multi-
+task structured SVM algorithm can address the issue of
+multiple tags more eectively. Our multi-task structured
+SVM algorithm can address the issue of visual ambiguity
+more eectively by learning the inter-related classiers for
+the inter-related object classes jointly. It can also enhance
+the discrimination and adaptation power of the inter-related
+object classiers signicantly by learning from the training
+instances for other inter-related object classes on the object
+correlation network. Incorporating the training instances
+from other inter-related object classes for classier training
+will signicantly enhance the generalization ability of their
+classiers, especially when the available training instances
+for the given object class may not be representative for large
+amounts of unseen test images. On the other hand, MILES
+does not consider the inter-object (inter-label) correlations
+explicitly, which may result in lower accuracy rates for de-
+tecting some inter-related object classes. (2) Through an
+instance clustering and inter-cluster correlation analysis pro-
+cess, our multi-task structured SVM algorithm can address
+the issue of loose tags more eectively, which is crucial to
+leverage the loosely-tagged images for object classier train-
+ing.
+Two existing approaches have considered the inter-label
+(inter-object) correlations for classier training: (a) struc-
+tured SVM algorithm [23-24]; and (b) multi-label multiple
+instance learning (MLMIL) algorithm [22]. Our multi-task
+structured SVM (MTS-MLMIL) algorithm is somewhat sim-
+ilar in spirit with these two existing approaches for object
+classier training, but it signicantly dierent from them
+in multiple important aspects. Compared with both the
+structured SVM algorithm and the multi-label multiple in-
+stance learning algorithm, our multi-task structured SVM
+algorithm can have multiple advantages: (a) it can explicitly
+model the inter-object correlations and the inter-task relat-
+edness in the inter-related object classiers (i.e., common
+regularization component W0), which may provide a good
+environment to leverage the inter-object correlations and the
+inter-task relatedness for inter-related classier training and
+enhance their discrimination power signicantly; (b) it can
+save the cost for object detection by exploiting the inter-
+12
+Figure 8: Performance comparison on AUC rates: our multi-task structured SVM (MTS-MLMIL) algorithm
+versus other most relevant algorithms.
+Figure 9: Performance comparison on 30K Corel images with 98 object classes.
+Table 2: Average AUC scores on MSRC [3].
+algorithms average AUC scores
+Structural SVM [22-23] 0.6952
+MILES [10] 0.7304
+MLMIL [22] 0.7539
+Our MTS-MLMIL 0.7965
+object correlations in the feature space. On the other hand,
+both the structured SVM algorithm and the multi-label mul-
+tiple instance learning algorithm model the inter-object cor-
+relations in the output space (label space) rather than in
+the input space (feature space). In average, our multi-task
+structured SVM algorithm has better performance than the
+structured SVM algorithm and the multi-label multiple in-
+stance learning algorithm as shown in Table 2.
+By generalizing multi-class SVM algorithm, the structured
+SVM algorithm focuses on supporting structural output pre-
+diction for a large number of SVM object classiers, e.g.,
+modeling the inter-object contexts in the output space and
+exploiting the inter-object contexts at the label space rather
+than in the feature space. On the other hand, our multi-
+task structured SVM (MTS-MLMIL) algorithm can directly
+model the inter-task relatedness in the feature space (i.e., the
+input space for classier training and testing) and explicitly
+exploit the inter-object correlations to achieve more eective
+training of a large number of inter-related object classiers.
+As shown in Fig. 7 and Fig. 8, our multi-task structured
+SVM algorithm can have better performance (higher AUC
+rates) as compared with the structured SVM algorithm.
+We have also compared the performances between our
+multi-task structured SVM (MTS-MLMIL) algorithm ver-
+sus multi-label MIL (MLMIL) technique developed by Zha
+et al. [22]. By explicitly modeling the inter-task related-
+ness in the feature space rather than in the label space, our
+multi-task structured SVM algorithm can provide a good en-
+vironment to leverage the inter-object correlations and the
+inter-task relatedness for inter-related object classier train-
+ing, which may result in higher discrimination powers for a
+large number of inter-related object classiers. Compared
+with the multi-label multiple instance learning algorithm,
+our multi-task structured SVM algorithm can achieve very
+competitive performance as shown in Fig. 7 and Fig. 8. For
+some object classes, the MLMIL algorithm can obtain a lit-
+tle bit higher accuracy rates, but our multi-task structured
+SVM algorithm can in average achieve better accuracy rate
+as shown in Table 2 for MSRC image set with 21 object
+classes [3, 22].
+Besides MSRC images, we have also compared the per-
+formances between our proposed algorithm (MTS-MLMIL)
+versus normal SVM and multi-label MIL(MLMIL) on 30K
+Corel images for 98 concept categories [26], where the orig-
+inal images are associated with totally 5k tags and 98 fre-
+quent object tags are chosen to be our distinguished con-
+cept categories. In average, each Corel image may have
+more than 10 image regions (instances), thus there are to-
+tally 300K instances which are too large to be handled eec-
+tively by using one single PC (i.e., pre-compute and store the
+kernel-based similarity matrix for all these 300K instances).
+When the size of image instances reaches one million, some
+existing techniques for kernel-based image clustering and
+SVM classier training (such as LIBSVM [28]) may take
+years to run out a O(m3) algorithm on a single PC. Thus it
+is very attractive to develop a distributed computing frame-
+work to enable kernel-based image clustering and SVM clas-
+sier training.
+To address the issue of computational complexity more
+eectively, two approaches are used: (a) only the rst-order
+neighbors and their image instances are integrated for inter-
+13
+Table 3: Average AUC scores on Corel images.
+algorithms average AUC scores
+normal SVM [28] 0.6438
+Structural SVM [22-23] 0.6512
+MLMIL [22] 0.7236
+Our MTS-MLMIL 0.7549
+related classier training; and (b) cascade learning frame-
+work is incorporated for training the SVM classiers in a
+distributed way [27]. The idea of the cascade learning frame-
+work is to equally divide the image instances and iteratively
+aggregate the nal SVM classiers. For a given object class
+on the object correlation network, all the positive image in-
+stances for itself and its rst-order neighbors are integrated
+for joint classier training. To enhance the discrimination
+power of a large number of inter-related object classiers, the
+cascade framework is used to sample the positive instances
+from other object classes which are not the rst-order neigh-
+bors for the given object class.
+The original version of the MILES algorithm focuses on
+solving a 1-norm SVM problem over all the training in-
+stances, it is too time-consuming to leverage the MILES
+algorithm for training the classiers for a large number of
+inter-related object classes. On the other hand, it is not an
+easy task to adapt the MILES algorithm into the cascade
+learning framework, thus it is very hard for us to obtain
+the performance of the MILES algorithm on a large number
+of inter-related object classes by using a large Corel image
+set for classier training. Based on this observation, we do
+not compare the performance dierence between our multi-
+task structured SVM algorithm and the MILES algorithm
+on 30K Corel image set with 98 object classes. As shown
+in Fig. 9 and Table 3, our proposed algorithm had a sig-
+nicant improvement over normal SVM [28] and obtained a
+little higher AUC score in average than MLMIL [22].
+7. CONCLUSIONS
+A multi-task structured SVM algorithm is developed to
+leverage both the inter-object correlations and the loosely-
+tagged images for achieving more eective training of a large
+number of inter-related object classiers. To tackle the is-
+sues of multiple and loose tags, an ambiguous image repre-
+sentation algorithm is developed by using bags of instances
+and a multiple instance learning algorithm is proposed for
+identifying the positive instances automatically. An object
+correlation network is constructed for identifying the inter-
+related learning tasks automatically, and multi-task learn-
+ing is seamlessly integrated with structured SVM to achieve
+more eectively training of a large number of inter-related
+object classiers. Our experimental results on a large num-
+ber of object classes have provided very positive results. Our
+image set and source codes are released on our web site:
+http://www.cs.uncc.edu/ jfan.
+8. REFERENCES
+[1] Flickr, http://www.ickr.com.
+[2] J. Fan, Y. Shen, N. Zhou, Y. Gao, \Harvesting large-scale
+weakly-tagged image databases from the web", IEEE
+CVPR, 2010.
+[3] MSRC, http://research.microsoft.com/.
+[4] Y. Deng, B.S. Manjunath, \Color image segmentation",
+IEEE CVPR, 1999.
+[5] B. Russell, A. Efros, J. Sivic, W. Freeman, A. Zisserman,
+\Using multiple segmentations to discover objects and their
+extent in image collections", IEEE CVPR, 2006.
+[6] B.J. Frey, D. Dueck, \Clustering by passing messages
+between data points", Science, vol.315, 2007
+[7] S. Vijayanarasimhan, K. Grauman, \Keywords to visual
+categories: Multiple-instance learning for weakly supervised
+object categorization", IEEE CVPR 2008.
+[8] Q. Zhang, W. Yu, S. A. Goldman, J. E. Fritts,
+\Content-based image retrieval using multiple-instance
+learning", ICML, 2002.
+[9] O. Maron, A. L. Ratan, \Multiple-instance learning for
+natural scene classication", ICML, 1998.
+[10] Y. Chen, J. Bi, J. Z. Wang, \MILES: multiple instance
+learning via embedded instance selection", IEEE Trans.
+PAMI, vol.28, no.12, pp.1931-1947, 2006.
+[11] M. R. Boutell, J. Luo, X. Shen, C.M. Brown,\Learning
+multi-label scene classication", Pattern Recognition, vol.
+37, no.9, pp. 1757-1771, 2004.
+[12] Z.-H. Zhu, M.-L. Zhang, \Multi-instance multi-label
+learning with application to scene classication", NIPS,
+2006.
+[13] J. Fan, Y. Gao, H. Luo, \Integrating concept ontology and
+multi-task learning to achieve more eective classier
+training for multi-level image annotation", IEEE Trans. on
+Image Processing, vol. 17, no.3, pp.407-426, 2008.
+[14] T. Evgeniou, C.A. Micchelli, M. Pontil, \Learning multiple
+tasks with kernel methods", Journal of Machine Learning
+Research, vol.6, pp.615-637, 2005.
+[15] S. Kumar, M. Hebert, \Discriminative random elds", Intl.
+Journal of Computer Vision, vol.68, no.2, pp.179-201, 2006.
+[16] J. Yang, Y. Liu, E. X. Ping, A.G. Hauptmann,
+\Harmonium models for semantic video representation and
+classication", SIAM Conf. on Data Mining, 2007.
+[17] A. Torralba, K. P. Murphy, W. T. Freeman, \Sharing
+features: ecient boosting procedures for multiclass object
+detection", IEEE CVPR, 2004.
+[18] W. Jiang, S.-F. Chang, A. Loui, \Context-based concept
+fusion with boosted conditional random elds", IEEE
+ICASSP, 2007.
+[19] J. Tang, X. Hua, M. Wang, Z. Gu, G. Qi, X. Wu,
+\Correlative linear neighborhood propagation for video
+annotation", IEEE Trans. on SMC, vol. 39, no.2,
+pp.409-416, 2009.
+[20] J. Liu , M. Li , W.-Y. Ma , Q. Liu , H. Lu, \An adaptive
+graph model for automatic image annotation", ACM
+Multimedia Workshop on MIR, 2006.
+[21] G.-J. Qi, X.-S. Hua, Y. Rui, J. Tang, T. Mei, H.-J. Zhang,
+\Correlative multi-label video annotation", ACM
+Multimedia, pp.17-26, 2007.
+[22] Z. Zha, X.-S. Hua, T. Mei, J. Wang, G.-J. Qi, Z. Wang,
+\Joint multi-label multi-instance learning for image
+classication", IEEE CVPR, 2008.
+[23] I. Tsochantaridis, T. Joachims, T. Hofmann,Y. Altun,
+\Large margin methods for structured and interdependent
+output variables", Journal of Machine Learning Research,
+vol.6, pp.1453-1484, 2005.
+[24] T. Joachims, T. Finley, C. Yu, \Cutting-plane training of
+structural SVMs", Machine Learning, vol. 77, no.1,
+pp.27-59, 2009.
+[25] J.A. Hanley, B.J. Mcneil, \The meaning and use of the area
+under a receiver operating characteristic (roc) curve",
+Radiology, vol.143, no.1, pp.29-36, 1982.
+[26] J. Fan, Y. Gao, H. Luo, \Multi-level annotation of natural
+scenes using dominant image components and semantic
+image concepts", ACM Multimedia, 2004.
+[27] H.P. Graf, E. Cosatto, L. Bottou, I. Durdanovic, V.
+Vapnik, \Parallel support vector machines: The cascade
+SVM", NIPS 2004.
+[28] R. Fan, P. Chen, C.-J. Lin, \Working set selection using the
+second order information for training SVM", Journal of
+Machine Learning Research, vol. 6, pp.1889-1918, 2005.
+14
+

@@ -1,0 +1,1009 @@
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Quantitative Characterization of Semantic Gaps for Learning
+Complexity Estimation and Inference Model Selection
+Jianping Fan1,3, Xiaofei He2, Ning Zhou3, Jinye Peng1, Ramesh Jain4
+1School of Information Science and Technology, Northwest University, Xi’an 710069, CHINA
+2State Key Lab of CAD & CG, Zhejiang University, Hangzhou, CHINA
+3Department of Computer Science, University of North Carolina, Charlotte, NC 28223, USA
+4Bren School of Information and Computer Sciences, University of California, Irvine, USA
+ABSTRACT
+In this paper, a novel data-driven algorithm is developed for achieving quantitative characterization
+of the semantic gaps directly in the visual feature space, where the visual feature space is the com-
+mon space for concept classifier training and automatic concept detection. By supporting quantitative
+characterization of the semantic gaps, more effective inference models can automatically be selected for
+concept classifier training by: (a) identifying the image concepts with small semantic gaps (i.e., the
+isolated image concepts with high inner-concept visual consistency) and training their one-against-all
+SVM concept classifiers independently; (b) determining the image concepts with large semantic gaps
+(i.e., the visually-related image concepts with low inner-concept visual consistency) and training their
+inter-related SVM concept classifiers jointly; and (c) using more image instances to achieve more reliable
+training of the concept classifiers for the image concepts with large semantic gaps. Our experimental
+results on NUS-WIDE [18] and ImageNet [11] image sets have obtained very promising results.
+Keywords: Quantitative Characterization of Semantic Gaps, Inner-Concept Visual Homogeneity
+Score, Inter-Concept Discrimination Complexity Score, Learning Complexity Estimation, Inference
+Model Selection, Concept Classifier Training.
+1
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+1. Introduction
+With the exponential growth of digital images, there is an urgent need to achieve automatic concept
+detection for supporting concept-based (keyword-based) image retrieval [28]. Unfortunately, there is
+a fundamental barrier of semantic gaps when low-level visual features are used to represent high-level
+image concepts, e.g., the semantic gap can be defined as the difference on the expression power between
+the low-level visual features (i.e., computational representations of the visual content of the images from
+computers) and the high-level image concepts (i.e., semantic interpretations of the visual content of the
+images from human beings) [1, 13-14, 20-26, 28, 30-35]. To bridge the semantic gaps, machine learning
+tools are usually used to learn the concept classifiers from large amounts of labeled training images (i.e.,
+learning the mapping functions between the low-level visual features and the high-level image concepts)
+[28]. However, it is not a trivial task because the learning complexities for concept classifier training
+could vary with the image concepts significantly, e.g., some image concepts may have lower learning
+complexities for concept classifier training because their semantic gaps are smaller, on the other hand,
+some image concepts may have higher learning complexities for concept classifier training because their
+semantic gaps are larger.
+To achieve more effective concept classifier training, it is very important to support quantitative
+characterization of the semantic gaps. It is worth noting that both concept classifier training and
+automatic concept detection are performed in the visual feature space rather than in the label space,
+thus it is very attractive to develop new algorithms that can support quantitative characterization of the
+semantic gaps directly in the visual feature space, so that we can automatically estimate the learning
+complexities and select more effective inference models for concept classifier training. For a given image
+concept with small semantic gap, there may exist a unique mapping function (concept classifier) between
+its feature-based visual representation and its semantic interpretation, e.g., the concept classifier for
+the given image concept is isolated from the concept classifiers for other image concepts in the visual
+feature space, which may further result in high discrimination power on concept detection. For a given
+image concept with large semantic gap, its concept classifier is not unique and may overlap with the
+concept classifiers for other image concepts in the visual feature space, which may further result in low
+discrimination power on concept detection. Thus the scales (numerical values) of the semantic gaps can
+also be treated as an effective measurement of the learning complexities for concept classifier training.
+When the image concepts are visually-related, their relevant images may share some common or
+2
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+similar visual properties (i.e., huge inter-concept visual similarity) and it could be difficult for machine
+learning tools to obtain unique concept classifiers for distinguishing such visually-related image concepts
+precisely, e.g., the visually-related image concepts may not be visually separable because huge inter-
+concept visual similarity may cause significant overlapping among their concept classifiers and result in
+low discrimination power on concept detection [10, 15-17]. Thus the image concepts, which are visually-
+related with many other image concepts, will have larger semantic gaps and their learning complexities
+for concept classifier training will be higher.
+When the image concepts have huge inner-concept visual diversity among their relevant images
+(i.e., low inner-concept visual consistency), it could be very difficult for machine learning tools to use
+some simple models to approximate their diverse visual properties effectively, on the other hand, using
+some complex models to approximate their diverse visual properties completely may cause significant
+overlapping between their concept classifiers and the concept classifiers for other image concepts, which
+may further result in low discrimination power on concept detection. Thus the image concepts, which
+have huge inner-concept visual diversity (i.e., low inner-concept visual consistency), will have larger
+semantic gaps and their learning complexities for concept classifier training will be higher.
+Based on these observations, an inner-concept visual homogeneity score is defined for characteriz-
+ing the inner-concept visual consistency among the relevant images for the same image concept, and
+an inter-concept discrimination complexity score is defined for characterizing the inter-concept visual
+correlations among the relevant images for multiple visually-related image concepts. By simultaneously
+considering both the inner-concept visual homogeneity scores and the inter-concept discrimination com-
+plexity scores, a novel data-driven approach is developed for supporting quantitative characterization
+of the semantic gaps directly in the visual feature space.
+The rest of this paper is organized as follows. Section 2 reviews the related work briefly; Section
+3 presents our work on feature extraction and image similarity characterization; Section 4 defines the
+inter-concept discrimination complexity score, where a visual concept network is constructed for char-
+acterizing the inter-concept visual similarity contexts explicitly and providing a good environment to
+determine the visually-related image concepts automatically; Section 5 defines the inner-concept visual
+homogeneity score; Section 6 introduces two alternative approaches for supporting quantitative char-
+acterization of the semantic gaps directly in the visual feature space; Section 7 presents our structural
+learning algorithm for concept classifier training by leveraging both the scales (numerical values) of
+3
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+the semantic gaps and the visual concept network for automatic inference model selection; Section 8
+describes our work on algorithm evaluation on two well-known image sets; We conclude this paper in
+Section 9.
+2. Related Work
+The semantic gaps between the low-level visual features and the high-level image concepts have become
+fundamental barriers for supporting keyword-based (concept-based) image retrieval [28]. It is worth
+noting that the semantic gaps are actually not uniform, e.g., the semantic gaps may vary with the image
+concepts significantly. In the last decades, many machine learning approaches have been developed to
+bridge the semantic gaps by training more reliable concept classifiers (e.g., the mapping functions
+between the low-level visual features and the high-level image concepts) [22-26, 30-35], but no existing
+research focuses on supporting quantitative characterization of the semantic gaps directly in the visual
+feature space.
+There are some existing researches on leveraging various information sources to bridge the semantic
+gap [22-26, 30-35], and Enser et al. have provided a comprehensive survey of the semantic gap in image
+retrieval [30]. Zhao et al. have integrated latent semantic indexing (LSI) to negotiate the semantic gap
+in multimedia web document retrieval [25]. Hare et al. have developed both bottom-up and top-down
+approaches to bridge the semantic gap for the purpose of multimedia information retrieval [23]. Ma et
+al. have developed a two-level data fusion framework to bridge the semantic gap between the visual
+content of social images and their tags [24]. Wang et al. have developed an effective distance metric
+learning approach to reduce the semantic gap in web image retrieval and annotation [31]. Fan et al.
+[26] have developed a hierarchical approach to bridge the semantic gap more effectively by partitioning
+the large semantic gaps into four small and bridgeable gaps. Snoek et al. have presented a semantic
+pathfinder architecture to bridge the semantic gap for generic indexing of multimedia archives [32].
+Santini et al. have integrated human-system interactions to bridge the semantic gaps and deal with
+emergent semantics interactively [33]. Rasiwasia et al. have combined query-by-visual-example with
+semantic retrieval to bridge the semantic gap [34]. Natsev et al. have constructed a model vector to
+bridge the semantic gap by supporting compact semantic representation of the visual content of the
+images [35].
+Recently, Lu et al. have developed an interesting approach for determining the high-level image
+concepts with small semantic gaps [13, 20]. According to our best knowledge, it is a pioneering attempt
+4
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+for determining the high-level image concepts with small semantic gaps by assessing the consistency
+between the visual similarity contexts among the images and the semantic similarity contexts among
+their associated text terms. However, good consistency between the visual similarity contexts and the
+semantic similarity contexts may not always correspond to small semantic gaps, and many auxiliary
+text terms for the images are weakly-related or even irrelevant with their semantics because of huge tag
+uncertainty (spam tags, ambiguous tags, loose tags, abstract tags, et al.) [27]. Hauptmann et al. have
+also pointed out what kind of high-level video concepts are most important for supporting semantic video
+retrieval [14, 21], they have also examined how many high-level video concepts are needed and what
+kind of high-level video concepts should be selected for supporting semantic video retrieval. Deselaers et
+al. [19] have done a pioneering research on evaluating the relationship between the semantic similarity
+among the labels and the visual similarity among the relevant images in ImageNet [11] image set.
+Because the inner-concept visual diversity may change with the depth in a concept hierarchy, concept
+ontology may provide a good environment for identifying the image concepts with smaller semantic gaps.
+The concept ontology may provide a hierarchical approach for determining the image concepts with
+smaller semantic gaps, e.g., the image concepts at the leaf nodes may have smaller semantic gaps
+because they may have strong limitation on their semantic senses and their relevant images may have
+good inner-concept visual consistency. Some pioneering work have been done recently by incorporating
+the concept ontology for organizing large-scale image/video collections according to their inter-concept
+semantic contexts [1, 11-12]. Schreiber et al. and Fan et al. have integrated the concept ontology for
+achieving hierarchical image annotation [10, 26, 29].
+It is worth noting that having good inner-concept visual consistency is just one criterion for semantic
+gap modeling and there is another important criterion for supporting quantitative characterization of the
+semantic gaps: the visually-related image concepts, which their relevant images share some common or
+similar visual properties, may have large semantic gaps because they may not be visually separable and
+their concept classifiers may have significant overlapping in the visual feature space. For examples, even
+the relevant images for the object classes “sea water” and “blue sky” may have good inner-concept visual
+consistency, the object class “sea water” may be detected as “blue sky” because they share some common
+or similar visual properties and their concept classifiers may have significant overlapping in the visual
+feature space. Based on these observations, both the inner-concept visual consistency (i.e., inner-concept
+visual homogeneity scores) and the inter-concept visual correlations (i.e., inter-concept discrimination
+5
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+complexity scores) should simultaneously be considered for supporting quantitative characterization of
+the semantic gaps directly in the visual feature space.
+Some pioneering researches have been done recently by using Flickr distance and KL divergence to
+measure the inter-concept visual correlations directly in the visual feature space [2, 10]. Unfortunately,
+the image distributions are very sparse and heterogeneous in the high-dimensional visual feature space,
+thus the KL divergence between the sparse image distributions cannot characterize their inter-concept
+visual similarity contexts accurately. To avoid this problem, visual clustering and latent semantic
+analysis have been used to generate visual ontology for automatic object categorization [3-8]. Recently,
+both the visual similarity contexts and the semantic similarity contexts are integrated for concept
+ontology construction [9-10].
+Multi-task learning and structural learning are two potential solutions for addressing the issue of
+huge inter-concept visual similarity by modeling the inter-concept correlations explicitly and training
+multiple inter-related classifiers jointly [10, 15-17]. One open problem for multi-task learning and
+structural learning is that they have not provided good solutions for determining the inter-related
+learning tasks directly in the visual feature space [26]. Torralba et al. have proposed a multi-task
+boosting algorithm by leveraging the inter-task correlations for concept detection [15], where the inter-
+task correlations are simply characterized by various combinations of the image concepts. Simply using
+concept combinations for inter-task relatedness modeling may seriously suffer from the problem of huge
+computational complexity: there are 2n potential combinations for n image concepts. In addition, not
+all the image concepts are visually-related and combining the visually-irrelevant image concepts for
+joint classifier training may decrease the performance rather than improvement [10].
+3. Feature Extraction and Image Similarity Characterization
+A large number of image concepts and their relevant images are used to assess the effectiveness and
+robustness of our data-driven algorithm on quantitative characterization of the semantic gaps. These
+image concepts and their relevant images are collected from two well-known image sets: NUS-WIDE
+[18] and ImageNet [11]. In this paper, we focus on assessing the effectiveness and robustness of our
+data-driven algorithm on two types of image concepts: (a) scene-based and event-based image concepts
+(image semantics are interpreted by the visual content of entire images); and (b) object-based image
+concepts (image semantics are interpreted by the visual content of object regions or object bounding
+boxes).
+6
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Table 1: 81 image concepts in NUS-WIDE [18] for algorithm evaluation.
+Categories Image Concepts
+Event/Activities
+Swimming Earthquake Fire-exposition Surfing Running
+Wedding Dancing Protest Soccer
+Scene/Location
+Airport Temple Castle Beach Cityscape Snow Buildings
+Mountain Valley Street Railroad Road Harbor Bridge
+Sky Clouds Garden Glacier Sunset Reflection Nighttime
+Water Grass Moon Frost Ocean Window Plants Waterfall
+Lake Rainbow House Town
+People Police Military Person Tattoo
+Objects
+Animal Vehicle Flags Birds Tiger Bear Car Toy Tree
+Train Boats Cat Horse Fox Elk Cow Computer Whales
+Zebra Fish Dog Tower Statue Coral Rocks Sign Flowers
+Leaf Sand Food Sun Book Plane
+Graphics Map
+Program Sports
+NUS-WIDE image set [18] has collected large amounts of Internet images for 81 image concepts: (a)
+scene-based and event-based image concepts (scene categories); and (b) object-based image concepts
+(object classes). The object bounding boxes are identified for the object-based image concepts (object
+classes). For the NUS-WIDE image set, all these 81 image concepts are illustrated in Table 1 and
+they are used for assessing the effectiveness and robustness of our data-driven algorithm on supporting
+quantitative characterization of the semantic gaps.
+ImageNet image set [11] has collected more than 9, 353, 897 Internet images and it contains more
+than 14, 791 image concepts at different semantic levels. In this paper, only 1, 000 image concepts
+(1, 000 most popular real-world object classes and scene categories), which contain large amounts of
+relevant images, are selected for assessing the effectiveness and robustness of our data-driven algorithm
+on supporting quantitative characterization of the semantic gaps directly in the visual feature space.
+For the ImageNet image set [11], parts of these 1, 000 most popular image concepts (real-world object
+classes and scene categories) are given in Table 2.
+For the scene-based and event-based image concepts (scene and event categories), each image is
+treated as one single image instance and feature extraction is done by partitioning each image (image
+7
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Figure 1: The visual concept network for NUS-WIDE image set [18].
+instance) into a set of 8 × 8 image patches. For each 8 × 8 image patch, the following visual features
+are extracted: (1) top 3 dominant colors; (2) 12-bin color histogram; (3) 9-dimensional Tamura texture
+features; and (4) SIFT (scale invariant feature transform) features. For each 8 × 8 image patch, its
+best-matching “visual word” is found from a pre-trained codebook with 512 visual words (codewords),
+and a 512-bin codeword histogram (histogram of 512 visual words) is extracted and used to represent
+the principal visual properties of the given image instance.
+For the object-based image concepts (object classes), both NUS-WIDE [18] and ImageNet [11] have
+provided the object bounding boxes, which are used to indicate the appearances of the object classes
+and their locations in the images. We treat each object bounding box as one single image instance
+and feature extraction is done by partitioning each object bounding box (image instance) into a set of
+8× 8 image patches. For each 8× 8 image patch, the following visual features are extracted: (1) top 3
+dominant colors; (2) 12-bin color histogram; (3) 9-dimensional Tamura texture features; and (4) SIFT
+8
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+(scale invariant feature transform) features. For each 8×8 image patch in a given image instance (object
+bounding box), its best-matching “visual word” is found from a pre-trained codebook with 512 visual
+words (codewords), and a 512-bin codeword histogram (histogram of 512 visual words) is extracted and
+used to represent the principal visual properties of the given image instance.
+A kernel function is defined for measuring the visual similarity context ?(x, y) between two image
+instances x and y according to their 512-bin codeword histograms u and v:
+?(x, y) = e??
+2(u,v)/? =
+512?
+i=1
+e??
+2
+i
+(u(i),v(i))/?i (1)
+where ? = [?1, · · · , ?512] is the set of the mean values of the ?
+2 distances. The ?2 distance ?2i (u(i), v(i))
+between u(i) and v(i) is defined as:
+?2i (u(i), v(i)) =
+1
+2
+·
+|u(i)? v(i)|2
+u(i) + v(i)
+(2)
+where u(i) and v(i) are the ith bin of the codeword histograms u and v for two image instances x and
+y.
+4. Inter-Concept Discrimination Complexity Score
+A visual concept network is constructed for organizing a large number of image concepts according to
+their inter-concept visual correlations. The visual concept network consists of two key components:
+(a) image concepts (i.e., object classes and scene categories); and (b) inter-concept cumulative visual
+similarity contexts between their relevant image instances.
+For two given image concepts Ci and Cj, their inter-concept cumulative visual similarity context
+?(Ci, Cj) is defined as:
+?(Ci, Cj) =
+1
+|Ci||Cj|
+?
+x?Ci
+?
+y?Cj
+?(x, y) (3)
+where |Ci| and |Cj| are the total numbers of image instances for the image concepts Ci and Cj, ?(x, y)
+is the visual similarity context between two image instances x and y as defined in Eq. (1).
+Two image concepts Ci and Cj are linked together on the visual concept network when their inter-
+concept cumulative visual similarity context is above a given threshold or ?(Ci, Cj) 6= 0. The visual
+concept networks for NUS-WIDE [18] (e.g., it consists of 81 image concepts) and ImageNet [11] (e.g.,
+1, 000 most popular image concepts are selected) are illustrated in Fig. 1 and Fig. 2, where the visually-
+related image concepts (which have larger values of the inter-concept visual similarity contexts ?(·, ·))
+9
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Table 2: Part of 1000 image concepts in ImageNet [11] for algorithm evaluation.
+tree beach snow mountain scarf earing ring abacus shirt flower
+road ladder corridor firework sword celery broccoli corn tadpole watch
+garden sunset sailing office scissors penguin starfish toad zebra monkey
+mouse home chair plane rail spiders tiger lion cat falls
+street landscape screen wall sponge mug cobra dolphin rainbows water
+city building parks cars teapot snake roses golf bears dagger
+are linked together. Some examples for the visually-related image concepts, which have larger values of
+the inter-concept cumulative visual similarity contexts ?(·, ·)), are illustrated in Fig. 3 and Fig. 4.
+As shown in Fig. 1 and Fig. 2, the geometric closeness among the image concepts is inverse with
+the scales (numerical values) of their inter-concept cumulative visual similarity contexts ?(·, ·): (a) the
+visually-related image concepts ?(·, ·) 6= 0 are linked together and the visually-irrelevant image concepts
+?(·, ·) = 0 are not linked at all; (b) the image concepts, which are closer on the visual concept network,
+have larger values of their inter-concept cumulative visual similarity contexts ?(·, ·); on the other hand,
+the image concepts, which are far-away on the visual concept network, have smaller values of their
+inter-concept cumulative visual similarity contexts ?(·, ·). Thus supporting graphical representation
+and visualization of the visual concept network can reveal a great deal about the visual correlations
+among the image concepts.
+The visual concept network can provide multiple advantages: (a) It can interpret the inter-concept
+visual correlations explicitly as shown in Fig. 1 and Fig. 2. (b) It can provide a good environment for
+determining the visually-related image concepts directly in the visual feature space as shown in Fig. 3
+and Fig. 4. (c) It can provide a good environment to select more effective inference models for concept
+classifier training, e.g., integrating the image instances for multiple visually-related image concepts to
+learn their inter-related SVM concept classifiers jointly and training the one-against-all SVM concept
+classifiers independently for the isolated image concepts.
+For two given image concepts Ci and Cj, if they have large value of their inter-concept cumulative
+visual similarity context ?(Ci, Cj), their image instances will share some common or similar visual
+properties and there may exist significant overlapping among their concept classifiers in the visual
+feature space. Thus it could be hard for machine learning tools to obtain unique concept classifiers
+for discriminating such visually-related image concepts effectively in the visual feature space, e.g., the
+10
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Figure 2: The visual network with 1000 image concepts for ImageNet image set [11].
+visually-related image concepts may not be visually separable because their relevant images and concept
+classifiers may have significant overlapping in the visual feature space. Therefore, th image concepts,
+which have large values of the inter-concept cumulative visual similarity contexts ?(·, ·) with many
+other image concepts on the visual concept network, may have large semantic gaps. On the other
+hand, the image concepts, which have small values or even zero values of the inter-concept cumulative
+visual similarity contexts ?(·, ·) with other image concepts on the visual concept network (i.e.,they are
+isolated from other image concepts in the visual feature space), may have small semantic gaps. Thus
+it is easy for machine learning tools to train unique concept classifiers for discriminating the isolated
+image concepts (with smaller semantic gaps) from other image concepts effectively.
+For a given image concept Cl, two criteria can be used to quantify its inter-concept discrimination
+complexity score effectively: (a) the number of its visually-related image concepts on the visual concept
+network (some examples for the visually-related image concepts are illustrated in Fig. 3 and Fig. 4);
+(b) the strengths (numerical values) of the inter-concept cumulative visual similarity contexts ?(·, ·)) for
+the visually-related image concepts, e.g., if two image concepts have large value of their inter-concept
+visual similarity context ?(·, ·), they may not be visually separable and they may have large semantic
+gaps.
+For a given image concept Cl, its inter-concept discrimination complexity score ?¯(Cl) is defined as
+11
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Figure 3: Some visually-related image concepts in NUS-WIDE image set [18].
+the cumulative inter-concept visual similarity contexts:
+?¯(Cl) =
+?
+Cj??l
+?(Cl, Cj) (4)
+where ?l is a set of image concepts that are visually related with the given image concept Cl and
+are linked with Cl on the visual concept network, ?(Cl, Cj) is the strength (numerical value) of the
+inter-concept visual similarity context between the image concepts Cl and Cj.
+If a given image concept has large value of the inter-concept discrimination complexity score ?¯(·),
+it may have large semantic gap and high learning complexity for concept classifier training because the
+given image concept may not be visually separable from other image concepts on the visual concept
+network. On the other hand, if a given image concept has small value of the inter-concept discrimination
+complexity score ?¯(·), the given image concept may have small semantic gap and low learning complexity
+for concept classifier training because the given image concept is visually isolated from other image
+concepts on the visual concept network. Thus the inter-concept discrimination complexity score ?¯(·)
+can be used as one important factor for supporting quantitative characterization of the semantic gaps
+directly in the visual feature space.
+5. Inner-Concept Visual Homogeneity Score
+For a given image concept Cl on the visual concept network, its inner-concept visual homogeneity score
+?(Cl) is defined as the cumulative visual similarity contexts among all its image instances:
+?(Cl) =
+1
+|Cl|2
+?
+u?Cl
+?
+v?Cl
+?(u, v) (5)
+where |Cl| is the total number of the images instances for the given image concept Cl, ?(u, v) is the
+kernel-based similarity context between two image instances u and v as defined in Eq. (1).
+12
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Figure 4: Some visually-related image concepts in ImageNet image set [11].
+If a given image concept has small value of the inner-concept visual homogeneity score ?(·), its
+image instances should have huge diversity on their visual properties (i.e., low inner-concept visual
+consistency), thus it is very hard for machine learning tools to use some simple models to approximate
+its diverse visual properties completely. When some complex models are used to approximate the
+diverse visual properties completely for the given image concept, there may not exist a unique concept
+classifier with high discrimination power. On the other hand, if a given image concept has large value
+of the inner-concept visual homogeneity score ?(·), its image instances should have small diversity on
+their visual properties (i.e., high inner-concept visual consistency). As a result, it is much easier for
+machine learning tools to use some simple models to approximate its homogeneous visual properties
+completely and there may exist a unique concept classifier with high discrimination power. Based on
+these observations, the inner-concept visual homogeneity score ?(·) can be treated as another important
+factor for supporting quantitative characterization of the semantic gaps directly in the visual feature
+space.
+6. Quantitative Characterization of Semantic Gaps
+For a given image concept Cl on the visual concept network, its semantic gap depends on two important
+factors: (a) its inner-concept visual homogeneity score ?(Cl) which is used to characterize the inner-
+concept visual homogeneity or inner-concept visual consistency among its relevant image instances, e.g.,
+?(Cl) can be used to assess whether there exists a unique concept classifier in the visual feature space
+for the given image concept Cl; (b) its inter-concept discrimination complexity score ?¯(Cl) which is
+used to characterize its cumulative visual correlations with other image concepts on the visual concept
+13
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+network, e.g., ?¯(Cl) can be used to assess whether the given image concept Cl is visually separable from
+other image concepts in the visual feature space. It is worth noting that these two important factors
+are inter-related, e.g., for a given image concept Cl, if it has small value of the inner-concept visual
+homogeneity score ?(Cl) (i.e., it has huge inner-concept visual diversity), it may have more opportunity
+to overlap with other image concepts in the visual feature space or share some similar visual properties
+with other image concepts (i.e., it may have large value for the inter-concept discrimination complexity
+score ?¯(Cl)).
+If the given image concept Cl has large semantic gap, it may have large value for the inter-concept
+discrimination complexity score ?¯(Cl) while having small value for the inner-concept visual homogeneity
+score ?(Cl) (i.e., Cl has many visually-related image concepts on the visual concept network while its
+inner-concept visual consistency is low). On the other hand, if the given image concept Cl has small
+semantic gap, it may have small value for the inter-concept discrimination complexity score ?¯(Cl) while
+having large value of the inner-concept visual homogeneity score ?(Cl) (i.e., Cl has high inner-concept
+visual consistency while it is visually isolated from other image concepts on the visual concept network).
+Based on these observations, the semantic gap for the given image concept Cl can be defined as:
+?(Cl) =
+?¯(Cl)
+?(Cl) + ?0
+(6)
+where ?0 is a constant to avoid the problem of overflow, ?(Cl) is the inner-concept visual homogeneity
+score for the given image concept Cl, ?¯(Cl) is the inter-concept discrimination complexity score for the
+given image concept Cl.
+By simultaneously considering both the inner-concept visual homogeneity score and the inter-concept
+discrimination complexity score, the scale of the semantic gap ?(Cl) can be used to predict whether
+the given image concept Cl is visually separable from other image concepts in the visual feature space
+or whether there exists a unique concept classifier for the given image concept Cl in the visual feature
+space, e.g., ?(Cl) can be used to estimate its learning complexity for concept classifier training. For
+the given image concept Cl on the visual concept network, the success for concept classifier training
+(i.e., whether its concept classifier can achieve high accuracy rate for automatic concept detection on
+test images) largely depends on the scale of its semantic gap ?(Cl).
+It is worth noting that: (a) our algorithm for supporting quantitative characterization of the semantic
+gaps is data-driven because both the inner-concept visual homogeneity score and the inter-concept
+discrimination complexity score are directly derived from the relevant image instances; (b) our data-
+14
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+driven algorithm can achieve quantitative characterization of the semantic gaps directly in the visual
+feature space, and the visual feature space is the common space for concept classifier training and
+automatic concept detection.
+To assess the effectiveness and robustness of our data-driven algorithm on supporting quantitative
+characterization of the semantic gaps, it is very important to compare its effectiveness with other
+alternative approaches. Some pioneering researches have been done recently for calculating the inner-
+concept visual homogeneity and the inter-concept visual correlation by using the average distances [19].
+Unfortunately, there is no existing approach for supporting quantitative characterization of the semantic
+gaps directly in the visual feature space (i.e., calculating the numerical values (scales) of the semantic
+gaps rather than simply guessing whether the image concepts have larger semantic gaps or not). Based
+on these observations, an alternative approach is developed for supporting quantitative characterization
+of the semantic gaps directly in the visual feature space, and it is treated as an alternative approach
+for effectiveness comparison in this paper.
+For a given image concept Cl, its inner-concept cumulative visual variance ?(Cl) is defined as:
+?(Cl) =
+1
+|Cl|2
+?
+u?Cl
+?
+v?Cl
+|?(u, v)??(Cl)|
+2 (7)
+where ?(Cl) is the inner-concept visual homogeneity score for the given image concept Cl as defined
+in Eq. (5). From this definition, one can observe that small inner-concept cumulative visual variance
+corresponds to large inner-concept visual homogeneity score, on the other hand, large inner-concept
+cumulative visual variance corresponds to small inner-concept visual homogeneity score.
+If the given image concept Cl has large semantic gap, it should have large values for both the inter-
+concept discrimination complexity score ?¯(Cl) and the inner-concept cumulative visual variance ?(Cl).
+On the other hand, if the given image concept Cl has small semantic gap, it should have small values for
+both the inter-concept discrimination complexity score ?¯(Cl) and the inner-concept cumulative visual
+variance ?(Cl). Based on these observations, the semantic gap for the given image concept Cl can
+alternatively be defined as:
+?(Cl) = ? · ?¯(Cl) + (1? ?) · ?(Cl) (8)
+where ? = 0.6 is a weighting factor, ?(Cl) is the inner-concept cumulative visual variance, ?¯(Cl) is the
+inter-concept discrimination complexity score for the given image concept Cl.
+The goals for supporting quantitative characterization of the semantic gaps directly in the visual
+feature space are to: (a) provide a theoretical approach to estimate the learning complexity for concept
+15
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+classifier training; (b) provide a good environment to select effective inference models for concept
+classifier training which will further result in high accuracy rates on concept detection. It is worth
+noting that both concept classifier training and automatic concept detection are performed in the
+visual feature space rather than in the label space. Thus supporting quantitative characterization of
+the semantic gaps directly in the visual feature space plays an important role in achieving more effective
+concept classifier training by selecting more suitable inference models automatically.
+7. Automatic Inference Model Selection for Concept Classifier Training
+Supporting quantitative characterization of the semantic gaps can allow us to estimate the learning
+complexity for each image concept directly in the visual feature space. With the knowledge of the
+learning complexity for each image concept (i.e., numerical value (scale) of the semantic gap ?(·) for
+each image concept), more effective inference models can be selected for concept classifier training
+by: (a) identifying the image concepts with small semantic gaps (i.e., the isolated image concepts
+with good inner-concept visual consistency) and training their one-against-all SVM concept classifiers
+independently; (b) determining the image concepts with large semantic gaps (i.e., the visually-related
+image concepts with low inner-concept visual consistency) and integrating their image instances to train
+their inter-related SVM concept classifiers jointly; and (c) using more image instances to achieve more
+reliable training of the concept classifiers for the image concepts with large semantic gaps.
+To bridge the semantic gaps, a structural learning algorithm is developed for concept classifier
+training, where both the scales of the semantic gaps ?(·) and the visual concept network are used to
+determine the inter-related learning tasks directly in the visual feature space and select more effective
+inference models for concept classifier training. As compared with traditional structural SVM algorithm
+[17], our structural learning algorithm leverages the inter-concept visual correlations for training multiple
+inter-related concept classifiers jointly rather than simply performing structural output regression in the
+label space. As compared with traditional multi-task boosting algorithm [15], our structural learning
+algorithm leverages both the visual concept network and the scales of the semantic gaps for inter-task
+relatedness modeling and automatic inference model selection rather than simply performing concept
+combinations.
+For a given image concept Cj on the visual concept network, its SVM classifier is defined as:
+fCj(x) = W
+tr
+j ?j(x) +
+?
+Ct??j
+?t · V
+tr
+t ?t(x),
+?
+Ct??j
+?t = 1 (9)
+16
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Figure 5: The consistency between the numerical values (scales) of semantic gaps ?(·) for learning
+complexity estimation and the accuracy rates for automatic concept detection in NUS-WIDE
+image set.
+where ?j is used to represent a set of image concepts that are visually-related with the given image
+concept Cj (they are linked with the given image concept Cj on the visual concept network), Wj is a
+self regularization term that is used to represent the contribution of the Cj’s image instances on the
+Cj’s SVM classifier fCj(x), Vt is the inter-concept regularization term that is used to represent the
+contribution of the Ct’s image instances on the Cj’s SVM classifier fCj(x), ?t is the weight factor to
+interpret how much the Ct’s image instances can contribute on the Cj’s SVM classifier fCj(x), ?j(x)
+and ?t(x) are the mapping functions from the visual feature vector x to some other Euclidean space H.
+If the given image concept Cj is visually-related with the image concept Ct (i.e., Cj is linked with
+Ct on the visual concept network), Vt 6= 0. If the given image concept Cj is visually-irrelevant with the
+image concept Ct (i.e., Cj is not linked with Ct on the visual concept network), Vt = 0.
+By integrating both the visual concept network and the scales of the semantic gaps for automatic
+inference model selection, our structural learning algorithm can achieve more effective classifier training
+by minimizing a joint objective function J .
+J =
+1
+2
+(?Wj?
+2 +
+|?j |?
+t=1
+?t?Vt?
+2) + ?0
+|?j |?
+t=1
+nj?
+i=1
+?ti +
+|?j |?
+t=1
+?t
+nt?
+i=1
+?ti (10)
+where |?j| is the size of ?j, ?ti ? 0 and ?ti ? 0 are the error rates, ?0 and ?t are the weighting factors for
+controlling the error penalty, nj and nt are the total number of image instances for the image concepts
+Cj and Ct, ?t is the weighting factor that is used to control the contributions of the Ct’s image instances
+on the Cj’s concept classifier fCj(x).
+By integrating the image instances for multiple visually-related image concepts ? = {(xit, yit)|i = 1,
+· · ·, n; t = 1, · · ·, |?j|} to solve the joint objective function as defined in Eq. (10), the SVM classifier
+17
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+for the given image concept Cj can be determined as:
+fCj (x) =
+|?j |?
+h,t=1
+?t?s(t, h)
+( nj?
+i=1
+?hi?(xji, x)?
+nh?
+i=1
+?hi?(xhi, x)
+)
++
+|?j |?
+t=1
+?t
+?t
+( nj?
+i=1
+?ti?(xji, x)?
+nt?
+i=1
+?ti?(xti, x)
+)
+(11)
+where ? and ?¯ are two different sets of the weights for the image instances, ?s(t, h) is the semantic
+kernel for characterizing the semantic similarity context between the image concepts Ct and Ch, ?(·, ·) is
+the visual kernel for characterizing the visual similarity context between the image instances as defined
+in Eq. (1).
+Our structural learning algorithm can significantly enhance the discrimination power of the concept
+classifiers by: (a) training the one-against-all SVM classifiers independently for the image concepts with
+small semantic gaps (i.e., the isolated image concepts with good inner-concept visual consistency) by
+automatically setting Vt = 0 in Eq. (9); (b) training the inter-related SVM classifiers jointly for multiple
+visually-related image concepts with large semantic gaps (i.e., multiple visually-related image concepts
+with low inner-concept visual consistency) by automatically setting Vt 6= 0 in Eq. (9); (c) learning from
+the image instances for other visually-related image concepts to enhance the generalization ability of the
+concept classifiers on test images, which may somewhat reduce the required sizes of the image instances
+for achieving reliable training of the concept classifiers for the image concepts with large semantic gaps.
+8. Algorithm Evaluation and Experimental Results
+Our experiments on algorithm evaluation are performed on two well-known image sets: NUS-WIDE
+[18] and ImageNet [11]. For a given image concept, our algorithm first calculates the scale (numerical
+value) of its semantic gap by using two alternative approaches as defined in Eqs. (6) and (8). The
+image concepts with small semantic gaps and the image concepts with large semantic gaps are then
+identified automatically according to the scales of their semantic gaps ?(·). The learning complexities
+for concept classifier training are high for the image concepts with large semantic gaps, on the other
+hand, the learning complexities for concept classifier training are low for the image concepts with small
+semantic gaps.
+8.1. Experimental Results for NUS-WIDE Image Set
+As mentioned above, a data-driven algorithm is developed for supporting quantitative characterization
+of the semantic gaps directly in the visual feature space, e.g., calculating the numerical values (scales)
+18
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Table 3: Image concepts with small semantic gaps in NUS-WIDE image set [18].
+clouds sky ocean grass zebra plane airport rocks animal map
+soccer vehicle window mountain valley water flower sun sunset tiger
+buildings reflection lake tree whales
+Table 4: Image concepts with large semantic gaps in NUS-WIDE image set [18].
+wedding earthquake tatoo statue fox toy running dancing temple book
+bridge glacier castle fire protest police protest flags cars town
+of the semantic gaps for the image concepts. Thus our data-driven algorithm can automatically identify
+both the image concepts with small semantic gaps and the image concepts with large semantic gaps,
+and some experimental results are given in Table 3 and Table 4 for NUS-WIDE image set [18].
+After the concept classifiers are obtained for all these 81 image concepts in NUS-WIDE image set,
+they are further used for detecting the image concepts from test images. Ideally, if an image concept
+has large semantic gap, its learning complexity for concept classifier training is high. As a result,
+the accuracy rates for detecting the image concepts with large semantic gaps may be low when the
+same sizes of image instances are used for concept classifier training. Thus there is a good consistency
+between the scales (numerical values) of the semantic gaps, the strengths of the learning complexities
+for concept classifier training, and the accuracy rates of the concept classifiers on automatic concept
+detection. As shown in Table 5 and Fig. 5, our experiments have obtained good evidences for this
+consistency (e.g., good consistency between the scales of the semantic gaps and the accuracy rates of
+the concept classifiers on automatic concept detection).
+For the image concept “Map” in NUS-WIDE [18], a small semantic gap is obtained but the detection
+accuracy rate is very low rather than high. The reason for this phenomenon is that NUS-WIDE image set
+contains a small number of the relevant images for the image concept “Map”, which cannot sufficiently
+characterize both the inner-concept visual diversity for the image concept “Map” and its inter-concept
+visual correlations with other image concepts.
+We have also compared our algorithm for quantitative characterization of the semantic gaps with
+the approach developed by Lu et al. [13, 20]. Because Lu’s approach focuses on determining the
+image concepts with smaller or larger semantic gaps rather than calculating the numerical values of
+19
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Table 5: The consistency between the numerical values (scales) of semantic gaps ?(·) for learning
+complexity estimation and the accuracy rates for automatic concept detection.
+Image concept Semantic gap Accuracy rate Image concept Semantic gap Accuracy rate
+sky 0.7557 0.5609 sun 0.337 0.8381
+clouds 0.7088 0.6079 tree 0.433 0.6169
+person 0.5711 0.6547 snow 0.4315 0.6834
+grass 0.5663 0.689 whales 0.4311 0.64
+animal 0.5183 0.7337 beach 0.4276 0.7698
+water 0.4986 0.7514 garden 0.4642 0.6902
+flowers 0.4892 0.7975 surf 0.5072 0.535
+tiger 0.5636 0.695 moon 0.4997 0.6644
+sunset 0.4599 0.7635 fish 0.4988 0.5521
+waterfall 0.4592 0.7967 birds 0.4955 0.6179
+zebra 0.5284 0.6458 rainbow 0.4934 0.6554
+lake 0.4994 0.5763 boats 0.4921 0.6053
+reflection 0.5938 0.534 map 0.1806 0.0913
+ocean 0.492 0.6037 military 0.4777 0.6169
+buildings 0.4916 0.6301 computer 0.4752 0.5599
+valley 0.4569 0.6472 road 0.4732 0.5646
+soccer 0.5468 0.5095 street 0.4719 0.5539
+nighttime 0.6441 0.5086 house 0.4498 0.5671
+cityscape 0.5131 0.5737 horses 0.4487 0.5159
+mountain 0.4999 0.6897 elk 0.448 0.6421
+airport 0.4953 0.679 harbor 0.5385 0.5146
+window 0.4929 0.6157 sports 0.4353 0.5315
+coral 0.4778 0.6348 tower 0.4331 0.5269
+plane 0.4747 0.5243 protest 0.4301 0.6107
+vehicle 0.4732 0.5858 sign 0.5287 0.5962
+bear 0.4591 0.5536 sand 0.4279 0.6227
+food 0.4495 0.5741 fire 0.4126 0.7491
+plants 0.448 0.6308 town 0.5126 0.5849
+rocks 0.4457 0.7604 cat 0.5111 0.6181
+20
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Table 6: Comparison on image concepts with small semantic gaps.
+Image concept Score [13] Semantic gap Image concept Score [13] Semantic gap
+sunset 0.092 0.4599 cloud(s) 0.012 0.7088
+flower(s) 0.057 0.4892 water 0.019 0.4986
+sky 0.032 0.7557 garden 0.02 0.4902
+tree 0.024 0.3169 beach 0.022 0.4698
+Figure 6: Comparison between two alternative approaches for supporting quantitative character-
+ization of the semantic gaps (i.e., numerical values of the semantic gaps ?(·)).
+their semantic gaps, we just provide our experimental results according to the results presented in Lu’s
+papers [13, 20]. As shown in Table 6, our data-driven algorithm has obtained very competitive results,
+where the image concepts with high confidence scores (small semantic gaps as defined by Lu’s method)
+are selected from Fig. 5 in Lu’s paper [13] and our algorithm is used to calculate the numerical values of
+their semantic gaps directly in the visual feature space. One can observe that good consistency between
+the semantic similarity contexts among the associated text terms and the visual similarity contexts
+among the relevant images (high confidence scores) does not always correspond to small semantic
+gaps (small numerical values for the semantic gaps ?(·) in the visual feature space). For some image
+concepts, our data-driven algorithm has obtained much better results than Lu’s approach because the
+associated text terms may consist of rich word vocabulary rather than only the auxiliary text terms for
+image semantics description. When all these auxiliary text terms are loosely used for characterizing the
+semantics of the social images, it is very hard if not impossible to obtain semantic consistency among
+the auxiliary text terms. For some image concepts, our data-driven algorithm has obtained similar
+results with Lu approach because the auxiliary text terms have good semantic consistency.
+21
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Table 7: Image concepts with small semantic gaps for ImageNet image set [11].
+blue sky water red rose sunset cup moon missle beach
+snow tree glass garden sunset yellow flower car-front car-wheel
+ocean cloud stone-rock red flower watermelon banana licence plate church
+purple flower white flower sand screen firework falls leaf butterfly
+stop sign coffee machine coffee pot mug traffic light bottle bin can
+... ... ... ... ... ... ... ...
+Table 8: Image concepts with large semantic gaps for ImageNet image set [11].
+flower ring fish dog car crab rail park gas station gun
+bank wave mountain street window horse building bike dolphin tiger
+... ... ... ... ... ... ... ... ... ...
+To assess the effectiveness and robustness of our data-driven algorithm on supporting quantitative
+characterization of the semantic gaps, we have compared the scales (numerical values) of the semantic
+gaps which are calculated by using two alternative approaches. As shown in Fig. 6, one can observe that
+two alternative approaches have obtained good consistency on supporting quantitative characterization
+of the semantic gaps, e.g., for any two image concepts, the image concept with larger semantic gap
+will always have larger semantic gap under two alternative approaches, on the other hand, the image
+concept with smaller semantic gap will still have smaller semantic gap under two alternative approaches.
+Thus our experimental results have demonstrated good evidences and rigorous justifications of the
+effectiveness and robustness of our data-driven algorithms on supporting quantitative characterization
+of the semantic gaps directly in the visual feature space.
+8.2. Experimental Results for ImageNet Image Set
+For the ImageNet [11] image set, its visual concept network is shown in Fig. 2 and some examples for
+the inter-related image concepts are shown in Fig. 4. The image concepts with small semantic gaps
+and the image concepts with large semantic gaps are identified automatically according to the scales
+(numerical values) of their semantic gaps ?(·), and some experimental results are shown in Table 7 and
+Table 8.
+After the concept classifiers are obtained for all these 1,000 image concepts in ImageNet [11] image
+set, they are further used for detecting the image concepts from test images. When the same sized
+22
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Figure 7: The consistency between the numerical values (scales) of semantic gaps ?(·) for learning
+complexity estimation and the accuracy rates for automatic concept detection in ImageNet image
+set.
+of image instances are used for concept classifier training, the accuracy rates for detecting the image
+concepts with large semantic gaps may be low. Thus there is a good consistency between the scales
+(numerical values) of the semantic gaps, the strengths of the learning complexities for concept classifier
+training, and the accuracy rates of the concept classifiers on automatic concept detection. As shown
+in Fig. 7, our experiments have obtained good evidences for this consistency (e.g., good consistency
+between the scales of the semantic gaps and the accuracy rates of the concept classifiers on automatic
+concept detection).
+It is worth noting that our algorithm for supporting quantitative characterization of the semantic
+gaps is a data-driven approach, thus it is very attractive to assess its dependence with various image
+sets, e.g., whether the scales (numerical values) of the semantic gaps for the same image concepts may
+vary with the image sets. As shown in Table 9, we have compared the scales (numerical values) of the
+semantic gaps ?(·) for the same image concepts in two well-known image sets: NUS-WIDE [18] and
+ImageNet [11]. From these experimental results, one can observe that the scales (numerical values) of
+the semantic gaps for the same image concepts may vary with the image sets, but the trends of the
+semantic gaps are consistent, e.g., for any two image concepts with different semantic gaps, the one
+with larger semantic gap will always have larger values of the semantic gaps in two image sets and the
+other with smaller semantic gap will always have smaller values of these semantic gaps in two image
+sets.
+To evaluate the effectiveness of image representation and similarity function and their influences
+23
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Table 9: Comparison on the scales of semantic gaps for different image sets.
+Image concept Semantic gap in NUS-WIDE [18] Semantic gap in ImageNet [11]
+sky 0.7557 0.7802
+clouds 0.7088 0.7358
+grass 0.5663 0.6132
+water 0.4986 0.5202
+flowers 0.4892 0.4925
+sunset 0.4599 0.4803
+waterfall 0.4592 0.4789
+zebra 0.4284 0.4559
+lake 0.3994 0.4230
+ocean 0.392 0.4185
+buildings 0.3916 0.4201
+mountain 0.2999 0.3260
+airport 0.2953 0.3138
+tree 0.233 0.2900
+snow 0.2315 0.2818
+beach 0.2276 0.2498
+garden 0.2142 0.2530
+moon 0.1997 0.2180
+rainbow 0.1934 0.2120
+boats 0.1921 0.2018
+sand 0.1279 0.1468
+train 0.0966 0.1260
+flags 0.7763 0.7933
+book 0.7486 0.7602
+toy 0.7440 0.7579
+cow 0.7133 0.7411
+castle 0.7090 0.7347
+bridge 0.6370 0.6847
+glacier 0.5962 0.6282
+fox 0.5540 0.5816
+temple 0.6388 0.6738
+24
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Figure 8: The consistency on the trend of the semantic gaps under different similarity functions:
+our algorithm using kernel function versus cumulative codeword histograms.
+on the effectiveness and robustness of our data-driven algorithm for quantitative characterization of
+the semantic gaps, three approaches are used for image representation and similarity characterization:
+(a) kernel function as defined in Eq. (1) which is based on the ?2 distances between the codewords;
+(b) Mahalanobis distance function where Mahalanobis distance is used to replace the ?2 distances in
+Eq. (1); and (c) kernel function between the cumulative codeword histograms. This study focuses on
+assessing the consistency of the effectiveness and robustness of our data-driven algorithm for quantitative
+characterization of the semantic gaps when different approaches are used for image representation and
+similarity characterization. As shown in Fig. 8 and Fig. 9, one can observe that our data-driven
+algorithm has good consistency for supporting quantitative characterization of the semantic gaps when
+different approaches are used for image representation and similarity characterization, e.g., for any two
+image concepts (one has smaller semantic gap and another has bigger semantic gap), the image concept
+with smaller semantic gap will always have smaller semantic gap under different distance functions for
+similarity characterization, on the other hand, the image concept with larger semantic gap will always
+have larger semantic gap under different distance functions for similarity characterization.
+8.3. Benefits from Semantic Gap Quantification
+The goal for supporting quantitative characterization of the semantic gaps is to provide a theoretical
+approach for: (a) estimating the learning complexity for concept classifier training directly in the
+visual feature space; and (b) selecting more effective inference models for concept classifier training.
+25
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Figure 9: The consistency on the trend of the semantic gaps under different similarity functions:
+our algorithm using kernel function versus Mahalanobis distance.
+In order to evaluate the benefits of semantic gap quantification on concept classifier training, we have
+compared three approaches for concept classifier training: (1) our structural learning algorithm which
+leverages the inter-concept visual correlations directly in the visual feature space for automatic inference
+model selection, e.g., leveraging both the scales (numerical values) of the semantic gaps and the visual
+concept network for automatic inference model selection; (2) traditional structural SVM algorithm which
+performs structural output regression by leveraging the inter-label (inter-concept) semantic correlations
+in the label space; (3) traditional multi-task boosting algorithm which leverages the inter-concept visual
+correlations via simple concept combinations.
+For the NUS-WIDE image set, the comparison results on the detection accuracy rates for some
+image concepts are given in Fig. 10. For the ImageNet image set, the comparison results on the
+detection accuracy rates are given in Fig. 11. In our structural learning algorithm, both the scales
+(numerical values) of the semantic gaps and the visual concept network are leveraged to: (a) determine
+the inter-related learning tasks (i.e., the learning tasks for the visually-related image concepts) directly
+in the visual feature space; (b) select more effective inference models for concept classifier training.
+On the other hand, the traditional structural SVM algorithm [17] leverages the inter-concept semantic
+correlations in the label space via structured output regression and the traditional multi-task boosting
+algorithm uses simple concept combinations to exploit the inter-concept visual correlations.
+The visual feature space is the common space for concept classifier training and automatic concept
+detection, thus characterizing the inter-concept correlations (inter-task relatedness) directly in the vi-
+26
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Figure 10: Performance comparison on the accuracy rates for automatic concept detection for
+NUS-WIDE image set: our structural learning algorithm, traditional structural SVM algorithm,
+traditional multi-task boosting algorithm.
+sual feature space and leveraging such inter-concept visual correlations for concept classifier training
+can significantly improve the accuracy rates of the concept classifiers on automatic concept detection.
+Using simple concept combinations for modeling the inter-task relatedness may seriously suffer from
+the problem of huge computational complexity: there are 2n combinations for n image concepts. In
+addition, not all the image concepts are visually-related and simply combining the visually-irrelevant
+image concepts for joint concept classifier training may decrease their performance rather than improve-
+ment [10]. On the other hand, the benefits from performing structural output regression in the label
+space could be limited because both concept classifier training and automatic concept detection are
+performed in the visual feature space rather than in the label space. As shown in Fig. 10 and Fig. 11,
+one can observe that our structural learning algorithm can obtain higher detection accuracy rates for
+automatic concept detection as compared with traditional multi-task boosting algorithm and structural
+SVM algorithm.
+In our structural learning algorithm, the visual concept network is used to determine the inter-
+related learning tasks automatically (i.e., determine the visually-related image concepts directly in the
+visual feature space) and the scales of the semantic gaps are used to estimate the learning complexity
+and select more effective inference models for concept classifier training. To assess whether supporting
+quantitative characterization of the semantic gaps contributes on concept classifier training or not, we
+have implemented a new structural SVM algorithm, where structural output regression is performed
+over the visual concept network (inter-concept visual contexts in the visual feature space) rather than
+27
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Figure 11: Performance comparison on the accuracy rates for automatic concept detection for
+ImageNet image set: our structural learning algorithm, traditional structural SVM algorithm,
+traditional multi-task boosting algorithm.
+over the inter-label semantic contexts in the label space. As shown in Fig. 12, our structural learning
+algorithm can obtain the concept classifiers with higher accuracy rates on automatic concept detection
+as compared with this new structural SVM algorithm.
+The goal for concept classifier training is to find a concept classifier with low generalization error
+on test images. Using more image instances for concept classifier training may usually improve the
+generalization ability of the concept classifiers and result in low generalization error rates on test images,
+but the sizes of the training image instances may significantly vary with the image concepts and largely
+depend on the scales (values) of their semantic gaps. To achieve the same accuracy rates for automatic
+concept detection, more training image instances should be used to train the concept classifiers for
+the image concepts with larger semantic gaps, but less training image instances can be used to train
+the concept classifiers with small semantic gaps. As shown in Fig. 13, our experimental results have
+demonstrated this phenomenon. From these experimental results, one can observe: (a) When the sizes
+of the training image instances are small, increasing the numbers of the training image instances may
+significantly improve the accuracy rates of the concept classifiers for automatic concept detection. When
+the sizes of the training image instances are large enough, adding more training image instances cannot
+obtain significant improvement on the accuracy rates of the concept classifiers for automatic concept
+detection. (b) When the image concepts have larger semantic gaps, more training image instances
+are needed to train their concept classifiers to achieve the same accuracy rates on automatic concept
+detection as compared with the image concepts with smaller semantic gaps.
+9. Conclusions
+In this paper, both the inner-concept visual homogeneity scores and the inter-concept discrimination
+28
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Figure 12: Performance comparison on the accuracy rates for automatic concept detection for
+ImageNet image set: our structural learning algorithm by using both the scales of the semantic
+gaps and the visual concept network for inference model selection versus traditional structural
+SVM algorithm by performing structural output regression over the visual concept network.
+complexity scores are seamlessly integrated to achieve quantitative characterization of the semantic gaps
+directly in the visual feature space, which can allow us to estimate the learning complexity for each image
+concept and select more effective inference models for concept classifier training. Our experimental
+results on a large number of image concepts have obtained very promising results. Our future work
+will focus on cleansing large-scale Internet images for assessing the effectiveness and robustness of our
+data-driven algorithm on supporting quantitative characterization of the semantic gaps.
+Acknowledgment
+The authors would like to thank the reviewers for their insightful comments and suggestions to make
+this paper more readable. We also want to thank the Associate Editor Prof. Francesco De Natale for
+his handling the review process of our paper. This research is partly supported by National Science
+Foundation of China under Grant 61075014, Doctoral Program of Higher Education of China (Grant
+No. 20096102110025, 20116102110027) and Program for New Century Excellent Talents in University
+under NCET-10-0071.
+References
+[1] M. Naphade, J.R. Smith, J. Tesic, S.-F. Chang, W. Hsu, L. Kennedy, A. Hauptmann, J. Curtis,
+“Large-scale concept ontology for multimedia”, IEEE Multimedia, 2006.
+[2] L. Wu, X.-S. Hua, N. Yu, W.-Y. Ma, S. Li, “Flickr distance”, ACM Multimedia, 2008.
+29
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+Figure 13: Our experimental results on the correlation among the accuracy rates for concept
+detection, the scales of semantic gaps (?(castle) > ?(flower) > ?(beach)), and the sizes of training
+image instances for concept classifier training.
+[3] J. Sivic, B. Russell, A. Zisserman, W. Freeman, A. Efros, “Unsupervised discovery of visual object
+class hierarchies”, IEEE CVPR, 2008.
+[4] M. Marszalek, C. Schmid, “Constructing category hierarchies for visual recognition”, ECCV, 2008.
+[5] M. Marszalek, C. Schmid, “Semantic hierarchies for visual object recognition”, IEEE CVPR, 2007.
+[6] G. Griffin, P. Perona, “Learning and using taxonomies for fast visual categorization”, IEEE CVPR,
+2009.
+[7] E. Bart, L. Porteous, P. Perona, M. Welling, “Unsupervised learning of visual taxonomies”, IEEE
+CVPR, 2008.
+[8] N. Ahuja, S. Todorovic, “Learning the taxonomy and models of categories present in arbitrary
+images”, ICCV, 2007.
+[9] J. Li, C. Wang, Y. Lim, D. Blei, L. Fei-Fei, “Building and using a semantivisual image hierarchy”,
+IEEE CVPR, 2010.
+[10] J. Fan, Y. Gao, H. Luo, “Integrating concept ontology and multitask learning to achieve more
+effective classifier training for multilevel image annotation”, IEEE Trans. Image Processing, vol.17,
+pp.407-426, 2008.
+[11] J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li and L. Fei-Fei, “ImageNet: A large-scale hierarchical
+image database”, IEEE CVPR, 2009.
+30
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+[12] C. Fellbaum, WordNet: An Electronic Lexical Database, MIT Press, Boston, MA, 1998.
+[13] Y. Lu, L. Zhang, Q. Tian, W.-Y. Ma, “What are the high-level concepts with small semantic gap”,
+IEEE CVPR, 2009.
+[14] A. Hauptmann, R. Yan, W.Lin, M. Christel, H. Walter, “Can high-level concepts fill the semantic
+gap in video retrieval? a case study with broadcast news”, IEEE Trans. on Multimedia, vol.9, no.5,
+pp.958-966, 2007.
+[15] A. Torralba, K. P. Murphy, W. T. Freeman, “Sharing visual features for multiclass and multiview
+object detection”, IEEE Trans. PAMI, vol. 29, no.5, pp.854-869, 2007.
+[16] T. Evgeniou, C.A. Micchelli, M. Pontil, “Learning multiple tasks with kernel methods”, Journal
+of Machine Learning Research, vol.6, pp.615-637, 2005.
+[17] M. Blaschko, C. Lampert, “Learning to localize objects with structured output regression”, ECCV,
+LNCS 5302, pp.2-15, 2008.
+[18] T. Chua, J. Tang, R. Hong, H. Li, Z. Luo, Y. Zheng, “NUS-WIDE: A real-world web image
+database from National University of Singapore”, ACM CIVR, 2009.
+[19] T. Deselaers, V. Ferrari, “Visual and semantic similarity in ImageNet”, IEEE CVPR, 2011.
+[20] Y. Lu, L. Zhang, J. Liu, Q. Tian, “Constructing concept lexica with small semantic gaps”, IEEE
+Trans. on Multimedia, vol.12, no.4, pp.288-299, 2010.
+[21] A. Hauptmann, R. Yan, W. Lin, “How many high-level concepts will fill the semantic gap in news
+video retrieval? ”, CIVR, pp.627-634, 2007.
+[22] C. Dorai, S. Venkatesh, “Bridging the semantic gap with computational media aesthetics”, IEEE
+Multimedia, vol.10, no.2, pp.15-17, 2003.
+[23] J. Hare, P. Sinclair, P. Lewis, K. Martinez, P. Enser, C. Sandom, “Bridging the semantic gap in
+multimedia information retrieval: Top-down and bottom-up approaches”, 3rd European Semantic
+Web Conference, 2006.
+[24] H. Ma, J. Zhu, M. R. Lyu, I. King, “Bridging the semantic gap between image contents and tags”,
+IEEE Trans. on Multimedia, vol. 12, no.5, pp.462-473, 2010.
+31
+Copyright (c) 2011 IEEE. Personal use is permitted. For any other purposes, permission must be obtained from the IEEE by emailing pubs-permissions@ieee.org.
+This article has been accepted for publication in a future issue of this journal, but has not been fully edited. Content may change prior to final publication.
+[25] R. Zhao, W.I. Grosky, “Narrowing the semantic gap - improved text-based web document retrieval
+using visual features”, IEEE Trans. on Multimedia, vol. 4, no.2, pp.189-200, 2002.
+[26] J. Fan, Y. Gao, H. Luo, R. Jain, “Mining multi-level image semantics via hierarchical classification”,
+IEEE Trans. on Multimedia, vol. 10, no.1, pp.167-187, 2008.
+[27] J. Fan, Y. Shen, N. Zhu, Y. Gao, “Leveraging large-scale weakly-tagged images from Internet”,
+IEEE CVPR, 2010.
+[28] A.W.M. Smeulders, M. Worring, S. Santini, A. Gupta and R. Jain, “Content-based image retrieval
+at the end of the early years”, IEEE Trans. on PAMI, 2000.
+[29] A. Schreiber, B. Dubbeldam, J. Wielemaker, B. Wielinga, “Ontology-based photo annotation”,
+IEEE Intelligent Systems, vol.16, pp.66-71, 2001.
+[30] P. Enser, C. Sandom, “Towards a comprehensive survey of the semantic gap in visual image
+retrieval”, ACM CIVR, pp.163-168, 2003.
+[31] C. Wang, L. Zhang, H.J. Zhang, “Learning to reduce the semantic gap in web image retrieval and
+annotation”, ACM SIGIR, pp.355-362, 2008.
+[32] C. Snoek, M. Worring, J.-M. Geusebroek, D. Koelma, F.J. Seinstra, A. W. M. Smeulders, “The
+semantic pathfinder: Using an authoring metaphor for generic multimedia indexing”, IEEE Trans.
+PAMI, vol.28, no.10, pp.1678-1689, 2006.
+[33] S. Santini, A. Gupta, R. Jain, “Emergent semantics through interaction in image databases”, IEEE
+Trans. Knowl. Data Eng., vol. 13, no.3, pp.337-351, 2001.
+[34] N. Rasiwasia, P.J. Moreno, N. Vasconcelos, “Bridging the gap: Query by semantic example”, IEEE
+Trans. on Multimedia, vol.9, no.5, 2007.
+[35] A. Natsev, M.R. Naphade, J.R. Smith, “Semantic representation, search and mining of multimedia
+content”, ACM SIGKDD, pp.641-646, 2004.
+32
+

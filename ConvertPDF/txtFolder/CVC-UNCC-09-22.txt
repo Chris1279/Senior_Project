@@ -1,0 +1,719 @@
+Interactive Coordinated Multiple-View Visualization of
+Biomechanical Motion Data
+Daniel F. Keefe, Member, IEEE, Marcus Ewert, Student Member, IEEE,
+William Ribarsky, Senior Member, IEEE, and Remco Chang, Member, IEEE
+Abstract— We present an interactive framework for exploring space-time and form-function relationships in experimentally collected
+high-resolution biomechanical data sets. These data describe complex 3D motions (e.g. chewing, walking, flying) performed by
+animals and humans and captured via high-speed imaging technologies, such as biplane fluoroscopy. In analyzing these 3D biome-
+chanical motions, interactive 3D visualizations are important, in particular, for supporting spatial analysis. However, as researchers in
+information visualization have pointed out, 2D visualizations can also be effective tools for multi-dimensional data analysis, especially
+for identifying trends over time. Our approach, therefore, combines techniques from both 3D and 2D visualizations. Specifically, it uti-
+lizes a multi-view visualization strategy including a small multiples view of motion sequences, a parallel coordinates view, and detailed
+3D inspection views. The resulting framework follows an overview first, zoom and filter, then details-on-demand style of analysis, and
+it explicitly targets a limitation of current tools, namely, supporting analysis and comparison at the level of a collection of motions rather
+than sequential analysis of a single or small number of motions. Scientific motion collections appropriate for this style of analysis exist
+in clinical work in orthopedics and physical rehabilitation, in the study of functional morphology within evolutionary biology, and in
+other contexts. An application is described based on a collaboration with evolutionary biologists studying the mechanics of chewing
+motions in pigs. Interactive exploration of data describing a collection of more than one hundred experimentally captured pig chewing
+cycles is described.
+Index Terms—Scientific visualization, information visualization, coordinated multiple views, biomechanics.
+1 INTRODUCTION
+Effective visualization of 3D motion is a complex problem, especially
+as it relates to experimentally collected data in biomechanics. Imag-
+ing modalities, such as biplane fluoroscopy combined with CT, are
+now able to capture high-speed motion of the bones of a joint at rates
+of 250 to 500 frames per second with sub-millimeter accuracy [1, 22].
+These data allow for far more detailed studies of a variety of complex
+motions in animals and humans than were previously possible. Sev-
+eral important visualization challenges arise from working with mo-
+tion data sets collected with these technologies.
+The first challenge in visualization and analysis of these data is un-
+derstanding the complex spatial relationships that are present. This is
+a 3D problem, in the sense that the bones exist in a 3D space and, in
+many cases, the relationship between the 3D shape of the bones and
+their function (functional morphology) is one of the primary scientific
+research questions. Thus, effective 3D spatial understanding is an im-
+portant feature of visualization systems appropriate for use with these
+data.
+The second challenge in analysis of these motion data is that, in
+both clinical and experimental work, these data typically exist as part
+of a large database. For example, when a scientist designs an exper-
+iment to study chewing motions (the primary example used in this
+paper) she will typically collect data on tens to hundreds of chewing
+cycles. Questions posed during analysis may be of the form, what is a
+typical chewing motion as exhibited across the data? Or, they may be
+of the form, how does chewing change based upon the amount of food
+in the mouth, the type of food, or other variables? This style of analy-
+sis requires understanding the time-varying spatial data that describes
+a single chewing motion, and, beyond that, it requires understanding
+• Daniel F. Keefe and Marcus Ewert are with the Department of Computer
+Science and Engineering at the University of Minnesota. E-mails:
+keefe@cs.umn.edu, ewert@cs.umn.edu.
+• William Ribarsky and Remco Chang are with The Charlotte Visualization
+Center, UNC Charlotte, E-mails: ribarsky@uncc.edu, rchang@uncc.edu.
+Manuscript received 31 March 2008; accepted 1 August 2008; posted online
+19 October 2008; mailed on 13 October 2008.
+For information on obtaining reprints of this article, please send
+e-mailto:tvcg@computer.org.
+trends and anomalies in this time-varying spatial data across a collec-
+tion of numerous repeated motions.
+Previous approaches to visualization of biomechanical motion data
+have benefited from animated and interactively controlled 3D graph-
+ics [8, 10, 21]. Our collaborators in evolutionary biology have also
+had positive experiences with 3D visualization of their data. In fact,
+several of them have found 3D views to be so useful that they have
+taught themselves how to use a combination of Maya and Matlab to
+produce their own 3D visualizations. In general, previous 3D visu-
+alizations presented in the literature have provided useful capabilities
+for investigating individual motions, but provided only limited capa-
+bilities for analysis and comparison of a set of motions. We present
+a framework that explicitly supports visualization of multiple related
+motion sequences, an important scientific task in this context.
+Visualization of trends in time-varying and multi-variate data has
+a rich history of study within the information visualization commu-
+nity [16]. Our work is motivated by a desire to leverage the theories
+and techniques resulting from this work and bring these to bear within
+a system that targets time-varying 3D data. Since spatial relationships
+in biomechanical motion data are so important, they have tended to be
+visualized in the past with what have traditionally been termed scien-
+tific visualization techniques, or 3D spatial layouts where the spatial
+arrangement is pre-determined by the true 3D arrangement of bones
+in space. To observe motion over time, these 3D views have been ani-
+mated, and often additional data attributes are visualized via color, tex-
+ture, streamlines, and 3D data glyphs [8, 10, 21]. While these sophisti-
+cated 3D views are clearly valuable, evidence in the information visu-
+alization literature suggests that, in general, understanding trends over
+time through animation may not be the most effective strategy [16].
+Based on this insight and other promising results in information visu-
+alization [3, 11, 15], we have been motivated to explore a new visu-
+alization framework that combines the strengths of both information
+and scientific visualization approaches and targets understanding of
+spatially complex, time-varying motion data.
+The idea of bringing information and scientific visualization to-
+gether is not new [7, 14], and several compelling examples tied to real
+scientific analysis now exist in the literature [12, 13, 19]. However,
+many challenges remain in this line of research, especially as it relates
+to specific forms of data. Analysis of detailed 3D motion, for exam-
+ple, raises the question of the most appropriate roles for animation,
+Fig. 1. When data are first loaded into the visualization framework, an overview of the motion database is presented using three coordinated data
+views: 1. A small multiples view generated from snapshots of 3D renderings (top-left window in the figure). 2. A parallel coordinates view (top-
+right), data dimensions plotted in this example are: trial number, chew cycle number, cycle duration, average angular velocity for the cycle, average
+translational velocity for the cycle, average distance of separation of the teeth for the cycle, then frame number and the same set of descriptive
+statistics but calculated at the single frame level rather than as averages over a cycle. 3. A 2D plot of data values over time (bottom), here angular
+velocity over time. All views are linked through both visual and interactive strategies. In this case, 108 chewing motions cycles from five different
+trials are displayed in this overview.
+comparison views, and techniques such as parallel coordinates, which
+have been widely applied in general, but less so within the context of
+biomechanical analysis.
+Specific to analysis of 3D biomechanical motion data, integrating
+3D and 2D visualization techniques, as in the overview visualization
+of Figure 1, is particularly appealing because each brings a unique
+strength that compensates for the other’s weakness. Analyzing motion
+trends using only 3D visualization tools imposes a high cognitive load
+on the user, since analysis often requires comparisons between mul-
+tiple detailed motions that the user must keep in his working mem-
+ory [9, 16]. On the other hand, when analyzing motion using only 2D
+visualizations, the abstract representations of the motion data do not
+provide the necessary context for the user to understand the 3D struc-
+ture of the object or its movement in space. We propose that when the
+two are integrated together in a tightly-coupled manner, the user may
+gain the benefit of both perspectives, leading to improved analysis ca-
+pabilities.
+The high-level contribution of our work is presenting an integrated
+framework for 2D and 3D interactive visualization of experimentally
+collected biomechanical motion data sets. Specific contributions of
+the work are: 1. The design of an overview technique for visualizing
+hundreds of repeated cyclic motions. 2. Methods for zooming, filter-
+ing, and exploring motion data via linked 2D and 3D views, including
+the ability to pass data generated through interaction with 3D views
+on to linked 2D visualizations, and vice versa. 3. The design of side-
+by-side and overlay-style coordinated views for comparing multiple
+related motions and surface-to-surface interactions. 4. A discussion of
+lessons learned, current limitations, and future directions as motivated
+by a driving real-world application.
+In the following section, we provide some background on the data
+and scientific application (analysis of pig chewing behavior) discussed
+in this paper. This is followed by a discussion of related work in vi-
+sualization. Then we present the motion visualization framework in
+detail, followed by more specifics of the driving application and ini-
+tial feedback from domain scientists. Finally, we present a discussion
+of lessons learned in developing this system, including limitations and
+future directions.
+2 BACKGROUND IN APPLICATION AREA AND DATA
+The framework presented here is likely to apply to analysis of a num-
+ber of experimentally-captured motions of interest to orthopedists,
+physical therapists, and evolutionary biologists. The example applica-
+tion driving the work in this paper comes from the field of evolutionary
+biology, where our collaborators are studying mastication in minipigs
+(Sinclair strain).
+In general, the mechanics of the mandible, skull, and teeth working
+together in chewing motions are an interesting area of study, both in
+humans [6], and in animals [8]. Pigs, in particular, follow an unusual
+chewing pattern, called bilateral chewing, that is characterized by mo-
+tion of the jaw up, then a sideways food grinding motion to the left,
+then down, then up, grinding to the right, then down. This alternat-
+ing side-to-side pattern tends to repeat over several chewing cycles.
+(The pattern can be seen in the tracer paths in adjacent small multi-
+ples views in Figure 2.) This characteristic motion has been visualized
+previously [8], but only for investigating a single chewing motion at
+a time. Research questions require analysis of multiple instances of
+this motion (an important goal of this framework). For example: Can
+we catalog a “typical” chewing behavior? How does the movement of
+bones change over time based upon the amount of food in the mouth
+or the type of food?
+Evolutionary biologists began their study by collecting data from
+multiple experimental trials in the lab. The trials captured motion from
+a number of different chewing-related behaviors, including food gath-
+ering, feeding on pig chow, and feeding on hard nuts (in the shell).
+Data were captured and processed using the X-Ray Reconstruction
+of Moving Morphology (XROMM) methodology [1], in which high-
+speed biplane fluoroscopy is used to capture motion data during the
+experiment and a CT scan captured separately is used to reconstruct
+the 3D geometry of the bones and teeth. Computational tools are uti-
+Fig. 2. A small multiples display setup interactively by a user. To tune the display, the user zooms in to one of the small views, making an interactive
+3D rendering of it fill the window. Then, he adjusts visualization and camera settings in the zoomed in view. When he returns to the small multiples
+view, each of the multiples is re-rendered using the new visualization settings. In this case, the user added a tracer curve to the visualization to
+trace out the path of the pig’s front tooth. Then, he zoomed in on the location of the tooth and made the bones invisible. The characteristic bilateral
+chewing motion of the pig may be seen in many of the adjacent images. Look for a tracer that begins (black end of the curve) on one side, moves
+up, then comes down on the other side. In the image immediately to the left or right of this one, you are likely to find a tracer that exhibits a similar
+pattern, but moving in the opposite direction. Cycles that capture food gathering behavior can also be identified in the display, characterized by
+tracers that are more compact than the elongated chewing motions. The background color for each multiple is set to encode the trial from which
+the data are drawn; the colors correspond to those used in the 2D time plot at the bottom of the screen (see Figure 1). Note: to better understand
+how the tracers were created, see the 3D view in Figure 3, which shows the bones together with a tracer placed in the same position as was used
+to generate these small multiples renderings.
+lized to register the two sources together to reconstruct high-speed 3D
+motion data. These data are the source for the visualizations presented
+here. For this study, they include more than one hundred chewing mo-
+tions (up-down cycles of the jaw) collected during five experimental
+trials.
+3 RELATED WORK
+In this section, we relate our work to relevant research in evaluat-
+ing animated visualization as a tool for trend analysis, visualizing 3D
+biomechanics, designing coordinated multi-view visualizations, and
+combining scientific and information visualization strategies.
+3.1 Trend Analysis and Animated Visualization
+In recent work, Robertson et al. examined the effectiveness of ani-
+mation for visualizing trends in data [16]. While animation is often
+attractive for presentation purposes, the results of this work suggest
+that static small multiples views and static traces of trend lines over
+time may be more effective than animation in analysis of trends over
+time.
+These findings have far reaching implications for visualizations
+of motion data, which are, nearly by default, viewed as animations.
+While viewing an animated visualization of the motion of an animal
+does seem natural and intuitive (after all the data are collected over
+time) the question is raised, are animated visualizations the right tool
+for analyzing these motion data?
+Based upon our experience with collaborators and the results of
+previous animated 3D visualizations in biomechanics, we believe in-
+teractive/animated 3D visualizations do play some important role in
+analysis. However, the findings of Robertson et al. highlight the po-
+tential importance of alternative complementary techniques and raise
+the issue of identifying the right mix of animated and static views for
+motion visualization. Our framework explores these issues and builds
+upon the static representations demonstrated by Robertson et al. A
+key component of our initial motion overview visualization is a small
+multiples visualization [20], which we have often found useful to con-
+struct as a set of tracer lines (See Figure 2), following in the style of
+the small multiples traces presented in [16].
+3.2 3D Biomechanics Visualization
+Several systems for 3D visualization of biomechanics data exist in the
+literature [2, 8, 10, 21]. A primary function of these tools is provid-
+ing a view of anatomical features (e.g. bones, ligaments) positioned
+appropriately in 3D space. Almost all of these systems also support
+some form of motion playback, often with some interactive support
+for adjusting camera parameters and playback speed.
+Beyond simply replaying experimentally captured data, 3D visu-
+alization systems also provide for visualization of derived data. For
+example, computing helical (or screw) axes to describe the motion of
+one bone relative to another is a technique that is gaining popularity
+within the biomechanics community [4, 6]. Viewing the position of
+this axis in space relative to anatomical landmarks in a 3D visualiza-
+tion can provide insight into the rotation and translational components
+of a complex motion [8, 21]. Other examples of 3D visualization of
+these data include applying color maps to bone surfaces to indicate the
+distance from one bone to another [10], and drawing 3D tracer curves
+to indicate the path some anatomical feature takes through space over
+time [2]. Our 3D visualizations employ each of these techniques. The
+focus of our investigation is not on the introduction of novel 3D visu-
+alization techniques, but rather on how a state-of-the-art 3D visualiza-
+tion of biomechanics may be leveraged within a system that interac-
+tively links it with complementary 2D visualizations.
+3.3 Multi-View and “Scientific-Information” Visualization
+The benefits of using multiple coordinated 2D visualizations for data
+analysis have been well documented [3, 11, 15].
+Our approach relates most closely to multi-view techniques that
+employ a combination of 2D and 3D views to investigate data that
+follow a pre-defined spatial distribution, thereby combining scientific
+and information visualization techniques. Several visualization and
+interaction techniques fitting this description have been documented
+previously, for example, linking 2D and 3D scatterplots [13], brush-
+ing over multiple dimensions in 2D views to identify 3D features [12],
+and using parallel coordinates as an interface for exploratory volume
+visualization [19]. Our work follows closely in the spirit of these tech-
+niques, however, our overview visualization, coordinated views, and
+use of animation and interaction are designed specifically to target
+analysis of high-precision motion data sets. As such, we have a spe-
+cial emphasis on the role of animation within our framework, and we
+have utilized specific properties of the data, such as its cyclic nature,
+in designing several components of the framework, such as the small
+multiples overview.
+4 MOTION VISUALIZATION FRAMEWORK
+In this section, we describe a novel framework for visualization of sci-
+entific 3Dmotion data. Through a series of visual tools, the framework
+supports the typical visual information seeking mantra: “Overview
+first, zoom and filter, then details-on-demand” [17].
+4.1 Small Multiples and Coordinated Views for a Motion
+Database Overview
+When a data set is first loaded, an overview of the data is displayed
+using the three coordinated view windows seen in Figure 1: a small
+multiples view, a parallel coordinates view, and a 2D xy-plot. These
+three views have been carefully chosen for their analytical capabilities
+in interpreting different aspects of a 3D motion sequence. The small
+multiples view displays a representative motion snapshot for each mo-
+tion sequence. The 2D xy-plot is chosen for its intuitive nature in rep-
+resenting time, described by Ericson during his keynote address in the
+2007 InfoVis conference [5]. Lastly, the parallel coordinates view is
+used to reveal relationships between data variables, including motion
+statistics and derived quantities. Together, these views allow the user
+to explore the 3Dmotion sequence in space, time, and at a dimensional
+level.
+4.1.1 3D Snapshot Small Multiples View
+The utility of small multiples displays for analysis of trends over time
+has been demonstrated in a 2D data context [16], but several open
+questions remain in developing a small multiples strategy for 3D mo-
+tion data. Relevant full-scale 3D visualizations are typically interac-
+tive and detailed. How do these translate to small scales? If the in-
+dividual multiples are to support the same style of interaction as in
+normal visualization, then how do the interaction strategies change to
+work within a much smaller window? Several questions that are spe-
+cific to motion visualization also arise, including, how are motions
+assigned to a small multiple? One small multiple per frame of the mo-
+tion data will result in far too many views to be useful. On the other
+hand, if a single multiple stands in for a sequence of frames in the
+data, then how does that single image best visually represent motion
+over time?
+Our approach to assigning motion to a particular small multiples
+image is based upon a characteristic of our target data. The biological
+motions we examine (e.g. chewing, walking, flying) are almost always
+cyclic. It is quite common to segment motions such as these into cycles
+as a part of the analysis. In walking, the moment the foot first touches
+the floor can be used as an indicator of the beginning and end of a
+single stride. In the chewing examples presented here, the motions
+are divided into segments of chewing patterns (a single up and down
+motion of the jaw bone). One motion segment is assigned to each
+small multiple image.
+The image displayed for each small multiple is a snapshot of a 3D
+visualization generated using our typical 3D rendering engine and then
+texture mapped onto a small rectangle to produce a grid of many mul-
+tiples that can be rendered at high frame rates. The default view when
+data are first loaded into the system is shown in Figure 1. Here, each
+multiple is a snapshot of a 3D rendering of the bones posed during the
+initial frame of each motion segment. The user tunes the display by
+first clicking on one of the small multiples. This enlarges the render-
+ing to fill its parent window, hiding the other small multiples. At a
+larger size, the 3D view is now easier to manipulate. The display now
+switches into an interactive 3D rendering mode and activates typical
+mouse and keyboard-based interaction widgets for camera manipula-
+tion, showing and hiding particular bones within the view, and adding
+visualization glyphs such as axes of rotation and tracer lines to the
+view. After some manipulation of these viewing parameters, the user
+escapes from the large interactive view and is returned to the small
+multiples display, which is then re-rendered so that all of the views
+match the camera and visualization settings set by the user in the in-
+teractive mode. The background color of each multiple is set to encode
+the trial from which the data come; the colors correspond to those in
+the 2D time plot (see bottom of Figure 1).
+Figure 2 shows a small multiples display generated in this way. In
+the interactive mode, the user attached a tracer to the front tooth on the
+jaw, zoomed the camera in to focus on the tooth, turned off the render-
+ing of the bones, and then returned to the small multiples display.
+4.1.2 Integrated 2D Plot and Parallel Coordinates View
+Accompanying the small multiples display in the overview visualiza-
+tion are two 2D views: a parallel coordinates visualization and a xy-
+plot. All the views are linked together via interactive brushing and
+highlighting. For example, as the mouse moves over the time axis
+in the 2D xy-plot, the corresponding small multiple view highlights.
+Conversely, moving the mouse over a small multiple image highlights
+the corresponding section of the time plot. Each line in the parallel
+coordinates view corresponds to a frame of motion data. Brushing
+over data in the parallel coordinates view highlights the corresponding
+frames and data values in the xy-plot. The axis of the xy-plot may be
+adjusted to map to any data attribute that may be calculated for each
+frame of the data. In practice, values such as angular or translational
+velocity for a particular bone are useful. The angular velocity of the
+rotation of the mandible is plotted over time in the view shown in Fig-
+ure 1.
+4.2 Filtering to Generate Zoomed-In Coordinated Views
+Following Shneiderman’s mantra “overview first, zoom and filter, then
+details-on-demand,” the system supports filtering down to specific seg-
+ments or time ranges of the motion sequence. In the small multiples
+overview, a right mouse click on an image activates a menu, which
+is used to create a new coordinated view filtered to display just the
+segment of the motion that corresponds to the small multiple. Simi-
+larly, after brushing with the mouse to select a portion of the data in
+the time plot view, a right click and menu selection sends the selected
+data to a new multi-view zoomed-in window. Figure 3 shows this new
+zoomed-in window.
+4.2.1 Interaction Between Views
+The zoomed-in window contains three data views: the parallel coordi-
+nates plot, 2D xy-plot, and a new interactive 3D view. Both 2D views
+are similar to the overview versions with the exception that the data
+visualized is a subset of the original data. The 3D view is different
+from the overview. Rather than a small multiples representation, spa-
+tial trends are now depicted via a real-time 3D rendering of the data
+that is responsive to mouse and keyboard controls for adjusting view-
+ing and visualization parameters. All views are linked visually and in-
+teractively. For example, the 3D view may be animated either through
+Fig. 3. A coordinated multiple view window created by zooming in on a
+portion of the larger data set.
+interaction in the 3D view or by mousing over the 2D time plot. In ei-
+ther case, the views advance together to display the active data frame
+as the animation plays. The 2D plot is not restricted to depicting time
+on the X axis. Other plots, for example, angular velocity vs. distance
+between bones, are also useful.
+4.2.2 Generating and Visualizing Data through Exploration
+A more interesting example of the tight linkage between these multi-
+ple views is the ability to seed new visualizations from data generated
+during analysis. Figure 4 illustrates an example of this. The user first
+filtered the data from the original overview to zoom in to a sequence
+of four main chewing patterns. Then, while interacting with the 3D
+view window, a tracer was created to mark the path of a point on the
+left condyle of the mandible. The path that this point travels through
+space is calculated and stored in a coordinate system relative to the
+pig’s skull. The 3D points that make up the path then become avail-
+able as a data source for the linked 2D views. In this example, the user
+brushed over high positive values for the vertical position (relative to
+the pig’s skull) of the tracer using the parallel coordinates view. The
+white lines in this view show the highlighted data points. Since the
+views are linked, these values also highlight in yellow within the plot
+below of average distance between the teeth over time. The visualiza-
+tion shows that during jaw closing, the selected point on the condyle
+rotates backward and downward. At its low point, there is some side-
+to-side motion of the jaw as the teeth come together to grind food. The
+sideways motion is visible in the tracer shown in the 3D view.
+Other 3D visualization systems have exported data generated dur-
+ing exploration to tools that may then be used to generate related 2D
+plots [8]. Important differences in the strategy described here are the
+tight coupling of the multiple views and the ability to build new views
+based upon data generated during exploration. A tracer placed in one
+view may generate data that are then used for exploration via interac-
+tive brushing and ultimately for a new filtering strategy. Then, based
+on this new filtering, a second zoomed-in coordinated view may be
+created.
+Fig. 4. The tracer created in the 3D view window generates new data
+(x,y,z points over time) that become available for display in the other
+linked views.
+4.3 Overlays and Side-by-Sides for Detailed Comparisons
+Visual comparison of motion sequences occurs at all levels of the
+framework, and as the focus narrows, the method of visual comparison
+changes. As noted by Robertson et al. [16], small multiples (or side-
+by-side windows) and overlays each have advantages in comparing
+motion. The advantage in using overlays is that “counter trends” are
+easily detectable, but overlays often suffer from visual clutter. On the
+other hand, side-by-side comparisons are less sensitive to visual clut-
+ter, but require more visual real estate to represent the same amount of
+information and require more time in visual scanning of all the win-
+dows. In this framework, the choice of the most appropriate mix of
+these styles of comparison is left to the user.
+In motion overlay views, data for multiple sequences are plotted
+and rendered together. Figure 5 shows an example. Note that, even in
+the 3D view, the pig is rendered with two superimposed jaw bones, one
+corresponding to each of the motion sequences that is being visualized.
+Side-by-side comparisons may be established informally by sim-
+ply arranging zoomed-in coordinated views side-by-side on the screen.
+Alternatively, data selected in a time plot within the motion overview
+or any zoomed-in window may also be sent to an existing window,
+which then resizes to arrange the views appropriately for a side-by-
+side comparison, as in Figure 6.
+5 APPLICATION TO EXPERIMENTALLY COLLECTED BIOME-
+CHANICS DATA
+This section describes application-specific implementation details, ini-
+tial findings, and feedback from domain scientists for the study of pig
+chewing behavior introduced in section 2.
+5.1 Processing Motion Data
+Before loading the pig chewing motion data into the visualization
+framework, a simpleMatlab script was prepared to segment the motion
+into cycles. While, more advanced time series analysis could certainly
+be utilized in this step, the approach taken here is quite simple. The
+angular velocity of the jaw bone is already calculated for these data
+in a preprocessing step. Using this information, a sign change from
+negative to positive in the angular velocity is detected. This occurs
+Fig. 5. Detailed motion comparisons are supported via overlay-style vi-
+sualization applied to each of the coordinated views. Data from multiple
+motion segments are plotted on the same axes and in the same regis-
+tered 3D space to produce these visualizations.
+regularly at the bottom of a chewing motion when the jaw stops open-
+ing and begins to close. The data frames where this occurs are saved to
+a file and loaded into the visualization system to seed the techniques,
+such as the small multiples display, that work based on segments of
+the motion data. In all, data from five different trials are loaded into
+the system resulting in 108 motion segments identified in this manner.
+All this data can be seen in the motion overview in Figure 1. Note that
+not all of the sequences correspond to a chewing cycle, some refer to
+food gathering. The small multiples view in Figure 2 provides a visual
+means for distinguishing chewing and food gathering patterns.
+5.2 Identifying Spatial Relationships and Surface Interac-
+tions
+Many biomechanical analyses require investigation of patterns in the
+interaction of surfaces, particularly bone-to-bone surface interaction
+within joints [10]. Chewing motions are interesting in this regard in
+that there are three areas of surface-to-surface interaction: the attach-
+ment of the jaw to the skull on the left and on the right, and the teeth.
+The occlusion and grinding patterns of the teeth are of particular in-
+terest. Figure 6 shows a series of zoomed-in data views setup as a
+side-by-side comparison. The vertical distance between the teeth has
+been calculated and plotted directly on the 3D view as a color map
+textured to the tooth geometry. These distance data are calculated for
+each frame of the motion in a preprocessing step and are rendered in-
+teractively in the 3D views using a texture-based color map implemen-
+tation. Within this framework, these data may be viewed both in the
+3D visualization and in 2D plots, where the average distance between
+the two sets of teeth is a useful variable to explore.
+5.3 Identifying Clusters of Related Motion Sequences
+Figure 7 demonstrates the use of multiple linked views for identify-
+ing and characterizing related motion sequences. The user has filtered
+down to a subset of the data (eleven chew sequences) that are visible
+in the parallel coordinates view and the 2D plot of average distance
+between teeth vs. frame number. The 2D plot has been arranged to
+overlay the chewing sequences, starting each at frame zero on the left
+side of the plot. In this arrangement, two similar clusters of motions
+are easily distinguishable, with an outlier that does not clearly fit into
+either pattern. Each cluster is likely to correspond to a different chew-
+ing behavior, for example, chewing and food gathering. Using the 2D
+views, we can clearly identify the two clusters and also explore the
+amount of variance within each cluster for different data variables.
+5.4 Feedback from Domain Scientists
+While we have yet to perform an extended analysis of the use of this
+framework by domain scientists, we have collected some initial feed-
+back from our collaborators based on our current implementation. Two
+high-level points of feedback are: first, there is widespread agreement
+that new analysis strategies are needed for working with these data,
+and second, the framework presented here is a drastic departure from
+current practice in fields such as evolutionary biology and orthope-
+dics. A key point of departure is the notion that it may be possible
+to look at all of the data from an experiment at once via the overview
+visualization methods. During a feedback session with our collabora-
+tors, this point sparked considerable discussion, including discussion
+of the use of tracer lines within the small multiples views and the po-
+tential to extend this concept to more sophisticated “tracers” that also
+encode velocity, rotation angle, or other variables through color cod-
+ing or other visual means. This feedback reinforces the importance of
+exploring the design space of potential small multiples views that are
+appropriate for motion visualization. During the same session, we also
+confirmed several characteristic features of pig chewing motions and
+investigated differences in the motion based upon the type of food (pig
+chow vs. nuts) through interactive exploration using this framework.
+6 DISCUSSION
+In this section we discuss current limitations and future research direc-
+tions suggested by this work.
+6.1 Scalability of Small Multiples
+One question raised by the current framework is, how will the tech-
+niques scale to databases of various sizes? The initial overview visual-
+ization, including the small multiples view, is perhaps the most inter-
+esting aspect of the framework to discuss with scalability in mind. One
+answer to the question is that the utility of the small multiples visual-
+ization scales with the skill and creativity of the user in constructing
+a useful small multiples display. The display in Figure 2 is useful
+for discerning some trends across 108 related motion sequences. With
+fewer motion sequences, alternative views, including those that feature
+the bones prominently may be useful. With more motion sequences,
+this layout and others may still be useful, but certainly at some point,
+the utility of a small multiples display crafted from snapshots of 3D
+renderings will reach a limit.
+A complementary technique to address the scalability of this small
+multiples motion overview may be the use of filtering within the small
+multiples view or within new instances of it in separate windows.
+Currently this display functions as a complete overview of the entire
+database, however, such an overview may also be appropriate for a
+subset of the original data. We have discussed this idea, but have not
+yet developed an implementation of it. Several interesting user inter-
+face issues remain in developing an interactive display of this form
+that supports fluid, interactive exploration.
+6.2 Scalability and Interactivity
+Adding 3D renderings to a multi-window information visualization
+system requires special design to maintain interactive framerates.
+While the 2D graphics utilized in typical information visualization
+Fig. 6. A sequence of side-by-side visualizations that demonstrate how the teeth slide against each other. The 3D view has been rotated so that
+we are looking up at the top rows of teeth, and the mandible has been hidden from view. A color map has been texture mapped onto the forms of
+the teeth to encode the vertical distance (defined by the principle axes of the skull) separating the teeth. The chewing sequence advances in time
+across the views from left to right. A 3D instantaneous helical axis describing the motion of the mandible relative to the skull is also displayed.
+techniques are relatively fast to render, 3D scientific visualizations of-
+ten utilize the full extent of the rendering power provided by current
+graphics hardware, just to render a single view of the data.
+Working with the data set described here, our current implementa-
+tion maintains interactive framerates, depending on the view options
+set, while rendering on the order of five instances the 3D scene in the
+filtered and comparison views. This seems to be a minimum level of
+performance for reasonable analysis using the framework. To extend
+the framework to applications that involve more intensive 3D render-
+ing, new strategies for addressing multi-view 3D rendering will be
+required. One potential direction for this research is to use a prior-
+itized rendering scheme, directing more rendering resources to the
+views that are actively being manipulated. Since the viewer’s atten-
+tion is divided between several views in multi-view systems, artifacts
+in some views may be almost unnoticeable from a perceptual stand-
+point. An example would be the use of image warping [18] to support
+linked camera manipulation in several 3D windows. The view in the
+window that the user is actually manipulating might be rendered as a
+true 3D scene, while other (lower priority) views might update in an
+approximate fashion using a faster rendering technique.
+6.3 Alternative Visual Representations for Motion
+Previously demonstrated 3D animated small multiples displays have
+supported rendering just a handful of multiples [2], which give them a
+very different visual character than the display in Figure 2. With addi-
+tional technical work to address rendering speed, it should be possible
+to develop animated 3D small multiples displays of tens to hundreds
+of animated 3D scenes. This raises the question of whether such a
+display would be useful in analysis of 3D motions. Our current work
+was motivated by the finding that static views may outperform ani-
+mation in analysis of trends [16]. Based on this notion, adding even
+more animation seems to have more potential to distract than to clar-
+ify. Nevertheless, it would be interesting to investigate whether certain
+classes of 3D motion trends may be discernible through visualization
+in large-scale animated small multiples displays.
+Currently, the most useful static small multiple representations for
+motion that we have discovered are of the form seen in Figure 2,
+simple geometric representations that describe motion from multiple
+frames of data in a single image. In addition to tracers, other visuals
+commonly found in 3D motion visualization applications may also be
+useful as small multiple images. Examples beyond tracer particles that
+fit this description include the average axis of rotation or the ruled sur-
+face swept out by an instantaneous axis of rotation over a sequence of
+frames of motion.
+6.4 New Data Sources
+In applying this framework to other data sets, one of the important
+next issues to address is handling biomechanical systems containing
+more than two bones, such as the spine or the wrist. The skull and jaw
+system is a special, rather complicated, case for a two-bone system, in
+that the jaw has multiple attachment points to the skull (the TMJ on
+both sides), and the two bones also interact as the teeth come together.
+Thus, many of the strategies employed here (e.g. interacting with 3D
+views to establish spatial points of interest, using multiple windows to
+focus on multiple points of interest) are likely to be relevant to analysis
+in complex systems with more than two rigid bodies in motion.
+7 CONCLUSION
+As new high-speed, high-resolution imaging capabilities see increased
+use in fields such as orthopedics, physical therapy, and evolutionary
+biology, scientists will face considerable challenges in analyzing the
+wealth of complex, 3D, time-varying data that result from these sys-
+tems. The framework presented here is specifically geared toward ad-
+dressing many of the new challenges posed by these data. Compara-
+tive analysis across large sets of experimentally collected data is facil-
+itated by integrating 2D and 3D interactive visualization tools to sup-
+port an overview first, zoom and filter, then details-on-demand style
+of analysis. A new interactive approach to constructing small mul-
+tiples overview visualizations is demonstrated using a collection of
+more than one hundred repeated cyclic motions. Specific interactive
+links that may be made between 2D and 3D visualizations to facili-
+tate zooming, filtering, and exploring motion data are also presented.
+These links include the use of data generated “on the fly” during anal-
+ysis, as seen in Figure 4, where the path of a 3D tracer curve gen-
+erated by the user acts as a filtering variable within coordinated 2D
+views. Two methods (overlays and side-by-sides) are presented for
+Fig. 7. Clusters of motion cycles are identified using a combination of
+the 2D xy-plot and the parallel coordinates view.
+detailed motion analysis using coordinated multi-view visualization.
+Each utilizes sophisticated 3D views that incorporate features, such as
+visualization of surface-to-surface distances via texture-mapped color
+coding, along with interactive 2D views, such as parallel coordinates
+plots that are non-traditional in this domain.
+Many challenges remain in this line of research, including im-
+proving scalability, refining visual representations, and extending this
+framework to new data sources. Our initial feedback from domain
+scientists confirms both the need for new analysis strategies, and the
+novelty of this framework compared to current practice in their fields.
+In particular, our collaborators expressed considerable interest in the
+overview visualization component of the framework and in future
+work designed to extend the small multiples tracer views to depict
+additional data. These findings contribute to a growing body of knowl-
+edge of the topic of coordinated, multi-view visualization systems that
+reinterpret and recombine techniques from scientific and information
+visualization to address driving scientific analysis challenges.
+ACKNOWLEDGEMENTS
+The authors wish to graciously acknowledge their collaborators
+in the Department of Ecology and Evolutionary Biology and the
+XROMM [1] group at Brown University. In particular, thanks to Eliz-
+abeth Brainerd, Stephen Gatesy, and David Baier for providing the ex-
+perimental data visualized here and for insightful discussions that both
+inspired this work and provided initial feedback. Also, special thanks
+to David Laidlaw at Brown University for growing the initial inter-
+disciplinary collaborations that made this research possible. Finally,
+thanks to David Nuckley at the University of Minnesota for discus-
+sions about current trends in motion data analysis.
+REFERENCES
+[1] BrownUniversity. X-ray reconstruction of moving morphology (xromm).
+http://xromm.org, 2009.
+[2] J. Chen, A. S. Forsberg, S. M. Swartz, and D. H. Laidlaw. Interactive
+multiple scale small multiples. IEEE Visualization 2007 Poster Com-
+pendium, 2007.
+[3] G. Convertino, J. Chen, B. Yost, Y.-S. Ryu, and C. North. Exploring
+context switching and cognition in dual-view coordinated visualizations.
+In CMV ’03: Proceedings of the conference on Coordinated and Multi-
+ple Views In Exploratory Visualization, page 55, Washington, DC, USA,
+2003. IEEE Computer Society.
+[4] J. J. Crisco, J. C. Coburn, D. C. Moore, E. Akelman, A.-P. C. Weiss,
+and S. W. Wolfe. In vivo radiocarpal kinematics and the dart thrower’s
+motion. The Journal of Bone and Joint Surgery, 87:2729–2740, 2005.
+[5] M. Ericson. Infovis keynote address: Visualizing data for the masses:
+Information graphics at the new york times. ieee transactions on visual-
+ization and computer graphics, 13, 2007.
+[6] L. M. Gallo, G. B. Airoldi, R. L. Airoldi, and S. Palla. Description of
+mandibular finite helical axis pathways in asymptomatic subjects. Jour-
+nal of Dental Research, 72(2):704–713, 1997.
+[7] H. Hauser, D. Weiskopf, K.-L. Ma, J. J. van Wijk, and R. Kosara. Scivis,
+infovis bridging the community divide?! In IEEE Visualization (Panel
+Proceedings), pages 52–55. IEEE CS Press, 2006.
+[8] D. F. Keefe, T. M. O’Brien, D. B. Baier, S. M. Gatesy, E. L. Brainerd,
+and D. H. Laidlaw. Exploratory visualization of animal kinematics using
+instantaneous helical axes. Computer Graphics Forum (EuroVis Special
+Issue), 27(3):863–870, 2008.
+[9] H. Lam. A framework of interaction costs in information visualiza-
+tion. IEEE Transactions on Visualization and Computer Graphics,
+14(6):1149–1156, 2008.
+[10] G. Marai, D. Laidlaw, C. Demiralp, S. Andrews, C. Grimm, and J. Crisco.
+Estimating joint contact areas and ligament lengths from bone kinematics
+and surfaces. IEEE Transactions on Biomedical Engineering, 51:790–
+799, May 2003.
+[11] C. North and B. Shneiderman. Snap-together visualization: can users
+construct and operate coordinated visualizations? International Journal
+of Human-Computer Studies, 53:715–739, 2000.
+[12] S. Oeltze, H. Doleisch, H. Hauser, P. Muigg, and B. Preim. Interactive
+visual analysis of perfusion data. IEEE Transactions on Visualization and
+Computer Graphics, 13(6):1392–1399, 2007.
+[13] H. Piringer, R. Kosara, and H. Hauser. Interactive focus+context visu-
+alization with linked 2d/3d scatterplots. In CMV ’04: Proceedings of
+the Second International Conference on Coordinated & Multiple Views
+in Exploratory Visualization, pages 49–60, Washington, DC, USA, 2004.
+IEEE Computer Society.
+[14] T.-M. Rhyne, M. Tory, T. Munzner, M. Ward, C. Johnson, and D. H.
+Laidlaw. Information and scientific visualization: Separate but equal or
+happy together at last? In IEEE Visualization (Panel Proceedings), pages
+611–614. IEEE CS Press, 2003.
+[15] J. C. Roberts. State of the art: Coordinated & multiple views in ex-
+ploratory visualization. In CMV ’07: Proceedings of the Fifth Interna-
+tional Conference on Coordinated and Multiple Views in Exploratory Vi-
+sualization, pages 61–71, Washington, DC, USA, 2007. IEEE Computer
+Society.
+[16] G. Robertson, R. Fernandez, D. Fisher, B. Lee, and J. Stasko. Effective-
+ness of animation in trend visualization. IEEE Transactions on Visualiza-
+tion and Computer Graphics, 14(6):1325–1332, 2008.
+[17] B. Shneiderman. The eyes have it: A task by data type taxonomy for in-
+formation visualizations. In VL ’96: Proceedings of the 1996 IEEE Sym-
+posium on Visual Languages, page 336, Washington, DC, USA, 1996.
+IEEE Computer Society.
+[18] F. Smit, R. van Liere, S. Beck, and B. Froehlich. An image warping
+architecture for vr: Low latency versus image quality. In Proceedings of
+IEEE Virtual Reality 2009, pages 27–34, 2009.
+[19] M. Tory, S. Potts, and T. Mo¨ller. A parallel coordinates style interface for
+exploratory volume visualization. IEEE Transactions on Visualization
+and Computer Graphics, 11(1):71–80, 2005.
+[20] E. R. Tufte. Envisioning Information. Graphics Press, 1990.
+[21] S. L. Van Sint Jan, G. J. Clapworthy, and M. Rooze. Visualization of
+combined motions in human joints. IEEE Computer Graphics and Appli-
+cations, 18(6):10–14, 1998.
+[22] B. You, P. Siy, W. Anderst, and S. Tashman. In vivo measurement of 3-D
+skeletal kinematics from sequences of biplane radiographs: Application
+to knee kinematics. IEEE Transactions on Medical Imaging, 20(6):514–
+525, 2001.
+

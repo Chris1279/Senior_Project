@@ -1,0 +1,523 @@
+Personalized News Video Recommendation
+Hangzai Luo1, Jianping Fan1, Daniel A. Keim2, and Shin’ichi Satoh3
+1 CS Department, UNC-Charlotte, USA, hluo, jfan@uncc.edu
+2 University of Konstanz, keim@uni-konstanz.de
+3 NII, Tokyo, Japan, satoh@nii.ac.jp
+Abstract. In this paper, a novel framework is developed to support personalized
+news video recommendation. First, multi-modal information sources for news
+videos are seamlessly integrated and synchronized to achieve more reliable news
+topic detection, and the contexts between different news topics are extracted au-
+tomatically. Second, topic network and hyperbolic visualization are seamlessly
+integrated to support interactive navigation and exploration of large-scale collec-
+tions of news videos at the topic level, so that users can gain deep insights of
+large-scale collections of news videos at the first glance. In such interactive topic
+network navigation and exploration process, users’ personal background knowl-
+edge can be exploited for selecting news topics of interest interactively, building
+up their mental models of news needs precisely and formulating their queries eas-
+ily by selecting the visible news topics on the topic network directly. Our system
+can further recommend the relevant web news, the new search directions, and the
+most relevant news videos according to their importance and representativeness
+scores. Our experiments on large-scale collections of news videos have provided
+very positive results.
+Key words: Topic network, personalized news video recommendation.
+1 Introduction
+There are more than 30,000 television stations in the world, these television stations
+broadcast large amounts of TV news programs (news videos) every day. Due to the
+large number of broadcast channels and TV news programs, finding news videos of
+interest is not a trivial task: (a) Most existing content-based video retrieval (CBVR)
+systems assume that users can formulate their information needs precisely either in
+terms of keywords or example videos. Unfortunately, users may not be able to know
+what is happening now (i.e., if they know it, it is not a news), thus it is very hard for
+them to find the suitable keywords or example videos to formulate their news needs
+precisely without obtaining sufficient knowledge of the available news topics of inter-
+est. Thus there is an urgent need to develop new techniques for detecting news topics
+of interest from large-scale collections of news videos to assist users on finding news
+videos of interest more effectively. (b) Because the same news topic can be discussed
+in many TV channels and news programs, topic-based news search may return large
+amount of news videos and thus simple news search via topics may bring the serious
+problem of information overload to the users. (c) Most existing CBVR systems treat all
+2 Hangzai Luo, Jianping Fan, Daniel A. Keim, and Shin’ichi Satoh
+users equally while completely ignoring the diversity and rapid change of their search
+interests. Besides the rapid growth of broadcast TV channels and news programs, we
+have also observed different scenarios of news needs from different users, thus it is very
+difficult to come up with a one size fits all approach for accessing large-scale collections
+of news videos. (d) The keywords for news topic interpretation may not be expressive
+enough for describing the rich details of video contents precisely and using only the
+keywords may not be able to capture users’ search intentions effectively. Thus visual-
+ization is becoming a critical component of personalized news video recommendation
+system [3-8]. (e) The objectives for personalized video recommendation and content-
+based video retrieval are very different, which make it unsuitable to directly apply the
+existing CBVR techniques for supporting personalized video recommendation. Thus
+supporting personalized news video recommendation is becoming one important fea-
+ture of news services [1].
+In this paper, we have developed a novel framework to support personalized news
+video recommendation, and our framework is significantly different from other existing
+works: (a) Rather than performing semantic video classification and automatic video
+content understanding on the single-modal channel of news videos, we have seam-
+lessly integrated multi-modal information channels (audio, video and closed captions)
+to achieve more reliable news topic detection. (b) The associations among the news top-
+ics (i.e., inter-topic contexts) are determined automatically and an interestingness score
+is automatically assigned to each news topic via statistical analysis. Such interesting-
+ness scores are further used to select the news topics of interest and filter out the less
+interesting news topics automatically. (c) A hyperbolic visualization tool is incorporated
+to enable interactive topic network exploration and allow users to gain deep insights of
+large-scale collections of news topics at the first glance, so that they can make better
+search decisions and find the news topics of interest interactively according to their
+personal preferences. The user’s personal knowledge, search intentions and contexts,
+which are disclosed and captured in the interactive topic network navigation and explo-
+ration process, can be taken into consideration for personalizing the topic network and
+the search results. (d) A novel video ranking algorithm is developed for recommending
+the relevant web news, the new search directions and the most relevant news videos
+according to their importance and representativeness scores for a given news topic.
+2 Related Work
+The Informedia Digital Video Library project at CMU has achieved significant pro-
+gresses on analyzing, indexing and searching of large-scale collections of news videos
+[11-12], and several applications have been reported, such as semantic video under-
+standing, multi-modal decision fusion, keyword-based video retrieval and query result
+visualization. Unfortunately, automatic video understanding is still an open problem for
+computer vision [7-8].
+Visualization is widely used to help the users explore large amount of data collec-
+tions and find interesting parts interactively [3-8]. In-spire [3] has been developed for
+visualizing and exploring large-scale text document collections, where statistics of news
+reports is put on a world map to inform the audiences of the “hotness” of regions and
+the relations among the regions. One major problem for such geographical location-
+Personalized News Video Recommendation 3
+based visualization approach is that some hot regions (such as middle-east) may be too
+busy but other places may be empty. TimeMine [4] is proposed to detect the most im-
+portant reports and organize them through the timeline with the statistical models of
+the word usage. Another system, called newsmap [5], can organize news topics from
+Google news on a rectangle, where each news story covers a visualization space that is
+proportional to the number of related news pages reported by Google. News titles are
+drawn in the visualization space allocated to the relevant news topic.
+It is very attractive to visualize the news topics according to their importance scores,
+but another aspect of news topics (i.e., inter-topic contexts) are missed by all these ex-
+isting techniques (e.g., this could be a serious problem for all these existing techniques
+because the news topics of inetrest may never happen individually). Context between
+the news topics is also very important for users to make better search decisions, espe-
+cially when the users are not familiar with the available news topics and their search
+goals or ideas are still fuzzy. The inter-topic context can give a good approximation
+of the interestingness of the news topics (i.e., like PageRank for characterizing the
+importance of web pages). Thus it is very attractive to integrate topic network (i.e.,
+news topics and their inter-topic contexts) for characterizing the interestingness of the
+news topics, assisting users on making better search decisions and suggesting the future
+search directions.
+ThemeRiver [6] can visualize large-scale collections of news documents with the
+keywords or the themes. ThemeRiver can intuitively represent the distribution structure
+of the themes and the keywords in the collections. Such distribution structures of the
+themes and the keywords may be useful for disclosing statistical knowledge of large-
+scale collections of news documents, but they may not make any sense to the users
+according to their goals of news search because there is an interest gap between the
+distribution structures and the users’ real news needs (e.g., news analysts may care such
+statistical knowledge, but general users as the news seekers may just care the news
+topics of interest and their inter-topic contexts).
+When large-scale news collections come into view, the number of the available news
+topics could be very large and displaying all of them to the users may mislead them. To
+visualize the news topics of interest in a size-limited screen, most existing algorithms
+have to select the most significant news topics of interest according to their definitions
+of importance. Unfortunately, the importance score of a news topic may depend on two
+issues: (a) the relative importance of the given news topic in the pool of large-scale news
+video collections; (b) the personal preferences for each particular user which may not
+be known at the beginning. Thus selecting and disclosing only the most important news
+topics of interest according to the pre-defined criteria may hinder users to access some
+news topics, which are strongly related with their personal preferences but may not
+be significant in the large-scale news video collections. For example, the news topics
+for NBA playoff may be very interesting for basketball fans, but the news topics for
+president candidate ellection may always dominate the pool of news topics and have
+higher interestingness scores in general. Thus there is an urgent need to develop new
+algorithms which are able to take the user’s personal preferences into consideration for
+defining the personalized interestingness scores of the news topics.
+4 Hangzai Luo, Jianping Fan, Daniel A. Keim, and Shin’ichi Satoh
+There are two well-accepted approaches for supporting personalized information
+retrieval [9-10]: content-based filtering and collaborative filtering. Unfortunately, all
+these existing personalized information recommendation techniques largely depend on
+the collections of users’ profiles and the available text context descriptions, thus they
+cannot support new users effectively because their profiles may not be available. Be-
+cause of the shortage of the available text descriptions of news videos, all these existing
+techniques cannot directly be extended for enabling personalized news video recom-
+mendation and there is an urgent need to develop news frameworks.
+3 Personalized News Topic Recommendation
+In this paper, an interactive approach is developed by incorporating topic network and
+hyperbolic visualization to recommend the news topics of interest for assisting users
+on accessing large-scale collections of news videos more effectively. To do this, an au-
+tomatic scheme is first developed to construct the topic network for representing and
+interpreting large-scale collections of news videos at the topic level. In addition, a hy-
+perbolic visualization technique is integrated to enable interactive navigation and explo-
+ration of large-scale topic network and recommend the news topics of interest according
+to the users’ personal preferences.
+Fig. 1. The flowchart for synchronizing multiple sources for news topic detection.
+Topic detection is important because many people often want to identify some spe-
+cific news stories or topics that are relevant to their personal interests. For the TV news
+programs, there are three multi-modal information channels (audio, video and closed
+captions) that can be integrated and be synchronized to enable more reliable news topic
+detection. Because the inherent property of speech is purely semantic, lexical search
+from automatic speech recognition (ASR) transcripts has been treated as the most suc-
+cessful strategy for content-based video retrieval. The problem with the ASR transcripts
+is that the spoken words may not completely cover the abundant semantic contents
+available in the news video.
+As shown in Fig. 1, we have developed a new scheme for automatic news topic
+detection by taking the advantage of multi-modal information channels (cross-media).
+First, automatic speech recognition (ASR), natural language processing (NLP), and se-
+mantic video classification are performed parallelly on these three multi-modal infor-
+mation channels to determime the keywords for news topic description from both the
+Personalized News Video Recommendation 5
+audio channel and the closed captions and detect the video concepts from the video
+channel. Second, the audio channel is synchronized with the closed captions, and the
+video channel is further synchronized with the audio channel and the closed captions.
+Finally, the news topic detection results from these three multi-modal information chan-
+nels are integrated to boost the performance of our news topic detection algorithm. Af-
+ter the closed captions are synchronized with the news videos, we can assign the video
+shots to the most relevant news topics that are accurately detected from the closed cap-
+tions. Thus all the video shots, which locate between the start time and the end time of
+a given new topic (that has been detected from the closed captions), are assigned to the
+given news topic automatically. Integrating multi-modal information channels for news
+topic detection can significantly enhance the detection accuracy.
+The inter-topic contextual relationships are obtained automatically, where both the
+cosine similarity and the mutual similarity for the relevant news topics are used to define
+a new measurement for determining their inter-topic associations more precisely. The
+inter-topic context ? (Ci, Cj) between two news topics Cj and Ci is determined by:
+? (Ci, Cj) = ? · ?(Ci, Cj) + ? · ?(Ci, Cj), ?+ ? = 1 (1)
+where the first part?(Ci, Cj) denotes the cosine similarity between the term weights for
+the text terms to interpret the news topicsCj andCi, the second part ?(Ci, Cj) indicates
+the mutual similarity between the text terms for interpreting the news topics Cj and Ci
+according to their co-occurrence probability, ? and ? are their relative importances.
+Fig. 2. Our large-scale topic network for organizing large-scale news videos.
+The cosine similarity ?(Ci, Cj) between the text terms for interpreting the news
+topics Cj and Ci can be defined as:
+?(Ci, Cj) =
+?N
+l=1 wl(Ci) · wl(Cj)??N
+l=1 wl(Ci)
+2
+??N
+l=1 wl(Cj)
+2
+(2)
+where N is the number of news documents (closed caption documents) in our collec-
+tions, wl(Ci) and wl(Cj) are the weights for the text terms for interpreting the news
+6 Hangzai Luo, Jianping Fan, Daniel A. Keim, and Shin’ichi Satoh
+topics Cj and Ci.
+??
+?
+wl(Ci) = log(fl(Ci) + 1.0) · log
+N+1
+fl+0.5
+wl(Cj) = log(fl(Cj) + 1.0) · log
+N+1
+fl+0.5
+(3)
+where fl(Ci) and fl(Cj) are the frequencies of the text terms for interpreting the news
+topics Cj and Ci in the lth news document (closed caption document), fl is the fre-
+quency of the lth news document which the news topics Cj and Ci occur in. The higher
+value of the cosine similarity ?(Ci, Cj) implies the stronger association ? (Ci, Cj) be-
+tween the relevant news topics Cj and Ci.
+The mutual similarity ?(Ci, Cj) between the news topics Cj and Ci can be defined
+as:
+?(Ci, Cj) = log
+p(Ci, Cj)
+p(Ci) · p(Cj)
+(4)
+where p(Ci, Cj) is the co-ocurrence probability of the relevant news topics Cj and Ci
+in the corpus, p(Ci) and p(Cj) are the individual ocurrence probability of the news top-
+ics Cj and Ci in the corpus. The underlying assumption behind the mutual similarity
+measurement ?(Ci, Cj) is that two news topics co-occur frequently if they are strongly
+relevant. The higher value of the mutual similarity ?(Ci, Cj) implies the stronger con-
+texts ? (Ci, Cj) between the relevant news topics Cj and Ci.
+Thus each news topic is automatically linked with multiple relevant news topics
+with the higher values of the inter-topic contexts ? (·, ·). A portion of our large-scale
+topic network is given in Fig. 2, where the news topics are connected and organized
+according to the strength of their associations, ? (·, ·). One can observe that such topic
+network can provide a good global overview of large-scale collections of news videos
+at the topic level and can precisely characterize the interestingness of the relevant news
+topics, thus it can be used to assist users on making better search decisions.
+To integrate the topic network for supporting personalized topic recommendation, it
+is very attractive to achieve graphical representation and visualization of the topic net-
+work, so that the users can obtain a good global overview of large-scale collections of
+news videos at the first glance and make better search decisions in the interactive topic
+network exploration and navigation process. Thus the underlying topic network visu-
+alization techniques should be able to provide a good balance between the local detail
+and the global context. The local detail is used to help users focus on the news topics
+of interest in their current focus. The global context is needed to tell the users where
+the other relevant news topics are (i.e., which news topics they can search for next step)
+and their contextual relationships with the news topic in the current focus, such global
+context can suggest the new search directions effectively. Thus supporting visualiza-
+tion and interactive navigation of the topic network is becoming a complementary and
+necessary component for personalized news video recommendation system and it may
+lead to the discovery of unexpected news videos and guide the future search directions
+effectively.
+Unfortunately, visualizing large-scale topic network in a 2D system interface with a
+limited screen size is not a trivial task. To achieve more effective visualization of large-
+scale topic network, we have developed multiple innovative techniques: (a) highlighting
+Personalized News Video Recommendation 7
+the news topics according to their interestingness scores for allowing users to obtain
+the most important insights at the first glance; (b) integrating hyperbolic geometry to
+create more space for large-scale topic network visualization and reduce the potential
+overlappings via interactive exploration.
+We have integrated both the popularity of the news topics and the importance of the
+news topics to determine their interestingness scores. The popularity of a given news
+topic is related to both the number of TV news programs which have discussed the given
+news topic and the time length for the same TV news program to report the given news
+topic. If one news topic is discussed by more TV news programs simultaneously or
+reported by the same TV news program repeatedly for a long time, it tends to be more
+interesting in general. The importance of a given news topic is related to its linkage
+structure with other news topics on the topic network. If one news topic is related to
+more news topics on the topic network, it tends to be more interesting. For example, the
+news topic for “roadside bond in Iraq" may strongly relate to the news topics of “gas
+price increase" and “stock price decrease". Thus the interestingness score ?(Ci) for a
+given news topic Ci is defined as:
+?(Ci) = ? ·
+em(ci) ? e?m(ci)
+em(ci) + e?m(ci)
++ ? ·
+et(ci) ? e?t(ci)
+et(ci) + e?t(ci)
++ ? ·
+ek(ci) ? e?k(ci)
+ek(ci) + e?k(ci)
+(5)
+where ?+?+? = 1, m(ci) is the number of TV news programs which have discussed
+or reported the given news topic Ci simultaneously, t(ci) is the time length (days) for
+the same TV news program to report the given news topic Ci repeatedly, k(ci) is the
+number of news topics linked with the given news topic Ci on the topic network. Such
+interestingness scores can be used to highlight the most interesting news topics and
+eliminate the less interesting news topics for reducing the visual complexity for large-
+scale topic network visualization and exploration.
+Supporting graphical representation and visualization of the topic network can pro-
+vide an effective solution for exploring large-scale collections of news videos at the
+topic level and recommending the news topics of interest to the users interactively for
+assisting them to make better search decisions. However, visualizing large-scale topic
+network in a 2D system interface with a limited screen size is a challenging task. We
+have investigated multiple solutions to tackle this challenge task: (a) A string-based ap-
+proach is incorporated to visualize the topic network with a nested view, where each
+news topic node is displayed closely with the most relevant news topic nodes according
+to the values of their associations. The underlying inter-topic contexts are represented
+as the linkage strings. (b) The geometric closeness of the news topic nodes is related
+to the strength of their inter-topic contexts, so that such graphical representation of the
+topic network can reveal a great deal about how these news topics are connected. (c)
+Both geometric zooming and semantic zooming are integrated to adjust the levels of
+visible details automatically according to the discerning constraint on the number of
+news topic nodes that can be displayed per view.
+Our approach for topic network visualization has exploited hyperbolic geometry [8].
+The hyperbolic geometry is particularly well suited for achieving graph-based layout of
+the topic network, and it has “more space" than Euclidean geometry. The essence of
+our approach is to project the topic network onto a hyperbolic plane according to the
+inter-topic contexts, and layout the topic network by mapping the relevant news topic
+nodes onto a circular display region. Thus our topic network visualization scheme takes
+8 Hangzai Luo, Jianping Fan, Daniel A. Keim, and Shin’ichi Satoh
+the following steps: (a) The news topic nodes on the topic network are projected onto
+a hyperbolic plane according to their inter-topic contexts by performing curvilinear
+component analysis (CCA), and such CCA process can be obtained automatically by
+preserving the local inter-topic contexts between the neighboring news topic nodes on
+the topic network, e.g., through minimizing the following error function:
+E({Ci}) =
+1
+2
+n?
+i=1
+n?
+j>i
+?ij |?(Ci, Cj)? ? (Ci, Cj)|
+2 (6)
+where ? (Ci, Cj) is the strength of the inter-topic context between the news topics Ci
+and Cj , the weight factors ?ij are chosen as a bounded and monotically descreasing
+function to allow the CCA projection algorithm to preserve the strong inter-topic con-
+texts than of weak inter-topic contexts (i.e., preserving the contexts between neigh-
+boring news topic nodes on the topic network), and ?(Ci, Cj) is the location distance
+between the news topics Ci and Cj on the hyperbolic plane.
+?(Ci, Cj) = 2 · arctanh
+(
+|Xci ?Xcj |
+|1?XciX¯cj |
+)
+(7)
+where Xci and Xcj are the physical locations of the news topics on the hyperbolic
+plane. In our current experiments, the weigh factors ?ij are characterized by using a
+sigmoid function:
+?ij =
+e? (Ci,Cj)
+e? (Ci,Cj) + 1
+(8)
+Through CCA projection, our algorithm can precisely preserve the local inter-topic
+contexts, and the global geometry is also preserved effectively because the nearest
+neighborhoods for the neighboring news topics are overlapped. (b) After such context-
+preserving projection of the news topic nodes is obtained, Poincaré disk model [8] is
+used to map the news topic nodes on the hyperbolic plane onto a 2D display coordinate.
+Poincaré disk model maps the entire hyperbolic space onto an open unit circle, and
+produces a non-uniform mapping of the news topic nodes to the 2D display coordinate.
+4 Personalized News Video Recommendation
+Because the same news topic may be reported many times in the same TV news program
+or be discussed simultaneously by many TV news programs for different broadcast
+stations, the amount of the news videos under the same news topic could be very large.
+Thus topic-based news search via simplely keyword matching may return large amount
+of news videos which are relevant to the same news topic. To reduce user’s information
+overload, it is very important to develop new algorithms for ranking the news videos
+under the same news topic and recommending the most relevant news videos according
+to their importance and representiveness scores.
+The news videos, which are relevant to the given news topic Cj , are ranked ac-
+cording to their importance and representiveness scores. For the given news topic Cj ,
+the importance and representativeness score %(x|Cj) for one particular news video x is
+defined as:
+%(x|Cj) = e
+??t + (1? )
+e?(x|Cj) ? e??(x|Cj)
+e?(x|Cj) + e??(x|Cj)
+(9)
+Personalized News Video Recommendation 9
+?(xj) = ? · v(x|Cj) + ? · r(x|Cj) + ? · q(x|Cj)
+where ?+?+ ? = 1, ?t is the time difference between the broadcast time for the given
+news video x for the particular TV news program and the time for the user to submit
+their requests, v(x|Cj) is the visiting times for the given news video x from all the
+users, r(x|Cj) is the rating score of the given news video x from all the users, q(x|Cj)
+is the quality of the given news video.
+We separate the time factor from other factors for news video ranking because the
+time factor is more critical than other factors for news video ranking (i.e., one topic can
+be treated as the news because it is new and tell people what is happening recently or
+what is discussing recently) and most people may just want to know the most recently
+reports for the given news topic. The quality q(x|Cj) is simply defined as the frame
+resolution and the length of the given news video x. If a news video has higher frame
+resolution and longer length (be discussed for longer time), it should be more important
+and representative for the given news topic.
+After the users’ search goals (i.e., which are represented by the accessed news top-
+ics) are captured interactively, our personalized news video recommendation system
+can: (a) recommend top 5 news videos according to their importance and representa-
+tiveness scores; (b) recommend other news topics of interest on the topic network which
+are most relevant to the accessed news topic and suggest them as the future search di-
+rections according to the user’s current preferences, where the accessed news topic is
+set as the current focus (i.e., the center of the topic network); (c) recommend the most
+relevant online web news which are relevant with the accessed news topic, so that the
+user can also read the most relevant online web news; (d) record the user’s search his-
+tory and preferences for generating more reliable personalized topic network to make
+better recommendation in the future. Some experimental results are given in Fig. 3, and
+one can conclude that our personalized news video recommendation system can effec-
+tively support multi-modal news recommendation from large-scale collections of news
+videos.
+5 Algorithm Evaluation
+We carry out our experimental studies by using large-scale collections of news videos (3
+TV news channels captured 24× 7 for more than 3 months). The topic network which
+consists of 4000 most popular news topics is learned automatically from large-scale
+collections of news videos. Our work on algorithm evaluation focus on: (1) evaluating
+the performance of our news topic detection algorithm and assessing the advantages for
+integrating multi-modal information channels for news topic detection; (2) evaluating
+the response time for supporting change of focus in our system, which is critical for
+supporting interactive navigation and exploration of large-scale topic network to enable
+user-adaptive topic recommendation; (3) evaluating the performance (efficiency and
+accuracy) of our system for allowing users to look for some particular news videos of
+interest (i.e., personalized news video recommendation);
+Automatic news topic detection plays an important role in our personalized news
+video recommendation system. Based on this observation, our algorithm evaluation for
+our automatic news topic detection algorithm focuses on comparing its performance
+10 Hangzai Luo, Jianping Fan, Daniel A. Keim, and Shin’ichi Satoh
+Fig. 3. Two examples for supporting personalized multi-modal news recommendation.
+difference by combining different information channels for automatic news topic de-
+tection. We have compared three combination scenarios for news topic detection: (a)
+only the closed captions are used for news topic detection; (b) the closed captions and
+the audio channel are integrated and synchronized for news topic detection; (c) the
+closed captions, the audio channel and the video channel are seamlessly integrated and
+synchronized for news topic detection. As shown in Fig. 4, integrating multi-modal in-
+formation channels (cross-media) for news topic detection can enhance the performance
+of our algorithm significantly.
+Fig. 4. The comparision results of our automatic news topic detection algorithm by integrat-
+ing different information channels.
+One critical issue for evaluating our personalized news video recommendation sys-
+tem is the response time for supporting change of focus to enable interactive topic net-
+work navigation and exploration, which is critical for supporting user-adaptive topic
+recommendation. In our system, the change of focus is used for achieving interactive
+exploration and navigation of large-scale topic network. The change of focus is imple-
+mented by changing the Poincaré mapping of the news topic nodes from the hyperbolic
+plane to the display unit disk, and the positions of the news topic nodes in the hyerbolic
+plane need not to be altered during the focus manipulation. Thus the response time for
+supporting change of focus depends on two components: (a) The computational time
+T1 for re-calculating the new Poincaré mapping of large-scale topic network from a
+Personalized News Video Recommendation 11
+hyperbolic plane to a 2D display unit disk, i.e., re-calculating the Poincaré position for
+each news topic node; (b) The visualization time T2 for re-layouting and re-visualizing
+the new Poincaré mapping of large-scale topic network on the display disk unit.
+Because the computational time T1 may depend on the number of news topic nodes,
+we have tested the performance differences for our system to re-calculate the Poincaré
+mappings for different numbers of news topic nodes. Thus our topic network with 4000
+news topic nodes is partitioned into 5 different scales: 500 nodes, 1000 nodes, 2000
+nodes, 3000 nodes, 3500 nodes and 4000 nodes. We have tested the computational time
+T1 for re-calculating the Poincaré mappings of different numbers of news topic nodes
+when the focus is changed. From our experiments, we find that the computational time
+T1 and the visualization time T2 are not sensitive to the number of news topics, and thus
+re-calculating the Poincaré mapping and re-visualization for large-scale topic network
+can almost be achieved in real time. Thus our system can support change of focus in
+real time and achieve interactive navigation and exploration of large-scale topic network
+effectively.
+For a given news topic of interest (news topic that is accessed by the particular
+user interactively), our system can further allow users to look for the most relevant
+news videos for the given news topic according to their importance and representative
+scores. To evaluate the effeciency and the accuracy of our personalized news video
+recommendation system, the benchmark metric includes precision P and recall R. The
+precision P is used to characterize the accuracy of our system for finding the most
+relevant news videos according to their importance and representativeness scores for
+the given news topic, and the recall R is used to characterize the efficiency of our
+system for finding the most relevant news videos according to their importance and
+representativeness scores for the given news topic.
+Table 1 gives the precision and recall of our personalized news video recommen-
+dation system. From these experimental results, one can observe that our system can
+support personalized news video recommendation effectively, thus users are allowed to
+obtain the most relevant news videos according to their importance and representative-
+ness scores for the requested news topic.
+6 Conclusions
+A novel framework is developed to support personalized news video recommendation.
+To allow users to obtain a good global overview of large-scale collections of news
+videos at the topic level, topic network and hyperbolic visualization are seamlessly in-
+tegrated to achieve user-adaptive topic recommendation. Thus users can obtain the news
+topics of interest interactively, build up their mental models of news needs easily and
+make better search decisions by selecting the visible news topics directly. Our system
+can further recommend the relevant web news, the new search directions, and the most
+relevant news videos according to their importance and representativeness scores. Our
+experiments on large-scale collections of news videos have provided positive results.
+Acknowledgment
+This work is supported by National Science Foundation under 0601542-IIS and 0208539-
+IIS. Hangzai Luo is recently supported by Shanghai Pujiang Program under 08PJ1404600,
+NSFC 60496325 and 60803077, CSM 07dz5997, 863 R & D 2006AA010111.
+12 Hangzai Luo, Jianping Fan, Daniel A. Keim, and Shin’ichi Satoh
+Table 1. The precision and recall for supporting personalized news video recommendation.
+news topics policy pentagon change dennis hastert matter
+P/R 95.6% /97.3% 98.5% /98.9% 100% /99.2% 95.3% /88.3% 85.2% /85.3%
+news topics implant wedding haggard scandal ethic
+P/R 90.2% /93.5% 96.3% /94.5% 96.5% /92.8% 96.6% /97.3% 93.3% /95.6%
+news topics gate steny hoyer democrat safety investigation
+P/R 95.9% /96.8% 96.5% /96.2% 96.3% /97.1% 94.5% /94.8% 93.3% /96.5%
+news topics majority leader confirmation child tax reduction
+P/R 99.2% /98.6% 93.8% /99.3% 94.5% /93.8% 91.3% /91.5% 98.5% /96.9%
+news topics secretary veterm ceremony beijing 2008 program
+P/R 100% /98.8% 99.8% /99.2% 99.3% /96.6% 99.2% /97.3% 83.5% /90.2%
+news topics honor vietnam lesson teacher conduct
+P/R 91.2% /93.5% 98.8% /96.7% 90.3% /91.6% 93.8% /94.5% 87.92% /88.3%
+news topics minority indonesia president republican amish
+P/R 100% /99.6% 96.8% /97.7% 100% /96.8% 91.6% /92.8% 99.5% /91.6%
+news topics o.j. sinpson trial money nuclear test china
+P/R 95.6% /99.4% 90.5% /90.3% 100% /90.6% 100% /97.6% 97.3% /95.2%
+news topics john kerry military race north korea japan
+P/R 100% /96.5% 100% /93.2% 100% /97.8% 100% /99.3% 98.5% /95.6%
+news topics election leadship school gun shoot sex message
+P/R 100% /95.5% 92.8% /90.3% 100% /96.7% 97.5% /98.2% 88.3% /87.6%
+References
+1. G. Marchionini, Information seeking in electronic environments, Cambridge University
+Press, 1997.
+2. B. Yang, T. Mei, X.-S. Hua, L. Yang, S.-Q. Yang, M. Li, “Online video recommendation
+based on multimodal fusion and relevance feedback", ACM CIVR’07, pp.73-80, 2007.
+3. J.A. Wise, J. Thomas, K. Pennock, D. Lantrip, M. Pottier, A. Schur, V. Crow, “Visualizing
+the non-visual: Spatial analysis and interaction with information from text documents", IEEE
+InfoVis’95, pp.51-58, 1995.
+4. R.C. Swan, J. Allan, “TimeMine: visualizing automatically constructed timelines", ACM
+SIGIR, 2000.
+5. M. Weskamp, “Newsmap", http://www.marumushi.com/newsmap/index.cfm.
+6. S. Havre, B. Hetzler, P. Whitney, L. Nowell, “ThemeRiver: Visualizing thematic changes in
+large document collections", IEEE Trans. on Visualization and Computer Graphics, vol.8,
+no.1, pp.9-20, 2002.
+7. H. Luo, J. Fan, J. Yang, W. Ribarsky, S. Satoh, “Large-scale new video classification and
+hyperbolic visualization", IEEE VAST’07, pp.107-114, 2007.
+8. H. Luo, J. Fan, J. Yang, W. Ribarsky, S. Satoh, “Exploring large-scale video news via inter-
+active visualization", IEEE VAST’06, pp. 75-82, 2006.
+9. W. Lai, X.-S. Hua, W.-Y. Ma, “Towards content-based relevance ranking for video search",
+ACM Multimedia, pp.627-630, 2006.
+10. J. Teevan, S. Dumais, E. Horvitz, “Personalized search via automated analysis of interests
+and activities", ACM SIGIR, 2005.
+11. H. Wactlar, A. Hauptmann, Y. Gong, M. Christel, “Lessons learned from the creation and de-
+ployment of a terabyte digital video library", IEEE Computer, vol.32, no.2, pp.66-73, 1999.
+12. M.G. Christel, R. Yang, “Merging stryboard strategies and automatic retrieval for improving
+interactive video search", ACM CIVR’07, 2007.
+

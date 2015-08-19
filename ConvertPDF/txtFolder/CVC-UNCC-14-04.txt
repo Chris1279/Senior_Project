@@ -1,0 +1,1016 @@
+VASA: Interactive Computational Steering of Large Asynchronous
+Simulation Pipelines for Societal Infrastructure
+Sungahn Ko, Jieqiong Zhao, Jing Xia, Student Member, IEEE, Shehzad Afzal, Xiaoyu Wang, Member, IEEE,
+Greg Abram, Niklas Elmqvist, Senior Member, IEEE, Len Kne, David Van Riper, Kelly Gaither,
+Shaun Kennedy, William Tolone, William Ribarsky, David S. Ebert, Fellow, IEEE
+Fig. 1. Conceptual overview of the VASA system, including four simulation components for weather, critical infrastructure, road
+network routing, and supply chains, as well as the VASA Workbench binding them together.
+Abstract—We present VASA, a visual analytics platform consisting of a desktop application, a component model, and a suite of
+distributed simulation components for modeling the impact of societal threats such as weather, food contamination, and traffic on
+critical infrastructure such as supply chains, road networks, and power grids. Each component encapsulates a high-fidelity simulation
+model that together form an asynchronous simulation pipeline: a system of systems of individual simulations with a common data and
+parameter exchange format. At the heart of VASA is the Workbench, a visual analytics application providing three distinct features: (1)
+low-fidelity approximations of the distributed simulation components using local simulation proxies to enable analysts to interactively
+configure a simulation run; (2) computational steering mechanisms to manage the execution of individual simulation components;
+and (3) spatiotemporal and interactive methods to explore the combined results of a simulation run. We showcase the utility of the
+platform using examples involving supply chains during a hurricane as well as food contamination in a fast food restaurant chain.
+Index Terms—Computational steering, visual analytics, critical infrastructure, homeland security.
+1 INTRODUCTION
+Highways, interstates, and county roads; water mains, power grids,
+and telecom networks; offices, restaurants, and grocery stores; sewage,
+landfills, and garbage disposal. All of these are critical components of
+our societal infrastructure that help run our world. However, the com-
+plex and potentially fragile interrelationships connecting these com-
+ponents also mean that this critical infrastructure is vulnerable to both
+natural and man-made threats: twisters, hurricanes, and flash floods;
+traffic, road blocks, and pile-up collisions; disease, food poisoning,
+• Sungahn Ko, Jieqiong Zhao, Shehzad Afzal, Niklas Elmqvist, and David S.
+Ebert are with Purdue University in West Lafayette, IN, USA. E-mail: {ko,
+zhao413, safzal, elm, ebertd}@purdue.edu.
+• Jing Xia is with Zhejiang University in Hangzhou, China. E-mail:
+xiajing@zjucadcg.cn.
+• Xiaoyu Wang, William Tolone, and William Ribarsky are with University of
+North Carolina at Charlotte in Charlotte, NC, USA. E-mail:
+{xiaoyu.wang, ribarsky}@uncc.edu.
+• David Van Riper, Len Kne and Shaun Kennedy are with University of
+Minnesota in Minneapolis, MN, USA. E-mail: {vanriper, lenkne,
+kenne108}@umn.edu.
+• Greg Abram and Kelly Gaither are with University of Texas at Austin in
+Austin, TX, USA. E-mail: {gda, kelly}@tacc.utexas.edu
+Submitted to IEEE VAST 2014. Do not redistribute.
+and major pandemics; crime, riots, and terrorist attacks. How can a
+modern society protect its critical infrastructure against such a diverse
+range of threats? How can we design for resilience and preparedness
+when perturbation in one seemingly minor aspect of our infrastructure
+may have vast and far-reaching impacts across society as a whole?
+Simulation, where a real-world process is modeled and studied over
+time, has long been a standard tool for analysts and policymakers to
+answer these very questions (e.g., applications for modeling the real
+world [10]). Using complex simulations of critical infrastructure com-
+ponents, expert users have been able to create “what-if” scenarios, cal-
+culate the impact of a threat depending on its severity, and—last but
+not least—study optimal mitigation measures to address them. In fact,
+analysts have gone so far as to name “simulation as the new innova-
+tion” [35]: instead of endeavoring to produce the perfect solution once
+and for all, this new school of thought is to create a whole range of
+possible solutions and determine the optimal one using modeling and
+simulation. For example, during the Obama reelection campaign, it
+was reported that Organizing for Action data analysts ran a total of
+62,000 simulations to determine voter behavior based on data from
+social media, political advertisements, and polling [43]. Basically, the
+philosophy with big data analytics driven by simulation is not to get
+the answer perfectly right, but to be less wrong over time [34]. Put
+differently, while it would be inappropriate to state—as others have
+done [2]—that big data will never somehow overtake theory, it is clear
+that large-scale simulation is a new and powerful tool in our arsenal
+for making sense of the world we live in.
+Applying simulation to the scope of entire critical infrastructures—
+such as transportation, supply chains, and power grids—as well
+as the factors impacting them—such as weather, traffic, and man-
+made threats—requires constructing large asynchronous simulation
+pipelines, where the output of one or more simulation models becomes
+the input for one or more other simulations arranged in a sequence with
+feedback. Such a system-of-systems [12, 30] (SoS) will enable lever-
+aging existing high-fidelity simulation models without having to cre-
+ate new ones from scratch. However, this approach is still plagued by
+several major challenges that all arise from the complexity of chaining
+together multiple simulations in this way: (C1) monolithic simulations
+that are designed to be used in isolation, (C2) complex configurations
+for each model, (C3) non-standard data exchange for passing data be-
+tween them, and (C4) long execution times for each individual simu-
+lation that are not amenable to interactive visual analytics.
+To address these challenges, we present VASA (Visual Analytics
+for Simulation-based Action), a visual analytics platform for inter-
+active decision making and computational steering of these types of
+large-scale simulation pipelines based on a visual analytics approach.
+The VASA Workbench application itself is an interactive desktop ap-
+plication that binds together a configurable pipeline of distributed sim-
+ulation components. It eables the analyst to visually integrate, explore,
+and compare the inter-related and cascading effects of systems of sys-
+tems components and potential final alternative outcomes. This is
+acheive by visualizing both intermediate and final results from the sim-
+ulation components using a main spatiotemporal view as well as mul-
+tiple secondary views. The tool provides an interface for the analyst to
+navigate in time, including stepping backwards and forwards, playing
+back an event sequence, jumping to a particular point in time, adding
+events and threats to the timeline, and initiating mitigation measures.
+Moreover, it allows them to select between or combine different en-
+semble outputs from one simulation to be fed to other SoS components
+and explore consequences. Using this interface, an analyst could for
+example add a weather event (e.g., either an existing hurricane from
+a historical database, the union of several ensemble output paths, or
+simulation of a new one) to a particular time, and then step forward a
+week to see its impact on roads, the power grid, food distribution, and
+total economic impact in southern United States.
+The simulation components provide the main functionality to the
+VASA platform. Each simulation component communicates with the
+Workbench using a representational state transfer (REST) API that
+standardizes the data and parameter exchange. The data flows and
+parameters passed in the pipeline can be configured using the Work-
+bench application using a graphical interface. Furthermore, the Work-
+bench also includes a local simulation proxy for each remote simula-
+tion component that provides real-time approximations of each sim-
+ulation model to enable using them for interactive visual discourse.
+This feature also provides the computational steering functionality of
+the Workbench: after configuring a simulation run in an interactive
+fashion, the analyst can launch the (possibly lengthy) execution from
+the Workbench. The Workbench then provides tools to manage the
+simulation pipeline, for example to prematurely shut down a simula-
+tion component to accept a partial result, or to skip a particular run.
+Our work on the VASA project has been driven by stakeholders in-
+terested in supply chain management of food systems, with an initial
+working example of a food production to restaurant system. For this
+reason, other than the VASA Workbench application and the protocols
+and interfaces making up the platform, we have also created VASA
+components for simulating weather (including storms, hurricanes, and
+flooding), the power grid, supply chains, transportation, and food poi-
+soning. We describe these individual components and then present an
+example of how the VASA platform can be used to explore a what-
+if scenario involving a major hurricane sweeping North Carolina and
+knocking out a large portion of the road networks and power grid. We
+also illustrate how the tool can be used to simulate food contamina-
+tion outbreaks and how this information can be used to track back the
+contaminated products to the original distribution centers.
+2 BACKGROUND
+Visual analytics [38], can be a powerful mechanism to harness simu-
+lation for understanding the world. Below we review the literature in
+visual analytics for simulation and computational steering, as well as
+appropriate visual representations for such spatiotemporal data.
+2.1 Simulation Models
+The potential for applying visual analytics to simulation involves not
+only efficiently presenting the results of a simulation to the analyst,
+but also building and validating large-scale and complex simulation
+models. For example, Matkovic et al. [27, 28] show that visual ana-
+lytics can reduce the number of simulation runs by enabling users to
+concentrate on interesting aspects of the data. Maciejewski et al. [23]
+apply visual analytics techniques to support exploration of spatiotem-
+poral models with kernel density estimation and cumulative summa-
+tion. This work was extended to a visual environment for epidemic
+modeling and decision impact evaluation [1]. Similarly, Andrienko
+et al. [5] propose a comprehensive visual analytics environment that
+includes interactive visual interfaces for modeling libraries and sup-
+ports selection, adjustment, and evaluation of such modeling methods.
+Our work is different from this prior art in that our approach combines
+multiple components in a simulation pipeline, where each stage in the
+pipeline produces visualization for analysis.
+Supply chain management is also a multi-decisional context where
+what-if analyses are often conducted to capture provenance and pro-
+cesses of supplies. Simulation is recognized as a great benefit to im-
+prove supply chain management, providing analysis and evaluation of
+operational decisions in the supply process in advance [37]. With the
+IBM Supply Chain Simulator (SCS) [9] and enterprise resource plan-
+ning (ERP), IBM is able to visualize and optimize nodes as well as
+relations in the supply chain [20]. Perez also developed a supply chain
+model snapshot [31] with Tableau. However, existing visualizations
+of supply chain are mostly limited to either local supply nodes or a
+metric model rather than managing the overall supply process.
+2.2 Computational Steering
+Computational steering refers to provoding user control over running
+computations, such as simulations. Mulder et al. [29] classify uses of
+computational steering as model exploration, algorithm experimenta-
+tion, and performance optimization. Applications include computa-
+tional fluid dynamics (CFD) [13], program and resource steering sys-
+tems [40], and high performance computing (HPC) platforms [7].
+For all of the above applications, the user interface is a crucial com-
+ponent that interprets user manipulation for reconfiguration of data,
+algorithms, and parameters. Controlling, configuring, and visualizing
+such computational steering mechanisms is an active research area.
+Waser et al. proposed World Lines [41], Nodes on Ropes [42], and
+Visdom [33] as well as an integrated steering environment [33] to help
+users to manage ensemble simulations—multiple runs of the same or
+related simulation models with slightly perturbed inputs—of complex
+scenarios such as flood simulations. In the business domain, Broek-
+sema et al. [8] propose the Decision Exploration Lab (DEL) to help
+users explore decisions generated from combined textual and visual
+analysis of decision models rooted in articifical intelligence.
+2.3 Spatiotemporal Data
+Spatiotemporal visual analytics systems enable users to investigate
+data features over time using a visual display based on geographic
+maps [3]. In these systems, color, position, and glyphs display fea-
+tures of different regions by directly overlaying the data on the map.
+Many approaches to visual analytics for spatiotemporal data exist.
+Inspired partly by a survey by Anselin [6], we review the most rele-
+vant ones below. Andrienko and Andrienko [4] use value flow maps to
+visualize variations in spatiotemporal datasets by drawing silhouette
+graphs on the map to represent the temporal aspect of a data vari-
+able. Hadlak et al. [16] visualize attributed hierarchical structures that
+change over time in a geospatial context. Fuchs and Schumann [15]
+integrate ThemeRiver [17] and TimeWheel [39] into a map to visual-
+ize spatiotemporal data. Ho et al. [18] present a geovisual analytics
+framework for large spatiotemporal and multivariate statistical flow
+data analysis using bidirectional flow arrows coordinated and linked
+with a choropleth map, histogram, or parallel coordinates plot. Our
+approach is different from those in that our system provide a visual
+analytics environment for managing and analyzing the results from
+multiple types of simulations.
+Some approaches enable analysis of spatially-distributed incident
+data. Maciejewski et al. propose a system for visualizing syndromic
+hotspots [24, 22] while Malik et al. [25] develop a visualization toolkit
+utilizing KDE (Kernel Density Estimation) to help police better ana-
+lyze the geo-coded crime data. The latter system is extended to a vi-
+sualization system [26]where historic response operations and assess-
+ment of potential risks in the maritime environment can be analyzed.
+In our work we also employ KDE for visualizing spatial distrubution
+of ill people who consumed contaminated food in a supply chain.
+3 DESIGN SPACE: STEERING SYSTEM-OF-SYSTEM SIMULA-
+TIONS FOR MODELING SOCIETAL INFRASTRUCTURE
+Computational steering is defined as user intervention in an au-
+tonomous process to change its outcome. This approach is commonly
+utilized in visual analytics [38] to introduce a human analyst into the
+computation loop for the purpose of creating synergies between the
+analyst and computational methods. In our work, the autonomous pro-
+cesses we are studying are simulation models (often based on discrete
+event models) that are chained together into asynchronous simulation
+pipelines where the output of one or several simulations becomes the
+input to one or several other simulations. Such a simulation pipeline is
+also a system-of-systems [12, 30] (SoS): multiple heterogeneous sys-
+tems that are combined into a unified, more complex system whose
+sum is greater than its constituent parts. Synthesizing all these com-
+ponents yields the concept of visual analytics for steering system-of-
+system simulations: the use of visual interfaces to guide composite
+simulation pipelines for supporting sensemaking and decisionmaking.
+In this work, we apply this idea to modeling societal infrastructure,
+such as transportation, power, computer networks, and supply chains.
+In this section, we explore the design space of this concept, includ-
+ing problem domains, users, tasks, and challenges. We then derive
+preliminary guidelines for designing methods supporting the concept.
+3.1 Domain Analysis
+A wide array of problem domains may be interested in creating large-
+scale system-of-system simulation pipelines for studying impacts on
+societal infrastructure. Our particular domain is for business intelli-
+gence for supply chain logistics in the fast-food business, but we see
+multiple potential applications (each with a specific example):
+• Supply chain logistics: Impact of large-scale weather events on
+the distribution of goods (particularly perishables, e.g., food).
+• Public safety: Crime, riots, and terrorist attacks on critical in-
+frastructure, such as on roads, bridges, or the power grid.
+• Food safety: Incidence, spread, and causes of food contamina-
+tion, often due to weather (power outage) or transport delays.
+• Cybersecurity: Societal impact of cybersecurity attacks, such
+as on power stations, phone switches, and data centers.
+3.2 User Analysis
+The intended audience for computational steering of simulation mod-
+els using visual analytics are what we call “casual experts”: users with
+deep expertise in a particular application domain, such as transporta-
+tion, supply chain, or homeland security, but with limited knowledge
+of simulation, data analysis, and statistics. Their specific background
+depends on the problem domain; for example, they may be business
+or logistics analysts for supply chain applications, police officers for
+public safety, and homeland security officials for food safety and cy-
+bersecurity. Because of this “casual” approach—a term we borrow
+from Pousman et al.’s work on casual information visualization [32]—
+our intended users are motivated by solving concrete problems in their
+application domain, but are not necessarily interested in configuring
+complex simulation models and navigating massive simulation results.
+Even if our primary user audience is these casual experts, it is very
+likely that the outcome of a simulation steering analysis will be dis-
+seminated to managers, stakeholders, or even the general public [38].
+Thus, a secondary user group for consuming our analysis products
+is laypersons with an even more limited knowledge in mathematics,
+statistics, and data graphics.
+3.3 Task Analysis
+Based on our review of the literature (Section 2) as well as feedback
+from domain experts, we identify a preliminary list of high-level tasks
+for steering system-of-system simulations for societal infrastructure:
+• Increasing preparedness for potential scenarios;
+• Improving the resilience of an organization; and
+• Planning for mitigation and response to a situation.
+3.4 Challenges
+Modeling the real world is a tremendously difficult and error-prone
+process. However, we leave concerns about the fidelity, accuracy,
+and quality of a simulation to research within the simulation de-
+sign. Rather, in this subsection we concern ourselves with the chal-
+lenges intrinsic to connecting multiple individual simulation models
+into large-scale pipelines. In the context of simulation steering for
+such pipelines, we identify the following main challenges:
+C1 Monolithic simulations: While individual high-fidelity simula-
+tion models exist for all of the above components and threats,
+these models are monolithic and not designed to work together.
+C2 Complex relationships: Each high-fidelity simulation model
+consists of a plethora of parameters and controls that require
+expertise and training, which is exacerbated when several such
+models are combined into a single model.
+C3 Non-standard data: No standardized data exchange formats ex-
+ist for passing the output of one simulation model, such as for
+weather, as input to another model, such as supply chain routing.
+C4 Long execution times: Most state-of-the-art, high-fidelity sim-
+ulation models require a non-trivial execution time, often on
+the order of minutes, if not hours. Such time frames are not
+amenable for real-time updates and interactive exploration.
+C5 Uncertainty and fidelity: Chaining together multiple simula-
+tions into a pipeline may yield systematically increasing errors
+as uncertain output from one model is used as input to another.
+This is compounded by the fact that heterogeneous simulation
+models may have different levels of fidelity and accuracy.
+3.5 Design Guidelines
+Based on our review of the problem domain, users, and tasks above, as
+well as the challenges that these generate, we formulate the following
+tentative guidelines for designing visual analytics methods for steering
+system-of-system simulation pipelines:
+G1 Simulations as standardized network services: Distributing sim-
+ulation models as network services avoids the trouble of integrat-
+ing a monolithic design with another system (C1) and automati-
+cally provides a data exchange format (C3). The simulations also
+become decoupled, which means they can be parallelized and/or
+distributed in the cloud to manage long execution times (C4).
+G2 Simulation proxies for interactive response: Meaningful sense-
+making in pursuit of one of the high-level tasks in Section 3.3
+requires real-time response to all interactive queries. This means
+that long execution times (C4) of simulation models in the
+pipeline should be hidden from the user. We propose the concept
+of a simulation proxy as an approximation of a remote simulation
+service that is local and capable of providing real-time response
+at the cost of reduced (often significantly) accuracy.
+G3 Visual and configurable relationships: The interactive visual in-
+terfaces routinely employed in visual analytics may help to sim-
+plify and expose the complex configurations necessary for many
+high-fidelity simulation models (C2), even for non-expert users.
+G4 Partial and interruptible computational steering: Once an an-
+alyst has configured a simulation run using simulation proxies
+(G2) and visual mappings (G3), the full simulation pipeline must
+be invoked to calculate an accurate result. A full-fledged sim-
+ulation run may take minutes, sometimes hours, to complete.
+The computational steering mechanisms provided by the soft-
+ware should provide methods for continually returning partial
+results [14] as well as interrupting a run halfway through.
+G5 Visual representations of both intermediate and final results: To
+fully leverage the power of visual analytics, we suggest using in-
+teractive visual representations of simulation results. Such visu-
+alizations should be used for both intermediate data generated by
+a simulation component anywhere in the pipeline—which would
+support partial results and interrupting a run at any time—as well
+as for the final results. All visual representations should be de-
+signed with uncertainty in mind (C6), and providing interme-
+diate visualizations should also help in exposing propagation of
+increasing error. Finally, it may also be useful to use visual repre-
+sentations for the approximations created by simulation proxies
+(G2), but these should be clearly indicated as such.
+4 VASA: OVERVIEW
+As previously described, our VASA system is a distributed
+component-based framework for steering system-of-system simula-
+tions for societal infrastructure. Figure 1 gives a conceptual model of
+the system architecture. At the center of the system is the VASA Work-
+bench (Figure 2), a user-driven desktop tool for configuring, steering,
+and exploring simulation models, impacts, and courses of action. The
+workbench provides a visual analytics dashboard based on multiple
+coordinated views, an event configuration view, and a computational
+steering view. The workflow of the workbench revolves around initi-
+ating, controlling, analyzing, exploring, and handling events from the
+remote simulation components as well as the local simulation proxies.
+Within the dashboard, events are displayed in a selectable calendar
+view (a) where each event’s name, dates and a user-selected represen-
+tative attribute (e.g., storm’s maximum wind speed) are shown. The
+selected events from (a) are listed based chronologically in the event
+viewer (b) where a user can select times for investigation. In (b-1),
+various options are provided, including initiating simulations (e.g., cy-
+berattack, storm simulations, distribution re-routing), selecting combi-
+nations of events (union, intersection, difference), selecting event vi-
+sualization modes (polygons, contours), and chronological playback.
+Users can fix a time within an event for comparison ( right-clicking
+on a event’s black rectangle) and a red mark is shown in the upper
+right corner of the associated rectangle(b-2), and the impact is shown
+in the main geospatial view (d-1). We provide a legend window (c) for
+selected properties (e.g., distribution centers, restaurants, power plants
+and other infrastructures) and the geographical view (d) provides the
+simulation results including event evolution, routing paths, and im-
+pacts on critical infrastructures. A food delivery schedule to each store
+within a supply chain is provided in (e) where the x-axis presents cor-
+responds to different restaurants while the y-axis represents different
+food processing centers or different types of foods. Here, the darker
+the red, the larger the quantity of the delivered food. The quantity
+information is provided in a tooltip that helps a user to estimate pos-
+sible losses. This view enables traceback analysis (e.g., which type
+of food was contaminated from which processing centers, how much
+contaminated food was delivered to which store) for food contamina-
+tion incidents.
+5 VASA: COMPONENTS
+Our current VASA suite consists of four simulation components that
+implement the VASA interface: components for weather, critical in-
+frastructure, routing, and supply chains. We review each of these next.
+5.1 Weather Component
+In order to provide clients with a one-stop source for weather data, we
+implement a server that asynchronously amasses data from various on-
+line sources and presents it to clients through a RESTful web interface.
+This provides access to various data through a singly authenticated
+service that provides consistent and convenient APIs for data acquired
+from many sources.
+5.1.1 Simulation Model
+For example, a collaboration of several research centers runs the AD-
+CIRC model during hurricane season off the east and gulf coasts of
+the U.S. When storms are present, these models are run every four
+hours, producing ADCIRC-formatted datasets at fixed intervals for-
+ward from the initial times. These results are made publicly available
+using THREDDS and OPeNDAP for cataloging, discovery and data
+access. When this data appears, we import it onto a VASA server, and
+provide a simple RESTful API to access the data in convenient multi-
+resolution formats. Similarly, NOAA produces wind-speed probabili-
+ties along the tracks of storms as contours at 34, 50, and 64-knot levels.
+This data is also imported asynchronously onto the VASA service and
+provided through the VASA RESTful API.
+5.1.2 Simulation Proxy
+The proxy in this component has two roles. The first role is to prepare
+all event data sets from the remote event server. Therefore, the system
+first checks for new updates from the server. If there is a new update,
+it retrieves the data and saves it on the local workbench for faster load-
+ing. The second role is to visualize new status of an event on the date
+that a user selected and notify the status change of the event to other
+proxies. An example status change is a user changing the start date of
+a hurricane in the event viewer. When this happens, the proxy visual-
+izes a new status of the hurricane on the date and notifies this change to
+other components, which initiates each proxy’s work (e.g., estimating
+an area without power and impassable roads).
+A user can select the hurricane visualization type either as polygons
+or contours for estimation by clicking a button as shown in Figure 2 (b-
+2, the last button). In the polygon mode, two probability models (blue
+with two different opacities) are projected as shown in the magnifica-
+tion view in Figure 2. Here, the smaller polygon means an expected
+path with high probability, and a larger one presents an expected path
+with low probability. When a user fixes a hurricane, the hurricane
+turns red for comparison to other paths (of other hurricanes). For ex-
+ample, in Figure 2 the path of Hurricane Irene on August 24, 2011 is
+projected (blue) and the path of Hurricane Sandy in October 27, 2012
+is presented in red for comparison.
+In the contour mode, hurricanes are drawn using three different
+sizes of contours, each of which represents mean areas in different
+wind speeds (e.g., Hurricane Irene in our simulation model has 64
+knot highest wind speed at the innermost contour, and 34 knot lowest
+wind speed at the outermost contour as shown in Figure 6). To utilize
+different wind speeds in simulation steering, a user can set up a thresh-
+old for infrastructures (e.g., a power generation unit is disabled if the
+wind hitting the plant has speed higher than 34 knot). In addition, a
+user can apply one of the contours for a time. For example, Figure 6
+(top-right) presents which power generation units are affected when a
+contour with 34 knot hits the area. Here red circles represent affected
+restaurants and red circles present the impacted power generation units
+supplying electricity to those restaurants.
+5.1.3 Implementation Notes and Performance
+From the client’s point of view, the VASA API consists of URLs that
+encode procedures and parameters that, when issued, return JSON ob-
+jects containing the results. This provides a very simple interface for
+use both by browser-based visualization UIs that use AJAX to issue re-
+quests asynchronously, and other native platforms that provide equiv-
+alent access through language-specific interfaces.
+(b) Event view 
+(c)  
+Legend  
+View 
+(d) Geographical view 
+(e) Pixel/Schedule view 
+ 
+(d-1) 
+(b-1) 
+(a) Calendar view 
+(b-2) 
+Intact 
+Disabled 
+Damage expected 
+Delivery routes 
+R2 R3 R4 R5 R1 R6 R7 
+Fig. 2. Multiple coordinated views in the VASA Workbench. (a) Calendar view with available events (e.g., weather, food poisoning, cyberattack,
+etc). (b) Event timeline for configuring events. (b-1) Event buttons. (b-2) Fixed event. (c) Map legend. (d) Geographical map. (d-1) Hurricane (red).
+(e) Pixel/Schedule view showing food deliveries. Each area divided by a blue line means a route that visits 3–4 restarunts, 3 time a week. This
+view also can be used for pixel-based visualization.
+5.2 Critical Infrastructure Component
+Widespread emergencies such as hurricanes, flooding, or cyberattacks
+will often affect multiple societal infrastructures. High winds and
+flooding from a hurricane, for example, could knock out parts of the
+power grid, the effect of which would cascade to traffic signals, the
+communications network, the water system, and other infrastructures.
+The flooding might simultaneously make parts of the road network
+impassable. These breakdowns would affect critical facilities such as
+schools, hospitals, and government buildings. For longer-lived disas-
+ters, food distribution might break down due to power outage, route
+disruption, or other cascading effects. The purpose of VASA’s critical
+infrastructure component is to simulate how such external emergen-
+cies, modeled in other components, will impact critical infrastructure.
+Fig. 3. Vu environment showing the modular structure where different
+simulation submodels can be inserted.
+5.2.1 Simulation Model
+To capture these complex, multifarious, and dynamic effects, we de-
+veloped a simulation model that takes into account the interrelation-
+ships between critical infrastructure systems. The simulation is built
+within the Vu environment (Figure 3), which provides a rule-based
+framework for integrating multiple infrastructure components at a high
+level. This results in an interdependency ontology. Thus, for exam-
+ple, a breakdown of a power substation would immediately cascade to
+power loss at points on its distribution network. If a school were a node
+in the distribution network, it would be switched to backup power that,
+after a given time, would also shut down. Likewise, telecommunica-
+tion nodes would switch to backup power that might also shut down
+after its prescribed duration. There could also be outages due to power
+load imbalances at other points in the grid.
+These interlaced critical infrastructures are captured in a set of net-
+works, with each node having a set of properties according to its cate-
+gory and the edges providing a dependency rule according to the cat-
+egory and state of the connected nodes. Relations between networks
+is captured by edges between nodes in the two networks. The timings
+of interdependencies and state changes are set according to a universal
+clock, so that any simulation of cascading effects evolves over time
+and space (since nodes are geographically located). The rules for net-
+works and interdependencies are set in consultation with experts (in
+the case of the power grid, for example) or through consultation of
+the appropriate literature for an infrastructure. However, some of the
+interdependencies are not directly known, even by experts, since mea-
+sures or simulations linking some infrastructures have never been done
+or validated. In this case, we define plausible rules that produce out-
+comes consistent with experience. This is in fact an advantage of the
+Vu approach in that it permits investigating interdependencies at a high
+level with a quick adjustment of the model and turnaround of results.
+These interdependencies can then be studied in depth as needed.
+The Vu approach will not capture detailed interdependency effects,
+transients, or complex interactions. However, it has been shown to be
+quite successful as a high-level simulator for a range of applications.
+To achieve this, it is modular, allowing new modules to be dropped
+in (Figure 3) and, as soon as the interdependency ontology is set up,
+simulations to be run. This makes it easy to configure simulations
+for several different infrastructures and even involving other types of
+simulation models, such as population and economic models.
+5.2.2 Data
+Our prototype system currently uses data from the state of North Car-
+olina, and the data collection and organization process involves locat-
+ing and identifying components of the various infrastructures for the
+state. We use publicly available data sources, in some cases identify-
+ing infrastructure components by indirect means. For example, com-
+prehensive information about the electrical grid is closely held by the
+utility companies. However, we have shown our results to utility com-
+pany officials and received confirmation as to their high level accuracy.
+The infrastructures we currently model include the electric grid; the
+communications network including TV stations, radio stations, cellu-
+lar switch controls, and cell towers; transportation facilities including
+airports, bus terminals, rail lines and terminals, bridges, tunnels, and
+ports; the road network including main and secondary roads; natu-
+ral gas pipelines and pumping stations; critical facilities including fire
+stations, police stations, schools, hospitals, emergency care facilities,
+manufacturing locations, government buildings, and hazmat facilities.
+Fig. 4. Power transmission grid with parts of the distribution network.
+Figure 4 shows the electric grid, which includes the complete trans-
+mission network down to substations for both North and South Car-
+olina. Parts of the distribution network are also included, especially
+for critical installations. Figure 5 shows the transportation network
+for North Carolina, including roads, airports, rail lines, etc. For the
+purposes of VASA, we have also added store and distribution center
+locations for a large food chain in North and South Carolina. These
+facilities are linked to the power grid and road networks.
+Fig. 5. Transportation network including transportation facilities.
+5.2.3 Simulation Proxy
+The proxy for the critical infrastructure component maintains a sim-
+plified connectivity network of critical infrastructure. In this graph,
+restaurants are connected to the nearest plant for impact approxima-
+tion due to an event. When the proxy receives a signal of a new event
+(e.g., storm path change, new day for approximation), it computes
+which infrastructures are affected by the event. For example, when
+a user moves the hurricane simulation forward to a new day, our proxy
+checks which infrastructures are newly affected and produces an esti-
+mate and its corresponding visualization (e.g., condition color changes
+for restaurants affected by power plant disruptions).
+5.2.4 Implementation Notes and Performance
+As for all the other VASA simulation components, we use a web ser-
+vice that can accept requests from the VASA Workbench and send ei-
+ther complete or approximate simulation results ready to be presented
+in the user interface (see Figure 1). The critical infrastructure server
+itself has two components. One contains a searchable database of the
+pre-computed ensemble of simulation runs. The other accepts current
+storm path and other inputs from the weather server, converts them into
+courses of action, and computes a fresh set of cascading infrastructure
+disruption results. When a request is issued via the user interface, the
+Simulation Proxy determines the weather inputs to send to the ensem-
+ble database component that immediately selects the closest ensemble
+simulation for use in the visual analysis. This proxy is then replaced
+by the more accurate result based on the current weather simulation
+as soon as it is available. Therefore an emergency response manager
+can make initial decisions based on the proxy and then refine them, if
+desired, once the up-to-date result is available.
+5.3 Supply Chain Component
+Most food systems involve a number of firms from on-farm production
+of inputs through processing, distribution and retail sales. For the fast
+food system in VASA, three different firms have collaborated to pro-
+vide the data on normal system performance: a vertically integrated
+poultry firm (hatchery to processed chicken), a warehouse and distri-
+bution firm, and a fast food restaurant firm. Each firm contributed data
+from their portion of the supply chain to enable modeling of prod-
+uct movement from farm to restaurant. The type of data provided
+includes geospatial information on the facilities involved (e.g., feed
+mills, hatcheries, poultry farms, poultry processing facilities, distribu-
+tion centers and restaurants), normal transportation routes and sched-
+uled times from each facility to the next facility in the system and
+details on actual shipment quantities on average (hatchery through
+processing) or actual shipment records for a limited time frame (dis-
+tribution centers to restaurants). As an illustration of the amount of
+data that drives these systems, one week of data on product delivered
+from the two distribution centers to the nearly five hundred individual
+restaurants alone is over 120,000 individual records.
+Hurricanes pose significant risks for normal supply chain opera-
+tion from impassable roads, power outages and floodings disrupting
+facility operation and distribution of products throughout the system.
+Understanding which routes and locations are likely to be at risk from
+a storm would enable a firm to develop contingency plans in advance
+of a storm, thus reducing operational losses immediately after a storm.
+Given that daily sales at larger fast food restaurants can be $4,300-
+$7,400, losses can mount up quickly. If in the case of an impending
+storm or immediate aftermath, near real time rerouting could enable
+firms to most efficiently maintain their distribution systems for both
+maintaining product distribution and retrieving of food from restau-
+rants without power to minimize spoilage losses.
+5.3.1 Simulation Model
+Food contamination can occur both intentionally or as a malicious act
+at any point in the supply chain and can result in significant public
+health consequences, from morbidity to mortality. While firms are re-
+quired to have information one step forward and one step back in their
+supply chain, they often have difficulty gaining visibility beyond that.
+By gathering data from each step in the supply chain, it is possible to
+trace product from farm through to restaurant and from restaurant back
+to farm. Using data on actual lot sizes from the firms involved, two il-
+lustrative contamination scenarios were constructed to illustrate how
+differently seemingly similar contamination scenarios would transpire.
+This system also illustrated a common problem of “hidden nodes” in
+the system, i.e., facilities that one firm in the system does not realize
+are part of its supply chain. One of the poultry slaughter and process-
+ing facilities ships raw poultry to a further processing facility that then
+ships the resulting product to the distribution centers. If there were a
+contamination at the “blind” facility, neither the distribution firm for
+the restaurant firm would initially know that it was part of their sup-
+ply chain. A contamination scenario builder is now under development
+that would enable users to model a wide range of contamination events
+and see how they would propagate through the supply chain.
+Our simulation model can generate food-borne illness data based on
+an approach similar to the Sydovat [21] system. There are two major
+components of the model for generating synthetic illness data: tem-
+poral and spatial data. A time series is contructed from its individual
+components (day-of-week, interannual, interseasonal, and remainder)
+similar to seasonal trend decomposition. To generate the time series of
+food-borne illnesses for a user-injected restaurant location, the user de-
+fines the mean daily count of illnesses along with seasonal and day of
+week components. If the historical food-borne illnesses data is avail-
+able then seasonal and day of week components can be randomly se-
+lected from this historical data. Spatial locations for temporal data are
+generated based on the density distribition that approximate the popu-
+lation in that area. Additionally, users can customize the grid size and
+density distributions.
+5.3.2 Simulation Proxy
+Our simulation proxy for the supply chain component maintains a low-
+fidelity representation of the transport network. This is used together
+with the weather polygons to approximate when a distribution center
+and store must shut down. For food-poisoning data, this inherently
+contains spatially-distributed points of ill people simulated based on
+the simulation model (Section 5.3.1). To visualize the spatial distribu-
+tion and the hotspots of the poisoned people, the proxy in this compo-
+nent uses a modified variable kernel density estimation technique with
+varying scales of the parameter of estimation based upon the distance
+from a patient location to the kth nearest neighbor [36]. The model
+used for estimating the number of people poisoned is the same model
+utilized in Maciejewski et al. [1, 22], but we adjust parameters to con-
+sider different population densities in different regions.
+5.3.3 Implementation Notes and Performance
+The supply chain component is built in ArcGIS and Arc Network
+Modeler so that storm impacts can model solutions accounting for
+restaurants out of service (power, flooding) and impassable roadways.
+5.4 Routing Component
+The purpose of the routing component is to provide a mechanism for
+other VASA components to find appropriate routes from one facility to
+another given a dynamically changing world model, where roads may
+become impassable due to weather or other widespread emergencies.
+5.4.1 Data Model
+We obtained the addresses of two distribution centers and 505 fast-
+food outlets, as well as the route information that links the centers
+to the outlets. We geocoded the addresses using the Environmental
+Systems Research Institute (Esri) ArcGIS 10.2 Server with the Net-
+work Analyst extension, and StreetMap Premium for ArcGIS (Tom-
+Tom North America data) Geodatabase. We then calculate N shortest
+path routes, where N is the number of routes specified in the input data,
+using Esri’s Network Analyst Route tool and the StreetMap Premium
+road network. The road network has a long list of attributes used to
+determine the shortest route, including road class, speed limit, number
+of lanes, and weight restrictions.
+5.4.2 Simulation Model
+The input to the routing component is a GeoJSON polygon represent-
+ing an area impacted by severe weather (such as a hurricane). The
+component ingests the GeoJSON object as a polygon barrier in the
+road network. Attributes of the road network are weighted to create
+a friction surface which iterates through routing options to determine
+the optimal route. The model does not currently include current traffic
+conditions or construction activity, but these factors could be added in
+the future. Each route minimizes the travel time between the distri-
+bution center and the first store or between stores. This set of routes
+represented the baseline scenario—how delivery trucks would travel
+under normal circumstances. Since delivery trucks can no longer reach
+outlets covered by the weather barrier, the routing service recomputes
+the routes with the barrier in place and returns new routes which avoid
+the outlets and roads covered by the barrier. If the barrier covers a dis-
+tribution center, no deliveries will be made to outlets serviced by the
+center. The routes are output as a set of large GeoJSON objects and
+sent back to the caller.
+5.4.3 Simulation Proxy
+The main focus of the proxy in the routing component is on approxi-
+mating the number of routes that will be replaced if a complete simu-
+lation result exists. The proxy investigates which nodes in routes are
+expected to be disabled when there is an event. Then, after the in-
+vestigation, it builds a polygon by connecting outer-most nodes and
+visualizes the polygon. This gives awareness to a user that the routes
+in the polygon are likely to be changed after a complete simulation. A
+user can initiate the simulation by clicking the “run” button (Figure 9).
+5.4.4 Implementation Notes and Performance
+The goal was to use as much Commercial Off-The-Shelf (COTS) soft-
+ware as possible when implementing the routing model. The Esri suite
+of Geographical Information System (GIS) tools is widely used in a
+variety of industries and provides a robust set of tools and data. Specif-
+ically, we used ArcGIS Server 10.2 with the Network Analyst exten-
+sion. The server provides web-based services through REST endpoints
+and provides a robust API accessed with HTTPS GET or POST re-
+quests. The VASA workbench initiates a request to the routing service
+by providing a GeoJSON representation of the affected area. The af-
+fected area polygon is input to Network Analyst Service to recalculate
+the route to traverse around the affected area. The response is two large
+GeoJSON objects containing a list of outlets no longer reachable, in-
+cremental travel time between stops, and the new route. Currently, the
+route processing requires 2-3 minutes to complete; this can be signifi-
+cantly improved when a production server is commissioned.
+6 EXAMPLES
+We showcase the utility of the VASA Workbench and our current
+simulation components using three examples: the impact of weather
+on macro-scale supply chains, foodborne illness contamination and
+spread, and a simplified cyber-attack on the power grid infrastructure.
+6.1 Supply Chains in Hurricane Season
+Our first example is the potential impact of hurricanes on North Car-
+olina’s critical infrastructure, especially our food distribution network,
+in North Carolina (NC). Our exploration begins by selecting appro-
+priate historial hurricanes for examination using the calendar view
+as shown in Figure 2, where each hurricane name, duration, and se-
+lected summary attribute (e.g., maximum hurricane wind speed) are
+provided. While we investigate the paths of these historical hurricanes,
+we see that Irene in 2011 and Sandy in 2012 passed over NC. Because
+Sandy passed over only a small area in upper NC (Fig 2 (d), red hurri-
+cane polygon), we choose to focus on Irene for further investigation.
+One interesting date is August 27, 2011 when Irene passed directly
+over eastern NC, an area with many power generation facilities, as
+shown in Figure 6 (top-right, purple circles). After we set up the wind
+tolerance value for these facilities to be 34 knot, our hurricane proxy
+instantly estimates which restaurants will be impacted based on the
+relationships between the units and the restaurants and colors the im-
+pacted restaurants red. Here, we also initiated a complete simulation
+for power outages and transportation network damage. Next, a poly-
+gon is shown representing an area where restaurants are disabled and
+which roads are blocked (bottom-left in Figure 6). To efficiently man-
+age distribution, this impact requires the food provider to change its
+:Intact  :Disabled :Delivery routes :Power Generation Unit 
+34 
+50 
+64 8/27/2011 
+Fig. 6. In this simulation, power generation units were hit by up to 34 knot during Hurricane Irene on August 27, 2011. Our hurricane proxy
+instantly estimates the impacted restaurants (right-top, left-top). Note that one distribution center (green) is outside the hurricane. After a complete
+power-grid simulation run is finished (by clicking the circled lightning button), a polygon representing the power outage area is shown. Next, this
+polygon is sent for use in computing new food delivery paths. Note that food is not delivered to the power outage area (right-bottom, red box).
+64 50 34 
+Fig. 7. If the power generation units could have resisted up to 50 knot
+wind, the number of impacted restaurants will be much smaller.
+delivery schedule, and this new routing is computed based on the im-
+pacted restaurant polygon and road conditions (e.g., blocked by flood-
+ing). After a simulation to compute the new routes (by clicking the
+truck button in a red circle, right-bottom Figure 6), we see that the
+updated delivery paths do not include the affected restaurants. The
+economic loss caused by this event is estimated based on the model
+in Section 5.3 as being up to $1.13 million. Another possible what-if
+question is “How different would the result be if the power generation
+units can resist winds up to 50 knot?” Figure 7 shows the first step of
+the analysis where we see many fewer restaurants affected compared
+to Figure 6 top-right (units are resilient to 34 knots). In this case, the
+estimated losses are less than $333,000.
+6.2 Fast Food Contamination
+Food poisoning is an illness caused by eating contaminated food
+containing viruses, bacteria and germ-generated toxins. There are
+many possible causes of food contamination including storage at in-
+appropriate temperatures [19], improper food handling, and cross-
+contamination during processing or packaging. As unfortunately ex-
+perienced several times per year, tracing back the cause of the con-
+tamination is a very difficult lengthy process. In this example, we
+explore a hypothetical scenario demonstrating how VASA can be used
+to trace-back the root causes of an incident of foodborne illness.
+To create the distribution of the ill population, we simulate the dis-
+tribution of contaminated food to stores, then simulate the illnesses in
+the neighboring areas using the simulation model discussed in Sec-
+tion 5.3. This creates the common base scenario of reports of people
+who are ill, their date of illness and their location to create the food
+contamination scenario for the trace-back investigation.
+For example purposes, we simulated these illnesses occurring dur-
+ing a three day span (September 1, 2011 to September 3, 2011) as
+shown in Figure 8. Since this is almost one week after Hurricane
+Irene, one may assume that power outages during the storm could be
+the possible reason behind the contamination. To confirm this hypoth-
+esis, we looked at the hot spots in Figure 8 and identified the stores
+closest to these hot spots. On cross comparison, we can identify the
+common products/lots in those stores, their distribution center, as well
+as their delivery mechanisms. As shown in Figure 8 bottom matrices,
+the rows represent 3 food processing centers and 4 types of food, and
+there is a column for each restaurant. Each cell is colored such that the
+darker the red color, the higher the amount of each product provided.
+Here, the restaurants in the affected area that are selected in the box in
+the top-left are highlighted with light green boxes. For stores S9 and
+S12, only one food processing center provided products, while other
+processing centers supplied most of the food throughout the network.
+Upon further inspection, one can determining that 3rd and 4th row
+product lots are common in most of the restaurants where individuals
+are. Some example routes are shown in Fig. 2 (e) where each route
+supplies 3-4 restaurants. A red bar means the supplied food and the
+green bar means the food consumed at a restaurant. Here, we see that
+a large amount of the third and fourth foods (blue circles in Fig. 2 (e))
+are delivered and will all be consumed within a few days. Therefore,
+these two product lots are good candidates for further inspection in
+tracing back the contaminated food item.
+6.3 Cyberattack on Critical Infrastructure
+Part of the mission of the VASA project is to study the impact and mit-
+igation of man-made attacks on societal infrastructure. Cybersecurity
+is becoming an increasingly important threat to modern society [11]
+(a) 9/1/2011  (b) 9/1/2011  (c) 9/2/2011  
+3 centers 
+4 foods 
+(d) 9/3/2011 
+Fig. 8. Ill people caused by contaminated food is presented using a KDE hotspot visualization. In (a), the darker location has a larger number of
+poisoned people. Brown points mean ill people in the reported location. The locations highlighted by a green box in (a) is magnified in (b), (c) and
+(d) on different dates. As the timeline shows, the number of ill people increased until 9/2/2011, then started decreasing on 9/3/2011. The bottom
+matrices show which food processing centers (1–3) were involved and which foods (1–4) were delivered to which store in 8/30/2011, two days
+before the illness. Here, the restaurants in the light green boxes are the those selected by the thicker green box in (a). We see that a large quantity
+(darkest red pixels in blue circles) of two foods (third and fourth rows) are commonly provided to restaurants in the area.
+Fig. 9. An example of the cyberattack simulation. (left) A user selects to disable power transmission by a cyberattack in the option menu and selects
+the region shown in the red rectangle. One power plant (purple dot) is included within this rectangle (shown in the dark red circle). (second-left) The
+infrastructure proxy instantly estimates the affected restaurants (red dots), and a full simulation is initiated. (second-right) Power outage regions are
+presented by the polygon, and new distribution routes are computed. (right) The new routes are shown as paths and do not include the affected
+restaurants but, unlike the hurricane scenario, all roads are available for food distribution. For comparison, see the path radiating from the polygon
+that was not allowed in the hurricane scenario.
+and may have a significant effect on an increasingly connected society
+where power plants and substations are all controlled from afar.
+While we do not yet provide a cyberattack module for VASA, many
+of the simulation components provide direct access to changing the
+state of particular infrastructure components through VASA. This en-
+ables us to simulate a cyberattack by, for example, shutting down a
+particular or several specific critical infrastructure component even if
+it is not affected by weather or other natural threats. Figure 9 shows
+a screenshot of an analyst studying precisely such a scenario where
+a power plant has been disabled by a cyberterrorist. Here the analyst
+simulates that the terrorist shuts down the power transmission grid for
+one of the two power plants in the town by drawing a red rectangle
+(left) around it. Then, the infrastructure proxy instantly estimates pos-
+sible affected restaurants and a full simulation is initiated for more
+accuracy (second-left). The simulation result is presented by a poly-
+gon and new route computations can be initiated (second-right). The
+new routes with impacted restaurants are visualized. Note that this
+routing example is different from the hurricane case because roads are
+still passable: purple paths are still shown within the polygon (right).
+7 CONCLUSION AND FUTURE WORK
+We have introduced the notion of visual analytics for simulation
+steering within the context of societal infrastructure. To our knowl-
+edge, ours is the first to study visual analytics for simulation from a
+systems-of-systems [12] perspective, where multiple heterogeneous—
+often physically distributed—systems are combined into a unified,
+more complex system in which the linkages between components
+provide a sum greater than its constituent parts. This notion tran-
+scends individual simulation models and instead chains together mul-
+tiple high-fidelity simulations into large-scale asynchronous pipelines.
+The VASA system we presented as a practical example of such an ap-
+proach is a distributed application framework consisting of a central
+Workbench controlled by an analyst and a set of loosely coupled sim-
+ulation components implemented as distributed network services.
+Big data simulation is a powerful new tool for data science, and
+while our work on applying visual analytics to this domain is concep-
+tually complete, it really only scratches the surface of what is possible.
+Future work on the VASA system will involve integrating even more
+advanced and detailed simulation components, such as high-fidelity
+power grid models, gas pipelines, and power plants for energy infras-
+tructure; bridges, tunnels, and causeways for transporation networks;
+and hospitals, police stations, and fire stations for societal infrastruc-
+ture. In doing so, we envision designing additional novel visual rep-
+resentations and interactions for configuring these components as well
+as visualizing their proxy, intermediate, and final results.
+ACKNOWLEDGMENTS
+This work was supported in part by the U.S. Department of Homeland
+Security’s VACCINE Center under award no. 2009-ST-061-CI0002.
+REFERENCES
+[1] S. Afzal, R. Maciejewski, and D. S. Ebert. Visual analytics decision sup-
+port environment for epidemic modeling and response evaluation. In Pro-
+ceedings of the IEEE Symposium on Visual Analytics Science and Tech-
+nology, pages 191–200, 2011.
+[2] C. Anderson. The end of theory: The data deluge makes the scientific
+method obsolete. Wired Magazine, June 2008.
+[3] N. Andrienko and G. Andrienko. Exploratory analysis of spatial and
+temporal data: A systematic approach. Springer Verlag, 2006.
+[4] N. V. Andrienko and G. L. Andrienko. Interactive visual tools to explore
+spatio-temporal variation. In Proceedings of the ACM Conference on
+Advanced Visual Interfaces, pages 417–420, 2004.
+[5] N. V. Andrienko and G. L. Andrienko. A visual analytics framework for
+spatio-temporal analysis and modelling. Data Mining and Knowledge
+Discovery, 27(1):55–83, 2013.
+[6] L. Anselin. From SpaceStat to CyberGIS: Twenty years of spatial data
+analysis software. International Regional Science Review, 35(2):131–
+157, 2012.
+[7] J. Biddiscombe, J. Soumagne, G. Oger, D. Guibert, and J.-G. Piccinali.
+Parallel computational steering and analysis for HPC applications using a
+ParaView interface and the HDF5 DSM virtual file driver. In Proceedings
+of the Eurographics Conference on Parallel Graphics and Visualization,
+pages 91–100, 2011.
+[8] B. Broeksema, T. Baudel, A. G. Telea, and P. Crisafulli. Decision explo-
+ration lab: A visual analytics solution for decision management. IEEE
+Transactions on Visualization and Computer Graphics, 19(12):1972–
+1981, 2013.
+[9] S. Buckley and C. An. Supply chain simulation. In Supply Chain Man-
+agement on Demand, pages 17–35. Springer, 2005.
+[10] L. Costa, O. Oliveira, G. Travieso, F. Rodrigues, P. Boas, L. Antiqueira,
+M. Viana, and L. Rocha. Analyzing and modeling real-world phenomena
+with complex networks: a survey of applications. Advances in Physics,
+3(60):319–412, 2011.
+[11] R. Deibert. Towards a cyber security strategy for global civil society?
+Technical report, The Canada Centre for Global Security Studies, 2011.
+[12] D. DeLaurentis and R. K. Callaway. A system-of-systems perspective
+for public policy decisions. Review of Policy Research, 21(6):829–837,
+2004.
+[13] H. Doleisch, H. Hauser, M. Gasser, and R. Kosara. Interactive fo-
+cus+context analysis of large, time-dependent flow simulation data. Sim-
+ulation, 82(12):851–865, 2006.
+[14] D. Fisher, I. O. Popov, S. M. Drucker, and m. c. schraefel. Trust me,
+I’m partially right: incremental visualization lets analysts explore large
+datasets faster. In Proceedings of the ACM Conference on Human Factors
+in Computing Systems, pages 1673–1682, 2012.
+[15] G. Fuchs and H. Schumann. Visualizing abstract data on maps. In Pro-
+ceedings of the International Conference on Information Visualization,
+pages 139–144, 2004.
+[16] S. Hadlak, C. Tominski, H.-J. Schulz, and H. Schumann. Visualization
+of attributed hierarchical structures in a spatiotemporal context. Interna-
+tional Journal of Geographical Information Science, 24(10):1497–1513,
+2010.
+[17] S. Havre, B. Hetzler, and L. Nowell. ThemeRiver: visualizing theme
+changes over time. In Proceedings of the IEEE Symposium on Informa-
+tion Visualization, pages 115–124, 2000.
+[18] Q. Ho, P. H. Nguyen, T. A?stro¨m, and M. Jern. Implementation of a flow
+map demonstrator for analyzing commuting and migration flow statistics
+data. Procedia - Social and Behavioral Sciences, 21:157–166, 2011.
+[19] B. C. Hobbs. Food poisoning and food hygiene. Edward Arnold and Co.,
+London, United Kingdom, 1953.
+[20] A. Kamran and S. U. Haq. Visualizations and analytics for supply chains.
+Technical report, IBM, February 2013.
+[21] R. Maciejewski, R. Hafen, S. Rudolph, G. Tebbetts, W. Cleveland,
+S. Grannis, and D. Ebert. Generating synthetic syndromic-surveillance
+data for evaluating visual-analytics techniques. Computer Graphics and
+Applications, IEEE, 29(3):18–28, May 2009.
+[22] R. Maciejewski, R. Hafen, S. Rudolph, G. Tebbetts, W. S. Cleveland, S. J.
+Grannis, and D. S. Ebert. Generating synthetic syndromic-surveillance
+data for evaluating visual-analytics techniques. IEEE Computer Graphics
+and Applications, 29(3):18–28, 2009.
+[23] R. Maciejewski, S. Rudolph, R. Hafen, A. M. Abusalah, M. Yakout,
+M. Ouzzani, W. S. Cleveland, S. J. Grannis, and D. S. Ebert. A visual an-
+alytics approach to understanding spatiotemporal hotspots. IEEE Trans-
+actions on Visualization and Computer Graphics, 16(2):205–220, 2010.
+[24] R. Maciejewski, S. Rudolph, R. Hafen, A. M. Abusalah, M. Yakout,
+M. Ouzzani, W. S. Cleveland, S. J. Grannis, M. Wade, and D. S. Ebert.
+Understanding syndromic hotspots - a visual analytics approach. In Pro-
+ceedings of the IEEE Symposium on Visual Analytics Science and Tech-
+nologoy, pages 35–42, 2008.
+[25] A. Malik, R. Maciejewski, T. F. Collins, and D. S. Ebert. Visual analyt-
+ics law enforcement toolkit. In Proceedings of the IEEE Conference on
+Technologies for Homeland Security, pages 222–228, 2010.
+[26] A. Malik, R. Maciejewski, B. Maule, and D. S. Ebert. A visual analytics
+process for maritime resource allocation and risk assessment. In Proceed-
+ings of the IEEE Symposium on Visual Analytics Science and Technology,
+pages 221–230, 2011.
+[27] K. Matkovic, D. Gracanin, M. Jelovic, A. Ammer, A. Lez, and H. Hauser.
+Interactive visual analysis of multiple simulation runs using the simu-
+lation model view: Understanding and tuning of an electronic unit in-
+jector. IEEE Transactions on Visualization and Computer Graphics,
+16(6):1449–1457, 2010.
+[28] K. Matkovic, D. Gracanin, M. Jelovic, and Y. Cao. Adaptive interac-
+tive multi-resolution computational steering for complex engineering sys-
+tems. In Proceedings of the EuroVis Workshop on Visual Analytics, pages
+45–48, 2011.
+[29] J. D. Mulder, J. J. van Wijk, and R. van Liere. A survey of computational
+steering environments. Future Generation Computer Systems, 15(1):119–
+129, 1999.
+[30] C. Ncube. On the engineering of systems of systems: key challenges
+for the requirements engineering community. In Proceedings of the
+IEEE Workshop on Requirements Engineering for Systems, Services and
+Systems-of-Systems, pages 70–73, 2011.
+[31] R. Perez. Supply chain model, April 2011.
+[32] Z. Pousman, J. T. Stasko, and M. Mateas. Casual information visualiza-
+tion: Depictions of data in everyday life. IEEE Transactions on Visual-
+ization and Computer Graphics, 13(6):1145–1152, 2007.
+[33] H. Ribicic, J. Waser, R. Fuchs, G. Bloschl, and E. Gro¨ller. Visual analysis
+and steering of flooding simulations. IEEE Transactions on Visualization
+and Computer Graphics, 19(6):1062–1075, 2013.
+[34] G. Satell. Why our numbers are always wrong. Digital Tonto, October
+2012.
+[35] G. Satell. Why the future of innovation is simulation. Forbes, July 2013.
+[36] B. W. Silverman. Density Estimation for Statistics and Data Analysis.
+Chapman and Hall, 1986.
+[37] S. Terzi and S. Cavalieri. Simulation in the supply chain context: a survey.
+Computers in industry, 53(1):3–16, 2004.
+[38] J. J. Thomas and K. A. Cook. Illuminating the Path: The R&D Agenda
+for Visual Analytics. IEEE Press, 2005.
+[39] C. Tominski, J. Abello, and H. Schumann. Axes-based visualizations
+with radial layouts. In Proceedings of the ACM Symposium on Applied
+Computing, pages 1242–1247, 2004.
+[40] J. S. Vetter and K. Schwan. Progress: A toolkit for interactive program
+steering. Technical Report GIT-CC-95-16, Georgia Institute of Technol-
+ogy, 1995.
+[41] J. Waser, R. Fuchs, H. Ribicic, B. Schindler, G. Bloschl, and E. Gro¨ller.
+World lines. IEEE Transactions on Visualization and Computer Graph-
+ics, 16(6):1458–1467, 2010.
+[42] J. Waser, H. Ribicic, R. Fuchs, C. Hirsch, B. Schindler, G. Bloschl, and
+E. Gro¨ller. Nodes on ropes: A comprehensive data and control flow for
+steering ensemble simulations. IEEE Transactions on Visualization and
+Computer Graphics, 17(12):1872–1881, 2011.
+

@@ -1,0 +1,255 @@
+3D Modeling By the Masses: A Mobile App for Modeling Buildings
+Todd Eaglin and Kalpathi Subramanian and Jamie Payton
+Department of Computer Science
+The University of North Carolina at Charlotte, Charlotte, NC, USA
+{teaglin,krs,payton}@uncc.edu
+Abstract—Knowledge of the 3D geometry of large urban
+buildings and surrounding structures is important in indoor
+navigation applications, emergencies, and evacuation response.
+Visual representations of the 3D geometry can be useful to
+users navigating unfamiliar buildings. The traditional methods
+of constructing 3D models from CAD drawings or GIS systems
+are prone to error, difficult to modify in a timely manner, can
+easily become out-of-date, and are not scalable. We exploit the
+power of current mobile devices (smartphones, tablets) and
+their 3D graphics rendering capabilities to present a mobile
+application that uses crowdsourcing to build 3D models of
+large buildings and urban structures. Our system is based on a
+client-server architecture, where users of a mobile application
+create, submit, and vote on 3D models of building components;
+the server collects and uses votes pertaining to accuracy
+and completion of a model to determine if an object may
+be approved. We describe preliminary results from using
+the system on a floor of an academic building and propose
+its deployment and demonstration during Percom 2013 for
+mapping the conference venue by meeting participants.
+Keywords-3D geometric modeling; crowdsourcing; naviga-
+tion;
+I. INTRODUCTION
+Models of 3D buildings are typically acquired from CAD
+drawings or designed using GIS systems and stored in
+databases. Most often, these tend to be in 2D with separate
+datasets for each floor of a building and additional attribute
+data held in different layers (structures). On the other hand,
+3D interactive modeling has a long history, based on 3D
+interactive graphics systems and has been in common use
+in automobile, aerospace and numerous other engineering
+applications.
+Access to 3D building data has numerous applications,
+including indoor navigation. Visual information about a
+building can be very useful in the hands of users navigating
+an unfamiliar building, especially for first responders in
+an emergency or evacuation (e.g., due to the presence
+of a fire, chemical exposure, or a threatening and armed
+individual). The proliferation of mobile computing devices
+(e.g., smartphones, tablets) and the availability of powerful
+3D graphics rendering capabilities that is currently possible
+on this platform opens up new opportunities and applications
+that were not possible even a few years ago.
+We present a 3D geometric modeler for interactive con-
+struction of building geometry on mobile devices. In addition
+to exploiting the graphics geometry processing and rendering
+power of today’s mobile computers, we use crowdsourcing
+as the means to rapidly generate 3D models and voting,
+ranking, and approval procedure. The goal is to lead to-
+wards a building a 3D model of the internal structure of
+a building that is sufficiently accurate to serve navigation
+type applications, and that can be adapted for use in other
+applications. Our design and goals are somewhat similar to
+Wikipedia[8], in that our system attains data quality and
+accuracy by empowering users to repeatedly contribute, edit
+and check the validity of the contributed data.
+Figure 1. Mobile 3D Modeler System Architecture.
+Related work in this regard includes the OpenStreetMap
+system [4]. Crowdsourcing in OpenStreetMap was a suc-
+cessful means of utilizing public efforts to effectively map
+data that would otherwise be extremely expensive. This
+work was expanded to mapping indoor locations in Open-
+RoomMap [7], exploring the potential and accuracy of map-
+ping buildings. However, the authors encountered several
+issues and the system restricted the floor plans to maintain
+accuracy. OpenRoomMap utilized manually modified archi-
+tectural drawings that outlined every aspect of the building.
+Users interacting with the system were unable to make
+modifications or alter these outlines in any way. Additions to
+the building structure, like the modifications of rooms, would
+be impossible through the current implementation. Lastly,
+the system also encountered vandalism through outside user
+participation.
+Our own earlier work on constructing 3D visualizations of
+building structures for indoor navigation used CAD drawings
+as input to build a 3D graph structure of a building [5],
+[3]. We have used the system to model over 70 campus
+academic and student residence buildings. As mentioned
+above, modifications and updates to the model in this kind of
+approach can be tedious and most building drawings are out
+of date. Kim et al. [6] focused on use of mobile devices for
+situationally-aware emergency response and training. Wood-
+man and Harley [9] focused on tracking padestrians within
+a building; they exploited sensors within mobile devices
+(compass, accelerometers) to accomplish this, however they
+assumed the existence of accurate building geometry. In
+contrast, our work does not rely on this assumption and
+instead harnesses the intelligence of the crowd to vote on
+the accuracy and completeness of user-generated models.
+Goodchild [2] surveys mapping techniques and concludes
+that crowdsourcing is a means to future mapping of urban
+spaces, given the decline and expense of commercial map-
+ping; our work provides an implementation of this approach.
+II. THE MOBILE 3D MODELER
+Fig. 1 illustrates the architecture of the mobile 3D
+modeler. The core of our design revolves around client-
+server architecture. Mobile users (clients) use an interactive
+3D modeling app on their mobile devices (currently on
+Apple iPhone/iPod/iPad devices) to construct components
+of a building. These can be rooms, hallways, furniture
+(chairs/tables, etc). The model can then be uploaded to a
+server for other users to access, augment and evaluate. Once
+these models are submitted by the user to the server, they
+are disseminated to users of the application to solicit votes
+on the created models. Votes may based on several criteria;
+currently we ask users to vote on completeness and accuracy
+of a submitted model. A model is considered to be complete
+if a room contains all existing components. The second
+measure is accuracy, which considers the dimensions and lo-
+cation of modeled objects (e.g., rooms, hallways, placement
+of furniture) as compared to the user’s knowledge of the
+ground truth of the physical space. The server tabulates the
+votes from users and uses thresholds to determine whether
+or not to approve the model as a quality representation of
+the real world. The server uses a color scale (green through
+red) to communicate the status of the object to users who
+may see the object as either pending (unapproved) objects or
+approved objects (of sufficient quality). An example model
+of the first floor of an academic building as captured by
+a user of our mobile application is shown in Fig. 2. Here
+rooms in red are waiting for additional votes, while those in
+green have received sufficient votes for approval.
+The mobile application allows users to create geometry
+through a simplified toolset and editor. The toolset in-
+cludes navigation, object creation and object modification.
+The editor includes predefined objects for creating indoor
+building geometry. The editor uses a two dimensional grid
+scaled appropriately to match the dimensions of a building
+being mapped. This environment simplifies the creation of
+geometry for users as well it also provides unification to
+every model developed. This way users are always using the
+same scale and working in the same environment. Highly
+structured models (classrooms with uniformly distributed
+furniture, for instance) are easily created by interactively
+selecting multiple tiles (representing furniture locations)
+and simply instancing the object at all selected locations.
+Grouping, ungrouping and Copy/Paste operations further
+provide scalable means to create models efficiently with
+minimal interaction.
+The server handles all communication between clients, but
+its primary task is running an automated approval process. It
+works in several steps. First, users generate models using the
+mobile application. These are then uploaded to the system
+for approval and become pending models. These pending
+models then become public for other users to view and vote
+upon. Users then submit votes back to the server. As data is
+collected, the server continually analyzes votes for pending
+models. When a specific model passes approval, the server
+will combine that model into a newly approved model that
+will be viewable by the public. Users will then be able to
+continue refining the approved model.
+The model in Fig. 2 was contributed by 2 users and took
+at total of 25 minutes to complete. This model includes 3D
+structures representing 6 classrooms (with chairs and desks),
+hallways, restroom areas, doors, and exits.
+III. IMPLEMENTATION DETAILS
+The mobile application was developed on iOS for the
+iPhone, iPod, and iPad. 3D rendering is utilized through
+OpenGL ES and GL shader language to efficiently draw and
+visualize building geometry. In our current implementation
+we store building geometry in Collada![1], an open format,
+which uses XML schema for transporting 3D assets between
+multiple applications. The format also provides a hierarchy
+that allows for relationships between objects.
+The mobile devices communicate over HTTP with an
+Apache webserver, which connects to a MySQL database.
+The webserver periodically runs the approval process,
+pulling new votes from the MySQL database. The server
+systems are written in PHP to send and receive data to the
+mobile devices. The geometric data sent from the server is
+compressed on the fly using gzip compression to maximize
+bandwidth.
+IV. DEMO SETUP REQUIREMENTS
+In our demo, we will involve conference attendees in
+using our crowdsourcing application to model the conference
+venue and to vote on constructed models. To do so, we will
+make the crowdsourcing application available in advance for
+download to conference attendees’ mobile phones. As the
+conference begins, we will encourage attendees to use the
+application to create and submit 3D geometric models that
+represent various parts of the conference venue. We will
+provide a website that shows the progress of the conference
+Figure 2. Model of the first floor of an academic building. The building contains 6 classrooms with furniture (see Inset on the left), hallways, restroom
+areas. Coloring corresponds to approval of the model components(Red has the fewest and green the highest number of votes).
+venue being mapped in real time and displays a “leader
+board” to motivate users to contribute models. During the
+live demo session, we will show attendees the models
+that have been submitted, a visualization that overlays the
+provided models over a manually constructed model of the
+ground truth of the conference venue, and the votes that
+have been received. We will also encourage attendees to use
+mobile phones that are pre-loaded with our application (we
+will provide and control these at the demo table) to vote on
+constructed models, and will encourage them to download
+the application on their own phones.
+In terms of technical requirements to support our demo,
+the crowdsourcing application requires WiFi to connect to
+the Internet in order to communicate with the server. The
+server will be hosted by our institution. We will use two
+laptops at the demo table, one to display the models, and
+another to display a visualization of the accuracy of the
+crowdsourced models; a power source is needed for these
+machines.
+V. CONCLUSION
+This demo paper presents preliminary work on a mobile
+application for constructing 3D models of buildings by
+exploiting crowdsourcing to contribute and model quality.
+We believe this approach has tremendous value, given the
+success of crowdsourcing in other domains and the fact that
+the mobile platform continues to improve in terms of com-
+puting power, storage and graphics rendering capabilities.
+We are currently working on improving usability of the
+mobile application interface to further simplify the creation
+of 3D geometry. In future work, we plan to improve and
+optimize the approval process and to incorporate incentives
+that might be helpful in engaging users to participate in
+such joint efforts. Finally, we are planning studies that will
+evaluate the feasibility of this approach and the accuracy
+of crowdsourced models; in fact, this demo provides an
+opportunity to collect data that can be used for formative
+and summative evaluation of our system.
+REFERENCES
+[1] Collada, “Digital asset and fx exchange schema,”
+http://collada.org.
+[2] M. Goodchild, “Citizens as sensors:the world of volunteered
+geography,” GeoJournal, vol. 69, no. 4, pp. 211–221, 2007.
+[3] J. Guest, T. Eaglin, K. Subramanian, and W. Ribarsky, “Visual
+analysis of situationally aware evacuations,” in Proceedings
+of SPIE Conference on Visualization and Data Analysis, Feb.
+2013, to appear.
+[4] M. Haklay and P. Weber, “Openstreetmap: User-generated
+street maps,” Pervasive Computing, vol. 7, no. 4, pp. 12–18,
+Dec. 2008.
+[5] J.Liu, K.Lyons, K. Subramanian, and W. Ribarsky, “Semi-
+automated processing and routing within indoor structures for
+emergency response applications,” in Proceedings of SPIE
+Conference on Defense, Security, and Sensing, Apr. 2010.
+[6] S. Kim, A. Mellama, D. Ebert, and T. Collins, “Visual analytics
+on mobile devices for emergency response,” in Proceedings of
+IEEE Symposium on Visual Analytics and Technology(VAST),
+Oct. 2007, pp. 35–42.
+[7] A. Rice and O. Woodman, “Crowd-sourcing world models
+with openroommap,” in Eigth annual IEEEE international con-
+ference on Pervasive Computing and Communication(Percom)
+Work-in-Progress, Mar. 2010.
+[8] wikipedia, http://en.wikipedia.org.
+[9] O. Woodman and R. Harle, “Pedestrian localisation for indoor
+environments,” in Proceedings of the 10th international con-
+ference on Ubiquitous computing, 2008, pp. 114–123.
+

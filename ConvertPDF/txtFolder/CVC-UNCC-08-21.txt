@@ -1,0 +1,606 @@
+ Multi-Focused Geospatial Analysis Using Probes 
+Thomas Butkiewicz, Wenwen Dou, Zachary Wartell, William Ribarsky, and Remco Chang
+Abstract—Traditional geospatial information visualizations often present views that restrict the user to a single perspective.  
+When zoomed out, local trends and anomalies become suppressed and lost; when zoomed in for local inspection, spatial 
+awareness and comparison between regions become limited.  In our model, coordinated visualizations are integrated within 
+individual probe interfaces, which depict the local data in user-defined regions-of-interest.  Our probe concept can be 
+incorporated into a variety of geospatial visualizations to empower users with the ability to observe, coordinate, and compare data 
+across multiple local regions.  It is especially useful when dealing with complex simulations or analyses where behavior in various 
+localities differs from other localities and from the system as a whole.  We illustrate the effectiveness of our technique over 
+traditional interfaces by incorporating it within three existing geospatial visualization systems: an agent-based social simulation, a 
+census data exploration tool, and an 3D GIS environment for analyzing urban change over time.  In each case, the probe-based 
+interaction enhances spatial awareness, improves inspection and comparison capabilities, expands the range of scopes, and 
+facilitates collaboration among multiple users. 
+Index Terms—Multiple-view techniques, Geospatial visualization, Geospatial analysis, Focus + Context, Probes.
+ 
+1 INTRODUCTION 
+A similarity across the majority of GIS applications and geospatial 
+visualizations is the singularity of the viewing perspective.  For 
+example, in map-based visualizations, the user is generally restricted 
+to viewing one region of the map at a particular zoom-level.  When 
+zoomed out to see the entire extent of the dataset, local trends and 
+anomalies, which are often of interest, become suppressed and 
+ultimately lost in the global picture, especially as the scale of the 
+dataset increases.  To discover and inspect these local details, the 
+user must zoom in to a level at which they become visible.  
+However, by doing so, one loses both the global overview and 
+context of the local region.  This both limits the user’s spatial 
+awareness and prohibits comparison between distant local regions. 
+In the model presented within this paper, coordinated information 
+visualizations are integrated directly within the main geospatial 
+visualization.  User defined regions-of-interest are linked to each 
+coordinated visualization, delineating which data is presented in each 
+visualization.  Furthermore, these interfaces, which we call probes, 
+allow the user to interact directly with the geospatial data within the 
+regions-of-interest as well.  By using multiple probes, the user can 
+simultaneously observe and interact with many different local 
+regions across the entire range of scales (ranging from global to the 
+smallest individual units) without losing spatial awareness.  This is 
+particularly useful when dealing with complex simulations or 
+analyses in which the local values and behaviors are differ greatly 
+from each other and/or the system as a whole.   
+To illustrate the general usefulness of our probe concept for 
+enhancing geospatial visualizations, we incorporate it within three 
+unique existing applications.  First we apply probes within a 3D 
+geographic information system (GIS) environment used to visually 
+explore the changes (new buildings, etc) detected (using aerial laser 
+range-finding) to a urban area between years.  The second 
+application we augment is designed for visual analysis of census data 
+across large urban areas.  Finally, we create a new, entirely probe-
+based interface for an agent-based social simulation that models the 
+various factions and behaviors of an entire country.  In each case one 
+can see benefits including uninterrupted spatial awareness, improved 
+inspection and comparison capabilities, ability to view data at 
+multiple scales simultaneously, and increased potential for 
+collaboration among multiple users.  These common benefits are 
+then more elaborately discussed in a more general context within 
+Section 5. 
+We also perform a informal user evaluation with experts in both 
+GIS and architecture.  Each group was presented with the original 
+applications and their probe-enhanced counterparts.  It was obvious 
+that these everyday users of geospatial visualization applications had 
+all encountered some of the shortcomings we address in this paper.  
+Their comments confirm that, with the addition of probes, the 
+presented applications become increasingly effective with more 
+intuitive interaction. 
+2 PREVIOUS WORK 
+Donelson’s [5] Spatial Data Management System presents a large 
+projected display of a 2D graphical information space.   The 
+interface is two-handed, supporting panning and zooming.   Two 
+joysticks, a tablet, and two secondary monitors that are touch 
+sensitive are provided.   One monitor displays a “world view” of the 
+entire information space along with a ‘you-are-here’ rectangle which 
+provides visual context for the user as he views a particular 2D 
+region on the large display.   The other monitor, “the key maps 
+monitor,” shows auxiliary information such as a chapter outline 
+when the main screen displays text files, or a time-line when the 
+main screen displays video. 
+Furnas [8] describes generalized fisheye views.   In the spatial 
+domain, the metaphor is a fisheye camera lens that shows higher 
+detailed, less distorted imagery toward the center of the field-of-view 
+and less detailed, compressed imagery toward the outer field-of-
+view.   In additional to the geospatial example of Steinberg’s famous 
+poster “New Yorker’s View of the United States”, Furnas presents 
+experimental studies showing that people’s concepts of complex 
+non-spatial structures also exhibit fisheye character.   Furnas presents 
+Degree of Interest functions to describe fisheye display of 
+information for both spatial and non-spatial data.   He also 
+acknowledges the significance in geospatial contexts of supporting 
+multiple foci in fisheye views.   He gives an example of a person 
+who has lived in multiple states whose mental map of the geography 
+is fisheye in character but with foci at each location in which he has 
+lived.   In the context of non-interactive cartography, Kadmon and 
+Shlomi present a mathematical approach for such multi-focal map 
+rendering [11].   Our modification to the UrbanVis [4] tool applies 
+the multiple foci concept but in 3D, driven by a ‘urban legibility’ 
+ 
+• All authors are with The Charlotte Visualization Center, UNC Charlotte, 
+E-Mails: tjbutkie, wdou1, zwartell, ribarsky, and rchang @ uncc.edu. 
+ 
+Manuscript received 31 March 2008; accepted 1 August 2008; posted online  
+27 October 2008. 
+For information on obtaining reprints of this article, please send e-mail to: 
+tvcg@computer.org. 
+level-of-detail algorithm.   Leung and Apperley [12] give an 
+overview of distortion based techniques circa 1994.   
+More recently, Furnas [9] focuses not on the variations of 
+geometric distortion, but on the different degree-of-interest (DOI) 
+functions and how these determine what information is and is not 
+included in the display.   He discusses how this concept can be 
+carried to non-visual domains as well.    
+Bier et al. [1][2] present the Toolglass and Magic Lenses, a see-
+though 2D, two-handed GUI interface.   The Toolglass and Magic 
+Lens are see-though windows whose positions are controlled by the 
+user’s second hand with a trackball+wheel device.   The user’s first 
+hand controls a regular mouse and pointer.   Graphical filters in a 
+toolglass can be overlaid on other objects to reveal alternate visual 
+representations while the mouse cursor continues to allow direct 
+manipulation of the objects through the Toolglass.   Bier et al. cite 
+earlier works with similar concepts of filters for changing 
+information in visualized systems but these earlier works lacked the 
+metaphor of a movable lens.  Viega et al. [14] extend the concept of 
+Magic Lens to 3D including both flat, planar lenses and volumetric 
+lenses.    
+Perlin and Fox [13] introduce the zoomable 2D Pad interface.   
+This interface includes portal filters, which show “non-literal views 
+of cooperating objects.”   For instance, when a portal filter is position 
+over tabular data, within the portal a bar chart could be displayed. 
+Our concept of probes relates to this prior work as follows:  We 
+start with a View+Closeup [9] implementation of the Focus+Context 
+metaphor.   However, the user can define, place and scale multiple 
+regions in the view for which the Closeup windows, or insets, are 
+generated.   The interactive manipulation of the regions-of-interest 
+(ROI) boundaries and the fact that the view geometry within the ROI 
+are drawn in an specialized manner borrows from Magic Lens and 
+portal filters.   However, while Magic Lens or portal filters just 
+present an alterate rendering of the selected geometry in the main 
+view, with probes an additional inset window displays  secondary 
+representations of the selected data.   Unlike a standard 
+View+Closeup inset in cartography, this inset is typically an 
+alternate 2D infovis representation of the data in the ROI.   Further, 
+the inset window can contain interactive controls that affect the ROI 
+and the inset’s infovis graphic supports linked brushing.   Compared 
+to a Toolglass, the a probe inset pane with interactive controls 
+decouples the ROI from the location of the controls.    Significantly, 
+probes are more than just labeled push-pins found in physical and 
+digital 3D maps such as Google Earth [10].    Push-pins are not areal 
+and labels are not dynamically varying infovis displays with optional 
+2D GUI controls.   Commercial GIS tools such as ArcGIS [6] 
+provide map views, tabular views and various basic graphing 
+capabilities but it is not possible to interactively tie a multiplicity of 
+these latter two view types to a multiplicity of ROIs on the map 
+view.  
+3 PROBES 
+The main building blocks of our design are probes.  We define a 
+probe as a pair consisting of a user-defined region-of-interest and a 
+pane containing any variety of information visualizations 
+coordinated to depict and interact with the data within that region-of-
+interest.  The region-of-interest and the visualization pane are linked 
+either directly (e.g. by a line) or indirectly (e.g. the region-of-interest 
+and the pane’s background are shaded the same color).   
+To create a probe, the user selects a region-of-interest (e.g. 
+specifying a central focal point and extent radius, or through manual 
+selection for irregularly shaped regions) and then chooses a location 
+for the visualization pane to be overlaid directly within the main 
+geospatial visualization.  Once created, a probe visually presents a 
+focused, local view into the dataset/model along with an intuitive 
+visual linkage back to the overall dataset/model.   
+ 
+Fig. 1.  Shown here is the original interface for the urban LIDAR 
+change application.  The main window (right) presents a 3D fly-around 
+view of the county.   To the side, a heatmap (upper left) shows the 
+global distribution (in height and area) of all changes across the entire 
+county.  The heat map can also be used to filter which changes are 
+presented in the main window. 
+4 APPLICATIONS 
+We begin by presenting the results of integrating our probe concept 
+into three tested and published applications.  In each case, we 
+describe the limitations of the original application, and discuss the 
+benefits gained by applying the probe concept. 
+It should be noted that inserting our “on-demand” probes within 
+an application will never remove or limit existing capabilities and 
+functionality, but always adds benefits such as extending beyond a 
+single-perspective,  adding multi-focus and multi-scale inspection 
+and interaction, and increased potential for collaborative use. 
+4.1 Urban Change in a 3D GIS Environment 
+The first application we integrate probes within is a 3D GIS 
+visualization.  This primary function of this application is to detect 
+changes such as construction, deforestation, etc. in an urban 
+environment between annual aerial LIDAR scans [3] (Figure 1).  
+Aside from the primary 3D GIS view, a heatmap is presented on the 
+side to depict the global distribution of the changes (in height and 
+area) across the entire urban environment.  Filtering is allowed on 
+the heatmap, which controls the visibility of changes in the 3D view 
+based on their area and height measurements.  
+Similar to most traditional GIS applications, this visualization 
+allows for a single perspective that is directly tied to the viewable 
+screen area.  When the user zooms into a small region, it is difficult 
+to maintain the global overview and context as the single perspective 
+limits the user’s spatial awareness.  Conversely, as the user zooms 
+out, local details become suppressed and difficult to see.   
+Furthermore, since the heatmap is tied directly to the user’s 
+perspective, there is no easy way to compare the trends and patterns 
+of two or more regions without saving the images to file and 
+comparing them offline.  
+Probes are introduced to this visualization to remedy these issues.  
+A user defines a region-of-interest using a mouse, and a probe 
+interface appears directly within the 3D view.  Within the probe 
+interface is the heat map visualization, now showing the distribution 
+of only those changes within the region-of-interest.  Also present are 
+the filtering controls, here again their domain switches from global to 
+local filtering.  Multiple probes can be added on the same display, 
+and they are differentiated based on the colors of the probes and the 
+highlights of the regions-of-interest (Figure 2).   
+ Fig. 2.  Shown here, the user has selected two regions-of-interest, the 
+blue is a commercially zoned district, and the red mostly residential.  
+The visualizations for each probe present a heat map showing the 
+distribution (in height and area) of changes detected in the respective 
+regions-of-interest.  The magenta arrow points to a concentration of 
+changes found only in the residential region.  This region on the heat 
+map can then be used as a global filter, revealing other similar new 
+residential developments elsewhere. 
+In the scenario presented in Figure 2, the user selects two regions-
+of-interest on the terrain.  The first region, shown in blue, consists 
+primarily of commercial buildings.  The second region, shown in red, 
+is a partially rural area that contains a number of new residential 
+developments under construction at the time.  It is clearly visible that 
+the distributions in these two regions are different by examining their 
+corresponding heatmaps.  The magenta arrow in Figure 2 shows a 
+concentration of changes found only in the second, residential 
+region.  This region can then be used to filter the entire county, 
+revealing all the similar new residential developments. 
+Even in this simple example, the power of the probe interface is 
+apparent.  The user can now examine regions from afar so as to 
+maintain spatial awareness in relation to the surrounding regions.  
+With the heatmaps displayed directly in the 3D view, the user can 
+easily relate the abstract information visualizations with their 
+corresponding spatial locations.  Even more importantly, comparison 
+between locations is now trivial as the heatmaps can be juxtaposed 
+for immediate comparisons. 
+4.2 Census Data Exploration Tool 
+UrbanVis [4] is an application designed to explore an urban 
+environment and its corresponding census information by combining 
+a 3D urban model view with an abstract information visualization 
+view (Figure 3).  With the use of the yellow sphere as control, the 
+user can interactively navigate an urban environment and explore 
+relationships between spatial and abstract information in a multi-
+resolution manner. 
+Unlike the LIDAR system described in the previous section, 
+UrbanVis already separates the region of interest (as denoted by the 
+yellow sphere) from the visible screen area.  This view independence 
+allows the user of UrbanVis to explore the urban model while 
+retaining spatial awareness.  However, similar to the LIDAR system, 
+UrbanVis allows for only a single perspective and therefore cannot 
+support comparison of different localized regions. 
+By applying the probe concept to UrbanVis, the user can now 
+interact with multiple regions of interest in the 3D model view.  As 
+shown in Figure 4, each region of interest is now accompanied by an 
+information panel exactly like the one shown on the left of Figure 3.  
+The information panels can be moved around directly on the 3D 
+model view but are always connected to the yellow spheres by a 
+(white) line to maintain a clear relationship between the two.  When 
+two information panels are placed next to each other, the differences 
+and similarities between the two local regions become apparent. 
+ 
+ 
+Fig. 3.  Shown here is the original interface of the UrbanVis 
+application.  It consists of both a 3D map view (right), used to select a 
+region-of-interest, and a coordinated visualization (left). 
+ 
+Fig. 4.  After modification to utilize probes,  the user can now select 
+multiple, variable sized regions-of-interest within the 3D view.  Each 
+region-of-interest is then linked to a resizable version of the original 
+coordinated information visualization.  By resizing the panels for each 
+probe, the user can control the granularity/abstraction of the depiction 
+of the data from the probe.  Resizing is extended further in Figure 5. 
+ 
+Fig. 5.  Shown here, the coordinated visualizations for each probe 
+have been limited to solely the parallel coordinates view and resized to 
+the point where each shows only the most general view of the 
+associated data.  Here the probes begin to resemble “flags” stuck in 
+the map, giving a simple representation, allowing for quick visual 
+comparison. (Assuming the user knows how to interpret them.) 
+The comparison capability gained from using probes in UrbanVis 
+is obvious.  However, another subtle but relevant advantage is that 
+the resizable information panel allows the user to “annotate” regions 
+using small information panels (Figure 5).  These small information 
+panels now act like glyphs in that they give an aggregated, high-level 
+overview of the selected regions of interest without taking up much 
+screen real estate. 
+4.3 Agent-based Social Simulation 
+Our agent-based simulation and visualization tool is created to 
+visualize the results of a live agent-based simulation that allows a 
+user to experiment with different social theories and scenarios in 
+Afghanistan.  Like the two visualizations described in Section 4.1 
+and Section 4.2, we apply the probe concept to an existing 
+visualization of the agent-based system (Figure 6).  However, unlike 
+the previous two visualizations, the introduction of probes 
+transformed the agent-based tool nearly completely. 
+Like the original LIDAR system, the agent-based tool is also 
+limited to a single perspective that is tied to the viewable map area.  
+Similarly, the additional infovis views in the agent-based tool such 
+as the bar chart and the time-series view are also tied to this single 
+perspective.  However, unlike the LIDAR system or UrbanVis, the 
+main purpose of the agent-based tool is for the user to manipulate 
+variables within the simulation and visualize the effects of the 
+changes.  Most of these variables are global in that they affect the 
+simulation of the entire country, some are tied to fixed single 
+locations or a specific regions.  It is clear that without proper 
+organization, an exponential number of controls are needed to 
+capture all combinations of all the variables.  In fact, Figure 6 shows 
+some of the 150+ sliders that were needed to operate a few relatively 
+simple social theories. 
+ 
+ 
+Fig. 6. The simulation’s original interface.  Notice the large portion of 
+screen-space dedicated to sliders and other control elements. 
+ 
+ 
+Fig. 7. An example workspace in our new, probe-based interface.  
+Notice that the user can add any number of different overview maps.  
+Probes can then be inserted into these maps, spawning linked 
+coordinated visualization/interaction panes.  This extends observation 
+and interaction across all levels, from global to individual cells. 
+In addition to the issue of over-crowding from excessive sliders 
+shown in Figure 6, the agent-based tool suffers another equally 
+severe interaction issue, in that the sliders offer no spatial context in 
+terms of their relationships to the corresponding geographical 
+regions.  Users and observers of this agent-based simulation are often 
+left wondering what slider to operate in order to affect a specific 
+region of interest.  This incongruity between the visualization and its 
+controls greatly diminishes the effectiveness of the simulation as an 
+experimental platform for testing social theories.  
+By applying our probe concept, we can greatly increase the 
+effectiveness of the interface.  As can be seen in Figure 7, multiple 
+instances of maps are now allowed, with each map colored based on 
+a particular dimension in the data (e.g., ethnic group, loyalty, etc.).  
+However, most importantly, the 150+ sliders can now be replaced by 
+an “on-demand” tabbed control panel of sliders directly associated 
+with each probe (Figure 8).  This combination of sliders with geo-
+located probes makes the effect of each slider intuitive and obvious, 
+in that interaction with a slider now only effects the region tied to its 
+corresponding probe.  
+The implication of a visualization that has capabilities for both 
+passive inspection and active manipulation is striking.  As shown in 
+Figure 8, the user has selected two nested regions to test the impact 
+of an increased economy in a small selected region and its effect in 
+the surrounding areas.  With the probe interfaces, the user can 
+directly modify the economy of the small selected region and 
+observe its effects in the probe associated with the surrounding areas.  
+In this example, it appears that as the residents of the selected small 
+region increase in wealth, the population of Taliban agents 
+diminishes in the surrounding area. 
+ 
+ 
+Fig. 8.  The use of localized control capabilities is shown in this 
+scenario.  Here, the user places a probe (the smaller circle) over the 
+city of Kabul and expands the control section of that probe’s interface 
+and manipulates local variables to test out a new social theory within 
+the city limits.  A second probe (the larger circle) has been added to 
+encompass the surrounding region, which has some pockets of 
+Taliban loyalists (brown cells).  This probe is setup to graph the 
+relative populations of various factions over time.  The user can easily 
+see that after the new social theory is enacted within Kabul, the 
+number of Taliban agents (white line) in the surrounding decreases. 
+ Fig. 9.  Shown here, the user has created two probes, one over a 
+Taliban-controlled area (magenta circle/brown cells) and one over a  
+Coalition-controlled area (yellow circle/green cells).  Each is set to 
+display the relative populations of each type of agent using parallel 
+coordinates.  Then by choosing to create a direct comparison (bottom 
+right pane) of the two probes, the user can see the values from each 
+region-of-interest together in a single visualization. 
+A common task when testing social theories is to directly 
+compare two regions-of-interest.  With the probe interface, this task 
+is again trivial and obvious.  As shown in Figure 9, a comparison 
+pane can be created between two existing probes to visualize the 
+relationships between the two regions.  Numerous possible 
+operations are possible within this framework.  In this example, the 
+user has selected a “union” operation, combining the two selected 
+regions into a single view, immediately revealing the differences in 
+population characteristics. 
+The most obvious benefit gained by adding probes to this 
+application is the ability to inspect multiple local regions at once.  
+Where the original fixed coordinated visualizations once reflected 
+the global model’s values, we now have any number of dynamically 
+created visualizations each able to reflect the values in regions-of-
+interest of every size and shape imaginable.  We can now provide 
+superior comparison capabilities by directly presenting regions-of-
+interest together or against each other in their own visualizations.   
+The probe interface also allows for geospatial-based manipulation 
+of the simulation and visualization; the user gains the freedom to 
+choose regions-of-interest of any size and shape and interact with 
+their properties directly, allowing for easy experimentation of 
+complex social theories and immediate visualization of their effects.  
+Finally, by replacing the static interface with a unrestrained 
+workspace, enabling and encouraging the user to add and remove 
+“on-demand” interface elements as needed, we not only remove the 
+original clutter and wasted screen space, but also extend the single-
+user application into one that has potential to support multiple users.  
+5 EVALUATION 
+We performed informal evaluations of our probe-enhanced 
+applications to solicit feedback regarding the usefulness over the 
+previous interfaces.  Each of the three systems were presented first in 
+their original form, and then with probes to two audiences, each with 
+a mixture of both faculty members and graduate students.  The first 
+group consisted of thirteen participants from the Center for Applied 
+GIScience at UNC Charlotte, while the second group consisted of 
+eight participants from the College of Architecture at UNC 
+Charlotte.  A few participants had previous experience designing and 
+working with the original UrbanVis. 
+5.1 View Independence 
+Using probes removes the burden of having to change zoom-levels to 
+inspect local data.  By preserving the global view, we ensure that the 
+user always perceives the overall dataset.  Visually depicting the 
+selected regions-of-interest directly on the global view ensures that 
+the user always knows the context of the local region.  By using 
+multiple probes, distant local regions can now be simultaneously 
+inspected and directly compared onscreen, alongside the global view.  
+This preserves maximum spatial awareness and decreases the 
+navigation required to switch between zoom-levels. 
+Many participants identified the issue of loss of spatial awareness 
+when constrained to a single perspective as one they have 
+encountered in their work.  Even though some of their existing 
+applications have the ability to present multiple camera views (e.g. 
+3D modelling suites), one participant noted that “when trying to 
+navigate in true 3D space, you often lose track of where something is 
+in [the overall] space,” while another elaborated that “where there’s a 
+lot of data….its important to be able to drill down” but that 
+“sometimes you dive into detail on something and its not easy to 
+navigate your way back out again.”  They saw our work as being a 
+solution to this problem, in that “all [the probes] are organized by the 
+overall metaphor of the map, so it really does help a lot [to know 
+that] this window relates, in this way, to the other windows” and that 
+this linkage “allows you to navigate more fluidly between different 
+parts.” 
+5.2 Multi-Focus Inspection 
+Probes allow the user to dynamically specify regions-of-interest and 
+select from a wide variety of “drop-in” information visualizations.  
+An assortment of methods are appropriate for selecting regions-of-
+interest: circular regions can be generated from a focal point and an 
+extent, irregular regions can be selected manually unit-by-unit, etc.  
+Extending the target of a coordinated visualization beyond what is 
+merely onscreen at the time to these more flexible and precise 
+regions improves both relevancy and accuracy.  By allowing 
+different visualizations to be tied to each probe, we can perform a 
+wider range of inspections at one time than if we were limited to a 
+traditional coordinated visualization interface. 
+By using multiple probes, the user can select multiple local 
+regions and view their values side-by-side, or directly together in a 
+comparison pane, always along with a global reference for overall 
+context.  This removes cognitive memory requirements, avoids 
+change blindness, and speeds up comparison. 
+All participants appreciated the view independence and multi-
+focus aspects allowing them to access lower-level information about 
+multiple local regions, while preserving the higher-level overview.  
+The multiplicity of scales available for visualization simultaneously 
+was also well received, with one participant specifically commenting 
+that “having multiple scales is incredibly interesting, because at 
+different scales you may be starting to visualize different processes.” 
+The comparison abilities were also identified as attractive by the 
+participants, one noted that having that capability in her application 
+would make it  “a lot easier to compare all my variables [while 
+looking at it] quickly.” Being able to investigate multiple regions 
+without “having to go through the steps of selecting them and then 
+opening up attribute tables” was described as “fast and intuitive.” 
+5.3 Location-specific Manipulation 
+The creation of probes at a multitude of different shapes and sizes 
+not only enhances inspection capabilities, but interaction capabilities 
+as well.  The user is no longer limited to applying adjustments and 
+controls specific predetermined scales.  This extends once global 
+controls into specific local regions, empowering the user to more 
+precisely interact with the data.  
+Several participants expressed enthusiasm about our probe 
+concept’s potential to enhance their own existing projects with 
+locally-tied interaction.  Their projects included a landslide hazard 
+analysis application, an interactive disease outbreak map, and a 
+cellular urban growth simulation.  The cellular urban growth 
+simulation was the center of much discussion, as it had many 
+parallels to the agent-based social simulation discussed in Section 
+4.3.  In particular they saw the probes as an attractive method of 
+being able to “change parts of the simulation…and affect the 
+simulation locally,” and “a really exciting opportunity to take to the 
+decision makers.” 
+6 CAVEATS 
+An obvious but important issue, well know in the GIS community 
+and raised by several participants, that must be discussed in relation 
+to this work is the modifiable areal unit problem (MAUP) [7].  
+Variations in how local areas are delineated can cause comparisons 
+between the visualizations of their aggregated values to be 
+misleading.  A classic example is crime-mapping, where many times 
+crimes are recorded and reported per police beat, can be argued to be 
+an inferior and misleading region choice as opposed to aggregating 
+the reports instead by local neighborhoods, each with equal numbers 
+of homes.  Scale also plays a role in the MAUP, as local variation 
+can be lost when aggregated into a larger region (a problem partially 
+solved by our multi-scale probes) as well as misleading comparisons 
+when comparing local regions of significantly different size (e.g. 
+area or population.)  In summary, often care must be given to how 
+local regions are selected for aggregation, to ensure that the 
+selections are meaningful, equal, and of similar scale; since we leave 
+region selection to the user, a potential improvement to this work is 
+providing assistance in selecting regions with similar characteristic 
+for more accurate comparison. 
+There are possible scalability issues that may arise when probes 
+are implemented within applications requiring significant processing 
+to render their information visualizations.  What may have been 
+sufficiently fast to draw in a single inset view, may be too slow for 
+deployment across multiple probes.  This is especially true if the 
+visualization requires extra calculation to aggregate information to 
+condense itself to a smaller screen size.  The UrbanVis application 
+detailed in Section 4.2, for example, ran much slower under the 
+strain of having to calculate multiple levels-of-detail and 
+aggregations for each region-of-interest, something it was not 
+originally designed to do efficiently. 
+Another issue arises from overlapping regions of interest denoted 
+by probes.  This is particularly problematic and ambiguous if direct 
+data manipulation is allowed on each probe, as is the case in the 
+agent-based system.  This overlap creates a one-to-many mapping 
+issue, since there can be multiple controls affecting one area.  There 
+are some obvious solutions to alleviate this problem, such as 
+prompting the user when a conflict arises.  However, we find this 
+problem to be more application- and domain-specific, and effective 
+solutions may be found on a case-by-case basis. 
+7 DISCUSSION 
+Although in this paper we demonstrate the effectiveness of applying 
+probe interfaces to geospatial visualizations, we believe that this 
+concept can be applied to more abstract data spaces as well.  The 
+most obvious visualizations that can benefit from this are tools that 
+present a spatial layout in which the locations of data items are of 
+importance, such as in an organizational chart or graph layout.  
+However, it is also conceivable that this type of interface can be 
+extended to any information visualization that presents an overview 
+that can be drilled into further.  In theory, this probe-based interface 
+should be very generalizable, and we look forward to exploring the 
+possibility of applying this interface to other types of visualizations. 
+We remove fixed single perspective interfaces, and instead allow 
+the user to dynamically insert interface elements anywhere they are 
+needed.  There is an immediate benefit of this style of interaction for 
+collaboration, as there are no theoretical limits to the number of 
+probes or map instances.  Multiple users can interact with the same 
+visualization at the same time without interfering with each other’s 
+views.  The most obvious interface device for deploying this kind of 
+probe-based visualization is a multi-touch table, which has been 
+demonstrated to be an effective medium for a multi-user 
+environment.  As the popularity of touch surfaces increases, we hope 
+that our interface and its future extensions will be widely used and 
+applied.     
+8 CONCLUSION 
+We have presented a probe-based concept that can be used to replace 
+or supplement the single perspective, fixed interfaces of traditional 
+geospatial visualization applications.  Coordinated information 
+visualizations, linked to user defined regions-of-interest, become 
+directly integrated within the main view.  Interaction controls are 
+also relocated within dynamic "on-demand" interfaces, reducing 
+clutter and allowing for local control across the entire range of 
+scales.  Together, these changes bring many benefits including view 
+independence, multi-focus inspection, location-specific  
+manipulation across the entire range of scales, and increased 
+potential for collaboration. 
+We demonstrate the usefulness and applicability of our methods 
+by modifying three unique geospatial applications to utilize probes.  
+In each case we can see the benefits gained by moving away from 
+traditional single-viewpoint interfaces.  Our informal evaluations 
+with experts in GIS and architecture confirm that with the addition of 
+probes, the three geospatial visualization and analysis tools become 
+more useful and intuitive. 
+ACKNOWLEDGEMENTS 
+This work is partially supported by the Army Research Office under 
+contract no. W911NF-05-1-0232.  Partial funding was also received 
+from the Defense Advanced Research Projects Agency (DARPA) of 
+the U.S. Department of Defense (U.S. DoD). 
+REFERENCES 
+[1] E. Bier, M. Stone, K. Pier, W. Buxton, T. DeRose, “Toolglass and 
+magic lenses: the see-through interface,” In Computer Graphics 
+(Proceedings of SIGGRAPH 93), pp. 74-80, 1993. 
+[2] E. Bier, M. Stone, K. Pier, K. Fishkin, T. Baudel, M. Conway, W. 
+Buxton, T. DeRose, “Toolglass and magic lenses: the see-through 
+interface,” Proceedings of CHI ‘94, pp. 445-446, 1994. 
+[3] T. Butkiewicz, R. Chang, Z. Wartell, W. Ribarsky, “Visual Analysis 
+and Semantic Exploration of Urban LIDAR Change Detection,”  
+Computer Graphics Forum/EuroVis, 2008. 
+[4] R. Chang, G. Wessel, R. Kosara, E. Sauda, W. Ribarsky, “Legible 
+Cities: Focus-Dependent Multi-Resolution Visualization of Urban 
+Relationships,” IEEE Trans. Visualization and Computer Graphics, vol. 
+13, issue 6, pp. 1169-1175, Nov-Dec 2007. 
+[5] W. C. Donelson, “Spatial management of information,” In Computer 
+Graphics (Proceedings of SIGGRAPH 78), pp. 203-209, 1978. 
+[6] ESRI, ArcGis website, http://www.esri.com/software/arcgis/, 2008. 
+[7] A. S. Fotheringham, D. W. S. Wong, “The modifiable areal unit 
+problem in multivariate statistical analysis,” Environment and Planning 
+A, vol. 23, no. 7, pp 1025-1044, 1991. 
+[8] G. W. Furnas, “Generalized fisheye views,” SIGCHI Bulletin, vol. 17, 
+no. 4, pp 16-23, 1986. 
+[9] G. W. Furnas, “A fisheye follow-up: further reflections on focus + 
+context,” Proceedings of CHI ‘06, pp. 999-1008, 2006 
+[10] Google Inc., Google Earth website, http://earth.google.com/, 2008. 
+[11] N. Kadmon, E. Shlomi, “A polyfocal projection for statistical surfaces,” 
+Cartography J., 15, 1, pp. 36,-41,  1978. 
+[12] Y. K. Leung, M. D. Apperley, “A review and taxonomy of distortion-
+oriented presentation techniques,” ACM Trans. Computation Human 
+Interaction, vol. 1, no. 2, pp. 126-160, 1994. 
+[13] K. Perlin, D. Fox, “Pad: an alternative approach to the computer 
+interface,” In Computer Graphics (Proceedings of SIGGRAPH ‘93), pp. 
+57-64, 1993. 
+[14] J. Viega, M. J. Conway, G. Williams, R. Pausch, “3D magic lenses,” 
+Proceedings of ACM UIST ’96, pp. 51-58, 1996. 
+

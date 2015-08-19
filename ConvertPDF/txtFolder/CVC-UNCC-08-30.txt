@@ -1,0 +1,203 @@
+Integrating visual analysis with ontological knowledge structure
+Xiaoyu Wang? Wenwen Dou Seok-won Lee William Ribarsky Remco Chang
+Visualization Center, UNC Charlotte
+ABSTRACT
+Most existing visual analytical tools that incorporate knowledge are
+tailored for specific analytical tasks. Although these tools are useful
+and powerful, it is often difficult to generalize the approaches uti-
+lized in these tools for knowledge incorporation to new problems
+or domains. In this paper, we propose a method for integrating a
+visual analytical tool with an ontological knowledge structure such
+that concepts can be dynamically created or modified through the
+ontology while the overall system retains the exploratory capabili-
+ties of the visual tools. In order to understand how such integration
+is possible, we first examine the roles of the visualization and the
+ontology. The relationship between the two then depict a gener-
+alizable model that describes the types of communication that are
+useful and practical between the visualization, the ontology, and the
+user.
+1 INTRODUCTION AND RELATED WORK
+The incorporation of knowledge into the process of solving analyti-
+cal tasks is a fast emerging area in visual analytics There have been
+many notable publications in this new area that demonstrate the
+value of integrating domain knowledge into visualization. Ling et
+al presented a traffic analysis system to analyze network traffic us-
+ing knowledge representation [2]. However, with few exceptions,
+the process of knowledge integration utilized in these publications
+is often specific to the task or the domain, making it difficult to
+generalize into new problem areas.
+In this paper, we propose our method to integrate a visual ana-
+lytical tool with an ontological knowledge structure such that con-
+cepts can be dynamically inserted or modified through the ontology
+while the overall system retains the exploratory capabilities of vi-
+sual tools. A concept refers to user’s understanding of data, whether
+inspired from internal knowledge or external knowledge sources.
+For example, when the user is trying to determine the volume of a
+cube based on its three dimensions (width, height, length), the con-
+cept is in the relationship between the volume and the product of the
+three dimensions. This simple concept could then be represented
+as an equation and stored in an ontological structure. By utilizing
+such concepts in a visualization, an analysis could be performed at
+a higher level instead of faithfully representing the original data.
+In order to understand how a visualization could be connected to
+a knowledge structure to utilize the concepts stored within, we first
+examine the functional relationship between a visualization and an
+ontological structure. Visualization is commonly accepted to be
+useful in exploring data, through which the user could gather infor-
+mation and make conclusions based on visual patterns. On the other
+hand, an ontology provides an explicit conceptualization (i.e.,meta-
+information) that describes the semantics of the data. [1] Similarly,
+our ontological structure focuses more on allowing a user to cre-
+ate concepts and then later on reusing these concepts to assist the
+discovery of inferential information. Although visualization and
+?e-mail: xwang25,wdou1,seoklee,ribarsky,rchang@uncc.edu
+ontology are seemingly disjoint, we believe that they could com-
+plement each other in solving analytical tasks (Figure 1A).
+Figure 1: (A) The relationship between visualization and an ontolog-
+ical structure (B) A communication model derived from the relation-
+ship in Figure 1A
+This complementary relationship, as elaborated in section 2, is
+the basis of our model, which describes the types of communication
+that are useful and practical between the visualization, the ontology,
+and the user (Figure 1B).
+In the important work by Gilson et al [3], they proposed a well-
+defined generalizable approach for automatic generation of visu-
+alizations via ontology mapping and applied the approach to web
+data. Although both approaches utilize visualization and ontolog-
+ical knowledge structure, our approach focuses more on dynami-
+cally creating, sharing and storing concepts to support visual ana-
+lytical tasks.
+In the remainder of this paper, we present our understanding of
+the complementary functional relationship between visualization
+and ontology in section 2. In section 3, we demonstrate several
+possible scenarios and applications of our approach. Finally, we
+provide our conclusion and future work in Section 4.
+2 FUNCTIONAL RELATIONSHIPS BETWEEN VISUALIZATION
+AND ONTOLOGY
+In order to integrate the visualization with the ontological knowl-
+edge structure, we need to understand what their relationship is
+and why the integration is meaningful. By examining visualization
+and ontological structure separately, we discover a complementary
+functional relationship between the two, as shown in the Venn di-
+agram Figure 1A, in which orange and blue circles represent func-
+tions of visualization and ontological structure, respectively.
+As shown in the overlapping region of Figure 1A, both visualiza-
+tion and ontological structure share similar functions that could pro-
+vide specific information, in the forms of visual selections and data
+queries respectively. For example, when searching for risk level
+higher than 0.4, the user could either filter the corresponding data
+dimension with Parallel Coordinates to location those information,
+or equally, they could write a data query directly to the ontology.
+(”select * from riskDB where riskLevel > 0.4”).
+However, the functions of the visualization and the ontological
+structure are not always similar, due to the different ways of inter-
+preting and representing information. As mentioned previously, vi-
+sualization is good at supporting the exploratory reasoning process,
+while ontological knowledge structure focus more on assisting the
+user in creating and storing concepts.
+For example, when a user wants to explore the interrelationship
+of two tuples X and Y, both the visualization and the ontological
+structure could provide different yet valid information. Through
+interaction with the Parallel Coordinates view, a user could notice
+certain trends that indicate Y increases non-linearly with respect to
+X, without knowing the exact relationship. Whereas, the ontologi-
+cal structure could provide empirical concepts, such as: y = x2 ?5
+or y = ?3x3 + 10. Then it is up to user to decide which interrela-
+tionship fits better to the visual pattern.
+3 IMPLEMENTATION AND VALIDATION
+Based on the understanding of the complementary relationship be-
+tween the visualization and the ontological structure, we derived a
+communication model that would integrate these two components.
+Based on this model, we develop a corresponding visual analytics
+system, shown in Figure 2 A.
+3.1 Model Overview
+Figure 2: (A) A prototype system built on the communication model.
+(B) Sharing Concepts from Visualization through User to Ontology
+(VUO) Process.
+In figure 1B, we provide a model for our system, which shows
+the communication between the visualization, the ontological struc-
+ture, and the user by means of a concept sharing mechanism.The
+model is composed of two primary processes. The first is the VUO
+process (from Visualization through User to Ontology). In this pro-
+cess, the user could gather insights from the visualization, trans-
+form the insights into concepts and store them into the ontology for
+future reference. The second is the OV process (Ontology to Visu-
+alization), in which the ontology shares certain concepts with the
+visualization. Although in OV process, the ontological structure di-
+rectly communicates with the visualization by sharing concepts, in
+the VUO process, the visualization could only indirectly communi-
+cate with the ontological structure via the user’s interpretation.
+To show the feasibility of our model, we identified two scenar-
+ios that demonstrate possible ways in which the model could be
+validated.
+3.2 Scenarios and Validation
+In the first scenario, we examine the plausibility of the OV process,
+through a task like ”Show me all bridges over water”. This kind
+of semantic tasks could not be directly solved by the visualization
+since there is no data labeled as ”bridges over water”. However, us-
+ing the OV process in our system, this task is first processed by the
+ontological structure, which searches for relevant predefined con-
+cepts. Then the ontological structure infers that bridges with type
+”Waterway” and ”Structure Type” should be considered as poten-
+tial answers, and finally it shares these dimensions and their rela-
+tionships as concepts with visualization.
+In the second scenario, we validate the feasibility of our VUO
+process, which assists the user in creating, verifying and storing
+knowledge to ontological knowledge structure, without losing the
+exploratory capabilities of the visual analytic tools. For example,
+shown in Figure 2B, when using Parallel Coordinates to explore
+the four attributes of cubes, like height, length, width, and size, the
+relationship between combinations of dimension may not be easily
+discovered. However, through VUO process, the user could visu-
+ally create a new data dimension, ”Value”, which is the multipli-
+cation of height, width and length. By doing this, a one-to-one vi-
+sual mapping between ”Value” and ”Size” has been revealed. Then
+the new finding is stored in form of a concept into the ontological
+knowledge structure.
+4 DISCUSSION
+In this section, we discuss the potential benefits gained by integrat-
+ing the visualization and the ontology.
+First of all, integrating a visual analytical tool and an ontological
+structure is one step towards shortening the semantic gap between
+the user’s intentions and the visualization, like described in the ex-
+ample of ”Show me all bridges over water”(Section 3.1). Due to
+the potential semantic gap caused by the visualization’s limitation
+on interpreting a user’s questions, the visualization could provide
+meaningless information to the user. An ontological structure, on
+the contrary, could interpret the user’s questions and search for rel-
+evant information, by utilizing its collected concepts. Therefore, by
+integrating ontological knowledge structure as an ”interpreter”, the
+semantic gap between the user and visualization could be shortened
+in system.
+In addition, integrating visual analytics tools with the ontologi-
+cal structure reduces a certain amount of opportunistic exploration,
+through a repeatable and retrievable visual exploratory process. By
+inserting new concepts to the ontological structure, findings and
+insights during the visual exploration process could be stored and
+later reused. Hence, the user’s exploration processes could now be
+retrievable and later be repeated if requested. Our system takes ad-
+vantages from both the visualization and the ontological structure
+and is capable of guiding inspectors through the entire reasoning
+task.
+5 CONCLUSION AND FUTURE WORK
+In this paper, we present our approach to integrating the visualiza-
+tion and the ontology, by utilizing their complementary functions.
+We start by understanding the functional relationship between vi-
+sualization and ontological structure. Based on which we derive
+a model that describes the types of communication that is useful
+between the visualization, the ontology, and the user.
+In future work, we want to formally evaluate the effectiveness of
+the integration of the visualization and the ontology. We would like
+to know to what extent this integration could augment the function-
+alities of visual analytics tools. In addition, we would like to inves-
+tigate the possibility of applying it to multiple ontological structures
+and other knowledge sources.
+REFERENCES
+[1] D.Febsel. Ontologies: A silver bullet for knowledge management and
+electronic commerce. Springer-Verlag.
+[2] J. L.Xiao and P.Hanrahan. Enhancing visual analysis of network traffic
+using a knowledge representatio. IEEE Symposium OnVisual Analytics
+Science And Technology, 2006.
+[3] P. G. O. Gilson, N. Silva and M. Chen. Fromweb data to visualization
+via ontology mapping. EuroVis.Volume 27 (2008), Number 3, 2008.
+

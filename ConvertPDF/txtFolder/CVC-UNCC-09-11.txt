@@ -1,0 +1,931 @@
+ Building and Applying a Human Cognition Model for 
+Visual Analytics 
+ 
+Tera Marie Green1, William Ribarsky1, & Brian Fisher2 
+1Charlotte Visualization Center, University of North Carolina at Charlotte 
+2School of Interactive Arts and Technology, Simon Fraser University 
+ 
+ 
+ABSTRACT  
+It is well known that visual analytics addresses the difficulty of evaluating and processing large quantities 
+of information. Less often discussed are the increasingly complex analytic and reasoning processes that 
+must be applied in order to accomplish that goal. Success of the visual analytics approach will require us 
+to develop new visualization models that predict how computational processes might facilitate human 
+insight and guide the flow of human reasoning. In this paper, we seek to advance visualization methods   
+by proposing a framework for human “higher cognition” that extends more familiar perceptual models. 
+Based on this approach, we suggest guidelines for the development of visual interfaces that better 
+integrate complementary capabilities of humans and computers. While many of these recommendations 
+are novel, some can be found in existing visual analytics applications.  In the latter case, much of the 
+value of our contribution lies in the deeper rationale that the model provides for those principles. We then 
+assess these visual analytics guidelines through the evaluation of several visualization examples. Lastly, 
+we discuss steps that can be taken towards a predictive human cognition model. 
+ 
+KEYWORDS: visual analytics, cognition and perception theory, embodied cognition, 
+visualization taxonomies and models  
+  
+INTRODUCTION 
+In a previous paper [1], we discussed the value of considering performance characteristics of 
+human reasoning, problem-solving, and decision-making, in addition to the more familiar 
+perceptual processes, to develop information and knowledge visualizations. The driving force 
+behind this program of research is the need to develop applications capable of attacking today’s 
+complex and critical problems with the required depth of reasoning and analysis that will support 
+their solution. This paper builds on the work reported in our VAST 2008 paper [41] and expands 
+our argument that the creation of comprehensive models of human-computer cognitive 
+processing should be a core component of the visual analytics effort, and is an essential 
+prerequisite for success of visual analytics as a field. In most visualization development “higher 
+cognition” processes have been considered as a “black box” that receives information from the 
+visualization through a perceptual transduction filter, and that generates responsive behavior 
+through unspecified internal mechanisms. (We will discuss this metaphorical view of human-
+visualization interaction during our consideration of the van Wijk operational model of 
+visualization in Section 4.)  However, as both interactive visualizations and cognitive tasks 
+become semantically as well as perceptually complex, it becomes apparent that we must peek 
+into the black box in an attempt to model and predict the behavior of the human-computer 
+collaboration as a cognitive system. Psychology and related behavioral sciences have 
+examined reasoning and other thought processes for decades, through classical scientific 
+processes of reduction, laboratory testing, and scientific induction. One reason that much of this 
+research has, as yet, been unused in the construction of interactive visualizations is the lack of 
+a broad theory of human reasoning with sufficient scope and predictive validity to impact the 
+design and evaluation of those applications. It is, as Newell once wrote, as if “science advances 
+by playing twenty questions with nature” [2]. As Newell suggests, the reductionist approach to 
+the study of higher cognition creates multiple competing theories of small, often binary, aspects 
+of reasoning, and these have dominated the research. His solution to this problem was to 
+propose that cognitive scientists generate models of large scale “cognitive architecture” such as 
+his own SOAR [Unified theories of cognition ref], and Anderson’s ACT-R [An Integrated Theory 
+of the Mind].  These models have had some success at modeling human abstract problem 
+solving but have struggled to accommodate cognitive activities that depend upon perceptual or 
+motor processes to a high degree, such as fluent human interaction with a visualization system 
+in the course of analyzing a situation and solving a problem.  
+ 
+But while complex, higher cognition is still predictable to some degree. The number of available 
+heuristics is finite, and is therefore theoretically knowable. And while extant research may 
+disagree on the finer points, there is general agreement that humans are parsimonious problem 
+solvers who most frequently choose to use the simplest heuristic that is adequate to accomplish 
+a given task. For our purposes it may be sufficient to find aspects of human cognition that are 
+sufficiently predictive that they can constrain the range of possible designs, and propose metrics 
+for testing the success of those methods. This is a simpler task than the comprehensive model 
+of human information processing that cognitive science seeks, although progress towards our 
+goals may well have an impact on those more comprehensive models of human cognition. 
+ 
+This paper endeavors to lay the framework of a human cognition model, whose guidelines 
+would guide the development of visual interfaces more able to attack the complex problems now 
+being faced by analysts and researchers. Additionally, this paper shows how this model 
+contributes new, cognition-based principles of visualization design. Some of these principles are 
+already being used in the better visual analytics designs, but without the deeper rationale that 
+the model provides. We will discuss and evaluate these visual analytics methods. Other 
+principles from the model have not been applied or not fully applied, and we will discuss how 
+their implementation and use will be of benefit.  
+ 
+COMPLEMENTARY STRENGTHS  
+Our focus is on mixed-initiative visualization, in which both the computer and the human initiate 
+processes and with which both collaborate in the exploration and creation of knowledge. Both 
+human and computer bring strengths to the overall cognitive system. Several of the obvious 
+strengths are complementary, which further strengthens the potential of the collaboration.  
+  
+Human strengths  
+Some of the earliest reasoning skills humans develop are those  of adaptation and 
+accommodation [3]. Adaptation is the ability to incorporate newly perceived information into 
+extant knowledge schema, and it relies heavily on our ability to categorize sensory stimuli at a 
+rate that is nearly instantaneous. Even when what is perceived is so novel it will not fit existing 
+knowledge schema, accommodation allows a human to temporarily place a marker in a closely 
+similar schema or create a new one [4]. This “fast and frugal” reasoning ability [5] enables 
+humans to more effectively deal with rapidly-changing situations. Biederman’s 1987 Recognition 
+By Components (RBC) model provides a mechanism by which basic-level categorization of 
+visual objects takes place rapidly and accurately regardless of viewpoint or changes in non-
+essential characteristics of those objects. [6]. This process is effortless (i.e. it does not demand 
+attentional resources) for a human, and it allows the reasoning process to advance despite 
+incomplete information. It is far superior to current computer object recognition. In addition to 
+our ability to categorize individual objects, human perceptual abilities are also well adapted to 
+complex and rapidly changing scenes, defined here as complex sets of objects and events 
+distributed in space that interact with each other in often novel ways.  
+Scene perception takes place through an integrated set of mechanisms that optimize 
+performance under the constraints of limitations in central resources such as focal attention. 
+Scene processing begins with a fast low-level “gist” mechanism that recognizes important scene 
+characteristics and relationships [7]. This preattentive visual process guides the allocation of 
+multiple attentional tokens known as FINSTs, see [8, 9] that support the rapid and automatic 
+calculation of a set of operations [10] known as visual routines that relay information on their 
+properties and relations to each other. All of this occurs prior to, and in support of, endogenous 
+focal attention (i.e. attention to the task at hand). This resulting cascade of processes frees 
+cognition for consideration of higher order characteristics of the information contained in the 
+display rather than the display itself -- object properties and spatial relations with other objects 
+and causal relations to events taking place. Thus, cognitive operations can proceed using more 
+parsimonious representations that are well- suited for the task at hand. This can be thought of 
+as a two-step process by which unconscious inference, the “logic of perception”, [11] works 
+hand-in-hand with cognitive processes to support reasoning. In this view, expertise is not only a 
+characteristic of higher-order cognitive logic, but also of perceptual logic, which can be trained 
+to better support cognitive operations through “perceptual expertise” [12].  
+ 
+Partially due to a lifetime of experience in adaptation and accommodation, humans are much 
+more flexible reasoners than AI models, and in particular much better enabled to understand 
+novel situations and novel approaches to known problems. Humans rely on a compendium of 
+reasoning and problem-solving heuristics, which can be used singly or concomitantly to 
+accomplish the task at hand.  The simplest of these, elimination heuristics such as satisficing 
+[13], eliminate available choices that do not possess an identified important attribute. Elimination 
+heuristics require little cognitive effort, and so are often what a human will use first in an attempt 
+to narrow down available choices.  
+ Of course, if the problem becomes semantically complex, more effort is required. Our model 
+assumes a mental model to inferred rules mechanization [14], wherein the human uses all 
+available information to create a mental model of the concept being considered. From this 
+model, the human infers generalizeable rules – sometimes in a matter of seconds – that are 
+used in later instantiations of a similar concept or problem. Because these models are based 
+entirely on available (including previously held) information, it is imperative that all pertinent 
+information is available to avoid the creation of incomplete mental models, which are, in turn, 
+likely to be the basis of invalid rules.  
+ Computer strengths  
+A computer is capable of two distinct processes that complement human reasoning strengths 
+well: superior working memory and information processing without cognitive biases. Humans 
+depend on their working memory as they reason, but are, at best, able to remember 7 ± 2 
+chunks of information [15]. The computer, on the other hand, has a “working memory” limited 
+only by hardware. The computer’s ability to keep all pertinent information visually available to 
+the human aids in complete mental modeling, among other things. The other computer strength 
+is the lack of inherent biases. This bias-free environment is, to be sure, influenced by what the 
+interface is designed to see as relationally relevant. But unlike humans, computers do not 
+situationally filter out pertinent information in accordance with a perceived belief or due to the 
+way a problem is presented [16,17].  By presenting all relevant information, the computer can 
+aid not only in mental modeling, but also in the analysis of competing hypotheses. 
+ 
+USE OF A  HUMAN COGNITION MODEL  
+This section will discuss the ways in which knowledge of higher cognition focuses a mixed-
+initiative human cognition model (HCM), as well as provides several guidelines which can be 
+derived from the model’s use. (See Figure 1.) On each of the HCM’s submodels, please see [1] 
+for more discussion.  
+  
+Information Discovery & Knowledge Building  
+The central process of the HCM is discovery, during which the computer presents information in 
+an ontological-like structure within a relevant, possibly human-defined, context. Presenting 
+information with a relevant context is one method of mitigating human cognitive overload in the 
+midst of an overwhelming number of semantic data points. The human directly interacts with the 
+visualized information, focusing the attention of discovery. We will explore this idea further in 
+Section 5.4.  
+An intuitive multi-model visualization also encourages knowledge building through new 
+knowledge creation. Throughout the process of discovery, the human may uncover a 
+relationship between two currently unrelated concepts or ideas. By creating a new relationship 
+between the two concepts and perhaps annotating the relationship, the human collaborator can 
+extend the knowledge base of the visualization, not only for what is to be accomplished in that 
+particular session, but for every session by every human who uses the visualization thereafter.  
+ 
+The computer can augment the discovery of relevant information through computer-aided 
+discovery. Through observation of what interests the human collaborator, the computer can 
+suggest information that is semantically related, but up to this point, has not been considered. 
+This also would include relational data which has been added by other human collaborators, 
+which allows one person to learn from another. The human is free to explore or to reject the 
+suggestion. But by making the effort to ensure that nothing important is overlooked, the 
+computer works to counteract human cognitive biases which can interfere with complete mental 
+modeling.   
+ 
+ 
+ 
+Guidelines for Discovery and Knowledge Building  
+We will now briefly discuss several guidelines based upon the HCM discovery and knowledge 
+submodels. These can be used to motivate visual analytics interface design. 
+  
+Multiple views  
+When the information being explored is semantically rich, and could be visualized through a 
+variety of categorization levels, it is often left to the discretion of the visualization developer as to 
+which level merits the primary view. It is important to categorize information to aid the human in 
+directing attention, but we would argue that a visualization that utilizes multiple organizational 
+views of the same information can be a powerful aid. As the human interacts with information in 
+any view, the relational changes are visualized in all views.      While the concept of multiple 
+views is not a new one [18], what we would highlight is how multiple views are informed by 
+human cognition. First, as humans perceive information in a variety of ways including through 
+the filter of their own assumptions, patterns are more likely to be discovered if represented 
+multiple ways, each tuned to particular, important aspects of the data.   
+Secondly, as we have discussed previously, humans prefer to narrow down the field of choices 
+by eliminating those that do not posses desired attributes. This is usually done before utilizing 
+more complicated heuristics. Multiple views make the process easier; multiple layers of 
+relational attributes are readily knowable without additional search.  
+Thirdly, multiple views enable more intuitive manipulation. Humans themselves do not interact 
+with information in one dimension; humans are capable of multi-layered processing: perceptual, 
+emotional, and higher-cognitive. Indeed, of all the guidelines we will discuss, use of multiple 
+views is the one most likely to lead to spontaneous insight.   
+Lastly, the multiple views can be each set for different cognitive viewpoints or cognitive tasks as 
+part of the overall problem-solving approach. This can be done in a general way, as is shown in 
+the WireVis example below. 
+   
+Direct interaction 
+By definition, a well-designed information visualization allows the user to directly interact with 
+information. But we would take direct interaction one step further. In computer-aided reasoning 
+and discovery, for example, the guideline of direct interaction would propose that whatever 
+tactic the computer uses to suggest relational information to the human be done without 
+interfering with a human’s train of thought or flow of reasoning.   Additionally, direct interaction 
+supports the goals of other HCM guidelines by facilitating rich, fast, and effective interaction. 
+The human thinks in terms of the analysis task, which is closely aligned with the interaction, and 
+then looks at the visualized results. As a result, the user is more able to stay in the cognitive 
+zone (as we will discuss shortly), even with multiple windows.  With this in mind, visualization 
+design should avoid, as much as possible, menus or other actions that take the user outside of 
+the frame of the task. Interactions should be through direct manipulation and translucent 
+wherever possible, avoiding the traditional pull-down menus, which require the human to sort 
+through and think about menu items.  
+  
+Central Role of Interaction  
+Human-computer interaction is not a series of disjointed behaviors. And while the visual process 
+is an important part of visualization, it does not stand alone. Interaction has a rhythm, a cycle of 
+give and take.  Interaction is the process by which the computer and the human give, take, and 
+create knowledge. We will see an example of this when we will consider the van Wijk 
+operational model in the next section.  
+ 
+ 
+ 
+ 
+Insulation of Reasoning Flow  
+One goal of intuitive visualization should be the facilitation of the flow of human reasoning. Once 
+the human has focused cognitive resources in an area of interest, the visualization should not 
+hamper the rhythm of reasoning until the human chooses to refocus resources elsewhere. This 
+insulation can be achieved partially through direct interaction within context and intuitive 
+computer-aided information discovery, as is discussed elsewhere in this section. Insulation is 
+also aided, where possible, by an understanding of the temporal constraints of human 
+perception and patterns of cognitive activity, adapting the timing of interface events and/or 
+reducing the time required to retrieve necessary information from interface interaction [19].  
+ 
+Spivey [37] argues that the pace of cognitive operations is determined by the need to reduce the 
+impact of the time required to pull information from the world on the flow of cognitive processing. 
+This is due to the high cost of storing and retrieving items in working memory. Given the poor 
+buffering capabilities of human information processing, it is more effective to simply reduce the 
+speed of cognitive processes to match those of information uptake. For example, humans can 
+think through visual material only as quickly as the eyes can move. In fact, the time that is 
+required to read text is much faster if each word in the sentence is displayed in series at the 
+same position in space (the Rapid Serial Visual Presentation technique). In normal reading, the 
+pace of information processing slows to allow the eyes to move to the next word before the 
+word just read is fully processed. Thus, the experience of reading shifts from a read-remember-
+read stop-and-go rhythm to a continuous (but slower) flow of reading. This insulates cognition 
+from the stop-and-go of eye movements, and the experience seems continuous. 
+ 
+For visualization, especially interactive visualization, the temporal constraints of the perception 
+and control of the image differ. To optimize the use of cognitive resources, designers need to 
+understand what temporal pattern of mental activity should take place for optimal cognitive 
+performance, and adapt the timing of events so as to maintain that pattern. This will require 
+additional research on rhythms of human information processing that are sufficiently predictive 
+to generate guidelines that can be applied in the design process, perhaps by an attentive 
+system that monitors user actions (such as eye movements) to infer patterns of cognitive 
+processes.  
+ 
+In the terminology of the HCM, being “in the zone” allows the human collaborator to reason 
+without encountering unnecessary attentional or cognitive impediments. In cases where task 
+complexity exceeds the user’s ability to process information, or a cognitive impasse is reached 
+for some other reason, the computer can provide a scaffolding of support by presenting the 
+information within relevant context, suggesting what may have been overlooked, and keeping 
+relevant information present.    
+  
+Intimate interaction  
+ It is important that the interaction is so translucent to the human collaborator that the give and 
+take which occurs in a successful collaboration is seamless. Entering the interaction should 
+seem natural and obvious. The use of on-screen tools should not require additional cognitive 
+focus – i.e. be usable without the human having to “think about it.” Intimate interaction deters 
+attentional interference during the cognitive flow, and enables the reasoning process to move 
+forward unabated.    When interaction is intimate, what the human should see and cognitively 
+manipulate is not the tool being used or the method of interaction, but only the interaction itself. 
+Intimate interaction is an important asset to flow insulation, and is supportive of the central role 
+of interaction.  
+  
+Search by Example & Search by Pattern  
+Searching for information has traditionally been done by entering a search term in a text box. 
+But text boxes require humans to specify what to look for (such as in Boolean-type queries), as 
+well as to stop where they are in the reasoning process to formulate a query in concrete terms. 
+Finding an appropriate Boolean query will almost always break the flow of cognitive processing. 
+We would argue that a better general approach would be to allow the human, where possible 
+and appropriate, to indicate the search terms by pointing and clicking on an example or drawing 
+a bounding box around a pattern of examples or other relational information.  This allows the 
+human to indicate the search visually, without the burden of linguistic encoding. This does not 
+require an interruption in thought, feels more intuitive, and allows reasoning to move forward. 
+ 
+It is true that Boolean searches can be necessary under certain conditions. For example, 
+working within the definition of an information scent model [20], a point-and-click search-by-
+example is likely a better approach.  But if the user exhausts an old scent, coding a Boolean 
+query becomes necessary in the hunt for a new one. Key here is to make the decision about 
+which type of search to employ based on the prediction of its impact on cognition. One of the 
+interfaces we consider in the Examples section, WireVis, has successfully used point-and-click 
+search by example with one or more variables. This, of course, requires underpinning analytical 
+tools tightly integrated with the visual interface. This might not always be feasible, but it is a 
+main goal of visual analytics. 
+ 
+ 
+ 
+ 
+ 
+Creation and Analysis of Hypotheses  
+ One extension of the knowledge building process that holds great potential for multi-modal 
+visualization is in the creation and evaluation of hypotheses. Hypothesis generation and 
+evaluation is highly impacted by human cognitive bias, as humans are wont to seek out 
+confirmatory evidence rather than to seek disconfirmation.    
+ 
+As Heuer described it [21], hypothesis analysis starts with a list of hypotheses and a body of 
+evidence that proves or disproves each one. As the human creates of list of hypotheses, the 
+computer can aid in finding relevant evidence. From there, the computer, with its superior 
+working memory, creates a weighted matrix or similar relational structure  that the human can 
+evaluate with her superior reasoning ability. Using the edited relational structure, the human 
+draws conclusions about which hypotheses are correct, and if desired, sets up a data watch in 
+the visualization that will notify the user of data changes.    Hypotheses generation is initiated by 
+the human, but the computer plays a significant role in shortening the process and neutralizing 
+biases, contributing to more solid conclusion through use of its strengths.   
+  
+CONSIDERING THE VAN WIJK MODEL  
+ We will now discuss what the implications of our model would look like if integrated into the van 
+Wijk operational model of the visualization process [22]. We do this primarily as another way to 
+envision how a human cognition model interrelates with other aspects of visualization theory, or 
+as another way to broadly sketch out the basic assumptions of the HCM within the context of an 
+extant model. 
+Van Wijk models the “user” as P (perception and cognition), K (knowledge), and E (interactive 
+exploration), as is demonstrated in Figure 2. The user perceives the image (I) and interacts 
+within the visualization using a variety of available manipulation techniques (the specifications 
+(S)).   
+ The model depicts Perception as feeding Knowledge, which, in turn, drives interactive 
+Exploration. This is appropriate for aspects of human perception, such as what Gray calls 
+“microstrategies”[36] -- simple perception/action patterns that take place largely without 
+conscious direction but under executive control of cognitive processes. Some perceptions are 
+not affected by the specifics of what the user knows, plans, and expects; these are aspects of 
+performance we can depend on to remain more or less constant, or "cognitively impenetrable" 
+[8,9].  
+ 
+There is still some discussion about which perceptual tasks could be considered truly 
+“preattentive” and which evidence cognitive manipulation (see for example [37]), and it is not our 
+intent to explore this debate in any depth here. Our intent is to demonstrate the cooperative 
+give-and-take of cognition throughout interactive visualization exploration. Thus, for the 
+purposes of this control diagram, we will define Perception to include other aspects of “lower 
+cognition” that do indeed inform executive cognition, such as object classification.  
+ 
+ Additionally, it is difficult to separate “knowledge” from the reasoning process that created it. A 
+person’s knowledge is not simply a compendium of declarative facts; it is also the relational or 
+inferential semantic meaning a person gives the facts, patterns of facts and their relationships, 
+the perceived worth of those facts, and the ways in which facts are used to reason about the 
+encounter with future novel information. Indeed, facts are useless without the reasoning power 
+to manipulate them, and so we believe that the ‘K’ submodel, must include the cognition 
+processes that created it.  
+ 
+Knowledge determines the methods used when new knowledge is integrated with the old. Van 
+Wijk also seems to imply this in how he models his “user;” his model pictures Knowledge 
+feeding Exploration. But K cannot inform E without the guiding focus of a reasoning process. 
+Indeed, exploration itself is cognition in action.  
+ 
+With these thoughts in mind, it would be more representative if Perception, Knowledge, and 
+Exploration were all modeled as cognitive processes informing each other. We would see P as 
+the early cognitive processes of selective attention, categorization, accommodation, including 
+perceptual logic. (See Section 2.1.)  K is viewed as meaningful knowledge with the use of 
+reasoning, problem-solving and other thought processes that allow the human to create 
+knowledge, and E as a focused, interactive cognitive process utilizing both P and K. 
+  
+When viewing the model this way, it’s easy to see that two additional directional arrows need to 
+be added to the model: from P to E, and from E to K. The first arrow indicates the important role 
+that perception and perceptual logic plays in active exploration. The second arrow signifies how 
+a rhythm of interaction feeds knowledge reasoning. As the human explores and learns, that 
+learning directs and focuses the attention of further exploration.  
+Additionally, van Wijk expressed Knowledge in this way:  
+                                               =)(tK  ?+
+t
+K
+00
+dt  t)K,P(I,  [22] 
+While this expression does encapsulate the idea that Perception is a vital part of the process, 
+our integration would express the creation of knowledge over time more like the following:  
+          0)( KtK = + ?
+t
+0
+dt  t)K,E(P,  
+ where Knowledge is the extension of currently held knowledge through the integrated 
+perceptual and reasoning cognitive processes of Exploration.  
+ Considering the Pirolli & Card Sensemaking Model 
+The HCM and its design implications share some understanding of the tasks involved in 
+information processing with what is commonly called the “sensemaking model” as specified by 
+Pirolli and Card [23]. This model identifies a series of tasks that are used progressively by 
+analysts to find and filter evidence in the creation of hypotheses and drawing of conclusions. 
+The task series is presented as iterative, using both top down and bottom up cognitive tasks to 
+forage and make sense of new information. The discussion of the foraging loop places 
+emphasis on the human’s ability to filter information and find patterns in the data. In the 
+sensemaking loop, we see several tasks that are also the basis of the hypothesis generation 
+subprocess of the HCM: listing hypotheses, listing evidence, and drawing conclusions.  
+ 
+The sensemaking model outlines processes involved in information processing. But to some 
+degree, it treats these processes as a series of small black boxes, whose tasks are described 
+but whose involved cognitive processes are largely undefined. One goal of the HCM is to 
+identify and explore multi-layered cognition within information spaces and, in the process, to 
+start opening up those black boxes so we can describe and find ways to support the processes 
+they contain. Learning of whatever variety is not linear, but involves multiple subsystems that 
+feed and inform each other throughout. Thus, it is important not to see human-visualization 
+interaction as linear either, but rather as an interlinking of processes working in concert. 
+ 
+Additionally, while the sensemaking model delineates cognitive processes between top-down 
+and bottom-up processes, it does not handle cognition, which either does not fit cleanly into 
+either group or which defies such categorization. One obvious example is what is sometimes 
+called spontaneous insight, or insights that emerge in “a-ha” moments with seemingly little 
+conscious preparation. What triggers and informs this variety of problem-solving is still the 
+subject of debate [24,25], but what is known suggests that spontaneous insight draws upon a 
+wide scope of tacit knowledge, inferencing, and paradigm-discarding information reorganization. 
+This reorganization leads to a profound understanding of the problem’s solution, without the 
+plodding trial-and-error or other incremental heuristics traditionally associated with problem-
+solving. Moreover, this understanding happens in what is often described as a “flash of 
+time[25],” and, because much of the preparation is unconscious, the problem solver rarely can 
+define where or how the solution came into focus. 
+ 
+More generally and in less dramatic fashion, human reasoning itself often defies the 
+sensemaking model’s incremental, bi-process structure. Reasoning is much more than a series 
+of delineated tasks; depending on complexity, reasoning can combine any number of heuristics 
+and use top-down and bottom-up thought constructions combinatorially. (For more discussion, 
+please see [1].) Any generally-applicable model of human cognition must deal with this 
+complexity sooner or later. 
+ 
+Briefly, we will discuss specific HCM theory and submodels that attempt to articulate the 
+cognitive processes involved in the black box task processes of the sensemaking model.  The 
+foraging loop, which starts with a general, base categorization and moves downward into the 
+more specific (the exploring-enriching-exploiting tradeoff) utilizes a variety of cognitive 
+processes previously discussed, including the use of elimination heuristics and the use of 
+ 
+mental models which lead to generalized inferencing rules. The foraging loop also implies (but 
+without specifics) the behavior of direct interaction, which promotes rapid and responsive 
+interaction, insulating the reasoning flow. On the other hand, the “leverage points” of the 
+sensemaking loop described by Pirolli and Card [23] address hypothesis generation, which is 
+also directly addressed by the HCM. In addition, the HCM uses mixed-initiative computer-aided 
+discovery to address the biases that can confound evidentiary support needed in hypotheses 
+analysis. 
+ 
+In conclusion, this discussion is not intended to propose the HCM as a replacement for the 
+sensemaking model, but rather to join it with that operational model; the HCM is  a step forward 
+in the evolution of an understanding of holistic human cognition. Thus, our objective is to not 
+only to outline the cognition involved in these processes, but to elucidate how that 
+understanding can benefit and inform visualization design.  
+ 
+EXAMPLES 
+In this section, we will demonstrate the model guidelines by using them to evaluate and/or 
+illustrate several visual analytics designs. The model, which was not used as a basis for these 
+designs, provides a deeper understanding of the choices made and how the designs might be 
+improved. Because we can discuss the rationale behind them more fully, we present 
+predominantly designs that we helped develop. However, the arguments we make here would 
+also apply to many other designs.  
+ 
+ 
+ 
+ 
+ 
+WireVis   
+Discovering financial fraud in the great stream of transactions at a large bank is a difficult, time-
+consuming, and expensive process since it must employ expert analysts and uncover ever-
+changing modes of operation by criminals. The WireVis system was designed to combine the 
+art of analysis with the science of visual analytics [26]. WireVis is an expert system, enhancing 
+insight with what, in the terms of our Knowledge expression in the last section, is presumed to 
+be the human’s already sizeable K0; it provides intuitive visual representations of wire 
+transactions, enhancing P; different views within the system allow the analysts to gain an 
+overview of all transactions in one glance, while the ability to drill down into specific details of 
+individual transactions enables finer examination and scrutiny.  A time-based visualization 
+allows the analysts to detect abnormal temporal patterns. Search by example permits selection 
+of a particular keyword or time distribution pattern; the system then finds patterns that are 
+similar to (or quite different from) the selected pattern. Finally, a keyword network shows 
+keyword links for the selected group of transactions (where linked keywords appear in the same 
+transaction), uncovering relationships that significantly aid the analyst in picking out suspicious 
+transactions. This process highlights the importance of E in extending K. Results of a user 
+evaluation found WireVis to be an efficient, effective tool, which can discover suspicious 
+patterns in a great mass of transaction data [26]; the tool is also generally applicable to other 
+types of transactional analysis 
+ 
+WireVis has a number of capabilities that conform to the above cognitive model and highlights 
+some of the design choices that must be made. Four windows are tailored to specific, important 
+views and tasks. Though having a single window to focus the user’s attention may be ideal in 
+some conceptual sense, and there is presumably a cognitive and perceptual load during task 
+switching, multiple windows seem necessary for many complex analytical problems [27, 28]. 
+The key is to minimize the load in order to mitigate the interference to the human’s reasoning 
+flow. This is done to a great extent through the concept of balanced interaction, as discussed 
+next. 
+In WireVis, the views were carefully chosen so that overviews of main aspects of financial 
+analysis were maintained. Linking and brushing between all views was enacted and immediate 
+update to any interaction was enforced. (There are not only perceptual but cognitive aspects to 
+maintaining high interactivity.) In addition, WireVis is designed to promote balanced interaction, 
+during which the multiple interlinked windows act and look like a single interface, rather than 
+separate entities; changes in one window are reflected across the interface, allowing the human 
+to focus on the interaction; and similar types of interaction are supported in all windows. Thus, 
+various selecting, filtering, and drill-down (through the transaction hierarchy of transactions) 
+interactions appear simultaneously in the multiple windows.  
+Further, very lightweight cursor passover interaction is enabled in several places (for example, 
+passing over specific keywords). Finally, direct manipulation is used wherever possible to 
+maintain user focus. We believe that balanced interaction is an essential design principle to 
+keep investigators “in the cognitive zone” when using a multi-window interface on complex 
+problems. With balanced interaction, the different components of the interface merge into one 
+cognitive whole where, as one of the papers co-authors remarked, “The interaction is the 
+analysis” [29].    WireVis also has search by example, which has been singled out in our 
+cognitive model because it is very general and it keeps the user in the context of her reasoning 
+process without interrupting it to construct the appropriate search query, which can quite difficult 
+to accomplish. In this case, the user selects the keyword or transaction pattern she is thinking 
+about to gather similar or dissimilar patterns. Search by example has been considered generally 
+useful in other types of visualization, such as image analysis [30], broadcast news event 
+analysis [31], and terrorism event investigation [32]. In fact, we believe that search by example 
+should be part of any visual analytics interface involving analysis or reasoning tasks for large 
+amounts of information.  
+ 
+Jigsaw  
+Jigsaw is a visual analytics system used to support investigative analysis [27]. It works with 
+large collections of reports or other text documents and with the entities extracted from them. Its 
+two main goals are to permit investigators to handle efficiently and move quickly through large 
+document collections and to support hypothesis formation and evidence gathering. Jigsaw won 
+the university portion of the VAST 2007 Contest, which centered on a simulated investigation 
+similar to those carried out by intelligence analysts.  
+ 
+As with WireVis, Jigsaw makes strong use of multiple windows with carefully tailored 
+representations for complex investigative problems.  The user is thought be in an “information 
+cockpit” with multiple monitors, in front of and above the user [27]. Jigsaw seeks to maximize 
+pixel use to take advantage of both the user’s high acuity central focus and wide peripheral field. 
+This is also a valid design point for WireVis (which requires at least two desktop monitors or a 
+high resolution cinema display) or any other multi-window system.  
+ 
+However, although Jigsaw has some linking and brushing to integrate the windows, it does not 
+have the balanced interaction WireVis employs. Based on the HCM guidelines, we would expect 
+that users of Jigsaw would be less in the flow and require more cognitive effort than in WireVis 
+during window management and connection. This is certainly a point worthy of further analysis 
+and evaluation.  
+As a point of contrast, Jigsaw uses a bottom-up approach, employing an incremental, query-
+based method to bring in subsets of data for exploration and possible connection, as compared 
+with WireVis’s top-down visualization of the whole dataset and its context. Undoubtedly both 
+approaches are valid and could be available in a general tool for complex problem-solving, and 
+will be the subject of future study.  Finally, Jigsaw is usable and simple. The interface permits 
+direction interaction with representations of entities and reports, changing focus and detail. As 
+with WireVis and other tools described here, simplicity and intuitiveness are not just goals based 
+on perception principles but also based on the need for cognitive support. The HCM provides a 
+point of view for investigating these goals in that light.  
+ 
+ 
+ 
+ 
+ 
+UrbanVis  
+UrbanVis is a system created to combine views of detailed geographical information with 
+relational views of associated abstract information [33]. The geographical view is based on 
+urban legibility theories in architecture, and the overall system permits the user to interactively 
+explore an urban environment to understand the detailed characteristics of a city. 
+ 
+ As with WireVis and Jigsaw and for the same general reasons, UrbanVis is highly dependent 
+upon multiple views, with a 3D multiresolution map driving the updates of a straight category 
+view and a parallel coordinates view, giving the user a rich overview of many categories and 
+relations at once. These views were carefully chosen after consultation with architects, urban 
+planners, and GIS experts. UrbanVis provides a general approach to reasoning with the 
+combination of geographic and abstract data. We are applying UrbanVis to bridge management 
+data over city and state regions and are planning to use it for situation awareness in emergency 
+response. This and the other examples in Section 5 show the generality of a multi-window 
+approach that is designed with principles of human cognition in mind.  Users of UrbanVis 
+interact directly with the information, moving a geographic pointer and highlighting areas of 
+interest or conversely choosing categories or individual coordinates in the parallel coordinates 
+view to highlight specific geographic areas. This makes it easer to discover hidden geographical 
+patterns for combinations of demographic or other abstract data. In the same sense as with 
+WireVis, UrbanVis provides balanced interaction. This combined with direct manipulation, 
+makes interaction the central focus. In addition, UrbanVis also provides a top-down, exploratory 
+view with drill down controlled by simple movement of the ball up and down. The interface has 
+only one menu, as it strives to keep the user cognitively focused during problem solving.  
+ 
+ Finally, since UrbanVis utilizes the central role of interaction, the visualization makes E, as 
+defined in Section 4, the seminal focus. In this interface, designed for a broad cross-section of 
+users, K0 can be small or great, and an attempt is made through use of color and spatial 
+organization to facilitate P.  
+  
+ GVis  
+ Although the human is uniquely qualified for “higher order” reasoning, our human cognition 
+model permits the computer to support this process in numerous ways. GVis in this section and 
+SRS in the next provide some of this support. As several of the visualization approaches utilize 
+similar methods, in these final sections we will highlight areas that are different from WireVis.   
+Using information available in public biological databases such as NCBI, GVis pictures the 
+relationships and publications known about genomic data  [34]. Due to the detail inherent in 
+genomic data, the amount of information presently viewable during drill down in direct 
+interaction becomes quickly overwhelming; the use of multiple views to visualize multiple levels 
+of information hierarchies prevents humans from “losing their place” in the taxonomy. Also, 
+similarly to WireVis, GVis is an expert visualization, requiring a rather sizeable K0 to focus 
+effective Exploration. This may mitigate the cognitive overload effects of information on P and K 
+in Figure 2. A popup menu allows the user to view and explore publications on the spheres in 
+the main view.  This is perhaps not an optimum solution, as use of the menu is not intimate and 
+can obstruct the field of view, which could threaten reasoning flow insularity and reduce the 
+value of direct interaction.  
+ 
+The visualization uses color and simple circles to highlight groups, insulating reasoning flow and 
+focusing P. In addition, it employs the notion of a stretchable canvas, similar to Pad++ [30], to 
+handle detail at all scales. The latest version of GVis applies the precepts of knowledge 
+visualization, relying on taxonomic and ontological representations of genomic knowledge to 
+determine what to visualize for the task at hand. When combined with the stretchable canvas, 
+important knowledge at any scale can be made visible to support the current reasoning task. 
+Thus, for example, glyphs showing how many genes are annotated (and what types) are made 
+visible at the genome or even the cluster level, even though the individual genes are sub-pixel 
+at these levels. This provides important support for the human reasoning process.  
+  
+Scalable Reasoning System (SRS)  
+ In SRS, Pike et al. demonstrate nicely the capacity of visual analytics to aid in hypothesis 
+generation and analysis [35]. For example, while searching by example in SRS is limited to text 
+searches, queried information can become “reasoning artifacts” to be used as the basis of 
+hypotheses, or as evidence for hypotheses represented in “thought chains.” The human is free 
+to manipulate these artifacts directly in a sandbox-like information space, which encourages 
+reasoning flow insularity and focuses P as described in Section 4. Additionally, by allowing the 
+human to arrange artifacts, interaction becomes the principle objective. While SRS does not use 
+multiple views to display information, by allowing rearrangement of artifacts, SRS encourages 
+the human to organize them in a way that is meaningful to the individual.  Additionally, SRS is 
+more than a display. New knowledge can be created by creating relationships between 
+reasoning artifacts. Thus, as the human generates hypotheses and their evidence, new 
+knowledge that is created during the process is not lost, either to the current analysis, or to all 
+other humans given editable confidence ratings, which aids in the weighing of evidence in 
+hypothesis analysis.  
+ 
+TOWARDS A PREDICTIVE HUMAN COGNITIVE MODEL 
+The current HCM is of substantial use in providing a framework for understanding the human-
+computer interface, in providing some initial design principles for both visual representation and 
+interaction that can then be evaluated, and in revealing what to evaluate to support human 
+cognition. However, the HCM can be made many times more powerful by making it predictive. 
+The GOMS model, for example, is a predictive model, based on HCI evaluation research, and is 
+derived for the design of mouse-driven, window interfaces [38]. It demonstrably improved the 
+speed of the design process for these systems because it permitted the designer to avoid the 
+slow, laborious process of user studies for each element of the design and for the overall layout. 
+Indeed, because of its predictive capability, it permitted optimization of these interfaces beyond 
+what could be accomplished with painstaking user studies because the design space could be 
+explored in a comprehensive, predictive manner. 
+ 
+To develop a predictive HCM, we start with the idea of the user being in, falling out of, and 
+regaining the cognitive zone (hereafter, referred to as the CZ). Initially, we want to develop a 
+phenomenological model of these effects. We concentrate on two predictive mechanisms within 
+the HCM, both focused on keeping the user in the CZ and in a high state of reasoning 
+efficiency. The first predicts the cost and benefit of design principles and decisions for keeping 
+the user within the HCM, including the cost of having to regain this state after falling out of it. 
+The second predicts the enhanced (or depressed) probability of making a discovery and 
+gathering an insight in a given period of time.  
+ 
+This approach reflects two aspects of the human reasoning process. The first part is 
+performance-oriented; the more effort spent on a reasoning task (measured by number of 
+operations or some other measure), the more will be accomplished. The second part attempts 
+to capture spontaneous insight. It is not as dependent on number of operations and may even 
+be diminished by requiring too much focus and structure from the participant [39].  
+We construct a cost/benefit model for the first part of our approach. Cost/benefit models have 
+wide applicability and, in particular, have been used successfully on adaptive graphics rendering 
+[40] and in van Wijk’s work, discussed previously [22]. A cost/benefit model would be (following 
+van Wijk’s approach):  
+  , 
+  
+ 
+where G is the benefit due to increased knowledge from use of the interactive visualization, W is 
+the value of the acquired knowledge, and F is the profit. These quantities depend on the change 
+in knowledge ?K, the number of users n, the number of sessions per user the data are 
+visualized m, and the number of exploratory steps per visualization k. Costs depend on the 
+initial development cost Ci, the initial cost per user Cu (e.g., for selecting, tailoring, and learning 
+how to use the visualization), the initial cost per session Cs (e.g., for converting data and setting 
+initial specifications), and the perception/exploration/cognition cost Ce (e.g., the user must spend 
+time watching and understanding the visualization as the interactive exploration proceeds).  
+ 
+)( KnmWG ?=
+uieS nCCkCCKWnmCGF ?????=?= ))((
+Note that this model has a way to handle overall knowledge gain by a number of users (say, in a 
+collaborative setting or for a tool that is widely used by a number of people) and takes into 
+account training effort and costs per session for things such as data setup. Of course, the model 
+is limited. For example, it assumes that if a user repeatedly revisits a dataset for further 
+exploration, his knowledge will continue to increase. But, even recognizing these limitations, a 
+predictive model would still be a powerful tool. Here, we are most interested in assessing the 
+terms G and Ce. For the latter, we assess exploration costs and the penalty for falling out of the 
+CZ and having to regain one’s cognitive rhythm for the task at hand. Here we will need to 
+categorize and rank actions. It is undoubtedly true that some actions are more disruptive than 
+others, and the HCM provides us guidance as to what those are. Then we can plan evaluation 
+strategy for quantifying, at least roughly, both G and Ce. We have begun some of those 
+evaluations, which will be reported elsewhere.  
+ 
+To capture discovery and spontaneous insight, we will need a separate probabilistic model. Our 
+first steps toward this model are necessarily crude; there is little in the literature on modeling 
+these processes. The main aspect we wish to capture is the disruptive effect to flashes of 
+insight due to falling out of the CZ [39,40], as well as the ameliorative effect of staying within the 
+zone. Our basic assumption within this model is that, using the HCM, we can distinguish 
+operations that keep the user in the CZ from those that are disruptive. To represent the 
+cumulative effect of non-disruptive operations that lead to insight formation within the CZ (e.g., 
+exploratory operations that support reasoning), we assume a probabilistic function that grows 
+and then levels off over time as the user employs the interface. (See Figure 3 below.) However, 
+there can be disruptive actions that take the user out of the CZ (e.g., having to form a Boolean 
+search query 
+or use a pull-down menu). These are represented by discontinuous downward trends, 
+represented by breaks in the probability curve (as in Figures 3b and 3c), whose depth is 
+determined by the degree of disruption. The idea here is that the probability of gaining a 
+spontaneous insight over a given period of time can be significantly lowered by significant 
+disruptions or repeated disruptions. We can determine a rough shape for this probabilistic 
+function over time through controlled experiments that seed data with insights to be discovered 
+(for example, several hidden, new patterns of fraud in wire transaction data within a data 
+visualization) and then permit users to use a visual analytics tool to discover them. In this 
+approach, the HCM provides a framework for categorizing and linking together the operations of 
+the tool in terms of cognitive processes. 
+ 
+ 
+  
+Figure 3. Probabilistic model for capturing discovery and spontaneous insight. 
+ 
+(c
+) 
+ CONCLUSIONS  
+ If we in the visual analytics community are to attain our aspiration of more effective, more 
+human-perceptive visualizations, we must begin to understand how humans manipulate 
+semantically-complex information. It is not enough to determine what is being seen and given 
+attention. Nor is it appropriate to infer combinatorial, individually-variable reasoning heuristics 
+from more binary cognitive behaviors. Just as an understanding of perceptual cognition based 
+on evaluative research has been employed in creation of effective information visualization 
+displays, a competent comprehension of reasoning, problem-solving, and decision-making must 
+be employed in the development of mixed-initiative analytical interfaces.  
+What we have proposed is not a full working model, but is, as yet, a framework of human 
+cognition. Our goal is to sketch out a system of “thinking about thinking” as a first step to 
+interface interaction which is no longer just between user and data, but between human and 
+computer partners, collaborating in the discovery of information and the creation and extension 
+of knowledge.  
+ 
+What we have proposed is a model still in its rudimentary stages, whose future will undoubtedly 
+be marked by additions, corrections, and multiple series of empirical evaluation. In some ways, 
+this work still has the emergent expectation and general outline of an archaeological excavation; 
+we cannot pretend to have all of the answers, but we know we’re digging at the right spot.   
+ 
+Even in its infant stages, the HCM has the potential to revolutionize how cognition is considered 
+and evaluated in visualization design. For too long, visual analytic research has depended on 
+black box assumptions about complex cognition that tend to be anecdotal, over-simplified, and 
+non-generalizeable. And because of a broad lack of standardization in protocol and incomplete 
+results reporting in published visual analytics evaluations, it is difficult or impossible to replicate 
+results or build on prior work. Claims are made, but the discipline as a whole stands still. For 
+these reasons, among others, the study of reasoning behaviors during interactive visualization 
+is often difficult and unclear. This threatens to stymie progress; our ability to visualize is 
+outstripping our knowledge of the thinking system we are visualizing for. 
+ 
+Additionally, the HCM reminds us that human cognition is not, nor shall it ever be, one-size-fits-
+all. One reason that reasoning cognition is complicated is that its combinatorial nature allows for 
+maximal problem-fit and solution scalability. In addition, which heuristics are used often 
+depends on innate and learned differences within reasoners, as well as the challenges of the 
+presented task. The potentially exponential scale of this complexity seems daunting. But 
+humans tend toward the habitual; they also prefer not to think harder than they must. 
+Psychological sciences have used these tendencies to their advantage, grouping reasoners 
+based on learning styles and other built-in preferences, and using these groupings to develop 
+trait rubrics that aid in explaining and, in some cases, predicting future behavior. There is no 
+reason that we could not build on this extant work and group users based on individual 
+differences, domain similarities, and interaction behavior, provided we are willing to adopt a 
+similar, exacting, experimental rigor. In fact we have begun studies in this direction where we 
+compare the strategies of users of our tools based on whether they are expert or novice or 
+based on their demonstrated problem-solving abilities. In the former case, we are finding that 
+the higher level strategies are easier to pick out and analyze because our tools are designed 
+and evaluated with the HCM in mind.  
+ One of the real strengths of creating a model such as the HCM is its inherent falsifiability. It 
+would have been easier, perhaps, to choose one assumption, test and retest, then chose 
+another assumption, test and retest, and perhaps eventually arrive at a model construct 
+inductively. But the likelihood is that the trees would have muddled our sense of direction in the 
+proverbial forest of mixed-initiative interaction. And very little would have been accomplished. 
+By feeling our way to the boundaries of the forest, and marking its perimeter, and through 
+application of insight, we have a better sense of where we are. The HCM is itself a hypothesis 
+based on the evidence of cognitive research and insights derived from the visual analytics 
+designs of ourselves and others. But when it is applied, it informs the questions we ask and the 
+evaluations we design. It provides a clarifying framework and a way to organize the results we 
+get when we use and analyze our visual analytics tools. And it reminds us that individual 
+cognitive behaviors must be evaluated within a holistic context. It is a place to start, and it is a 
+thing to be tested. And as with all hypotheses, our testing will show what is valid and what 
+needs to be expanded upon or changed.  
+ 
+ We have been able to show extant examples of several of the HCM’s submodels, but there is 
+still work to be done. There are, as yet, no spontaneous methods of searching by analogical 
+structure. Computer-aided discovery will require both a better understanding of learning 
+interfaces as well as a comprehensive understanding of human iterative thought chaining. 
+There is also the pesky problem of a unified theory of reasoning. Understanding the available 
+fragmented research is a good foundation, but we must approach a more complete discernment 
+of how all of the pieces work together in an information space to be better able to define and 
+evaluate the best ways to insulate reasoning flow, mitigate cognitive load, facilitate appropriate 
+task switching, and minimize attentional interference during the reasoning process. 
+Finally, there is the issue of better understanding of the temporal coordination of human 
+reasoning and computation and presentation of information. The temporal dynamics of control 
+actions and cognitive processing were addressed early in the history of HCI with GOMS and 
+keystroke analysis. However the dynamic coupling of scene gist perception, eye movements, 
+attentional allocation, cognitive processing and microstrategic perception/action patterns [36] 
+remains to be explored. Recent advances in the application of nonlinear dynamical modeling[37] 
+may provide sufficient predictive validity for incorporation into models of sensemaking in visual 
+analytics.  
+These tasks are broad items on a bold agenda. But our evaluation has also uncovered multiple 
+practical problems, and directed the search for how best to tackle them:  what number of 
+multiple views maximizes the cognitive return on investment, the best way for the computer to 
+suggest unconsidered information without interrupting – or annoying – the human at work, and 
+methods of maintaining the interactive process so as to keep cognition in the flow, whatever the 
+task. Finally, it is also clear that there must be strong support for permitting and managing 
+human annotations. But again, it all starts with daring to peek into reasoning’s black box.  
+  
+ACKNOWLEDGEMENTS  
+ This work was performed with support from the National Visualization and Analytics Center 
+(NVACTM), a U.S. Department of Homeland Security Program, under the auspices of the 
+SouthEast Regional Visualization and Analytics Center. Special thanks to Benjamin F. Green for 
+helpful insights.  
+   
+  
+ 
+ 
+REFERENCES  
+[1] Green TM, and Ribarsky W. Using a human cognition model in the creation of  collaborative 
+knowledge visualizations.  SPIE Defense + Security 2008 (Orlando, FL).  
+ 
+[2] Newell A. You can’t play 20 questions with nature and win: Projective comments on the 
+papers of this symposium. In Visual Information Processing. Chase, W.G. (Ed). New York: 
+Academic Press, 1973.  
+ 
+[3] Piaget P. “Piaget’s theory.” In Cognitive development to adolescence, K. Richardson, and S. 
+Sheldon, (Eds.) Erlbaum:  Hillsdale, NJ,  1988; 3 – 18.  
+ 
+[4] Komatsu KL. Recent views of conceptual structure. Psychological Bulletin 1992; 112: 500-
+526. 
+ 
+[5] Gigerenzer G and Goldstein DG, Reasoning the fast and frugal way: Models of bounded 
+rationality. Psychological Review 1996; 103(4). 
+ 
+[6] Biederman I. Recognition by components: A theory of human image understanding.  
+Psychological Review 1987; 94 (2): 115 -147.  
+ 
+[7] Rensink RA. A dynamic representation of scenes. Visual Cognition 2000; 7.  
+ 
+[8] Pylyshyn Z, Seeing and Visualizing: It’s not what you think, MIT Press/Bradford Books, 
+Cambridge, MA. 2003.  
+ 
+[9] Pylyshyn Z. Things and Places. IT Press/Bradford Books, Cambridge, MA. 2007.  
+ 
+[10] Ullman S. Visual routines. Cognition 1984. 97-159.  
+ 
+[11] Rock I. The logic of perception. MIT Press/Bradford Books, Cambridge, MA. 1985.  
+ 
+[12] Tarr MJ. Learning to see faces and objects. Trends in Cognitive Sciences 2003. 7(1).  
+ 
+[13] Kozielecki J. Elements of a psychological decision theory.  Studia Psychologica 1971. 
+13(1): 53-60.  
+ 
+[14] Cherubini P and Mazzocco A. From models to rules: Mechanization of reasoning as a way 
+to cope with cognitive overloading in combinatorial problems. Acta Psychologica 2004. 16(3): 
+223-243. (2004).  
+ 
+[15] Miller GA. The magic number seven, plus or minus two: Some limits on our capacity for 
+processing information. Psychological Review (63). 81-97.  
+ 
+[16] Wason PC. On the failure to eliminate hypotheses in a  conceptual task.  Quarterly Journal 
+of Experimental  Psychology 1960. 12: 129-140.  
+ 
+[17] Evans J.St. BT, Varston J, and Pollard P, On the conflict between logic and belief in 
+syllogistic reasoning. Memory and Cognition 1983. 11: 295-306.  
+ 
+[18] Baldonado MQW, Woodruff A, and Kuchinsky A. Guidelines for using multiple views in 
+information visualization. In  Proceedings of  Working Conference on  Advanced Visual 
+Interfaces 2000 (Palermo, Italy).  
+ 
+[19] Bederson BB, Hollan JD. Pad++: A zooming graphical interface for exploring alternate 
+interface physics. In UIST  1994: 17-26.  
+ 
+[20] Pirolli P. Computational models of information scent- following in a very large browsable 
+text collection.  Proceedings of the Conference on Human Factors in  Computing Systems, CHI 
+1997 (Atlanta, GA).  
+ 
+[21] Heuer RJ, The Psychology of Intelligence Analysis. Center for the Study of Intelligence. 
+CIA. 1999.  
+ 
+[22] van Wijk JJ,  The value of visualization.  IEEE  Visualization, Proceedings of Vis 2005: 79 – 
+86.  
+ 
+[23] Pirolli P and Card S. The Sensemaking Process and Leverage Points for Analyst 
+Technology   
+as Identified Through Cognitive Task Analysis. Proceedings of International Conference on 
+Intelligence Analysis 2005: 2-4. 
+ 
+[24] Knoblich G, Ohlsson S, and Raney GE. An eye movement study of insight problem solving. 
+Memory and Cognition 2001 29(7): 1000-1009.  
+ 
+[25] Bowden EM, Jung-Beeman M, Fleck J, and Kounios J. New approaches to demystifying 
+insight. Trends in Cognitive Sciences 2005 9(7):322–328. 
+   
+[26] Chang R, Ghoniem M, Kosara R, Ribarsky W, Yang J, Suma E, Ziemkiewicz C, Kern D, 
+Sudjianto A. WireVis: Visualization of categorical, time-varying data from financial transactions. 
+Proceedings of the 2007 IEEE Symposium on Visual Analytics Science and Technology 2007 
+(Sacramento, CA): 155-162. IEEE Computer Society. 
+ 
+[27] Stasko J, Gorg C, Liu Z and Singhal K, Jigsaw:  Supporting Investigative Analysis through 
+Interactive  Visualization. Proceedings of 2007 IEEE Symposium on Visual Analytics Science 
+and Technology 2007 (Sacramento, CA): 131-138.  
+ 
+[28] Wise JA, Thomas JJ,  Pennock K, Lantrip D, Pottier M, Schur A, and Crow V. Visualizing 
+the non-visual: spatial analysis and interaction with information  from text documents.  In 
+INFOVIS 1995: Proceedings of  the 1995 IEEE Symposium on Information V visualization: 51. 
+IEEE Computer Society.  
+ 
+[29] Private communication, Remco Chang.  
+ 
+[30] Yang J, Fan J, Hubball D, Gao Y, Luo H, Ribarsky W, and Ward M. Semantic Image 
+Browser: Bridging Information Visualization with Automated Intelligent Image Analysis. 
+Proceedings of IEEE VAST 2006: 191-198. 
+ 
+[31] Ghoniem M, Luo D, Yang J, and Ribarsky W.  NewsLab:Exploratory Broadcast News Video 
+Analysis.  IEEE VAST 2007: 123-130.  
+ 
+[32] Wang X, Chang R, Kosara R, Ribarsky W, Smarick K,  and Miller E. Investigative Visual 
+Analysis of Global Terrorism. EG/IEEE EuroVis 2008.  
+ 
+[33] Chang R, Wessel G, Kosara R, Sauda E, and Ribarsky W. Legible Cities: Focus-
+Dependent Multi-Resolution Visualization of  Urban Relationships. IEEE Transactions on 
+Visualization and Computer Graphics (TVCG) InfoVis  2007 (Sacramento, CA). 
+ 
+[34] Hong J, Jeong DH, Shaw CD, Ribarsky W, Borodovsky M, and Song C. GVis: A Scalable 
+Visualization  Framework for Genomic Data,“ In Proceedings of EuroVis 2005: 191-198.  
+ 
+[35] Pike AP, May R, Baddeley B, Riensche R, Bruce J, and Younkin K, Scalable visual 
+reasoning: supporting collaboration through distributed analysis. Proceedings of IEEE 
+International Symposium on Collaborative Technologies and Systems 2007. 
+ 
+[36] Gray WD, and Boehm-Davis DA. Milliseconds Matter: An introduction to microstrategies 
+and to their use in describing and predicting interactive behavior.  Journal of Experiment 
+Psychology: Applied 2000 6(4): 322-335.  
+ 
+[37] Spivey M. The Continuity of Mind. Oxford Press, NewYork, NY; 2007.  
+ 
+[38] Card SK, Moran TP, and Newell A. The Psychology of Human-Computer  
+Interaction. Lawrence Erlbaum, Hillsdale, N.J: 1983. 
+ 
+[39] Lehrer J. The Eureka Hunt: Why do good ideas come to us when they do? New Yorker, 
+July 28, 2008: 40. 
+[40] Wilson TD, and Schooler JW. Thinking too much: introspection can reduce the quality of 
+preferences and decisions. Journal of Personality and Social Psychology 1991 60(2): 181-192. 
+[41] Tera Green, William Ribarsky, and Brian Fisher. Visual Analytics for Complex Concepts 
+Using a Human Cognition Model. Proc. IEEE VAST 2008, pp. 91-98. 
+ 
+Figure 1. The Human Cognition Model (HCM) showing process initiators. 
+ 
+ 
+ 
+Figure 2. The van Wijk visualization model, with our integrations in red. 
+

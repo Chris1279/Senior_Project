@@ -1,0 +1,831 @@
+Structured Max-Margin Learning for Multi-Label Image
+Annotation
+Xiangyang Xue
+Shanghai Key Lab of Intel.
+Info. Processing
+School of Computer Science
+Fudan University
+Shanghai, CHINA
+xyxue@fudan.edu.cn
+Hangzai Luo
+Software Engineering Institute
+East China Normal University
+Shanghai, CHINA
+hzluo@sei.ecnu.edu.cn
+Jianping Fan
+Dept of Computer Science
+UNC-Charlotte
+Charlotte, NC 28223, USA
+jfan@uncc.edu
+ABSTRACT
+In this paper, a structured max-margin learning scheme is
+developed to achieve more effective training of a large num-
+ber of inter-related classifiers for multi-label image annota-
+tion. First, a visual concept network is constructed to char-
+acterize the inter-concept visual similarity contexts more
+precisely and determine the inter-related learning tasks au-
+tomatically. Second, multiple base kernels are combined to
+achieve more precise characterization of the diverse visual
+similarity contexts between the images and address the is-
+sue of huge intra-concept visual diversity more effectively.
+Third, a structured max-margin learning algorithm is de-
+veloped by incorporating the visual concept network, max-
+margin Markov networks and multi-task learning to address
+the issue of huge inter-concept visual similarity more effec-
+tively. Our structured max-margin learning algorithm can
+leverage the inter-concept visual similarity contexts to learn
+a large number of inter-related classifiers simultaneously and
+improve their discrimination power significantly. Our exper-
+iments have also obtained very positive results.
+Categories and Subject Descriptors
+I.4.8 [Image Processing and Computer Vision]: Scene
+Analysis-image classification.
+General Terms
+Algorithms, Measurement, Experimentation.
+Keywords
+Structured max-margin learning, image classification, visual
+concept network.
+1. INTRODUCTION
+Permission to make digital or hard copies of all or part of this work for
+personal or classroom use is granted without fee provided that copies are
+not made or distributed for profit or commercial advantage and that copies
+bear this notice and the full citation on the first page. To copy otherwise, to
+republish, to post on servers or to redistribute to lists, requires prior specific
+permission and/or a fee.
+CIVR ’10, July 5-7, Xi’an China
+Copyright c©2010 ACM 978-1-4503-0117-6/10/07 ...$10.00.
+As digital images are growing exponentially, it is very at-
+tractive to develop more effective machine learning frame-
+works for classifier training and automatic image annotation.
+Unfortunately, it is not a trivial task because of the following
+issues:
+(a) Inter-Concept Visual Similarity: When a large
+number of objects and image concepts come into view, some
+of them may be inter-related and share similar visual prop-
+erties (i.e., huge inter-concept visual similarity) [6-8, 10-14,
+16-20]. For example, the images for the inter-related image
+concepts, such as “garden”, “beach”, “ocean” and “outdoor”,
+may share some common visual properties. Different object
+classes, such as “sky” and “water”, may also share similar
+visual properties. Most classifier training techniques isolate
+such the inter-related objects and image concepts and learn
+their classifiers independently, which may seriously affect
+their discrimination power [16-20].
+Multi-task learning is one potential solution to address
+the issue of huge inter-concept visual similarity by learn-
+ing multiple inter-related classifiers jointly [13-15, 16-20],
+but one open problem for multi-task learning is how to
+model the task relatedness accurately and determine the
+inter-related learning tasks automatically. Some pioneer
+work have been done recently by incorporating pairwise con-
+cept combinations to characterize the task relatedness ex-
+plicitly [13]. When a large number of image concepts and
+objects come into view, the number of such the pairwise
+concept combinations could be very large and the computa-
+tional complexity for classifier training could be very high.
+Thus it is very attractive to develop new algorithms for char-
+acterizing the inter-concept similarity contexts more pre-
+cisely and determining the inter-related learning tasks auto-
+matically, so that the inter-concept similarity contexts can
+be leveraged for inter-related classifier training.
+(b) Intra-Concept Visual Diversity: One challenging
+problem for image classification is that the semantically-
+similar images (i.e., images belong to the same object or
+concept category) may have huge diversity on their visual
+properties (i.e., huge intra-concept visual diversity) [3-4].
+To address the issue of huge intra-concept visual diversity,
+high-dimensional multi-modal visual features are usually ex-
+tracted to achieve more sufficient characterization of various
+visual properties of the images. Thus the statistical proper-
+ties of the training images could be heterogeneous in the
+high-dimensional multi-modal feature space and their di-
+verse visual similarity contexts cannot be approximated ef-
+82
+fectively by using one single type of kernels such as RBF ker-
+nel. Unfortunately, most existing approaches assume that
+the statistical properties of the training images are homo-
+geneous in the high-dimensional multi-modal feature space
+and one single type of kernels (such as RBF kernel) is used
+to characterize the diverse visual similarity contexts between
+the images. To address the issue of huge intra-concept vi-
+sual diversity, it is very attractive to combine multiple base
+kernels to characterize the diverse visual similarity contexts
+between the images more precisely [21-25].
+In order to address these two issues (i.e., huge inter-concept
+visual similarity and huge intra-concept visual diversity) more
+effectively, a structured max-margin learning scheme is de-
+veloped by leveraging the inter-concept visual similarity con-
+texts for inter-related classifier training: (1) A visual concept
+network is constructed for characterizing the inter-concept
+visual similarity contexts more precisely and providing a
+good environment to determine the inter-related learning
+tasks automatically. (2) A mixture-of-kernels algorithm is
+used to combine multiple base kernels to achieve more ac-
+curate characterization of the diverse visual similarity con-
+texts between the images and address the issue of huge intra-
+concept visual diversity more effectively. (3) A structured
+max-margin learning algorithm is developed to address the
+issue of huge inter-concept visual similarity more effectively
+by incorporating the visual concept network, max-margin
+Markov networks and multi-task learning for inter-related
+classifier training.
+The paper is organized as follows. Section 2 introduces a
+new scheme for visual concept network construction; Section
+3 presents our structured max-margin learning algorithm for
+inter-related classifier training; Section 4 presents our algo-
+rithm for multi-label image annotation; Section 5 describes
+our work on algorithm evaluation; We conclude in Section
+6.
+2. VISUAL CONCEPT NETWORK
+The images, which are used in our experiments, are down-
+loaded from Caltech-256 [2] and LabelMe [1] and are also
+crawled from Internet (i.e., Google Images and Flickr.com)
+[3-4]. For Caltech-256 and LabelMe image sets, the text
+terms for object and concept interpretation are extracted
+from the category names or the tags provided by many users
+of LabelMe image set. The images for the same objects or
+concept categories, which are covered by both Caltech-256
+[2] and LabelMe [1], are integrated. Some objects or concept
+categories for Caltech-256 and LabelMe image sets may con-
+tain less than 1000 images, thus more images from Google
+and Flickr are crawled and added, so that each object and
+concept category consists of at least 1000 relevant images.
+We have also used some additional text terms, which are
+not covered by Caltech-256 and LabelMe and can be used
+to interpret the most popular real-world objects and image
+concepts, to crawl more images from Internet. In this paper,
+we focus on 1000 most popular real-world objects and image
+concepts.
+A visual concept network is constructed to characterize
+the inter-concept visual similarity contexts more precisely
+and provide a good environment to determine the inter-
+related learning tasks in the feature space. Our visual con-
+cept network consists of two key components: image con-
+cepts or objects and their inter-concept visual similarity re-
+lationships. In this paper, both the global visual features
+Table 1: Inter-concept visual similarity contexts.
+concept pair ? concept pair ?
+urbanroad-streetview 0.99 cat-dog 0.81
+frisbee-pizza 0.80 dolphin-cruiser 073
+moped-bus 0.75 habor-outview 0.71
+monkey-humanface 0.71 guitar-violin 0.71
+lightbulb-firework 0.69 mango-broccoli 0.69
+porcupine-lion 0.68 bridge-warship 0.68
+doorway-street 0.65 statue-building 0.68
+windmill-bigben 0.63 cat-lion 0.66
+kerb-saucer 0.28 tweezer-corn 0.19
+fridge-vest 0.29 journal-grape 0.19
+stick-cupboard 0.29 sheep-greatwall 0.26
+mushroom-moon 0.32 whistle-watermelon 0.28
+cannon-ruler 0.41 snake-ipod 0.31
+tombstone-crab 0.42 helicopter-city 0.63
+pylon-highway 0.61 LCD-container 0.65
+beermug-bar 0.62 sailboat-cruiser 0.66
+and the local visual features are extracted for character-
+izing various visual properties of the images: (1) 36-bin
+RGB color histogram to characterize the global color distri-
+butions of the images; (2) 48-dimensional texture features
+from Gabor filter banks (i.e., mean and co-variance for each
+filtering channel) to characterize the global visual proper-
+ties (i.e., global structures) of the images; (3) a number
+of interest points and their SIFT (scale invariant feature
+transform) features to characterize the local visual proper-
+ties (i.e., coarse shapes of the image objects and local image
+structures) of the underlying salient image components [9].
+By using the high-dimensional multi-modal visual features
+for image content representation, we can achieve more suffi-
+cient characterization of the diverse visual properties of the
+images. The statistical properties of the images could be
+heterogeneous in the high-dimensional multi-modal feature
+space, and thus the diverse visual similarity relationships
+between the images cannot be approximated precisely by
+using one single type of kernel [21-25]. Preprocessing of
+high-dimensional multi-modal visual features is a powerful
+method for improving the performance of a learning algo-
+rithm. Based on these observations, the high-dimensional
+multi-modal visual features are first partitioned into multi-
+ple feature subsets and each feature subset is used to char-
+acterize one certain type of visual properties of the images.
+For each feature subset, the underlying visual similarity re-
+lationships between the images are more homogeneous and
+can be approximated more precisely by using one particular
+type of base kernel.
+For a given image concept or object Cj , different base
+kernels may play different roles on characterizing the diverse
+visual similarity relationships between the images. Thus the
+diverse visual similarity contexts between the images are
+characterized more precisely by using a mixture-of-kernels
+[21-25]:
+?(x, y) =
+??
+l=1
+?l?l(x, y),
+??
+l=1
+?l = 1 (1)
+where ? is the number of feature subsets (i.e., the number of
+base kernels), ?l ? 0 is the importance factor for the lth base
+kernel ?l(x, y) and it can be obtained automatically in the
+following kernel-based learning procedure. Through learning
+the kernel combination coefficients ? automatically, it is able
+for us to understand the importances of these base kernels
+83
+Figure 1: Our visual concept network for 1000 image
+concepts and objects.
+and their relevant feature subsets. Thus our mixture-of-
+kernels algorithm may provide a new approach for automatic
+feature subset selection.
+To exploit the inter-concept visual association for con-
+cept network construction, Flickr distance has been used for
+characterizing the inter-concept visual association [5]. How-
+ever, the image distributions in the high-dimensional feature
+space could be very sparse and heterogeneous, using the di-
+vergence between their sparse image distributions may not
+be able to provide a good approximation of the inter-concept
+visual similarity contexts. Based on this observation, the
+visual association ?(Ci, Cj) between the image concepts or
+objects Ci and Cj is determined by:
+?(Ci, Cj) =
+max
+?, ?
+?T?(Si)?(Sj)??
+?T?2(Si)? · ?T?2(Sj)?
+(2)
+where ? and ? are the parameters for determining the op-
+timal projection directions to maximize the correlations be-
+tween two image sets Si and Sj for the image concepts or
+objects Ci and Cj , ?(Si) and ?(Sj) are the kernel functions
+for characterizing the cumulative visual correlations between
+the images in the same image sets Si and Sj .
+?(Si) =
+?
+u,v?Si
+?(u, v), ?(Sj) =
+?
+u,v?Sj
+?(u, v)
+where the visual correlation between the images is defined as
+their kernel-based visual similarity ?(·, ·). The parameters ?
+and ? for determining the optimal projection directions are
+obtained automatically by solving an eigenvalue equation
+[28].
+Some of our experimental results for the inter-concept vi-
+sual similarity contexts ?(·, ·) are given in Table 1. The ob-
+jects and image concepts, which have larger values of ?(·, ·),
+can be linked together on the visual concept network. For
+some image concepts and objects, their inter-concept visual
+similarity contexts ?(·, ·) could be very weak (i.e., having
+smaller values of ?(·, ·)), thus it is not necessary for each im-
+age concept or object to be linked with all the other image
+concepts and objects in the vocabulary. Based on this un-
+derstanding, each image concept or object is automatically
+Figure 2: The most relevant image concepts for “VCR”.
+linked with the most relevant image concepts and objects
+with larger values of the inter-concept visual similarity con-
+texts ?(·, ·). Eliminating the weak inter-concept visual sim-
+ilarity contexts can allow our structured max-margin learn-
+ing algorithm (see Section 3) to focus on the most relevant
+objects and image concepts and achieve more effective learn-
+ing of a large number of inter-related classifiers. The visual
+concept network for our test image set is shown in Fig. 1,
+where each image concept or object is linked with multiple
+most relevant image concepts and objects with larger values
+of ?(·, ·).
+Our visual concept network can provide multiple advan-
+tages: (a) It can characterize the inter-concept visual simi-
+larity contexts more precisely and provide a good environ-
+ment to identify the inter-related learning tasks automat-
+ically; (b) It can provide a good environment to learn a
+large number of inter-related classifiers jointly and reduce
+the learning complexity dramatically; (c) It can bring more
+powerful inference schemes to enhance the discrimination
+and adaptation power of the inter-related classifiers signif-
+icantly by modeling the concept correlations and the task
+relatedness explicitly in the feature space and integrating
+their training images to learn their inter-related classifiers
+jointly.
+3. STRUCTURED MAX-MARGIN LEARN-
+ING
+In this paper, a structured max-margin learning scheme
+is developed by incorporating the visual concept network,
+multi-task learning and max-margin Markov networks to en-
+hance the discrimination power of a large number of inter-
+related image classifiers: (a) The visual concept network is
+used to identify the inter-related learning tasks automat-
+ically, e.g., training the inter-related classifiers simultane-
+ously for the fully-connected image concepts and objects
+(i.e., cliques of the graph) on the visual concept network;
+(b) The inter-task relatedness is characterized explicitly by
+using the strengths of the inter-concept visual similarity con-
+texts ?(·, ·) and a common prediction component is shared
+among the inter-related classifiers for the fully-connected im-
+age concepts and objects on the visual concept network; (c)
+The max-margin Markov networks are integrated to model
+the inter-related learning tasks more precisely and estimate
+the common prediction component more accurately.
+The idea behind multi-task learning is that if multiple
+inter-related learning tasks share a common prediction com-
+84
+ponent, such the common prediction component can be esti-
+mated more reliably by considering these inter-related learn-
+ing tasks together [13-15]. One of the most important open
+problems for multi-task learning is to better characterize
+what the related tasks are. The idea behind max-margin
+Markov networks [26-27] is to leverage both the advantages
+of the graphical models (i.e., good modeling of inter-concept
+prediction structure) and the Support Vector Machines (SVMs)
+(i.e., good generalization ability in the high-dimensional fea-
+ture space) for training the inter-related classifiers more re-
+liably.
+For a given image concept or object Cj , its first-order
+nearest neighbors on the visual concept network are denoted
+as ?j (i.e., cliques of the graph). For a given image concept
+or object Cj , its joint conditional distribution P (Cj , X) can
+be modeled by using an exponential function:
+P (Cj , X) =
+1
+Z
+exp
+?? ?
+Cj??j
+f(Cj , X) +
+?
+Cj??j
+?
+Ci??i
+f(Cj , Ci, X)
+??
+(3)
+where f(Cj , X) is the basic discriminant function for the
+given image concept or object Cj , f(Cj , Ci, X) is the pair-
+wise discriminant function for the inter-related image con-
+cepts or objects Cj and Ci on the visual concept network, ?i
+is the first-order nearest neighbors of the image concept or
+object Ci on the visual concept network (i.e., one example
+is shown in Fig. 2), and Z is a normalizing constant known
+as the partition function. The partition function Z can be
+defined as:
+Z =
+T?
+j=1
+exp
+?? ?
+Cj??j
+f(Cj , X) +
+?
+Cj??j
+?
+Ci??i
+f(Cj , Ci, X)
+??
+(4)
+where T is the total number of the first-order nearest neigh-
+borhoods on the visual concept network (i.e., the total num-
+bers of cliques). In this paper, T is equal to the total num-
+ber of image concepts and objects on the visual concept
+network because only the first-order nearest neighbors are
+considered.
+We are not interested in the exact form of the joint condi-
+tional probability P (Cj , X), we are rather interested in the
+classifier HCj (X) and its confidence for image classification.
+Once the concept model for the given image concept or ob-
+ject Cj has been fitted on the training images, one can do
+automatic image classification by computing:
+HCj (X) = argmax
+?? ?
+Cj??j
+f(Cj , X) +
+?
+Cj??j
+?
+Ci??i
+f(Cj , Ci, X)
+??
+(5)
+Given the labeled training images for the inter-related im-
+age concepts and objects in ?j (i.e., we assume that the size
+of the clique ?j is M and there are M image concepts and
+objects which are fully connected with Cj on the visual con-
+cept network): ? = {Xij , Yij |i = 1, · · · , N ; j = 1, · · · ,
+M}, the discriminant functions f(Cj , X) and f(Cj , Ci, X)
+can further be defined as:
+f(Cj , X) = sign
+(
+N?
+l=1
+??
+m=1
+?ljYlj?m?m(Xlj , X) + b
+)
+(6)
+f(Cj , Ci, X) = sign
+?? M?
+j=1
+N?
+l=1
+??
+m=1
+?ˆljYlj ?ˆm?m(Xlj , X) + b
+??
+(7)
+Given the labeled training images for M inter-related im-
+age concepts and objects: ? = {Xij , Yij |i = 1, · · · , N ;
+j = 1, · · · , M}, the margin maximization procedure can be
+transformed into the following joint optimization problem:
+min
+?
+max
+?
+??
+r=1
+?l?(r) +
+min
+?ˆ
+max
+?ˆ
+??
+r=1
+?ˆl?(r) (8)
+subject to:
+?Nl=1 : 0 ? ?l ? ?,
+N?
+l=1
+?lYl = 0;
+??r=1 : ?r ? 0,
+??
+r=1
+?r = 1; ?ˆr ? 0,
+??
+r=1
+?ˆr = 1
+?Ni=1 ?Mj=1 : 0 ? ?ˆij ? M
+2?
+,
+M?
+j=1
+N?
+i=1
+?ˆijYij = 0
+where ?(r) and ?(r) are the individual and common objec-
+tive functions, and they are defined as:
+?(r) =
+N?
+l,m=1
+?l?mYlYm?r(Xl, Xm)?
+N?
+l=1
+?l (9)
+?(r) =
+M?
+j=1
+N?
+i=1
+M?
+h=1
+N?
+l=1
+?ˆihYih?ˆjlYjl?r(Xih, Xjl)?
+M?
+j=1
+N?
+i=1
+?ˆij
+(10)
+Because the common prediction component can be learned
+jointly by using the training images for all these fully-connected
+image concepts and objects (i.e., image concepts and ob-
+jects which are correlated on their visual properties and can
+easily be confused by the machines), our structured max-
+margin learning algorithm can address the issue of huge
+inter-concept visual similarity more effectively. By learn-
+ing from the training images for other fully-connected im-
+age concepts and objects on the visual concept network (i.e.,
+inter-related image concepts and objects), our structured
+max-margin learning algorithm can enhance the discrimina-
+tion power and the generalization ability of the classifiers for
+the inter-related image concepts and objects.
+The classifier HCj (X) for the given image concept or ob-
+ject Cj can be refined as:
+HCj (X) = argmax
+?? ?
+Cj??j
+N?
+l=1
+??
+r=1
+?ljYlj?r?r(Xlj , X)+
+?
+Cj??j
+?
+Ci??i
+N?
+l=1
+??
+r=1
+?ˆljYlj?ˆr?r(Xlj , X)
+?? (11)
+One can observe that our inter-related classifiers consist
+of two components: (a) individual prediction component;
+and (b) common prediction component. By learning two
+different sets of the kernel coefficients ? and ?ˆ simultane-
+ously, our structured max-margin learning algorithm can au-
+tomatically determine two separable feature subsets, which
+can effectively characterize both the common visual proper-
+ties shared among all these M inter-related image concepts
+and the individual visual properties for each particular im-
+age concept in the clique. The feature subsets and their
+85
+Figure 3: Multi-label image annotation results.
+base kernels, which are used to construct the common pre-
+diction component for multiple inter-related classifiers (i.e.,
+with larger values of ?ˆ), are less important for the individ-
+ual prediction components for these inter-related classifiers
+(i.e., with smaller values or even zero values of ?).
+By learning two different sets of the weights ? and ?ˆ
+for the training images simultaneously, our structured max-
+margin learning algorithm can automatically establish two
+independent decision boundaries for both the common pre-
+diction component (shared among the inter-related discrim-
+inant functions) and the individual prediction component of
+the discriminant function for each particular image concept.
+The training images, which are used to construct the com-
+mon prediction component for multiple inter-related classi-
+fiers (i.e., support vectors with large values of ?ˆ), are less
+important for the individual prediction components for these
+inter-related classifiers (i.e., with smaller values or even zero
+values of weights ?).
+The kernel coefficients ?ˆ and the weights ?ˆ are fixed for all
+these M inter-related discriminant functions to characterize
+their common prediction component. By learning a com-
+mon prediction component for multiple inter-related image
+concepts or objects and separating it from their individual
+prediction components, our structured max-margin learning
+framework can address the issue of huge inter-concept visual
+similarity effectively and enhance the discrimination power
+and the generalization ability of the classifiers significantly.
+Our structured max-margin learning scheme has provided
+multiple advantages: (a) It can have lower computational
+complexity and good scalability with the number of objects
+and image concepts by leveraging the inter-concept visual
+similarity contexts to reduce the learning complexity for
+training a large number of inter-related classifiers; (b) It
+can address the issue of huge inter-concept visual similar-
+ity more effectively and support multi-label image annota-
+tion by learning the inter-related classifiers for the inter-
+related objects and image concepts jointly; (c) It can en-
+hance the discrimination and adaptation power of the inter-
+related classifiers significantly by learning from the training
+images for other inter-related objects and image concepts on
+Figure 4: Multi-label image annotation results.
+the visual concept network. Incorporating the training im-
+ages from other inter-related objects and image concepts for
+classifier training will significantly enhance the generaliza-
+tion ability of their classifiers, especially when the available
+training images for the given image concept may not be rep-
+resentative for large amounts of unseen test images.
+In our structured max-margin learning framework, the
+computational complexity for our mixture-of-kernels algo-
+rithm is bounded at O(?N3), where ? is the number of fea-
+ture subsets or base kernels, N is the number of training im-
+ages for each category of image concepts and objects. There
+are Mˆ×T potential iterations to learn the inter-related clas-
+sifiers for all the image concepts and objects on the visual
+concept network, where T is the total number of concepts
+and objects on the visual concept network, Mˆ is the average
+number of image concepts and objects for all the potential
+cliques on the visual concept network. Thus the computa-
+tional complexity for our structured max-margin learning
+algorithm is bounded at O(Mˆ × T ) · O(?N3). It is worth
+noting that the number for the feature subsets or base ker-
+nels ? could be very small and the value of Mˆ is small as
+compared with T . For the traditional pairwise concept com-
+bination approach, its computational complexity is bounded
+at O(T 2) ·O(N˜3), where N˜ is the number of training images
+for each category of image concepts and objects.
+4. MULTI-LABEL IMAGE ANNOTATION
+Our algorithm for image classification and multi-label an-
+notation takes the following steps: (a) The test image is
+first classified into the most relevant image concept or object
+Ck on the visual concept network, which has the maximum
+value of the confidence (posterior probability) P (Ck|X). There
+are T image concepts and objects on the visual concept net-
+work and each image concept or object has a clique (i.e.,
+first-order nearest neighbors on the visual concept network),
+thus the computational cost for the first step is O(T ). (b)
+Because the image concepts and objects are inter-related
+on the visual concept network, thus the confidences for the
+image concepts and objects (which are fully-connected with
+the best matched image concept(object) Ck) are further cal-
+86
+Figure 5: The average precision and recall rates of our
+structured max-margin learning algorithm for 1000 ob-
+jects and image concepts.
+Figure 6: The comparison results on the precision be-
+tween our mixture-of-kernels algorithm and traditional
+single kernel technique.
+culated to determine the potential classification paths. If
+the confidences for some of these inter-related image con-
+cepts and objects are above a given threshold ?2 = 0.65,
+the relevant classification paths are selected. Otherwise,
+the relevant classification paths are terminated. Such the
+confidence-based image classification processes are repeated
+over the potential classification paths until their confidences
+are less than the given threshold ?2 = 0.65. (c) The key-
+words, which are used to interpret the inter-related objects
+and image concepts on all these potential classification paths,
+are selected for achieving multi-label image annotation Some
+of our experimental results on multi-label image annotation
+are given in Fig. 3 and Fig. 4.
+Most existing algorithms for multi-class object detection
+and scene recognition are often handled by combining multi-
+ple binary classifiers, thus they may have square complexity
+with the number of concepts and objects T , i.e., O(T 2). On
+the other hand, our multi-label image classification and an-
+notation algorithm can achieve linear complexity with the
+size of the visual concept network T and the average size of
+the cliques Mˆ , i.e., O(Mˆ + T ), thus it is very attractive for
+dealing with a large number of image concepts and objects.
+5. ALGORITHM EVALUATION
+In our experimental image set, each object and concept
+category consists of 1000 images. We have constructed a vi-
+sual concept network which consists of 1000 image concepts
+and objects. For each image concept or object, we have used
+550 labeled images as the training images and the residue la-
+beled images (at least 450 labeled images for each category)
+are used as the test images.
+Our work on algorithm evaluation focus on: (1) compar-
+ing the performance differences of the same classifier train-
+ing tool by using one single kernel or a mixture-of-kernels
+for diverse image similarity characterization; (2) compar-
+ing the performance differences between various approaches
+for inter-concept context characterization and inter-related
+learning task determination; (3) comparing the performance
+differences between our structured max-margin learning al-
+gorithm (by leveraging the inter-concept visual similarity
+contexts for inter-related classifier training) and the flat ap-
+proach (learning the classifiers for all these objects and im-
+age concepts independently). The average precision and re-
+call rates of our structured max-margin learning scheme for
+1000 objects and image concepts are given in Fig. 5.
+By combining multiple base kernels, our mixture-of-kernels
+algorithm can achieve more accurate approximation of the
+diverse visual similarity relationships between the images,
+handle the issue of huge intra-concept visual diversity more
+effectively and may further result in higher classification ac-
+curacy rates. For the same image classification task (i.e.,
+learning the classifier for the same image concept or object),
+we have compared the performance of our mixture-of-kernels
+algorithm with other single-kernel techniques. As shown in
+Fig. 6, one can observe that our mixture-of-kernels algo-
+rithm can outperform the single-kernel techniques.
+By using the same set of multi-modal visual features for
+image content representation, we have compared the per-
+formance differences between two approaches for classifier
+training by using the same set of training images: flat ap-
+proach (i.e., the classifiers for the image concepts and ob-
+jects on the visual concept network are learned indepen-
+dently) versus our structured max-margin learning approach
+by leveraging the inter-concept visual similarity contexts for
+inter-related classifier training.
+As shown in Fig. 7, one can observe that our struc-
+tured max-margin classifier training scheme can improve
+the classification accuracy for the inter-related image con-
+cepts and objects. Such the improvement on the classi-
+fication accuracy benefits from two components: (1) The
+classifiers for the inter-related image concepts and objects
+are trained jointly by leveraging their inter-concept visual
+similarity contexts for inter-related classifier training, thus
+our structured max-margin learning algorithm can learn not
+only the reliable classifiers but also the bias, e.g., learn how
+to generalize from one image concept or object to other inter-
+related image concepts and objects on the visual concept
+network. (2) The final prediction results for the inter-related
+image concepts and objects are obtained by a voting pro-
+cedure according to their confidence scores to make their
+prediction errors to be transparent.
+For the same image classification task (i.e., classifying the
+images into the same set of image concepts and objects), we
+have used two approaches to model the task relatedness for
+inter-related classifier training and their performance differ-
+ences are compared: multi-task boosting approach versus
+our structured max-margin learning algorithm. The same
+set of high-dimensional multi-modal visual features are used
+for image content representation and the same set of training
+images are used for inter-related classifier training.
+Because the inter-concept visual similarity contexts have
+been leveraged for inter-related classifier training, one can
+observe that our structured max-margin learning scheme can
+have good classification accuracy for most image concepts
+and objects as compared with the multi-task boosting ap-
+proach (shown in Fig. 8). The computational complexity
+for our structured max-margin learning scheme is bounded
+at O(Mˆ × T ) ·O(?N3).
+87
+Figure 7: The comparison results on the precision be-
+tween our structured max-margin learning algorithm and
+flat approach for some image concepts and objects.
+6. CONCLUSIONS
+In this paper, we have developed an inter-related classifier
+training framework to support multi-label image annotation.
+The visual concept network is constructed for characterizing
+the inter-concept visual similarity contexts more precisely
+and determining the inter-related learning tasks automat-
+ically. Multiple base kernels are combined to characterize
+the diverse visual similarity relationships between the im-
+ages and handle the issue of huge intra-concept visual di-
+versity more effectively. A structured max-margin learning
+algorithm is developed by incorporating the visual concept
+network, multi-task learning, and max-margin Markov net-
+works to handle the issue of huge inter-concept visual simi-
+larity effectively. Our structured max-margin learning algo-
+rithm can leverage the inter-concept visual similarity con-
+texts to reduce the learning complexity for training a large
+number of inter-related image classifiers. Our experiments
+have also obtained very positive results.
+7. ACKNOWLEDGEMENTS
+This research is sponsored in part by 973 Program (Project
+No. 2010CB327900), NSFC Projects (60873178), and MoE
+Research Project (104075).
+8. REFERENCES
+[1] B.C. Russell, A. Torralba, K.P. Murphy, W.T. Freeman,
+“LabelMe: a database and web-based tool for image
+annotation”, Intl. Journal of Computer Vision, vol.77, no.1,
+pp.157-173, 2008.
+[2] L. Fei-Fei, R. Fergus and P. Perona,
+http://www.vision.caltech.edu.
+[3] A. Torralba, R. Fergus, W.T. Freeman, “80 million tiny
+images: a large dataset for non-parametric object and scene
+recognition”, IEEE Trans. on PAMI, vol.30, no.11,
+pp.1958-1970, 2008.
+[4] J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li and L. Fei-Fei,
+“ImageNet:A large-scale hierarchical image database”, IEEE
+CVPR, 2009.
+[5] L. Wu, X.-S. Hua, N. Yu, W.-Y. Ma, S. Li, “Flickr distance”,
+ACM Multimedia, 2008.
+[6] K. Barnard and D. Forsyth, “Learning the semantics of
+words and pictures”, IEEE ICCV, pp.408-415, 2001.
+[7] N. Vasconcelos, “Image indexing with mixture hierarchies”,
+IEEE CVPR, 2001.
+[8] L. Fei-Fei, P. Perona, “A Bayesian hierarchical model for
+learning natural scene categories”, IEEE CVPR, 2005.
+[9] D. Lowe, “Distinctive image features from scale invariant
+keypoints”, Intl Journal of Computer Vision, vol.60,
+pp.91-110, 2004.
+[10] A. Rabinovich, A. Vedaldi, C. Galleguillos, E. Wiewiora, S.
+Belongie, “Objects in context”, IEEE ICCV, 2007.
+Figure 8: The comparison results on the precision be-
+tween our structured max-margin learning algorithm and
+multi-task boosting for some image concepts and objects.
+[11] E. Sudderth, A. Torralba, W. Freeman, A. Willsky,
+“Learning hierarchical models of scenes, objects, and parts”,
+IEEE ICCV, 2005.
+[12] C. Liu, J. Yuen, A. Torralba, “Nonparametric scene
+parsing: label transfer via dense scene alignment”, IEEE
+CVPR, 2009.
+[13] A. Torralba, K. P. Murphy, W. T. Freeman, “Sharing
+features: efficient boosting procedures for multiclass object
+detection”, IEEE CVPR, 2004.
+[14] J. Fan, Y. Gao, H. Luo, ““Integrating concept ontology and
+multi-task learning to achieve more effective classifier
+training for multi-level image annotation”, IEEE Trans. on
+Image Processing, vol. 17, no.3, pp.407-426, 2008.
+[15] T. Evgeniou, C.A. Micchelli, M. Pontil, “Learning multiple
+tasks with kernel methods”, Journal of Machine Learning
+Research, vol.6, pp.615-637, 2005.
+[16] S. Kumar, M. Hebert, “Discriminative random fields”, Intl.
+Journal of Computer Vision, vol.68, no.2, pp.179-201, 2006.
+[17] J. Yang, Y. Liu, E. X. Ping, A.G. Hauptmann,
+“Harmonium models for semantic video representation and
+classification”, SIAM Conf. on Data Mining, 2007.
+[18] M.-Y. Chen, A.G. Hauptmann, “Discriminative fields for
+modeling semantic concepts in video”, RIAO, 2007.
+[19] W. Jiang, S.-F. Chang, A. Loui, “Context-based concept
+fusion with boosted conditional random fields”, IEEE
+ICASSP, 2007.
+[20] G.-J. Qi, X.-S. Hua, Y. Rui, J. Tang, T. Mei, H.-J. Zhang,
+“Correlative multi-label video annotation”, ACM
+Multimedia, pp.17-26, 2007.
+[21] J. Zhang, M. Marszalek, S. Lazebnik, C. Schmid, “Local
+features and kernels for classification of texture and object
+categories: A comprehensive study”, Intl Journal of
+Computer Vision, vol. 73, no. 2, pp. 213-238, 2007.
+[22] M. Varma, D. Ray, “Learning the discriminative
+power-invariance trade-off”, IEEE ICCV, 2007.
+[23] A. Frome, Y. Singer, F. Sha, J. Malik, “Learning
+globally-consistent local distance functions for shape-based
+image retrieval and classification”, IEEE ICCV, 2007.
+[24] A. Bosch, A. Zisserman, X. Munoz, “Representing shape
+with a spatial pyramid kernel”, ACM CIVR, 2007.
+[25] G. Smits, E. Jordan, “Improved SVM regression using
+mixtures of kernels”, IEEE IJCNN, 2002.
+[26] J. Lafferty, A. McCallum, F. Pereira, “Conditional random
+field: Probabilistic models for segmenting and labeling
+sequence data”, Proc. ICML, 2001.
+[27] B. Taskar, C. Guestrin, D. Koller, “Max-margin Markov
+networks”, Proc. of NIPS, 2003.
+[28] D.R. Hardoon, S. Szedmak, J. Shawe-Taylor, “Canonical
+correlation analysis: An overview with application to
+learning methods”, Technical Report, CSD-TR-03-02,
+University of London, 2003.
+88
+

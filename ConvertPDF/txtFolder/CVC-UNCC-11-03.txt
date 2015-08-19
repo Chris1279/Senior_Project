@@ -1,0 +1,803 @@
+Harvesting Large-Scale Weakly-Tagged Image Databases from the Web
+Jianping Fan1, Yi Shen1, Ning Zhou1, Yuli Gao2
+1Department of Computer Science, UNC-Charlotte, NC28223, USA
+2Multimedia Interaction and Understanding, HP Labs, Palo Alto, CA94304, USA
+Abstract
+To leverage large-scale weakly-tagged images for computer
+vision tasks (such as object detection and scene recogni-
+tion), a novel cross-modal tag cleansing and junk image
+filtering algorithm is developed for cleansing the weakly-
+tagged images and their social tags (i.e., removing irrele-
+vant images and finding the most relevant tags for each im-
+age) by integrating both the visual similarity contexts be-
+tween the images and the semantic similarity contexts be-
+tween their tags. Our algorithm can address the issues of
+spams, polysemes and synonyms more effectively and de-
+termine the relevance between the images and their social
+tags more precisely, thus it can allow us to create large
+amounts of training images with more reliable labels by har-
+vesting from large-scale weakly-tagged images, which can
+further be used to achieve more effective classifier training
+for many computer vision tasks.
+1. Introduction
+For many computer vision tasks, such as object detection
+and scene recognition, machine learning techniques are usu-
+ally involved to learn the classifiers from a set of labeled
+training images [1]. The size of the labeled training images
+must be large-scale due to: (1) the number of object classes
+and scenes of interest could be very large; (2) the learning
+complexity for some object classes and scenes could be very
+high because of visual ambiguity; and (3) a small number
+of labeled training images are incomplete or insufficient to
+interpret the diverse visual properties of large amounts of
+unseen test images. However, hiring professionals to label
+large amounts of training images is cost-sensitive and poses
+a key limitation for the practical use of some advanced com-
+puter vision techniques. On the other hand, large-scale dig-
+ital images and their associated text terms are available on
+the Internet, thus it is very attractive to leverage large-scale
+online images for computer vision tasks [2].
+Some pioneering works have been done to leverage In-
+ternet images for computer vision tasks [2, 4-8]. Fergus et
+al. [4] and Li et al. [6] dealt with the precision problem by
+re-ranking the images which are downloaded from an image
+search engine. Recently, Schroff et al. [7] have developed a
+new algorithm for harvesting image databases from the web
+by combining text, meta-data and visual information. All
+these existing techniques have made a hidden assumption,
+e.g., image semantics have an explicit correspondence with
+the associated texts or nearby texts. Unfortunately, such an
+assumption may not always be true.
+Collaborative image tagging system, such as Flickr [3],
+is now a popular way to obtain large set of labeled images
+easily by relying on the collaborative effort of a large pop-
+ulation of Internet users. In a collaborative image tagging
+system, people can tag the images according to their social
+or cultural backgrounds, personal expertise and perception.
+We call the collaboratively-tagged images as weakly-tagged
+images because their social tags may not have exact cor-
+respondences with the underlying image semantics. With
+the exponential growth of the weakly-tagged images, it is
+very attractive to develop new algorithms that can lever-
+age large-scale weakly-tagged images for computer vision
+tasks (such as learning the classifiers for object detection
+and scene recognition). Without controlling the word vo-
+cabulary, many text terms for image tagging may be syn-
+onyms or polysemes or even spams. The appearances of
+synonyms, polysemes and spams may either return incom-
+plete sets of the relevant images or result in large amounts
+of ambiguous images or even junk images. Thus it is not
+a trivial task to leverage large-scale weakly-tagged images
+for computer vision tasks.
+In this paper, we focus on collecting large-scale weakly-
+tagged images from collaborative image tagging systems
+such as Flickr by addressing the following crucial issues:
+(a) Synonymous Tags: Different people may use dif-
+ferent tags, which have the same or close meanings (syn-
+onyms), to tag their images. For example, car, auto, and au-
+tomobile are a set of synonyms. The synonyms may result
+in incomplete returns of the relevant images in the image
+crawling process, and most tag clustering algorithms can-
+not incorporate the visual similarities between the relevant
+images to deal with the issue of synonyms more effectively.
+(b) Polysemous Tags: Collaborative image tagging is
+an ambiguous process. Without controlling the vocabulary,
+different people may apply the same tag in different ways
+(i.e., the same tag may have different meanings under dif-
+ferent contexts), which may result in large amounts of am-
+biguous images. For example, the text term “bank” can be
+used to tag “bank office”, “river bank” and “cloud bank”.
+Word sense disambiguation is one potential solution for ad-
+dressing this ambiguity issue, but it cannot incorporate the
+visual properties of the relevant images to deal with the is-
+sue of polysemes more effectively [9-10].
+(c) Spam Tags: Spam tags, which are used to drive traf-
+fic to certain images for fun or profit, are done by inserting
+the text terms that are more related to popular query terms
+rather than the text terms related to the actual image con-
+tent. Spam tags are problematic because the junk images
+may mislead the underlying machine learning tools for clas-
+sifier training. Junk image filtering is an attractive direction
+for dealing with the issue of spam tags, but it is worth noting
+that the scenario for junk image filtering in a collaborative
+image tagging space is significantly different.
+In this paper, a novel cross-modal tag cleansing and
+junk image filtering algorithm is developed by integrat-
+ing both the visual properties of the weakly-tagged images
+and their social tags to deal with the issues of spams, pol-
+ysemes and synonyms more effectively, so that we can cre-
+ate large amounts of training images with more reliable la-
+bels for computer vision tasks by harvesting from large-
+scale weakly-tagged images. The paper is organized as fol-
+lows. In section 2, an automatic algorithm is introduced for
+image topic extraction. In section 3, a mixture-of-kernels
+algorithm is introduced for image similarity characteriza-
+tion. In section 4, a spam tag detection technique is intro-
+duced for junk image filtering. In section 5, a cross-modal
+tag cleansing algorithm is introduced for addressing the is-
+sues of synonyms and polysemes. The algorithm evaluation
+results are given in section 6. We conclude this paper at
+section 7.
+2. Image Topic Extraction
+Each image in a collaborative tagging system is associated
+with the image holder’s taggings of the underlying image
+content and other users’ taggings or comments. It is worth
+noting that entity extraction can be done more effectively in
+a collaborative image tagging space. In this paper, we first
+focus on extracting the social tags which are strongly related
+to the most popular real-world objects and scenes or events.
+The social tags, which are related to image capture time and
+place, are also very attractive, but they are beyond the scope
+of this paper. Thus the image tags are first partitioned into
+two categories: noun phrases versus verb phrases. The noun
+phrases are further partitioned into two categories automat-
+ically: content-relevant tags (i.e., tags that are relevant to
+image objects and scenes) and content-irrelevant tags. The
+verb phrases are further partitioned into two categories au-
+tomatically: event-relevant tags (i.e., tags that are relevant
+to image events) and event-irrelevant tags.
+The occurrence frequency for each content-relevant tag
+and each event-relevant tag is counted automatically by us-
+ing the number of relevant images. The misspelling tags
+may have low frequencies (i.e., different people may make
+different typing mistakes), thus it is easy for us to correct
+such the misspelling tags and their images are added into
+the relevant tags automatically. Two tags, which are used
+for tagging the same image, are considered to co-occur once
+without considering their order. A co-occurrence matrix is
+obtained by counting the frequencies of such pairwise tag
+co-occurrences.
+The content-relevant tags and the event-relevant tags are
+further partitioned into two categories according to their
+interestingness scores: interesting tags and uninteresting
+tags. In this paper, multiple information sources have been
+exploited for determining the interesting tags more accu-
+rately. For a given tag C, its interestingness score ?(C)
+depends on: (1) its occurrence frequency t(C) (e.g., higher
+occurrence frequency corresponds to higher interestingness
+score); and (2) its co-occurrence frequency ?(C) with any
+other tag in the vocabulary (e.g., higher co-occurrence fre-
+quency corresponds to higher interestingness score). The
+occurrence frequency t(C) for a given tag C is equal to the
+number of images that are tagged by the given tag C. The
+co-occurrence frequency ?(C) for the given tag C is equal
+to the number of images that are tagged jointly by the given
+tag C and any other tag in the vocabulary.
+The interestingness score ?(C) for a given tag C is de-
+fined as:
+?(C) = ?·log(t(C)+
+?
+t2(C) + 1)+?·log(?(C)+
+?
+?2(C) + 1)
+(1)
+where ? and ? are the weighting factors, ? +? = 1.
+All the interesting tags, which have large values of ?(·)
+(i.e., top 5000 tags in our current experiments), are treated
+as image topics. In this work, only the interesting tags,
+which are used to interpret the most popular real-world ob-
+ject classes and scenes or events, are treated as the image
+topics. It is worth noting that one single weakly-tagged im-
+age may be assigned into multiple image topics when the
+relevant tags are used for tagging the image jointly. Collect-
+ing large-scale training images for the most popular real-
+world object classes and scenes or events and learning their
+classifiers more accurately are crucial for many computer
+vision tasks.
+3. Image Similarity Characterization
+To achieve more sufficient characterization of various visual
+properties of the images, both global and local visual fea-
+tures are extracted for image content representation. In our
+current experiments, the following visual features are ex-
+tracted: (1) 36-bin RGB color histogram to characterize the
+global color distributions of the images; (2) 48-dimensional
+texture features from Gabor filter banks to characterize the
+global visual properties (i.e., global structures) of the im-
+ages; and (3) a number of interest points and their SIFT
+(scale invariant feature transform) features to characterize
+the local visual properties of the underlying salient image
+components.
+By using high-dimensional visual features (color his-
+togram, wavelet textures, and SIFT features) for image con-
+tent representation, it is able for us to characterize various
+visual properties of the images more sufficiently. On the
+other hand, the statistical properties of the images in the
+high-dimensional feature space may be heterogeneous be-
+cause different feature subsets are used to characterize dif-
+ferent visual properties of the images, thus the statistical
+properties of the images in the high-dimensional feature
+space may be heterogeneous and sparse. Therefore, it is
+hard to use only one single type of kernel to characterize
+the diverse visual similarity contexts between the images
+precisely.
+Based on these observations, the high-dimensional vi-
+sual features are first partitioned into multiple feature sub-
+sets and each feature subset is used to characterize one cer-
+tain type of visual properties of the images, thus the un-
+derlying visual similarity contexts between the images are
+more homogeneous and can be approximated more pre-
+cisely by using one particular type of kernel. For each fea-
+ture subset, a suitable base kernel is designed for image sim-
+ilarity characterization. Because different base image ker-
+nels may play different roles on characterizing the diverse
+visual similarity contexts between the images, the optimal
+kernel for diverse image similarity context characterization
+can be approximated more accurately by using a linear com-
+bination of these base image kernels with different impor-
+tance.
+For a given image topic Cj in the vocabulary, differ-
+ent base image kernels may play different roles on charac-
+terizing the diverse visual similarity relationships between
+the images. Thus the diverse visual similarity contexts be-
+tween the images are characterized more precisely by using
+a mixture-of-kernels [13-14]:
+?(x, y) =
+??
+l=1
+?l?l(x, y),
+??
+l=1
+?l = 1 (2)
+where ? is the number of feature subsets (i.e., the number
+of base image kernels), ?l ? 0 is the importance factor
+for the lth base image kernel ?l(x, y). Combining multiple
+base kernels can allow us to achieve more precise charac-
+terization of the diverse visual similarity contexts between
+the weakly-tagged images.
+4. Spam Tag Detection
+Some popular image topics in the vocabulary may consist of
+large amounts of junk images because of spam tagging, and
+incorporating the junk images for classifier training may se-
+riously mislead the underlying machine learning tools. Ob-
+viously, the junk images, which are induced by spam tag-
+ging, may make a significant difference on their visual prop-
+erties with the relevant images. Thus the junk images can
+be filtered out effectively by performing visual-based image
+clustering and relevance analysis.
+4.1 Image Clustering
+A K-way min-max cut algorithm is developed to achieve
+more effective image clustering, where the cumulative inter-
+cluster visual similarity contexts are minimized while the
+cumulative intra-cluster visual similarity contexts (summa-
+tion of pairwise image similarity contexts within a cluster)
+are maximized. These two criteria can be satisfied simulta-
+neously with a simple K-way min-max cut function [11].
+For a given image topic C, a graph is first constructed for
+organizing all its weakly-tagged images according to their
+visual similarity contexts [11-12], where each node on the
+graph is one weakly-tagged image for the given image topic
+C and an edge between two nodes is used to characterize
+the visual similarity contexts between two weakly-tagged
+images, ?(·, ·).
+All the weakly-tagged images for the given image topic
+C are partitioned into K clusters automatically by minimiz-
+ing the following objective function:
+min
+{
+?(C,K, ?) =
+K?
+i=1
+s(Gi, G/Gi)
+s(Gi, Gi)
+}
+(3)
+where G = {Gi|i = 1, · · · ,K} is used to represent K im-
+age clusters, G/Gi is used to represent other K ? 1 image
+clusters in G except Gi, K is the total number of image
+clusters, ? is the set of the optimal kernel weights. The cu-
+mulative inter-cluster visual similarity context s(Gi, G/Gi)
+is defined as:
+s(Gi, G/Gi) =
+?
+u?Gi
+?
+v?G/Gi
+?(u, v) (4)
+The cumulative intra-cluster visual similarity context
+s(Gi, Gi) is defined as:
+s(Gi, Gi) =
+?
+u?Gi
+?
+v?Gi
+?(u, v) (5)
+We further define X = [X1, · · · ,Xl, · · · ,Xk] as the
+cluster indicators, and its component Xl is a binary indi-
+Figure 1: Image clustering for the image topic “beach”: (a) cluster correlation network; (b) filtered junk images.
+cator for the appearance of the lth cluster Gl,
+Xl(u) =
+??
+?
+1, u ? Gl
+0, otherwise
+(6)
+W is defined as an n×n symmetrical matrix (i.e., n is the
+total number of web images), and its component is defined
+as:
+Wu,v = ?(u, v) (7)
+D is defined as an n × n diagonal matrix, and its diagonal
+components are defined as:
+Du,u =
+n?
+v=1
+Wu,v (8)
+For the given image topic C, an optimal partition of its
+weakly-tagged images (i.e., image clustering) is achieved
+by:
+min
+{
+?(C,K, ?) =
+K?
+l=1
+XTl (D ?W )Xl
+XTl WXl
+}
+(9)
+Let ??W = D? 12WD? 12 , and ??Xl = D
+1
+2Xl
+?D
+1
+2Xl?
+, the objective
+function for our K-way min-max cut algorithm can further
+be refined as:
+min
+{
+?(C,K, ?) =
+K?
+l=1
+1
+??
+Xl
+T
+·
+??
+W ·
+??
+Xl
+?K
+}
+(10)
+subject to:
+??
+Xl
+T
+·
+??
+Xl = I,
+??
+Xl
+T
+·
+??
+W ·
+??
+Xl > 0, l ? [1, · · · ,K]
+The optimal solution for Eq. (10) is finally achieved by
+solving multiple eigenvalue equations:
+??
+W ·
+??
+Xl = ?l
+??
+Xl, l ? [1, · · · ,K] (11)
+The objective function for kernel weight determination
+is to maximize the inter-cluster separability and the intra-
+cluster compactness. For one specific cluster Gl, its inter-
+cluster separability µ(Gl) and its intra-cluster compactness
+?(Gl) are defined as:
+µ(Gl) = X
+T
+l (D ?W )Xl, ?(Gl) = X
+T
+l WXl (12)
+For one specific cluster Gl, we can refine its cumulative
+intra-cluster pairwise image similarity contexts s(Gl, Gl) as
+W (Gl):
+W (Gl) =
+?
+u?Gl
+?
+v?Gl
+?(u, v) =
+??
+i=1
+?i?i(Gl) (13)
+D(Gl)?W (Gl) =
+??
+i=1
+?i[i(Gl)? ?i(Gl)] (14)
+where ?i(Gl) and i(Gl) are defined as:
+?i(Gl) =
+?
+u?Gl
+?
+v?Gl
+?i(u, v), i(Gl) =
+nl?
+v=1
+?i(Gl) (15)
+The optimal weights ~? = [?1, · · ·, ?? ] for kernel com-
+bination are determined automatically by maximizing the
+inter-cluster separability and the intra-cluster compactness:
+max
+~?
+{
+1
+K
+K?
+l=1
+?(Gl)
+µ(Gl)
+}
+(16)
+subject to: ??i=1 ?i = 1, ?i : ?i ? 0
+The optimal kernel weights ~? = [?1, · · ·, ?? ] are de-
+termined automatically by solving the following quadratic
+programming problem:
+min
+~?
+{
+1
+2
+~?T
+(
+K?
+l=1
+?(Gl)?(Gl)
+T
+)
+~?
+}
+(17)
+subject to: ??i=1 ?i = 1, ?i : ?i ? 0
+Figure 2: Image clustering for the image topic “rock”: (a) cluster correlation network; (b) filtered junk images.
+?(Gl) is defined as:
+?(Gl) =
+?(Gl)
+(Gl)? ?(Gl)
+(18)
+In summary, our K-way min-max cut algorithm takes the
+following steps iteratively for image clustering and kernel
+weight determination: (1) ? is set equally for all these fea-
+ture subsets at the first run of iterations. (2) Given the initial
+values of kernel weights, our K-way min-max cut algorithm
+is performed to partition the weakly-tagged images into K
+clusters according to their pairwise visual similarity con-
+texts. (3) Given an initial partition of the weakly-tagged
+images, our kernel weight determination algorithm is per-
+formed to estimate more suitable kernel weights, so that
+more precise characterization of the diverse visual similar-
+ity contexts between the images can be achieved. (4) Go to
+step 2 and continue the loop iteratively until ? is convergent.
+As shown in Fig. 1(a) and Fig. 2(a), our image cluster-
+ing algorithm can achieve a good partition of large amounts
+of weakly-tagged images and determine their global distri-
+butions and inter-cluster correlations effectively. Unfortu-
+nately, such image clustering process cannot directly iden-
+tify the clusters for the junk images.
+4.2 Relevance Re-Ranking
+For different users, their motivations for spam tagging are
+significantly different and their images for spam tagging
+should contain different content and have different visual
+properties. Thus the clusters for the junk images (which
+come from different users with different motivations) could
+be in small sizes. Based on this observation, it is reasonable
+for us to define the relevance score ?(C,Gi) for a given im-
+age cluster Gi with the image topic C as:
+?(C,Gi) =
+?
+x?Gi
+P (x,C)?
+y?C P (y, C)
+(19)
+where x and y are used to represent particular weakly-
+tagged images for the image topic C, P (x,C) and P (y, C)
+are used to indicate the co-occurrence probabilities for the
+images x and y with the image topic C.
+In order to leverage the inter-cluster correlations for
+achieving more effective relevance re-ranking, a random
+walk process is performed for automatic relevance score re-
+finement [15]. For a given image topicC, our image cluster-
+ing algorithm can automatically determine a cluster corre-
+lation network (i.e., K image clusters and their inter-cluster
+correlations) as shown in Fig. 1(a) and Fig. 2(a). We use
+?l(Gi) to denote the relevance score for the ith image clus-
+ter Gi at the lth iteration. The relevance scores for all these
+K image clusters at the lth iteration will form a column vec-
+tor
+????
+?(Gi)? [?l(Gi)]K×1. We further define ? as an K×K
+transition matrix, its element ?Gi,Gj is used to define the
+probability of the transition from the image cluster Gi to its
+inter-related image cluster Gj . ?Gi,Gj is defined as:
+?Gi,Gj =
+s(Gi, Gj)?
+Gh?C
+s(Gi, Gh)
+(20)
+where s(Gi, Gj) is the inter-cluster visual similarity context
+between two image clustersGi andGj as defined in Eq. (4).
+The random walk process is then formulated as:
+?l(Gi) = ?
+?
+j??j
+?l?1(Gj)?Gi,Gj +(1? ?)?(C,Gi) (21)
+where ?j is the first-order nearest neighbors of the image
+cluster Gj on the cluster correlation network, ?(C,Gi) is
+the initial relevance score for the image cluster Gi and ? is
+a weight parameter. This random walk process will promote
+the image clusters which have many connections on the
+cluster correlation network, e.g., the image clusters which
+have close visual properties (i.e., stronger visual similarity
+contexts) with other image clusters. On the other hand, this
+random walk process will also weaken the isolated image
+clusters on the cluster correlation network, e.g., the image
+clusters which have weak visual correlations with other im-
+age clusters. This random walk process is terminated when
+the relevance scores converge.
+Figure 3: Different views of our topic network.
+By performing random walk over the cluster correlation
+network, our relevance score refinement algorithm can re-
+rank the relevance between the image clusters and the im-
+age topic C more precisely. Thus the top-k image clusters,
+which have higher relevance scores with the image topic,
+are selected as the most relevant image clusters for the given
+image topic C. Through integrating the cluster correla-
+tion network and random walk for relevance re-ranking, our
+spam tag detection algorithm can filter out the junk images
+effectively as shown in Fig. 1(b) and Fig. 2(b). By filtering
+out the junk images, we can automatically create large-scale
+training images with more reliable labels to learn more ac-
+curate classifiers for object detection and scene recognition.
+5. Cross-Modal Tag Cleansing
+The appearance of synonyms may result in insufficient im-
+age collections, which may prevent the underlying machine
+learning techniques from learning reliable classifiers for the
+synonymous image topics. On the other hand, the appear-
+ance of polysems may result in the image sets with huge
+visual diversity, which may also prevent the underlying ma-
+chine learning tools from learning precise classifiers for the
+polysemous image topics. To leverage large-scale weakly-
+tagged images for computer vision tasks, it is very attrac-
+tive to develop cross-modal tag cleansing techniques for ad-
+dressing the issues of synonyms and polysems more effec-
+tively.
+5.1 Combining Synonymous Topics
+When people tag their images, they may use multiple text
+terms with similar meanings to tag their images alterna-
+tively. Thus the image tags are inter-related and such inter-
+related tags and their relevant images should be consid-
+ered jointly. Based on this observation, a topic network is
+constructed automatically for characterizing such inter-tag
+(inter-topic) similarity contexts more precisely. Our topic
+network consists of two key components: (a) a large number
+of image topics; and (b) their cross-modal inter-topic corre-
+lations. The cross-modal inter-topic correlations consist of
+two components: (1) inter-topic co-occurrence correlations;
+and (2) inter-topic visual similarity contexts.
+For two given image topics Ci and Cj , their visual simi-
+larity context ?(Ci, Cj) is defined as:
+?(Ci, Cj) =
+1
+2|Ci||Cj |
+?
+u?Ci
+?
+v?Cj
+[?ˆ(u, v)+ ?¯(u, v)] (22)
+where |Ci| and |Cj | are the numbers of the weakly-tagged
+images for the image topicsCi andCj , ?ˆ(u, v) is the kernel-
+based visual similarity context between two weakly-tagged
+images u and v by using the kernel weights for the image
+topic Ci, and ?¯(u, v) is the kernel-based visual similarity
+context between two weakly-tagged images u and v by us-
+ing the kernel weights for the image topic Cj .
+The co-occurrence correlation ?(Ci, Cj) between two
+image topics Ci and Cj is defined as:
+?(Ci, Cj) = ?P (Ci, Cj)log
+P (Ci, Cj)
+P (Ci) + P (Cj)
+(23)
+where P (Ci, Cj) is the co-occurrence probability for two
+image topics Ci and Cj , P (Ci) and P (Cj) are the occur-
+rence probability for the image topics Ci and Cj .
+The cross-modal inter-topic correlation between two im-
+age topics Ci and Cj is finally defined as:
+?(Ci, Cj) = ? · ?(Ci, Cj) + (1? ?) · ?(Ci, Cj) (24)
+where ? is the weighting factor and it is determined through
+cross-validation. The topic network for our image collec-
+tions is shown in Fig. 3, where each image topic is linked
+with multiple most relevant image topics with larger values
+of ?(·, ·).
+Our K-way min-max cut algorithm is further performed
+on the topic network for topic clustering, thus the synony-
+mous topics are grouped into the same cluster and can be
+combined as one super-topic. The images for these synony-
+mous topics may share similar visual properties and seman-
+tics, thus they are combined and assigned to the super-topic
+automatically and a more comprehensive set of the relevant
+images can be obtained. Multiple tags for interpreting these
+synonymous topics are combined as one unified phrase for
+tagging the super-topic. Through combining the synony-
+mous topics and their similar images, we can obtain more
+sufficient images to achieve more reliable learning of the
+classifier for the corresponding super-topic.
+5.2 Splitting Polysemous Topics
+Some image topics may be polysemous, which may result
+in large amounts of ambiguous images with diverse visual
+properties. Using the ambiguous images for classifier train-
+ing may result in the classifiers with high variance and low
+generalization ability. To address the issue of polysemes,
+automatic image clustering is performed to split the poly-
+semous topics by partitioning their ambiguous images into
+multiple clusters with more homogeneous visual properties.
+Thus our K-way min-max cut algorithm is used to partition
+the ambiguous images under the same polysemous topic
+into multiple groups automatically and each group may cor-
+respond to one certain sub-topic with more homogeneous
+visual properties and smaller semantic gap.
+To address the issue of the polysemous topics more ef-
+fectively, WordNet is first incorporated to identify the can-
+didates of the polysemous topics. For a given candidate of
+the polysemous topics P , all its weakly-tagged images are
+first partitioned into multiple clusters according to their vi-
+sual similarity contexts by using our K-way min-max cut
+algorithm. The visual diversity ?(P ) for the given candi-
+date P is defined as:
+?(P ) =
+?
+Gi,Gj?P
+????µ(Gi)? µ(Gj)?(Gi) + ?(Gj)
+????
+2
+(25)
+where µ(Gi) and µ(Gj) are the means of the image clusters
+Gi and Gj , ?(Gi) and ?(Gj) are the variances of the image
+clusters Gi and Gj .
+The candidates with large visual diversity between their
+images are treated as the polysemous topics and are fur-
+ther partitioned into multiple sub-topics. For a given poly-
+semous topic, all its ambiguous images are partitioned into
+multiple clusters automatically, and each cluster may corre-
+spond to one certain sub-topic. By assigning the ambiguous
+images for the polysemous topic into multiple sub-topics,
+we can obtain multiple image sets with more homogeneous
+visual properties, which may have better correspondences
+between the tags (i.e., sub-topics) and the image semantics
+(i.e., smaller semantic gaps). Through splitting the poly-
+semous topics and their ambiguous images, we can obtain:
+(a) multiple sub-topics with smaller semantic gaps and vi-
+sual diversity; and (b) more precise image collections (with
+smaller visual diversity) which can be used to achieve more
+accurate learning of the classifiers for multiple sub-topics
+with smaller semantic gaps.
+6. Algorithm Evaluation
+We have carried out our experimental studies by using
+large-scale weakly-tagged Flickr images. We have down-
+loaded more than 10 million Flickr images. Our algorithm
+evaluation work focuses on evaluating how well our tech-
+niques can address the issues of spams, polysemes and syn-
+onyms. To evaluate the performance of our algorithms on
+spam tag detection and cross-modal tag cleansing, we have
+designed an interactive system for searching and exploring
+large-scale collections of Flickr images. The benchmark
+metric for algorithm evaluation includes precision ? and re-
+call % for image retrieval. They are defined as:
+? =
+?
+?+ ?
+, % =
+?
+?+ ?
+(26)
+Figure 4: The comparison on the precision rates after and
+before performing spam tag detection.
+Figure 5: The comparison on the recall rates after and before
+merging the synonymous topics.
+where ? is the set of images that are relevant to the given
+image topic and are returned correctly, ? is the set of images
+that are irrelevant to the given image topic and are returned
+incorrectly, and ? is the set of images that are relevant to the
+given image but are not returned. In our experiments, only
+top 200 images are used for calculating the precision and
+recall rates.
+The precision rate is used to characterize the accuracy of
+our system for finding the particular images of interest, thus
+it can be used to assess the effectiveness of our spam tag
+detection algorithm. As shown in Fig. 4, one can observe
+that our spam tag detection algorithm can filter out the junk
+images effectively and result in higher precision rates for
+image retrieval. On the other hand, the recall rate is used to
+characterize the efficiency of our system for finding the par-
+ticular images of interest, thus it can be used to assess the
+effectiveness of our cross-modal tag cleansing algorithm on
+addressing the issue of synonymous tags. As shown in Fig.
+5, one can observe that our cross-modal tag cleansing algo-
+rithm can combine the synonymous topics and their similar
+images effectively and result in higher recall rates for image
+retrieval.
+To evaluate the effectiveness of our cross-modal tag
+cleansing algorithm on dealing with the polysemous tags,
+we have compared the performance differences on the pre-
+cision rates before and after separating the polysmous tags
+and their ambiguous images. Some results are shown in Fig.
+6, one can obtain that our cross-modal tag cleansing algo-
+rithm can tackle the issue of polysemous tags effectively.
+By splitting the polysemous topics and their ambiguous im-
+ages into multiple sub-topics, our system can achieve higher
+precision rates for image retrieval.
+We have also compared the precision and recall rates
+between our system (i.e., which have provided techniques
+Figure 6: The precision rates for some query terms before and
+after separating the polysemous topics and their ambiguous
+images.
+Figure 7: The precision rates for 5000 query terms: (a) our
+system; (b) Flickr search.
+to deal with the critical issues of spam tags, synonymous
+tags, and polysemous tags) and Flickr search system (which
+have not provided techniques to deal with the critical issues
+of spam tags, synonymous tags and polysemous tags). As
+shown in Fig. 7 and Fig. 8, one can observe that our system
+can achieve higher precision and recall rates for all these
+5000 queries (i.e., 5000 tags of interest in our experiments)
+by addressing the critical issues of spams, synonyms and
+polysemes effectively.
+7. Conclusions
+The objective of this work is to create large amounts of
+training images with more reliable labels for computer vi-
+sion tasks by harvesting from large-scale weakly-tagged im-
+ages. A novel cross-modal tag cleansing and junk image
+filtering algorithm is developed by integrating both the vi-
+sual similarity contexts between the images and the seman-
+tic similarity contexts between their tags for cleansing the
+weakly-tagged images and their social tags. Our exper-
+iments on large-scale collections of weakly-tagged Flickr
+Figure 8: The recall rates for 5000 query terms: (a) our sys-
+tem; (b) Flickr search.
+images have provided very positive results. We will also
+lease our image sets with more reliable labels on our web
+site.
+References
+[1] A.W.M. Smeulders, M. Worring, S. Santini, A. Gupta and R.
+Jain, “Content-based image retrieval at the end of the early
+years”, IEEE Trans. on PAMI, 2000.
+[2] J. Fan, C. Yang, Y. Shen, N. Babaguchi, H. Luo, “Leveraging
+large-scale weakly-tagged images to train inter-related classi-
+fiers for multi-label annotation”, Proc. of first ACM workshop
+on Large-scale multimedia retrieval and mining, 2009.
+[3] Flickr, http://www.flickr.com.
+[4] R. Fergus, P. Perona, A. Zisserman, “A visual category filter
+for Google Images”, ECCV, 2004.
+[5] T. Berg, D. Forthy, “Animals on the Web”, IEEE CVPR, 2006.
+[6] L. Li, G. Wang, L. Fei-Fei, “OPTIMOL: automatic online pic-
+ture collection via incremental model learning”, IEEE CVPR
+2007.
+[7] F. Schroff, A. Criminisi, A. Zisserman, “Harvesting image
+databases from the web”, IEEE ICCV, 2007.
+[8] B.C. Russell, A. Torralba, R. Fergus, W.T. Freeman, “80 mil-
+lion tiny images: a large dataset for non-parametric object
+and scene recognition”, IEEE Trans. on PAMI, vol.30, no.11,
+2008.
+[9] K. Barnard, M. Johnson, ”Word sense disambiguation with
+pictures”, Artificial Intelligence, vol. 167, pp. 13-30, 2005.
+[10] J. Yuan, Y. Wu, M. Yang, “Discovery of collocation patterns:
+from visual words to visual phrases”, IEEE CVPR, 2007.
+[11] C. Ding, X. He, H. Zha, M. Gu, H. Simon, “A Min-max
+Cut Algorithm for Graph Partitioning and Data Clustering”,
+ICDM, 2001.
+[12] J Shi, J Malik, “Normalized cuts and image segmentation”,
+IEEE Trans. on PAMI, 2000.
+[13] J. Zhang, M. Marszalek, S. Lazebnik, C. Schmid, “Local fea-
+tures and kernels for classification of texture and object cate-
+tories: A comprehensive study”, Intl. Journal of Computer
+Vision, vol.73, no.2, 2007.
+[14] J. Fan, Y. Gao, H. Luo, ““Integrating concept ontology and
+multi-task learning to achieve more effective classifier train-
+ing for multi-level image annotation”, IEEE Trans. on Image
+Processing, vol. 17, no.3, pp.407-426, 2008.
+[15] W. Hsu, L. Kennedy, S.F. Chang, “Video search reranking
+through random walk over document-level context graph”,
+ACM Multimedia, 2007.
+

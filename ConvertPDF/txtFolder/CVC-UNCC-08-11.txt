@@ -1,0 +1,557 @@
+Eurographics/ IEEE-VGTC Symposium on Visualization 2008
+A. Vilanova, A. Telea, G. Scheuermann, and T. Möller
+(Guest Editors)
+Volume 27 (2008), Number 3
+Visual Analysis and Semantic Exploration of Error Aware
+Urban Change Detection
+Paper 1104
+Abstract
+Many previous approaches to detecting urban change from LIDAR point clouds do not consider error and un-
+certainty and simplify their calculations by interpolating into a regular grid structure, producing a 2D image as
+output. We present a method of LIDAR change detection the accounts for error and uncertainty, maintains ac-
+curacy, and extracts relevant changes as individual 3D models. We then utilize these models, alongside existing
+GIS data, within an interactive application that allows the chronological exploration of the changes to an ur-
+ban environment. A three-tiered level-of-detail system maintains a scale-appropriate, legible visual representation
+across the entire range of view scales, from individual changes such as a buildings and trees, to groups of changes
+such as new residential developments, deforestation, and construction sites, and finally to larger regions such as
+neighborhoods and districts of a city that are emerging or undergoing revitalization. Tools are provided to assist
+the visual analysis by urban planners and historians through semantic categorization and filtering of the changes
+presented.
+Categories and Subject Descriptors (according to ACM CCS):
+1. Introduction
+In the mission statement for the USGS Center for LIDAR
+Information Coordination and Knowledge (CLICK) it is ac-
+knowledged that while "there has been increasing demand
+for research utilizing all information generated from LIDAR
+remote sensing data and not just [the resulting] bare earth
+[Digital Elevation Maps (DEM)]," "research on using the
+entire point cloud of this remote sensing data for scien-
+tific applications has been slowed by a steep learning curve
+on research and understanding involving utilizing the entire
+point cloud." [USG07] Indeed, when examining previous ap-
+proaches to the detection of urban change through LIDAR
+data, we can see that most researchers choose to reduce the
+complexity and detail of the point clouds into raster based
+approximations for purposes of speed and ease of computa-
+tion. It is evident that utilizing the unsimplified point cloud
+has great advantages both in retaining maximum quality in
+the resulting models and the ability to accurately determine
+the uncertainty of the data, leading to knowledge of the con-
+fidence one can have in those models and any calculations
+performed on them.
+The goal of a change detection algorithm should not be
+to simply calculate the differences between two samplings,
+but instead to determine, with a measure of confidence, if the
+differences between the two are due to actual changes in the
+physical environment or are the result of a combination of
+various errors and uncertainties. As such, we start by requir-
+ing data quality measures for our input data. These values
+allow us to determine how much deviation between points
+in the datasets could be due simply to collection errors and
+therefore would not represent a change in the actual physical
+world being sampled.
+Our system presents these change models alongside ex-
+isting Geographic Information System (GIS) data, within an
+interactive application that allows the chronological explo-
+ration of the changes to an urban environment. The system
+has multiple coordinated views including a main 3D view,
+a heat map view and a zoomed-in inspection view. For the
+main 3D view a three-tiered level-of-detail system maintains
+a scale-appropriate, legible visual representation across the
+entire range of view scales, from individual changes such
+as a buildings and trees, to groups and regions of changes.
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2008)
+2 Paper 1104 / Visual Analysis of Urban Change
+Tools are provided to assist the visual analysis of changes
+and their patterns through semantic categorization and fil-
+tering of the extracted change models. Heat map signa-
+tures capture the relationship between the footprint areas and
+heights of change models. Semantic filters can be applied to
+suppress or highlight typical classes of physical objects such
+as trees, residential houses and road re-gradings.
+2. Previous Approaches
+A number of researchers have devised methods of detecting
+changes in urban environments between LIDAR scans taken
+at different times. Vu et al. [VMY04] focuses on updating
+GIS records and assessing damage from earthquakes, Mu-
+rakami et al [HMI99] sees application in the enforcement of
+real estate taxes.
+A common strategy these researchers take when attempt-
+ing detection of changes between LIDAR scans is the trans-
+formation of the LIDAR point clouds into a grid using
+nearest-neighbor interpolation. As described in [VMY04]
+this tactic is chosen because it is effective at decreasing the
+amount of time needed to perform calculations. A grid reso-
+lution is determined based on the density of the LIDAR sam-
+ples from the pair of scans, and the values for each grid loca-
+tion are generally determined by nearest-neighbor interpola-
+tion to preserve the sharp height changes at building edges.
+Murakami subtracts the grid values of one scan from
+that of the other to produce a grid of values representing
+height changes; image processing morphology operations
+are used to filter out noise, and the cleaned-up difference
+image is merged with an orthoimage for manual interpreta-
+tion [HMI99]. In [VMY04] Vu et al determine the statistical
+distribution of the intensity values of the difference image
+and define those values beyond a certain number of stan-
+dard deviations from the mean to be possible new construc-
+tion, and likewise those below a certain number of standard
+deviations from the mean to be possible demolition. Mor-
+phological opening and reconstruction is again used to fil-
+ter out undesirable results. Output from these approaches
+are most commonly raster images or DEM files showing
+those buildings determined to be newly constructed or de-
+molished/damaged.
+We argue that gridding the LIDAR data for ease and speed
+of calculation not only introduces error to the data, but fails
+to properly accommodate scans of different resolutions and
+overlapping swaths, which can provide areas of higher res-
+olution. The collection hardware used for each scan may
+have significant differences in accuracy which should be pre-
+served. A likely failing of these techniques is their indiffer-
+ence towards the uncertainties of the sample collection meth-
+ods themselves, although in fairness these are not likely to
+effect the detection of changes as large as entire buildings.
+To our knowledge there has been no interactive visual analy-
+sis of raw LIDAR point cloud data similar to what we present
+in this paper.
+Finally, our analysis tools combines two 3D views with a
+heat map. Heap maps have been used successfully in visual-
+izations tools in multiple application domains [AvH04] and
+are included with several commercial tools [Spo05]. In ge-
+nomics, heat maps are used for the visualization of massive
+gene arrays [JSS02] and provide a compact overview of the
+data as well as a drill-down capability for detailed informa-
+tion. Similar to our system, Chang et al [CWK?07] combine
+an interactive heat map with a 3D visualization.
+3. Implementation
+The motivation for this work is to visualize the changes
+due to construction and development between yearly LIDAR
+scans of Mecklenburg County, North Carolina, which con-
+tains the city of Charlotte and roughly 370,000 buildings.
+The annual scans register quite well with each other. How-
+ever, the density of the sample points leaves something to be
+desired, with roughly 3-4 meters between points. The only
+data used in this analysis is the raw LIDAR returns, in the
+form of x,y,z points, which have not undergone filtering to
+remove buildings or trees. This method is attractive because
+it does not require the use or availability of supplementary
+data such as classification or intensity values for the LIDAR
+returns or aerial/satellite imagery.
+3.1. Pre-Processing
+Before processing, values for the horizontal and positional
+accuracy of the LIDAR system used for collection must be
+specified. These values allow us to account for the uncer-
+tainty of sample points taken by different hardware systems,
+as would likely be encountered when comparing datasets
+collected across a span of years. By knowing the accu-
+racy/error characteristics of each dataset, it can be deter-
+mined how much deviation between points in the datasets
+could be due simply to collection errors and therefore would
+not represent a change in the actual physical world being
+sampled.
+Firstly, irregular triangular meshes are generated from the
+LIDAR points using 2D Delaunay triangulation (we utilize
+the CGAL library [Yvi07]). The resulting meshes serve two
+purposes. During change detection points are projected into
+the mesh of the opposing scan which allows us to quickly
+determine surrounding points for comparison. The meshes,
+as well as simplified (using [GH97]) versions of them, are
+also stored for use as a reference surface models in the user
+interface.
+3.2. Error Aware Change Detection
+The goal of the change detection process is to identify and
+mark all the points in the new scan that are most likely to be
+changes in the actual physical world and not merely changes
+in measurement (collection error).
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2008)
+Paper 1104 / Visual Analysis of Urban Change 3
+This is done by iteratively evaluating each point in the
+new scan in the following manner: First the point in the new
+scan is projected in 2D onto the triangulation of the old scan
+to determine which face it falls within. The distance along
+that face, from the projected point to the nearest vertex of
+the face, minus any positional errors, is calculated. This dis-
+tance is then used to determine a height allowance based on
+the possible geologic variation that could be present between
+the known sample points. The height of the point above the
+interpolated face, minus any vertical measurement errors, is
+then compared against the height allowance. If the point ex-
+ceeds the bounds of what could be accounted for with known
+errors and geologic variation, then it is considered to be a le-
+gitimate change point and is marked as such.
+See [BCWR07] for a more complete description of the
+errors involved in generating terrain models from airborne
+LIDAR points, and the techniques we have used here to ac-
+count for these errors. Specifically, the technique used here
+to classify single points is equivalent to the technique used
+there to determine the occupancy of voxels, with the excep-
+tion that we have incorporated additional positional and ele-
+vation errors for the incoming point.
+3.3. Filtering and Model Creation
+The resulting set of marked points that have been classified
+as significant changes will generally contain many "noisy"
+objects caused by collection/data errors, low-resolution scan
+returns sporadically striking tall thin objects such as broad-
+cast antennas, street signs, telephone poles, etc.
+Vu et al [VMY04], Murakami et al [HMI99], and others
+have utilized morphological opening and reconstruction to
+filter out small noisy changes from their results. This was
+suitable for their purposes as their difference results were in
+the form of a 2D grid with each pixel marked as being the
+same or having changed. These image processing techniques
+both reduce the accuracy of the changes reported and are not
+applicable to our non-gridded point cloud results. We inte-
+grate our noise filtering process within the process of creat-
+ing models of the detected change points.
+We begin by selecting a marked point and examining its
+neighboring vertices in the triangulation to determine if any
+have also been marked as changed. Here we can implement
+the simplest form of noise reduction by disregarding any
+marked vertices with no marked neighbors. If the point has
+marked neighbors we can begin to build a model for this
+change. We add the incident faces of the original point and
+recursively visit the marked neighbors, adding their incident
+faces to the current change model until we can no longer
+reach any unvisited vertices. We can then store the extracted
+model and proceed to select the next marked point that has
+yet to be visited and continue this process until no unvisited
+marked points remain.
+The output of this process is a collection of 3D models
+representing the changes between the two scans. We can now
+perform yet another type of filtering by computing the sum
+of the 2D area of the triangles in each model. To conserve
+storage, change models below a specified area threshold can
+be discarded at this step. This method is suited for dismiss-
+ing small legitimate changes, such as trucks on a highway,
+when the objective is to find more significant developments,
+such as new construction. Change models also retain a count
+of the marked change points they contained, allowing for fil-
+tering by that criteria as well, which is advantageous in some
+cases (such as removing small trees).
+4. Presentation and Interaction
+Our interactive application allows for a rich visual explo-
+ration of the output data as opposed to more traditional out-
+put formats (images or digital elevation maps) for this type
+of result. We provide the basic behaviors and capabilities
+of common existing GIS / 3D terrain applications (such as
+Google Earth or ArcGIS) as well as visualizations that al-
+low the user to analyze the results in a number of differ-
+ent views. These include a main 3D view of the terrain with
+highlighted changes, a sub-window showing a zoomed in,
+inspection view of any user selected change objects, and a
+semantic filtering sub-window utilizing a heat map. In the
+heat map, the x and y axis correspond to the changed mod-
+els’ footprint area and height, and the intensities of the cells
+indicate the relative number of changed models matching
+the cells’ area and height ranges. In addition to the semantic
+filtering, through the use of manual area and change-point-
+count thresholds, the user can permanently filter out spurious
+changes they do not care about.
+Existing available GIS data, such as streets, highways,
+known building footprints, political boundaries, etc. provide
+ease of navigation, meta-data for change models (such as es-
+timated street address) and show the potential for integration
+into a larger GIS environment. We draw the vector data di-
+rectly onto the reference surface models and other 3D struc-
+tures using the technique presented in [SK07].
+Changes are presented to the user in the intuitive color
+scheme of green representing new construction and growth,
+and red representing demolitions, excavations, tree-clearing,
+etc. The user can control the temporal aspect of the visual-
+ization by switching between discrete years, where the ter-
+rain reflects only that year’s scan with only the appropriate
+new construction or demolition that has occurred displayed
+overtop. A hybrid option is provided that presents data from
+multiple years; new constructions are shown overtop of the
+terrain from the previous scan in which they did not exist,
+and demolitions are shown overtop terrain from the latter
+scan in which the result can be seen. In this way, a change
+is always presented against its counterpart for reference. See
+Figure 4 for an example view of hybrid mode on an dense
+urban area.
+Due to the large amounts of data and the inherently
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2008)
+4 Paper 1104 / Visual Analysis of Urban Change
+Figure 4: Shown here is a new residential development at increasingly further camera distances. The Individual models
+gradually begin to glow and are ultimately replaced by semi-transparent ’splats’ which maintain near-constant screen-size
+regardless of distance.
+Figure 1: A view of the downtown area in hybrid mode.
+Change models of new construction are rendered in green
+and change models of buildings that have been demolished
+are rendered in red.
+broad range of scales at which the dataset can be examined
+(from individual houses at street level to county or statewide
+views,) it is necessary to implement some form of level-of-
+detail. It is here that we can exploit the level-of-detail con-
+cept to not only control the amount of data we render, but to
+change what it is we are rendering in order to appropriately
+abstract the data into a form that makes sense, and is useful
+to the user at that zoom-level.
+4.1. Levels of Detail/Abstraction
+When the user is zoomed in to a view that is significantly
+close to the terrain, the system shows the unaltered change
+models at full detail, as this allows for immediate inspec-
+tion and interpretation of the change detection results. How-
+ever, as the user zooms out, smaller change models quickly
+become little more than a pixel or disappear altogether.
+Figure 2: Changes to the university campus between 2002
+and 2003. Green models represent new construction while
+red models represent demolition or tree clearing. 2004 tax
+database footprints are drawn in black. The selected build-
+ing was currently under construction at the time, only filling
+half the future 2004 footprint.
+We counteract this problem with the introduction of a sec-
+ond level-of detail/abstraction. As individual models recede
+away from the camera, they gradually begin to glow and
+are ultimately replaced by a semi-transparent ’splat’ which
+is scaled to maintain near-constant screen-size regardless of
+distance. These splats seamlessly fade in and take over while
+the individual model detail level fades out.
+The splats do not simply allow us to see individual
+changes/buildings beyond the point at which their models
+would disappear. They also provide an amalgamating be-
+havior in which collections of individual changes cooperate
+to form larger, more significant glyphs in the visualization.
+This is shown in Figure 4 where in a series of increasingly
+distant views, a new residential housing development seam-
+lessly transforms from a few rows of individual buildings
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2008)
+Paper 1104 / Visual Analysis of Urban Change 5
+Figure 3: Examining a new residential development under
+construction. The selected (orange) volume shown in the in-
+set view is an area where the earth has been moved and re-
+graded to allow the level construction of a new street. We
+can also see the build up of earthen walls (green) on either
+side of the large interstate highway (red) in the lower-right
+region, presumably as sonic barriers against traffic noise.
+into a single ’blob’ representing the entire development as a
+whole. This blob is visible long after the individual models
+would have been too small to render as single pixels, aggre-
+gating and preserving the development.
+The third and final level of abstraction is displayed when
+the user has zoomed out to a distance where depicting indi-
+vidual changes and even amalgamated groups in splat form
+no longer makes sense due to issues of overlap and extreme
+clutter. At this level, the user is presented instead with urban
+legibility regions. These regions are based on the level-of-
+detail clusters generated by [CBZ?06] which delineate sec-
+tions of the city based on aspects of urban legibility, such as
+paths, districts, nodes, and other perceptual qualities. Origi-
+nating from a LOD solution to city-viewing, these clusters
+are naturally useful to display city-wide data in clustered
+form at appropriate detail for a wide range of distances, as
+demonstrated with census data in [CWK?07]. This ability is
+clearly shown in Figure 7 where a significantly wide range of
+zoom levels result in continuously legible images of the con-
+centration of changes present. The shading of these regions
+can be determined by several criteria, the simplest being the
+comparative ratios of local to global change footprint areas,
+number of change points, or number of individual changes.
+4.2. Heat Map and Semantic Filtering
+To allow a higher-level exploration of the results of the
+change detection we provide a semantic filtering interface
+utilizing a heat map. The heat map presents the distribu-
+tion of the physical dimensions of the change models. The
+X-axis corresponds to 2D projected area (footprint size),
+while the Y-axis corresponds to the maximum height of the
+change model above the surrounding terrain. The axes are
+divided into bins, forming a matrix of cells. Change mod-
+els are enumerated into these cells, and the intensity of each
+cell indicates the relative number of change models meet-
+ing that cell’s size ranges. A logarithmic scale is the default
+mapping for intensity, as it allows better observation of the
+less populous cells away from the main concentration areas,
+however linear and exponential scales are also provided in
+case changes follow uncommon distributions, or inspection
+deeper into the main concentration is desired.
+Different types of physical objects often have a particu-
+lar signature in the heat map. For instance, individual trees
+cut down will produce change models that are relatively tall
+with very small footprint areas, while grading of dirt at a
+construction site will tend to produce change models that
+are relatively flat (low heights), but cover very large areas.
+We can define these characteristics with sets of simple con-
+ditionals and bounding functions (relating growth in height
+to growth in area or vice versa) in order to delineate con-
+tinuous regions in the heat map. These regions can then be
+associated with a particular group of physical changes.
+We provide predefined functions that create regions in the
+heat map for trees, residential structures, commercial struc-
+tures, and grading of earth. When the user selects one of
+these filter categories, the associated cells in the heat map
+are stippled with a unique color to indicate they are actively
+filtering the changes presented in the other 3D views. See
+Figure 5 for an illustration of the shapes these regions take
+on in the heat map.
+The user can also define their own custom filters by se-
+lecting regions of cells in the heat map. This is advantageous
+when looking for changes that are not as simply defined as
+the provided categories, or to modify existing filters to better
+suit a particular dataset. Filters are stackable to permit more
+complex filtering.
+An example of the usefulness of the custom semantic fil-
+tering is shown in Figure 8. Here the user opts to view only
+destruction changes, and creates a custom filter on the heat
+map to show only changes above a certain area and within a
+certain height range. The resulting 3D view allows the user
+to easily extract the red change models showing both the de-
+forestation (left and center) due to clear cutting for construc-
+tion, and the volumes of rock removed at the granite quarry
+(upper right).
+Because the heat map provides a visual representation of
+the statistical distribution of the changes, it can also be used
+for a more general understanding of the types of changes
+across the entire dataset or in a sub-region. As shown in Fig-
+ure 6 we can compare the heat map for the edge region of
+the city, which is under transformation from rural to subur-
+ban, to the more established urban and suburban areas closer
+to the city center. We see the wider distribution of changes,
+especially in the height dimension, for the city center region.
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2008)
+6 Paper 1104 / Visual Analysis of Urban Change
+Figure 5: Shown here are the regions selected in the heat
+map generated by various semantic filters. The "trees" filter
+produces the green region, "residential" - orange, "commer-
+cial" - yellow, "grading" - brown, and and a user defined
+region in black.
+A possible explanation for this is that in the more established
+regions, structures tend to be larger and taller, and vegetation
+is more closely controlled.
+5. Applications
+Besides the stated application of analyzing the growth of a
+urban region based on detected new construction, there are
+other uses of this application that are being developed. The
+most promising is the detection of unreported or inaccurately
+reported construction. By comparing the changes extracted
+from the LIDAR scans through our method with existing real
+estate tax databases, we can look for buildings that do not
+exist in tax records, or those that are inaccurately recorded.
+Here, at the region level, instead of clustering changes to
+show overall trends, we would instead seek to highlight out-
+liers and mismatches. We are seeking to collaborate with
+such enforcement agencies to evaluate the benefits of such
+a system over current methods of real estate tax enforcement
+and assessment, such as the use of aerial photography and in
+situ inspections.
+6. Limitations
+We did not rely on (nor did we possess a complete set of)
+any additional information besides the point locations of raw
+LIDAR returns. However, additional sources of information
+such as LIDAR return intensities or aerial imagery could
+be used to help classify the detected changes based on the
+reflectance characteristics of their surfaces (concrete, water,
+vegetation, etc). When our system was presented to a group
+of GIS users, this was one of the most requested modifica-
+tions.
+While realistic rendering of the terrain is not of concern
+in this application, the method used for storage, retrieval,
+and display of the reference surface models is still quite
+primitive. This manifests itself in the seam artifacts present
+(roughly every square mile) between each reference surface
+model, a result of triangulations of points on each side of an
+arbitrary division line, with no triangles formed across said
+line. Clearly there is the need for the integration of a more
+advanced terrain engine to elegantly manage the storage and
+display of the reference models as a single entity. Hopefully
+this issue will be addressed by integration of the successful
+aspects of the visualization into an existing 3D terrain or GIS
+package.
+There is much potential for the addition of algorithms
+such as automated target classification and pattern match-
+ing to further the abilities of the semantic filtering functions.
+This would be especially helpful in real GIS systems where
+the end users may know exactly what changes they want to
+ignore or expose, but are incapable of defining the specific
+parameters themselves.
+7. Conclusions
+In line with the mission statement of the USGS Center for
+LIDAR Information Coordination and Knowledge, we have
+developed a system that compares LIDAR data from differ-
+ent times and visualizes the differences in an intuitive and
+legible manner. This system, combined with building foot-
+prints from tax records and road information, provides a
+powerful tool for visualizing and identifying constructions
+and demolitions of buildings, grading of terrain, as well as
+increases and decreases in forestation.
+Instead of using traditional methods for creating regularly
+gridded DEMs, our system maintains a high degree of accu-
+racy by utilizing LIDAR point collections of any resolution
+and consistency. More importantly, our emphasis on preserv-
+ing the accuracy in the LIDAR data is carried throughout the
+preprocessing and analysis processes in which any error in-
+troduced by LIDAR scanning is taken into account.
+The presentation of the resulting LIDAR data uses a three-
+tiered LOD technique that is view dependent. This technique
+ensures that constructions or demolitions of buildings are
+clearly visible from all view distances and angles and allows
+the user to see overviews as well as detailed information at
+all times.
+Lastly, by providing a heat map visualization of the distri-
+bution of changes and enabling semantic filtering, we allow
+the user to better explore the 3D results, and understand the
+patterns contained within, in ways beyond the capabilities of
+traditional 2D image results.
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2008)
+Paper 1104 / Visual Analysis of Urban Change 7
+Figure 6: On the left is the distribution of changes for a region on the edge of the city, under transition from rural to suburban.
+In the center is the distribution of changes for a region in the center of the city, which is an established urban and suburban
+area. On the right is the difference of the two, showing the wider distribution of changes, especially in the height dimension, in
+the center city region.
+Figure 7: Shown here are the urban legibility regions at increasingly distant camera locations.
+References
+[AvH04] ABELLO J., VAN HAM F.: Matrix zoom: A vi-
+sual interface to semi-external graphs. infovis 00 (2004),
+183–190.
+[BCWR07] BUTKIEWICZ T., CHANG R., WARTELL Z.,
+RIBARSKY W.: Analyzing sampled terrain volumetrically
+with regard to error and geologic variation. Erbacher R. F.,
+Roberts J. C., Grohn M. T., Borner K., (Eds.), vol. 6495,
+SPIE, p. 64950O.
+[CBZ?06] CHANG R., BUTKIEWICZ T., ZIEMKIEWICZ
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2008)
+8 Paper 1104 / Visual Analysis of Urban Change
+Figure 8: By opting to view only destruction changes, and creating a custom filter on the heat map to show only changes above
+a certain area and within a certain height range, we can easily see in the 3D view, the red change models showing both the
+deforestation (left and center) due to clear cutting for construction, and the volumes of rock removed at the granite quarry
+(upper right).
+C., WARTELL Z., POLLARD N., RIBARSKY W.: Hi-
+erarchical simplification of city models to maintain ur-
+ban legibility. In SIGGRAPH ’06: ACM SIGGRAPH
+2006 Sketches (New York, NY, USA, 2006), ACM Press,
+p. 130.
+[CWK?07] CHANG R., WESSEL G., KOSARA R.,
+SAUDA E., RIBARSKY W.: Legible cities: Focus-
+dependent multi-resolution visualization of urban rela-
+tionships. In IEEE Transactions on Visualization and
+Computer Graphics (TVCG) InfoVis (2007), pp. 1169–
+75.
+[GH97] GARLAND M., HECKBERT P. S.: Surface sim-
+plification using quadric error metrics. In SIGGRAPH
+’97: Proceedings of the 24th annual conference on Com-
+puter graphics and interactive techniques (New York,
+NY, USA, 1997), ACM Press/Addison-Wesley Publishing
+Co., pp. 209–216.
+[HMI99] HIROSHI MURAKAMI KATSUTO NAKAGAWA
+H. H. T. S., IWANAMI E.: Change detection of build-
+ings using an airborne laser scanner. vol. 54 Issues 2-3,
+pp. 148–152.
+[JSS02] JINWOOK SEO; SHNEIDERMAN B.: Interactively
+exploring hierarchical clustering results [gene identifica-
+tion]. Computer 35, 7 (Jul 2002), 80–86.
+[SK07] SCHNEIDER M., KLEIN R.: Efficient and accu-
+rate rendering of vector data on virtual landscapes. Jour-
+nal of WSCG 15, 1-3 (January 2007).
+[Spo05] SPOTFIRE: Decision site for functional ge-
+nomics.
+http://www.spotfire.com/, 2005.
+[USG07] USGS.: The united states geological survey
+center for lidar information coordination and knowledge.
+http://lidar.cr.usgs.gov/ (2007).
+[VMY04] VU T. T., MATSUOKA M., YAMAZAKI F.:
+Lidar-based change detection of buildings in dense urban
+areas. vol. 5, pp. 3413–3416.
+[Yvi07] YVINEC M.: 2d triangulations. In CGAL User
+and Reference Manual, Board C. E., (Ed.), 3.3 ed. 2007.
+submitted to Eurographics/ IEEE-VGTC Symposium on Visualization (2008)
+

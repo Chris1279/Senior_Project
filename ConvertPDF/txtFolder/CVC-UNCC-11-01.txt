@@ -1,0 +1,850 @@
+Xiaoyu Wang, et al. / Designing Knowledge-Assisted VA Systems for Organizational Environments 1
+Designing Knowledge-Assisted Visual Analytics Systems for
+Organizational Environments
+Xiaoyu Wang 1,Thomas Butkiewicez1, Wenwen Dou1, Eric Bier2, and William Ribarsky1
+1University of North Carolina at Charlotte, USA
+2Palo Alto Research Center
+Abstract
+We present research focused on designing knowledge-assisted visual analytics systems for workers in organiza-
+tional environments. We focus on business analysts and asset managers, who work collaboratively to analyze
+information and make decisions. Through extensive investigations in two organizational environments, we found
+that these knowledge workers struggle with managing and analyzing information from multiple perspectives. Their
+current tools lack support for aggregating, organizing, and sharing such information. To address their needs, we
+characterized their analytic workflows, extracted specific key knowledge actions for each task commonly found
+in these workflows, and designed and evaluated two visual analytics systems that support and encapsulate these
+knowledge actions. We provide design guidelines that should be used when designing knowledge-assisted visual
+analytics systems, and illustrate their effectiveness with two systems built by following them.
+Categories and Subject Descriptors (according to ACM CCS): I.3.8 [Computer Graphics]: Applications—
+1. Introduction
+We present the design for knowledge-assisted visual ana-
+lytics systems in organizational environments. Our targeted
+users are business analysts and asset managers, who com-
+prise the task force that handles information analysis and
+decision-making for companies and government agencies.
+These knowledge workers focus on fusing multiple streams
+of data, retrieving information for context-dependent tasks,
+analyzing and sharing their findings, and finally collaborat-
+ing with others to reach business decisions.
+Various systems have been developed to provide data ma-
+nipulation and information analysis [IBM] [AG]. However,
+as Gile et al. [GRMT04] pointed out, a major shortcom-
+ing of these systems is that they do not associate informa-
+tion analysis with the analytical process, and are therefore
+limited in providing context for decision-making. Bucher et
+al. [BGS09] further suggested that information analysis is
+generally isolated from the knowledge worker’s analytical
+workflow, leaving a significant amount of data and informa-
+tion detached from an interpretation context. Therefore, it is
+necessary to design a system tailored to these professionals’
+workflows, while supporting more systematic and purpose-
+ful information analyses.
+Following Zimmerman et al.’s [ZFE07] definition of de-
+sign research, instead of intending to produce a commercial
+product, we focus on producing design considerations that
+support the analytical process within a knowledge-assisted
+visual analytics system. We consolidate the resulting design
+considerations into more general guidelines, which can be
+applied to the wide range of visual analytics applications
+currently being developed and deployed in today’s organi-
+zational environments.
+Our design study was conducted through extensive collab-
+oration with two groups of knowledge workers. From them,
+we learned their actual analysis needs and workflows, and
+with them, we concurrently designed prototype systems to
+iteratively identify tangible design considerations for their
+user class.
+This work makes three primary contributions: We present
+a characterization of the analytical workflow of knowledge
+workers and key knowledge actions that are required to per-
+form individual tasks in the workflow. We describe design
+guidelines for visual analytics systems that facilitate the
+workflow through support for the above key knowledge ac-
+tions. Finally, to illustrate the effectiveness of our guidelines,
+we introduce and evaluate two systems designed using them
+as a basis. (Further details on the architectures and imple-
+mentations of these systems can be found in our companion
+papers [WJB10] [WDC?10].)
+We grounded our design based on studies with two groups
+of professionals in different organizational settings: bridge-
+asset managers in The U.S. Department of Transporta-
+tion, who propose and execute strategic bridge maintenance
+plans; and business analysts from Xerox, who retrieve and
+analyze documents for information essential to the opera-
+tion of the business. We closely examined these users’ ana-
+Xiaoyu Wang, et al. / Designing Knowledge-Assisted VA Systems for Organizational Environments 2
+lytic workflows and interviewed them to learn the knowledge
+work required for achieving each analytical task. In general,
+members from both groups must utilize and analyze infor-
+mation from multiple channels, and are required to gener-
+ate shared products effectively (e.g., a maintenance proposal
+or analytical report). Subsequently, they need to coordinate
+with multiple colleagues in different locations to agree on
+strategic decisions.
+Specifically, we identified six task activities essential for
+these professionals’ decision-making workflows. As shown
+in Figure 1, these six tasks are recurrent and central in
+jobs involving foraging and organizing relevant information,
+and enable these workers to update statuses and coordinate
+progress with other individuals and groups. Currently, these
+tasks are handled dispersedly in an individual’s workflow
+with little support for systematically aggregating, organiz-
+ing, or analyzing the information.
+In the following sections, we present the procedures and
+findings of our characterization for this domain, and its re-
+lated analytical workflows. We describe the use of action-
+able knowledge (Section 3.3) to transform the tasks found in
+these workflows into tangible visual analytics design guide-
+lines. These design guidelines include requirements that sup-
+port the essential analytic tasks, as well as advanced func-
+tions. Finally, we evaluate two systems designed with these
+guidelines in mind.
+2. Characterizing Organizational Analytics Processes
+To produce appropriate design guidelines for an effective
+knowledge-assisted visual analytics system, we closely stud-
+ied our targeted knowledge workers and characterized their
+domain-specific analytical processes. As shown in previ-
+ous research [NE00] [CKH?10], an organizational analyt-
+ical task is a process of handling multiple channels of in-
+formation through the utilization of trained knowledge and
+current resources. Characterizing the analytical process in an
+organizational setting, such as a company or a governmental
+agency, is a complex process and requires commitment from
+all parties to maintain long-term collaboration.
+We are very appreciative to our collaborators from US-
+DOT and Xerox Corporation for their devotion to helping
+us pursue our research goals and generously providing in-
+valuable resources. Both organizations granted us the oppor-
+tunity for close, in-depth interactions with their knowledge
+workers and to conduct surveys and interviews, which were
+crucial in studying their analytic processes. With the input
+we collected, we were able to create schematics detailing
+their workflows and identify the analytical tasks used in each
+organization.
+Our design study involved two separate investigations
+with knowledge workers from each of the two organizations.
+Participants varied in number, depending on the availability
+of these busy professionals at each time. During each investi-
+gation, data was collected using online questionnaires and/or
+semi-structured interviews. The data collected was used to
+characterize these workers’ task activities within analytical
+processes, and further used to develop the design require-
+ments for a knowledge-assisted visual analytics system. In
+the following sections, we describe the procedures and re-
+sults for each investigation:
+2.1. Depicting Tasks in Bridge Maintenance Process
+Starting in January 2008, our university formed a research
+partnership with the USDOT and The North Carolina State
+Department of Transportation (NCDOT) to investigate novel
+approaches in assisting the bridge management process. One
+of our first actions under this research partnership was to
+conduct a nation-wide survey [WDC?10] regarding profes-
+sional profiles, tool usage, and tool preferences. The surveys
+were designed to provide a baseline and statistics for com-
+parisons between normal tools used in bridge management,
+and to identify potential areas for improvement.
+Thirty-five out of the 50 state DOTs responded to our sur-
+vey. The results clearly indicated that current bridge man-
+agement systems are often insufficient in supporting effec-
+tive bridge analysis. Almost all the responding states ex-
+pressed the need to have a management system that would
+enable them to be more effective at analyzing their bridges,
+and that such a system needs to be customizable to assist
+their individual workflows.
+Based on their feedback, we further conducted semi-
+structured interviews with bridge managers on a regular ba-
+sis (every two weeks), in order to iteratively identify and pro-
+pose features that can better support their analyses. Through
+our interviews, we learnt that bridge maintenance workflow
+is a process of deciding the severity, trending, relevance, and
+benefits of maintenance work on specific bridges, as well
+across as entire networks of bridges. Bridge managers hold
+the role of knowledge manager and are attuned to informa-
+tion analysis and sharing practices.
+As shown in Figure 2, the first essential analytical task
+in the bridge analysis process is to gather all the relevant
+data about a particular bridge, including any known dam-
+age, previous maintenance history, and typical deterioration
+patterns of the materials involved. Bridge managers then an-
+alyze the obtained information, identify any need for mainte-
+nance, and write up proper maintenance plans. We also note
+that bridge managers often need to develop their own cus-
+tom analysis routines. Depending on available resources, a
+bridge manager’s strategy can be very different from their
+peers’, requiring a different combination of the above analy-
+sis processes. In addition, sometimes even a single manager
+needs to utilize multiple alternative analytical approaches
+due to changes in priorities. At the heart of these individ-
+ual routines are different combinations and sequences of the
+above analytical processes. Therefore, it is important for a
+system to provide bridge managers with the flexibility to
+combine and sequence these analytical processes to fit their
+own, customized workflows.
+Xiaoyu Wang, et al. / Designing Knowledge-Assisted VA Systems for Organizational Environments 3
+Figure 1: An overview for our design guidelines. An organizational workflow is characterized into six common task activities.
+Each activity is disseminated into fine-grained actionable knowledge. VA design guidelines are consolidated by transforming
+this actionable knowledge into practical functions. Note: Given the different degree of completeness, only a subset of the listed
+actionable knowledge is typically used in accomplishing each task.
+2.2. Understanding Business Information Analysis
+We further carried our momentum and analysis methodolo-
+gies into our project with Xerox Corporation in the sum-
+mer of 2009. In an organizational environment, such as Xe-
+rox, employees’ document-centric activities result in the cre-
+ation of many diverse information streams, including email
+threads, calendar entries, web browsing histories, and ver-
+sions of office documents. Many of these documents contain
+information essential to the operation of the business, such as
+project proposals and emails capturing product discussions.
+Thus, our goal in this project is to investigate and design a
+system that is effective to assist corporate employees in both
+managing these information streams, and extracting desired
+business information from them.
+To understand this particular information analysis pro-
+cess, we conducted 30 semi-structured interviews with Xe-
+rox employees. The interviewees held a broad range of po-
+sitions, including product researchers who needed to write
+proposals and research papers, managers who were in charge
+of business planning and marketing, and administrative staff
+members who oversee hiring. These interviews were de-
+signed to provide us with baseline statistics about the gen-
+eral information analysis methods that were being used in
+managing business information.
+The results of our interviews showed that the most chal-
+lenging problems for the corporate employees was handling
+large amounts of content and, more importantly, managing
+information from multiple channels simultaneously.
+As shown in Figure 2, the analytical tasks of finding busi-
+ness information often include content aggregation, informa-
+tion organization and correlation, and sharing and collabora-
+tion. To analyze certain business information, an employee
+often starts with aggregating content, such as possibly rele-
+vant documents, into a single location. They will then filter
+this large collection of data, and attempt to organize it in a
+clear and consistent manner to support the awareness and
+sensemaking process. We noticed that sharing their analysis
+findings and providing status updates are crucial activities
+in these employees’ workflows. Because most current tools
+lack support for these critical functions, employees will of-
+ten resort to paper formats or email to communicate with
+other colleagues about the business information which they
+have found or their need for help finding it.
+2.3. Identifying Six Common Task Activities in
+Organizational Analytics Processes
+To further characterize the common task activities found
+within an organizational environment, we consult the Think
+Loop model [PC05], grounding the usage of visual analytics
+in a theory of information flows through the users’ analy-
+Xiaoyu Wang, et al. / Designing Knowledge-Assisted VA Systems for Organizational Environments 4
+Figure 2: This chart describes the workflow in each organizational environment. (Top) The six task activities common to both
+organizational analysis processes. (Middle) A typical analytical workflow for bridge maintenance planning. (Bottom) A typical
+analytical workflow for a business information analyst.
+sis processes. We found that, while different organizations
+shared diverse tasks, each’s analytical processes constituted
+a series of similar, loosely defined, and collaborative task ac-
+tivities. Knowledge workers accomplished analytical goals
+via subtasks, had focused targets, and accessed a range of
+services and resources [GIAH09]. As shown in Figure 2, we
+identified six task activities common to organizational anal-
+ysis processes:
+• Content Gathering and Aggregation: Knowledge workers
+identify appropriately-scoped content to form basic ana-
+lytical contributions. They seek and extract information
+from multiple channels relevant to the analytical tasks.
+• Content Filtering and Customization: Knowledge work-
+ers use filtering to familiarize themselves with content
+they have collected. They also personalize the analysis en-
+vironment in which this content is filtered.
+• Content Organization and Information Analysis: Knowl-
+edge workers organize the collected content and examine
+it from multiple perspectives to look for data patterns and
+desired information.
+• Evidence Collection and Hypothesis Generation: Knowl-
+edge workers create hypotheses regarding their analyses,
+and collect related supporting evidence.
+• Report Generation and Status Update: Knowledge work-
+ers increase visibility to others regarding analysis status,
+by providing notification and updates on the progress of
+their analyses,
+• Post-Analysis and Summarization: Knowledge workers
+focus on validating project achievements and introspect-
+ing workflows, after accomplishing an analytics process.
+3. Transforming Organizational Analysis Process into
+Visual Analytics Design
+Designing a knowledge-assisted visual analytics system re-
+quires supporting the analytical workflows of the knowledge
+workers. While the aforementioned task activities are use-
+ful in describing a general analytic process, they are often
+too general to provide any specific guidelines in actual sys-
+tem designs. Therefore, the first step in our design research
+was to search for tangible artifacts that could help break-
+down these high-level semantic tasks. These target artifacts
+must meet two basic requirements: (1) they need to be con-
+crete enough for practical visual analytics system designs,
+and more importantly (2) they must be consumable for the
+knowledge workers, who need to decide how to make use
+of them, without introducing a considerable cognitive over-
+head.
+3.1. In Search of Tangible Design Artifacts
+Many approaches have been used to denote such artifacts.
+We examined previous research in the intelligence analy-
+sis and knowledge management communities, and focused
+on understanding the use of the knowledge process (e.g.
+knowledge creation, consumption, and transfer) within the
+analytical process. Similar to Heuer’s [Heu07] perspective
+on knowledge as a dynamic expectation of information, we
+emphasize the importance of knowledge actions to support
+the transitions between different analytical task stages, and
+further integration within the analytical process as a whole.
+In addition, Nonaka et al. [IH95] also explored the general
+knowledge conversion processes that can guide design of or-
+ganizational decision support systems. Again, these knowl-
+edge processes are too high-level to be useful in directing a
+specific design for a visual analytic system.
+Enlightened by the Theory of Action [AS92], we followed
+Anrigyri et al.’s definition, and described our target artifacts
+as a series of Actionable Knowledge. Actionable knowl-
+edge is explicit symbolic knowledge,typically presented in
+the form of tradeoffs for action or rules [MMG02], which
+allows the decision maker to recognize some important re-
+lations and perform an action, such as targeting a direct
+marketing campaign, or planning infrastructure maintenance
+aimed at reparing those assets with lowest health. The nature
+of actionable knowledge fits well with our two requirements
+in that: (1) it represents the fine-grained elements of each
+analytical task, and thus is quite instructive for the design
+of a knowledge assisted visual analytics system; (2) it is ex-
+tracted from domain users’ knowledge actions, and therefore
+can be consumed without additional cognitive overhead.
+Xiaoyu Wang, et al. / Designing Knowledge-Assisted VA Systems for Organizational Environments 5
+3.2. Representing Organizational Analytics Processes
+using Actionable Knowledge
+As illustrated in [AS92] [BGS09] [CS04], there are many
+approaches to model actionable knowledge. Given our ad-
+vantage of a close working relationship with actual domain
+users, we adopted the domain-driven modeling process, and
+grounded our search for actionable knowledge on the inter-
+views and surveys with our two interviewee groups.
+During the interviews, we asked the participants to envi-
+sion the hypothetical process of carrying out their usual tasks
+with their regular tools and working environments. We en-
+couraged them to also think about additional functions that
+might be useful but not yet available in any of the tools they
+typically used. Specifically, we asked our participants about
+the fine-grained knowledge actions they used in their daily
+practices, the essential tools they have, and how they utilized
+these tools to execute each action. In doing so, we were able
+to identify key actionable knowledge that a tool should sup-
+port to improve productivity and reduce workload.
+In their responses, our interviewees expressed the impor-
+tance of actionable knowledge to the organizational deci-
+sion making process. In their analytical process, actionable
+knowledge is followed to respond to different situations, and
+illuminates potential action paths for overcoming obstacles.
+The use of actionable knowledge further directs these profes-
+sionals to discover certain information or data patterns, and
+helps them to react to the advantages of a specific task. For
+example, for the content aggregation task, a bridge manager
+often needs to check multiple sources of information (e.g.
+structural, financial, and historical) prior to their response
+for a new bridge maintenance request. During this process,
+actionable knowledge regarding where to look for informa-
+tion, and how to examine the information, plays a significant
+role in addressing this task.
+Tools, in this context, are considered as means to trans-
+form the knowledge into desired task actions. Knowledge
+workers primarily use tools such as email/documents/local
+folders, to produce and communicate task related contents
+and information. In the process, their domain knowledge (i.e.
+the expertise) is employed, and further results in context-
+dependent actions that are used in their analytical process.
+These professionals currently posses and use a number of
+different tools; however, we found that both groups were
+severely lacking tools that were actually designed to support
+to their analysis workflows. This finding pointed to the need
+for a tool that encapsulates the users’ actionable knowledge
+and helps them effectively perform necessary actions.
+Based on the feedback from our interviews, we summa-
+rized a set of selected actionable knowledge that describes
+the six common organizational task activities. As shown in
+Figure 1, every task in an analytical process is decomposed
+into a set of fine-grained actionable knowledge. Note that,
+this list contains only a subset of all the collected action-
+able knowledge; some of the stated actionable knowledge
+is unclear, ambiguous, or contradictory, and is therefore ex-
+cluded from this list. Also as seen in Figure 1, we have con-
+structed a clear mapping between high-level tasks and their
+fine-grained tangible artifacts. This mapping provides clear
+insights into the organizational workflow. More importantly,
+it is further transformed into a range of important design re-
+quirements for creating an effective knowledge-assisted vi-
+sual analytics system.
+3.3. Transforming Actionable Knowledge into VA
+Design Guidelines though Prototyping
+Our next step was transforming this list of specified action-
+able knowledge and requirements into proper visual analyt-
+ics designs. We followed the design theory for enterprise-
+knowledge-processes [MMG02], and conducted several it-
+erations of prototyping in close collaboration with our users
+to encapsulate their actionable knowledge into functions. Al-
+though both groups shared similar common analytical tasks,
+our prototyping methods with them were quite different
+(considering their diverse workspaces and time constrains).
+Specifically, we used a more frequent, throwaway prototyp-
+ing [And94] method for our collaboration with Xerox. Given
+the shorter design cycle (three months), the throwaway pro-
+totyping guaranteed us more design iterations and, more im-
+portantly, allowed us to explore broader options for trans-
+forming the actionable knowledge into visual analytics de-
+signs. A sample of the intermediate prototypes can be seen
+in our companion media.
+Based on our iterative prototyping with business analysts,
+we found a clear preference for a unified, intuitive, and less
+intrusive system that can help effectively retrieve and man-
+age desired information. Therefore, we finalized our pro-
+totype and implemented Taste [WJB10]; an interactive vi-
+sual analytics system that enhances employees’ capabilities
+to search and share business information. As shown in Fig-
+ure 3, Taste is structured to embed information retrieval cues
+into a coordinated multi-level visualization system. At a high
+level, Taste encodes these cues with a set of three visual-
+izations, a Facet view (A), a Temporal view(B), and a En-
+tity Tag view (C). Each view presents a particular aspect
+of document activity information across entire collections.
+In lower-level views, Taste presents visualizations that inte-
+grate related activity information for single documents(D).
+Using this multi-level structure, Taste helps users to cohe-
+sively depict document activity from different points of view,
+and effectively find the desired information.
+Thanks to a long-term collaboration plan, we were able to
+conduct a longer-cycle, more functionality-based prototyp-
+ing process with the bridge managers at both USDOT and
+NCDOT. This iterative functional prototyping [GB94] sim-
+ulates application behavior and helps to ensure that more of
+our design system is understood at each step of the collab-
+oration. In each iteration, we invited the bridge managers to
+test and evaluate our prototypes by working with the sys-
+tem to perform actual bridge analysis. Based on their sug-
+Xiaoyu Wang, et al. / Designing Knowledge-Assisted VA Systems for Organizational Environments 6
+Figure 3: An overview for both the Taste and IRSV systems. (Middle) The design guidelines actually incorporated within each
+system are indicated by marked checkboxes. (Right) Taste consists of (A) Facet view, (B) Temporal view, (C) Entity Tag view,
+(D) Detail view, and (E) Storytelling view. (Left) IRSV contains multiple analysis views, including (F) Detailed structural view,
+(G) High-level structural view, (I) Geospatial view, and (H) Temporal analysis view. In addition, IRSV provides two variations:
+(K) a knowledge base integrated system and (J) a web-based system.
+gestions and requests, we then refined, re-designed, and re-
+implemented the prototype system to increase its effective-
+ness to support the bridge analysis process.
+During a nine-month period, we generated over ten func-
+tional prototypes, including various changes to the visualiza-
+tion and interface designs. Over the course of past two years,
+our prototyping has resulted in a final set of variations of the
+system. These all focus on providing support for bridge man-
+agement using integrated remote sensing and visualization,
+so we generally refer them as IRSV. While each of the sys-
+tems is designed to accommodate requirements for different
+use cases, all follow a similar set of underlining actionable
+knowledge, and were designed to achieve the same goal: to
+provide examination of heterogeneous data sources and fa-
+cilitate effective bridge maintenance planning.
+At the heart of IRSV, we designed a set of visualiza-
+tions to help bridge managers organize and analyze their
+assets from the multiple perspectives essential to their de-
+cisionmaking process. As seen in Figure 3, these visualiza-
+tions were designed to perform the three high-level analyses:
+structural analysis (G), temporal analysis (H), and geospa-
+tial analysis (I). For lower-level tasks, we designed a struc-
+tural detail view (F) to automatically link information be-
+tween each bridge component, and provided bridge man-
+agers with an intuitive visualization to interactively analyze
+specific corresponding information. All of these visualiza-
+tions are tightly coordinated together in such a way that
+an action performed in one view affects all other views.
+Implementation details can be seen in our companion pa-
+pers [WDC?10] [WJD?09] [WCHR10].
+4. Examples for System Design and Evaluation
+Both Taste and IRSV were designed following our guide-
+lines. These knowledge-assisted visual analytics systems are
+implemented to support the analytic processes encountered
+in organizational environments. Through iterative prototyp-
+ing processes, each was tailored to the analytical workflow
+of its target domain. As shown in Figure 3 (Middle), the de-
+sign guidelines actually incorporated within each system are
+illustrated separately by marked checkboxes. We also con-
+ducted user-studies to evaluate the utility of these systems.
+Instead of emphasizing technique details, our discussion
+below focuses on evaluations for the effectiveness of our
+systems to support domain analysis processes. Specifically,
+we summarize the users’ feedback and comments, and use
+these to assess the performance of our systems in facilitating
+the common task activities. We have also planned future im-
+provements for the systems based on the users’ suggestions.
+4.1. Taste: Supporting Business Information Analysis
+To evaluate Taste, 21 Xerox employees participated in both
+lab and field studies using the tool. In the following subsec-
+tions, we describe how Taste was found to be useful and ef-
+fective in facilitating each of the six common task activities
+in the domain analysis process. Detailed statistical results for
+this evaluation can be found in our previous report [WJB10].
+4.1.1. Gathering content into a unified visual interface
+At the heart of Taste is a transparent, real-time, contextual
+data capturer, which was designed to capture the user’s activ-
+ities around office documents, calendars, emails, etc. Taste
+creates an index of documents on a user’s machine, and logs
+information about the user’s activities with these documents.
+Xiaoyu Wang, et al. / Designing Knowledge-Assisted VA Systems for Organizational Environments 7
+Taste stores this information, along with copies of the doc-
+uments, in a unified repository. All captured information is
+then indexed and grouped with its related documents, and is
+interactively presented to the user through Taste’s visualiza-
+tion interface, as shown in Figure 3 (Right).
+All participants indicated the usefulness of this unified in-
+terface. They agreed that integrating multiple information
+streams into a single interface sufficiently encapsulates their
+actionable knowledge, reducing search times for related in-
+formation. They believe this could greatly assist them in
+gathering and aggregating contents from multi-channels
+4.1.2. Enable facet search for content filtering
+As shown in Figure 3 (A), Taste utilizes the Facet view to
+aggregate both the documents and the people with whom a
+user has previously interacted. This visualization allows the
+users to filter and sort information based on automatically
+extracted data facets, including type (person or document)
+and format (email, text document, etc.). Facet view further
+sorts and displays document activity by importance, which
+is measured by frequency and users’ dwell time.
+When presented to the participants, they spontaneously
+formulated a variety of facet filters to find information. They
+were generally satisfied with the efficiency of using Taste to
+’slice and dice’ information, and appreciated the flexibility
+to perform customized analysis.
+A common suggestion was to be able to also create for-
+mulas to sort the documents with customized measures. One
+analyst indicated that introducing customized time factors
+(such as increasing the importance of a more recently cre-
+ated documents over older documents) would be especially
+useful for filtering.
+4.1.3. Interactive Information Analysis
+Besides the facet view, Taste also supports high-level con-
+tent analysis based on both temporal information and content
+keywords (See Figure 3 (B) and (C)). Taste utilizes the tem-
+poral view to show how a user’s activities unfold over time,
+and presents the temporal trends and patterns of a user’s doc-
+ument activities. This view allows the user to interactively
+drill down to a specific time, and helps the users examine
+the content, which occurred in that time span. In addition, an
+entity tag view is used to enable fast entity browsing. This is
+implemented using an automated entity extractor, which ex-
+tracts entities, such as company name, contacts, etc., from
+all of previous documents. As shown in Figure 3 (C), Taste
+enables users to focus on a specific entity, and examine any
+information related to it.
+In the low-level view, Taste incorporates a detail view
+(Figure 3 (D)) for depicting a single document from mul-
+tiple perspectives, such as its related temporal information
+and other versions of the document. All views in Taste are
+coordinated, such that updates in one view are immediately
+reflected in the others.
+In our studies, Tastes was compared with other existing
+tools to assess its analysis capabilities. The participants were
+generally positive about Taste’s effectiveness for retrieving
+and analyzing business information. All participants agreed
+that the ability of viewing information from different granu-
+larities can largely help them filer and analyze information.
+One suggestion was to provide finer-grained categories,
+and display more information for entities. One participant
+suggested that the current categorization is too broad by ref-
+erencing a common expectation: Instead of general, high-
+level categories like browsing, email, etc, usually the cate-
+gories of interest are more narrow like “email with Bob” or
+“browsing about JAVA”)
+4.1.4. Using Storytelling to generate and share reports
+By utilizing an interactive storytelling view, shown in Fig-
+ure 3 (D), Taste allows users to interactively collect evi-
+dence, annotate it, and share it with others. The storytelling
+view allows the user to take a more active role in informa-
+tion tracking, and enables them to express the information
+relationship based on their own knowledge. Whenever a user
+comes across an interesting information object in Taste, they
+can directly add that object to a new or existing story view.
+Once an element is in a storytelling view, the user can fur-
+ther annotate or tag it, and can group different story elements
+based on their reasoning logic.
+The story created by one user around a collection of peo-
+ple and documents may be of interest to other users as well,
+so Taste allows stories created in one instance of the system
+to be shared with users in another instance. Analysts who
+receive these shared stories, are able to modify them based
+on their understanding of the topics, and add or suggest re-
+moval of story elements. By sharing their stories about doc-
+ument activities, groups of employees can now understand
+those activities better, and improve information analysis for
+all members of the group.
+While the story feature is new, many participants found
+the idea of collaboratively searching for information intu-
+itive, and felt that the feature was practical and useful. Al-
+though we didn’t set up a collaborative environment for par-
+ticipants (due to privacy concerns), participants were still in-
+terested in utilizing the story view and tried to share findings
+between different instances of Taste.
+In summary, while Taste has so far only been evalu-
+ated by a limited number of participants (albeit actual tar-
+get users), it appears to be a promising technology and a
+successful design. Based on the feedback we have received,
+we believe the design of this visualization successfully en-
+capsulates the actionable knowledge and supports the ana-
+lytical workflows that are essential for business information
+analysis. Through our on-going collaboration, we are fur-
+ther refining its basic functions and enriching it with more
+advanced features.
+Xiaoyu Wang, et al. / Designing Knowledge-Assisted VA Systems for Organizational Environments 8
+4.2. IRSV: Facilitating Bridge Maintenance Planning
+Our evaluations of IRSV and its variations were performed
+iteratively throughout the collaboration, and were mainly
+conducted with a group of bridge managers from both North
+Carolina DOT and Charlotte DOT (CDOT). These 12 (10
+male, 2 female) bridge managers participated in at least three
+sessions of onsite evaluations
+In the following subsections, we summarize feedback
+from these evaluations and assess the systems (multiple
+IRSV variations collectively) for their effectiveness in facil-
+itating each task activity encountered in bridge maintenance
+planning.
+4.2.1. Integrating heterogeneous data into one interface
+As shown in Figure 3, IRSV provides bridge managers with
+a unified content interface that combines multiple streams
+of bridge information. It can incorporate a range of data
+sources, including National Bridge Inspection Standards
+(NBIS) datasets, high-resolution aerial images, and Light
+Detection and Ranging (LIDAR) scans. In addition, IRSV
+provides an advanced feature, incorporating knowledge con-
+tents from an ontological knowledge structure. As detailed
+in our previous report [WJD?09], using a service-oriented-
+architecture, IRSV has been extended to communicate with
+the knowledge base, access and fetch the inference results,
+and present them in a cohesive visual interface.
+Through comparisons to existing bridge management sys-
+tems, it was clear that IRSV was appreciated for its effi-
+ciency in contents aggregation. All participants considered
+the visual interface well addressed their information retrieval
+needs, representing cohesive and useful for bridge informa-
+tion. Moreover, they were excited about the ability to access
+and follow prior practices and guidelines that were embod-
+ied in the knowledge base.
+4.2.2. Customizing analysis workflows
+Because it was built with a modular architecture, IRSV al-
+lows bridge managers to extend the system to incorporate ad-
+vanced visualizations and more effective data models. Each
+visualization component integrated within IRSV was de-
+signed to be interchangeable with other equivalent visualiza-
+tions. Furthermore, IRSV provides bridge managers with the
+flexibility to combine and sequence different visualizations
+to fit their individual analysis routines.
+All participants appreciated the flexibility of the inter-
+face, finding it useful for customizing the system to only
+utilize the necessary visualizations in their particular prac-
+tices. They spontaneously formed a variety of visualization
+combinations in order to find bridge assets. The most com-
+mon strategy used was to combine a geospatial window with
+scatter plot view to gain information for the most recent
+changes of a particular bridge. A manager from NCDOT fur-
+ther pointed out that,“[IRSV] will greatly shorten the catch-
+up time between my learning to use the system and my actual
+use of it.”
+4.2.3. Analyzing information from multiple aspects
+All participants noted that IRSV provided a visual ex-
+ploration environment to help them analyze information
+from multiple aspects. The capability to perform not only
+geo-temporal analysis, but also structural analysis was of
+great value to their decision-making process (See Figure 3
+(G)(I)(H)). One of the managers commented that, “[the]
+linked visualizations provide me with a cohesive understand-
+ing about the data that I am working on. It reduces the time
+I spent on manually searching for information, and helps me
+focus more on the task itself.”
+In particular, seven out of the 12 bridges managers pointed
+out that the temporal analysis in IRSV provided them with
+the capability to effectively monitor changes in bridge condi-
+tions and identify maintenance candidates. In addition, after
+familiarizing themselves with the concepts and usage of the
+visualizations, most bridge managers (9 out of 12) noted that
+the capability to examine bridge structures simultaneously
+from multiple levels (overview and detailed view) allowed
+for effective transitions from examining large amounts of
+data to inspecting bridges one at a time.
+4.2.4. Evidence collection and report generation
+As shown in Figure 3(J), IRSV also supports interactively
+collecting, annotating, and sharing analysis findings be-
+tween different collaborators. Using a web interface, IRSV
+treats individual visualizations and group workspaces as col-
+lectable items. It enables bridge managers to directly drag
+and drop these items into a sandbox, designed to collect all
+the findings and sort them temporally. IRSV further allows
+bridge managers to use the collected evidence to support
+their analysis hypotheses and create analysis reports. The
+bridge managers can directly combine findings that can sup-
+port their reasoning and share them with colleagues, through
+built-in sharing channels or emails.
+Most participants found the idea of collaboratively man-
+aging bridge information intriguing. They consider our ap-
+proach practical and useful for creating preliminary analysis
+reports. There was significant interest in utilizing the fea-
+tures that allowed evidence to be reported and shared with
+others. While we are still refining these features, we have
+seen great potential for IRSV to support the inherently col-
+laborative nature of bridge maintenance planning.
+In summary, IRSV was designed by following our design
+guidelines set forth earlier in this paper. It has been deployed
+to USDOT for daily use and testing. Based on feedback from
+bridge mangers, IRSV appears to be a successful design and
+a useful visual analytics system that effectively supports the
+bridge maintenance management process. The effort to en-
+rich IRSV is still on-going; we are working closely with
+bridge mangers to identify new actionable knowledge that
+requires advanced features, including web-based collabora-
+tion and post-analysis.
+Xiaoyu Wang, et al. / Designing Knowledge-Assisted VA Systems for Organizational Environments 9
+5. Limitations
+We undertook this research to better understand the prag-
+matic analytical processes in an organizational environment,
+and identify practical design guidelines for visual analytics
+systems. To this end, we consolidated our design guidelines
+into characteristics for the six common analytical task ac-
+tivities, their related actionable knowledge, and interactions
+between the two. We found that actionable knowledge plays
+a unique role in addressing important problems in organiza-
+tions, and affects knowledge workers’ performance. There-
+fore, we transformed this knowledge into design guidelines
+for visual analytics systems. We hope that our guidelines will
+help others provide better support for domain analytical pro-
+cesses within their visual analytical applications.
+There are limitations to our research which must should
+be addressed. Generalizability of our design guidelines is
+limited because this research was conducted within only two
+organizations. We attempted to mitigate local biases by in-
+creasing the number of participants. Nevertheless, different
+training backgrounds, personal preferences, and project time
+constraints could engender different analytical conditions.
+Moreover, our research characterizes the domain analyti-
+cal workflow through interviews and surveys, which gener-
+ally are self-reported by participants. Our research was also
+limited, in that it modeled the analytical workflow from a
+retrospective perspective, whereas Brows et al. demonstrated
+that problem spaces and solutions are established and change
+dynamically in interactions with people and the environ-
+ment [BD91]. Therefore, our understanding of domain anal-
+ysis and actionable knowledge is constrained to the knowl-
+edge workers’ general way of performing tasks.
+Finally, our research is limited by its evaluations with do-
+main experts. We evaluated Taste with formal studies and
+IRSV with informal case studies. Developing evaluations,
+strategies, and methodologies to accurately assess the effec-
+tiveness of a knowledge-assisted visual analytics system is
+challenging. At this point we do not have a clear outline
+on the best evaluation approach; the design of guidelines
+for evaluating a knowledge-assisted visual analytic system
+would be one interesting future direction for our research.
+However, while we recognize these limitations in our
+work, we believe supporting organizational analysis pro-
+cesses is important visual analytics research. Our design
+guidelines (Figure 4) illuminate the role that a knowledge-
+assisted VA plays in such complex problem-solving environ-
+ments.
+6. Conclusions
+This paper has presented two years of iterative design efforts
+to explore and advance the design of knowledge-assisted
+visual analytics systems. Based on our extensive interac-
+tions with domain knowledge workers, we identified and
+consolidated six common task activities that are generally
+used to perform organizational analysis. To decompose these
+high-level tasks to implementable artifacts, we further re-
+framed the problem and disseminated these tasks into action-
+able knowledge that illustrates the fine-grained functional re-
+quirements for each task. Using these requirements, we de-
+signed and implemented two knowledge-assisted visual an-
+alytics systems for our collaborators.
+Our primary contribution is the resulting set of design
+guidelines that, when implemented, allow visual analytics
+researchers to effectively collaborate with domain users, and
+to empower knowledge workers in organizational environ-
+ments to effectively accelerate their analytical processes.
+These guidelines provide design considerations for both
+high-level task activities and low-level functional require-
+ments. In addition, we have summarized a set of evaluations
+that show the effectiveness of visual analytics systems de-
+signed using our guidelines as a basis.
+We hope that by proposing these general guidelines, we
+can begin a serious discussion of design considerations crit-
+ical for producing effective knowledge-assisted visual ana-
+lytics systems. We will continue to evaluate and refine our
+guidelines with current and future collaborators. In addition,
+we hope that these guidelines will lead to potential impacts
+in today’s organizational environments.
+Xiaoyu Wang, et al. / Designing Knowledge-Assisted VA Systems for Organizational Environments 10
+Figure 4: Our design guidelines in checklist form.
+References
+[AG] AG S.: Business management software. 1
+[And94] ANDRIOLE S.: Fast, cheap requirements prototype, or
+else! Software, IEEE 11, 2 (Mar. 1994), 85 –87. 5
+[AS92] ARGYRIS C., SCHON D. A.: Theory in Practice: In-
+creasing Professional Effectiveness. Jossey-Bass, 1992. 4, 5
+[BD91] BROWN J. S., DUGUID P.: Organizational Learning and
+Communities-of-Practice: Toward a Unified View of Working,
+Learning, and Innovation. Organization Science 2, 1 (1991), 40–
+57. 9
+[BGS09] BUCHER T., GERICKE A., SIGG S.: Process-centric
+business intelligence. Business Process Management Journal 15,
+408-429 (2009). 1, 5
+[CKH?10] CONVERTINO G., KAIRAM S., HONG L., SUH B.,
+CHI E. H.: Designing a cross-channel information management
+tool for workers in enterprise task forces. In Proceedings of the
+International Conference on Advanced Visual Interfaces (New
+York, NY, USA, 2010), AVI ’10, ACM, pp. 103–110. 2
+[CS04] CROSS R., SPROULL L.: More than an answer: Informa-
+tion relationships for actionable knowledge. Organization Sci-
+ence 15 (August 2004), 446–462. 5
+[GB94] GRAY D. E., BLACK T. R.: Prototyping of computer-
+based training materials. Computers and Education 22, 3 (1994),
+251 – 256. 5
+[GIAH09] GECZY P., IZUMI N., AKAHO S., HASIDA K.: An-
+alytics and management of collaborative intranets. In Collabo-
+rative Computing: Networking, Applications and Worksharing.
+Springer Berlin Heidelberg, 2009, pp. 623–631. 4
+[GRMT04] GILE K. G. K., RUSSOM P., MOORE C., TEUBNER
+C.: The Emergence Of Process-Centric BI. Forrest Research,
+Cambridge, MA, 2004. 1
+[Heu07] HEUER R.: Psychology of Intelligence Analysis. Pherson
+Associates, 2007. 4
+[IBM] IBM: Business analytics and optimization. 1
+[IH95] I N., H T.: The Knowledge Creating Company. Oxford
+University Press, 1995. 4
+[MMG02] MARKUS M. L., MAJCHRZAK A., GASSER L.: A
+design theory for systems that support emergent knowledge pro-
+cesses. MIS Quarterly 26, 3 (2002), pp. 179–212. 4, 5
+[NE00] NISSEN M. E., ESPINO J.: Knowledge process and sys-
+tem design for the coast guard. Knowledge and Process Manage-
+ment 7 (2000), 165–176. 2
+[PC05] PIROLLI P., CARD S.: The sensemaking process and
+leverage points for analyst technology as identified through cog-
+nitive task analysis. Proc. Int’l Conf. Intelligence Analysis
+(2005). 3
+[WCHR10] WANG X., CHEN S.-E., HAUSER E., RIBARSKY
+W.: imonitor: Architecture of web-based collaborative visual
+analytics system for bridge management. In Transportation Re-
+search Board 90 Annual Meeting (2010). 6
+[WDC?10] WANG X., DOU W., CHEN S.-E., RIBARSKY W.,
+CHANG R.: An interactive visual analytics system for bridge
+management. Computer Graphics Forum 29 (2010), 1033–1042.
+1, 2, 6
+[WJB10] WANG X., JANSSEN B., BIER E.: Finding business
+information by visualizing enterprise document activity. In Pro-
+ceedings of the International Conference on Advanced Visual In-
+terfaces (New York, NY, USA, 2010), AVI ’10, ACM, pp. 41–48.
+1, 5, 6
+[WJD?09] WANG X., JEONG D. H., DOU W., LEE S.-W., RIB-
+ARSKY W., CHANG R.: Defining and applying knowledge con-
+version processes to a visual analytics system. Computers and
+Graphics 33, 5 (2009), 616 – 623. 6, 8
+[ZFE07] ZIMMERMAN J., FORLIZZI J., EVENSON S.: Research
+through design as a method for interaction design research in hci.
+In Proceedings of the SIGCHI conference on Human factors in
+computing systems (New York, NY, USA, 2007), CHI ’07, ACM,
+pp. 493–502. 1
+

@@ -1,0 +1,1064 @@
+Charlotte Visualization Center   Technical Report CVC-UNCC-12-15 
+University of North Carolina at Charlotte  March 2012 
+Towards Utilizing Heterogeneous Analytics Interfaces in Coastal 
+Infrastructure Management  
+ 
+Xiaoyu Wang*, Thomas Butkiewicz*,†, Isaac Cho*, Zachary Wartell* 
+xiaoyu.wang@uncc.edu, tbutkiewicz@ccom.unh.edu, icho1@uncc.edu, zwartell@uncc.edu  
+*Charlotte Visualization Center                     †Center for Coastal and Ocean Mapping  
+                                      University of North Carolina at Charlotte                      University of New Hampshire 
+ 
+ABSTRACT 
+Geo-spatial data such as multiple return LIDAR terrain data, sonar 
+data and ocean surge data play a significant role in various 
+emergency response and planning scenarios. Such multi-planar 
+and volumetric data is rich in geographic features; more 
+importantly, it also contains a significant temporal component. 
+Understanding geospatial-temporal changes is a fundamental 
+aspect of analyzing, understanding and responding to natural 
+phenomena (e.g. hurricane impacts, coastal infrastructure changes, 
+and ocean surges). We are collaborating with a number of 
+scientific colleagues on projects relating to prediction of and 
+response to various natural disasters such as hurricanes and oil 
+spills. These colleagues and their supporting agencies have 
+identified several visual analytic needs relating to inspecting and 
+cleaning up multi-return LIDAR and sonar data and volumetric 
+ocean flows. These include the ability to provide efficient 
+interactive display systems and user interfaces for navigating, 
+selecting and inspecting outlier 3D points or flow vectors; the 
+ability for multiple co-located, collaborating scientists to perform 
+such analysis on visually dense 3D data; and the ability of the 
+system to semi-automatically extract high-level features from 
+large data sets and to then help the scientist construct a narrative 
+that explains the salient temporal-spatial features in a concise 
+textual and abstract visual form. 
+Keywords:. 
+Index Terms:  
+1 MOTIVATION AND RESEARCH GOAL  
+Managing coastal infrastructures and responding to coastal natural 
+disasters is a multi-stage, multi-model analytics process that 
+involves a wide range of heterogeneous geospatial data 
+collections. Good management and emergency response policy 
+decisions demand an effective analytics workflow that includes 
+data acquisition, data cleaning and analytics, data visualization, 
+and interaction. The ultimate goal is to support the human 
+decision-making process. This is essential for coastal 
+infrastructure management decisions that are often heavily 
+dependent on rich geospatial features and planning. Stakeholders 
+and emergency responders, from both government agencies and 
+research institutes, are continuously collecting and generating 
+heterogeneous geospatial data to support decision-making. 
+Geo-spatial data, such as multiple return light detection and 
+ranging (LIDAR) terrain data, deep-ocean sonar data, and ocean 
+surge models, play a significant role in such emergency response 
+and planning scenarios. The scanned terrain data can include 
+natural terrain or urban terrain that incorporates man-made 
+infrastructure. Such multi-planar and volumetric data is rich in 
+geographic features, and is used and analyzed to understand 
+impacts of natural disasters and ocean dynamics.  More 
+importantly, such collected geospatial data also contains a 
+significant temporal component. Depicting this temporal factor is 
+an integral part of analyzing natural phenomena, (e.g. coastal 
+terrain changes or hurricane impacts), and can help formulate 
+responses and preventative management.  
+LIDAR, sonar, and flow data are generally multi-layered, if not 
+fully volumetric. While automated algorithms will certainly be a 
+significant part of the analytic workflow, visual analytic tools for 
+coastal infrastructure will require a wide variety of SciVis (3D) 
+and InfoVis (2D) interactive techniques. The 3D visualizations 
+and their constituent interaction techniques need to account for the 
+multi-layered and volumetric aspects of these data. In an ideal 
+visual analytic environment, each interaction task would be 
+performed using a display system that is best suited for the given 
+task. When interactively cleaning LIDAR or sonar point clouds, 
+stereoscopic displays and motion parallax can aid visual 
+perception and understanding of the point cloud arrangement, and 
+help with interactions such as selection. Similarly, stereoscopic 
+displays can aid visual perception and understanding of animated, 
+multi-layer streamlines in ocean flow or storm surge simulations. 
+Furthermore, when selecting and removing outliers from point 
+clouds, a multi-touch or perhaps 3D multi-finger interface might 
+speed the interactive selection of individual points among a dense 
+collection. 
+1.1 Research Goal 
+Given the deep heterogeneity in the coastal infrastructure data, 
+our research addresses the design of visual analytics environments 
+that employ a suite of heterogeneous displays to facilitate data 
+acquisition, data cleaning and analytics, and interactive data 
+visualization, and to support the human decision-making process.  
+     Our system employs a suite of displays, including a semi-
+immersive, stereoscopic display, a high-resolution tiled display, 
+and a multi-touch table. This creates an analytics environment that 
+provides a powerful integration of high quality stereoscopic 3D 
+graphics, two-handed interaction, and touch-based interaction. 
+Our tools support analysis of terrain height changes and ocean 
+surge as well as feature-spaces analytics that allow the user to 
+discover structures within the data that are not easily detectable 
+using traditional visualization or feature extraction methods. 
+Temporal information is also represented for both terrain and 
+feature analytics through animation. Notably, the process of 
+collecting such geospatial data, analyzing it on multiple 
+heterogeneous displays, and creating human-centered visual 
+analytical environments, can be generalized across different 
+domains.  
+Charlotte Visualization Center   Technical Report CVC-UNCC-12-15 
+University of North Carolina at Charlotte  March 2012 
+A detailed description of the components of the display 
+environment and the software tools with their related analysis 
+processes are the focus of this paper. 
+1.2 Situation Assessment and Motivating Scenario 
+This research is motivated by impending sea-level rise and 
+possible increased intensity of tropical storms and cyclones. With 
+nearly 325 miles of coastal shoreline, the state of North Carolina 
+has a long history of significant impacts from hurricanes and 
+tropical storms. Recent natural disasters (e.g. Hurricane Irene 
+flooding and Hurricane Isabel barrier island breaching) have 
+highlighted the great vulnerability of these coastal communities.  
+As illustrated in recent geology research, certain barrier island 
+segments along the Outer Banks and other NC coastal areas are 
+clearly in danger of developing inlets in the near future. Road 
+maintenance plans, development policies, hazard mitigation, and 
+emergency response plans depend upon an understanding of 
+terrain change rates.  
+Monitoring and adapting to infrastructure changes is critical. 
+With advances in survey and aerial surveillance technologies, 
+such as such as LIDAR and hyperspectral imaging, several 
+initiatives and organizations have started collecting and sharing 
+coastal data for analysis, modelling, and simulations. In particular, 
+the Digital Coast project lead by National Oceanic and 
+Atmospheric Administration (NOAA) has provided rich coastal 
+infrastructure and natural resources data since 1997. 
+Unfortunately, the sheer size and heterogeneity of this data 
+presents a hurdle for infrastructure management. According to a 
+recent survey conducted by NOAA with a variety of coastal 
+infrastructure experts, data collection (e.g. terrain and ocean 
+information) and decision support (e.g. inlet monitoring and risk 
+quantifying) are still top priorities among infrastructure-related 
+agencies and organizations [14]. 
+2 THE HETEROGENEOUS DISPLAY ENVIRONMENT 
+As part of the Center for Natural Disasters, Coastal Infrastructure 
+and Emergency Management (DIEM), our team has become 
+increasingly aware of the data analytics challenges, and consider it 
+critical to identify the coastal resources at greatest risk before a 
+disastrous event so that natural disaster impacts can be planned for 
+and mitigated. Specifically, the objective of our research is 
+intended to meet the needs of stakeholders in this regard, 
+enhancing the effectiveness and integration of their simulation 
+research and their analysis process.  
+    To do this we must develop tools to examine and analyze 
+heterogeneous, time-dependent datasets with rich and effective 
+visualization and interaction technologies. By the report of this 
+paper, we have developed several tools targeted at data related to 
+storm surges, hurricanes, flooding, and critical infrastructure 
+models. Such tools will be of significance to a variety of 
+stakeholders, including emergency planners and infrastructure 
+managers. 
+Our tools leverage a variety of displays and spatial input 
+devices. There are many tradeoffs among display technologies in 
+particular for 3D user interfaces (3DUI) ranging from common 
+desktop WIMP based 3DUI to fully immersive systems [2]. Two 
+significant dimensions are resolution and levels of immersion. 
+Immersion is generally increased by wider fields-of-view and 
+fields-of-regard, and the addition of stereoscopy and head-coupled 
+motion parallax. Stereoscopy and motion parallax can improve 
+spatial understanding and interaction with spatially dense 
+geometric data sets. This is significant to CIM because LIDAR, 
+sonar, and ocean current data have this property. Similarly, when 
+analyzing and interacting with point clouds and volumetric data, 
+having effective and efficient 3D user interface techniques for 
+precise manipulation and selection data subsets is necessary. 3D 
+user interface techniques based on a variety of physical input 
+devices are available. Our tools leverage a variety of technologies 
+including 6 degree-of-freedom, two-handed tracked input devices, 
+multi-touch and direct 3D finger tracking. 
+While high-resolution, unencumbered stereoscopic, head-
+tracked displays have been demonstrated [15], current 
+commercial, high-resolution displays, such as tiled-displays, 
+generally do not provide unencumbered stereo and head-tracking, 
+in particular for multiple simultaneous users. Hence for an 
+emergency response task that requires multiple, co-located 
+stakeholders to view a common display, commercial immersive 
+display technology is less appropriate. For co-located 
+collaboration, a large tiled-display, perhaps coupled with a multi-
+user, multi-touch table, can avoid users crowding around a single 
+desktop display. 
+In section 4, we present our set of tools using the following 
+systems: 
+• a stereoscopic 3D finger tracked system – this system is 
+designed for interactive inspective and cleaning of dense, 
+scanned point cloud data. Stereo display improves depth 
+perception of the dense point cloud while the 3D finger 
+tracking provides a high-DOF input device for selecting and 
+partitioning small sets of points amidst a dense cloud. 
+• a high-resolution desktop system – this system uses a WIMP 
+3D UI on a high-resolution display for exploring changes to 
+LIDAR scanned terrain along the N.C. coast. 
+• a stereoscopic desktop VR system using a two 6DOF input 
+devices – this system allows the inspection of N.C. coast 
+LIDAR terrain and interactive exploration of a feature space 
+view of the terrain along side a 3D view. 
+• a stereoscopic, multi-touch system – this system visualizes 
+ocean currents and the insertion of virtual dyes that generate 
+various types of flow lines. Stereo display greatly enhances 
+the depth perception of the volumetric flow. A novel multi-
+touch input mechanism is created for controlling position of 
+the dye emitters. 
+3 SITUATION ASSESSMENT AND CHARACTERIZATION 
+According to NOAA’s mission statement, the standard workflow 
+for Coastal Infrastructure Management involves a varied and large 
+amount of scientific, engineering, as well as information analytics. 
+Within this broad scope, we have collaborated with coastal 
+infrastructure managers and planners to enhance the digital coastal 
+resilience and emergency management technologies. The 
+partnership focuses on the improvement of the information 
+analytics aspect, with the goal of providing improved visual 
+interfaces that support the analytic workflows that yield more 
+accurate and effective results.  
+Based on our discussions during our three-year collaboration, it 
+has become clear to us that, at a high-level, coastal infrastructure 
+management (CIM) involves three major challenges. 
+First, available tools for planning, situation assessment, and 
+change detections are inadequate for analyzing and managing 
+existing coastal infrastructure. Based on a survey conducted by 
+NOAA, 57 out of 198 managers are not satisfied with their current 
+tools [14]. Most of the participants in this survey showed interest 
+and need for decision-support systems. The geospatial data used 
+by these systems includes terrain, weather and oceanic data 
+(currents, temperature gradients, etc.). Here, the term terrain 
+refers to both natural terrain as well as urban terrain. Currently, 
+LIDAR scans are the technology of choice for digitizing terrain 
+Charlotte Visualization Center   Technical Report CVC-UNCC-12-15 
+University of North Carolina at Charlotte  March 2012 
+geometry. Based on our collaborations, we determined that for 
+CIM systems the three major tasks are data cleaning, geospatial 
+change detection, and interactive analysis. The densely sampled 
+sensor derived data must be cleaned by a combination of 
+automated and semi-automated techniques to deal with noise and 
+errors.  
+A second major CIM challenge is that changes in the coastal 
+infrastructure environment are increasing the potential impact of 
+existing hazards. Depicting temporal patterns and terrain changes 
+caused by natural disasters are the two main aspects of this 
+challenge. This requires the ability to semi-automatically detect 
+changes in the geospatial geometry over time, and to characterize 
+the geometric features of identified change segments of the 
+geometry that were affected by an earlier disaster.  
+A final CIM requirement is the ability for collaborating 
+stakeholders to be able naturally converse in an unencumbered 
+fashion while viewing and interacting with the collected data.  
+The ability to navigate, select, and manipulate densely sampled 
+geo-spatial datasets is important to two components. First, the 
+data cleaning process—where you want find, select, and 
+investigate outliers perhaps at the level of individual points. And 
+second, to the process of detecting, investigating, and 
+characterizing geometry change features in the data set (e.g. a 
+house in a LIDAR terrain scan that gets washed away in a 
+hurricane storm surge).  
+To meet these challenges, the coastal emergency management 
+system requires a top to bottom review.  There is a clear need to 
+build a resilient and sustainable coast, able to successfully adapt 
+to twenty-first century challenges posed by natural hazards and 
+growth on the coastal urban interface. Effective adaptation 
+strategies require a far-reaching transformation in coastal 
+management plans, tools, and institutions. 
+4 OUR DESIGN AND ANALYTICS SOLUTION 
+Based on our domain characterization and design assessment, 
+below we describe our applications that use the following types of 
+display systems: two desktop Windows-Icon-Menu-Pointer 
+(WIMP) systems, a desktop VR system, a multi-touch systems, a 
+hybrid multi-touch desktop VR setup with camera based full hand 
+tracking, a tiled-display application, a hybrid multi-touch table + 
+tiled-display system. 
+Different types of displays and associated user interfaces can 
+best take advantage of the human perceptual system for these 
+three tasks.  For data cleaning the user needs to be able to quickly 
+navigate through the spatial data set, to spot, select and investigate 
+outliers. For dense LIDAR point clouds or Doppler radar weather 
+data, being able to visually distinguish shape and details—down 
+to the individual sample point level—can be a perceptual 
+challenge. For these types of data that have lots of occlusion and 
+dense geometry, motion parallax and stereoscopic display can 
+improve understanding of the geometry [20]. Further being able to 
+quickly change the viewpoint via 6 degree-of-freedom 
+adjustments is also important. With the addition of stereoscopic 
+display, head motion parallax and/or direct 3D (6DOF) 
+manipulation the view scale factor must be further adjusted as a 
+7th degree-of-freedom [21] . Further if one wants to be able to 
+quickly navigate (controlling up to 7 DOFs) and to perform 
+selection of small subsets of densely sampled data—in particular 
+volumetric data—being able to interact with both hands is 
+engages far more of human motor system than a standard mouse 
+interface. This can be done either through a two-handed 6DOF 
+interfaces [8]  or a multi-touch interface or a hybrid approach [1]. 
+Some types of data are best viewed with 2D, InfoVis 
+visualizations while others are best viewed using 3D graphics. 
+Within 3D graphics, under some circumstances stereoscopic 
+display and/or head-position dependent 3D (commonly done with 
+head-tracking) are beneficial. Correspondingly input devices 
+could range from the standard mouse and keyboard, to multi-
+touch, to 3D 6-degree-of-freedom input devices and camera based 
+body tracking. An ER environment could include mobile display 
+systems, small form factor desktop technologies and large scale 
+command centers containing high-resolution tiled-displays, VR 
+technologies (preferably, of course, auto-stereoscopic with 
+unencumbered tracking), etc. In this paper, however, we focus the 
+non-mobile components, as might be found in a command-and-
+control (C&C) center, while acknowledging that a complete, 
+deployed ER software suite would include mobile systems for the 
+“in-the-field” first responders. 
+4.1 Data Acquisition and Batch Processing  
+A        B 
+ 
+Figure 1:  (A) Overlapping flight paths from aerial LIDAR scans  
+(B) Data processed into tiles. Tile opacity indicates number of 
+flight paths that crossed each tile. 
+ 
+NOAA’s digital coast contains LIDAR surveys of the NC coast 
+from multiple dates and the surveys overlap in irregular ways 
+(Figure 1A). These datasets are very high resolution, often with 
+sub-foot sample point spacing, leading to terabytes of storage that 
+exceed a workstation’s memory capacity. The individual survey 
+files are in multiple formats and organized in multiple space-
+dividing schemes (e.g. gridded chunks, flight swaths, etc.)  To 
+efficiently visualize this heterogeneous collection, our software 
+pipeline standardizes the storage and organization. Our automated 
+pipeline sorts the multiple datasets sample points into an 
+organized grid-based file structure (Figure 1B). This provides an 
+efficient mapping between geographic area and the original 
+survey files. In our application (Figure 1B), the user selects which 
+grid tile to load and analyze further. This interactive data catalog 
+is integrated into the system we describe in Section 4.3. The data 
+files themselves are currently also read directly by the system we 
+describe in Section 4.4. The experimental data cleaning tool 
+described next (Section 4.2), currently loads sonar point cloud file 
+format but can be trivially modified to also read from our coastal 
+LIDAR dataset. 
+ 
+4.2 3D Semi-Immersive Display for Data and Cleaning  
+Traditionally, point cloud data cleaning tasks involve a semi-
+automated but repetitive and tedious process of navigating the 
+dataset, rotating it in such a way as to make the bad points 
+visually separated from the good points, then carefully selecting 
+them for removal with the mouse.  However, by employing virtual 
+hand models as “cutting plane” type tools, the user can quickly 
+position them between good and bad data points, marking those 
+that should be removed.   
+Charlotte Visualization Center   Technical Report CVC-UNCC-12-15 
+University of North Carolina at Charlotte  March 2012 
+ 
+Figure 2: Screenshot from an experimental sonar/LIDAR data 
+cleaning tool that uses a Kinect to capture the user’s arms, then 
+reconstructs them as textured 3D models, that are projected into 
+the data space to be used as virtual tools. 
+ 
+By using an inexpensive Kinect depth camera, we can capture 
+both color video and depth measurements of the user’s hands in 
+front of the display(s) [5].  Through image processing and 3D 
+segmentation algorithms, the individual arms/hands/fingers can be 
+extracted and transformed into 3D triangulated mesh models, 
+textured with the corresponding color imagery. The result is a set 
+of live virtual hand models with true 3D structure that can be 
+directly inserted into the 3D world onscreen (Figure 2).  These can 
+be used to directly manipulate the items in the virtual world. In 
+particular, in our data cleaning tool this virtual hands are used for 
+selecting and distinguishing points in dense sonar and LIDAR 
+data sets.   
+In contrast to the flat, rigidly defined cutting planes that can be 
+defined by a single 6DOF device, the user can easily manipulate 
+their hands to form complex curves that conform to the irregular 
+distributions of noisy data.  Conducting this interaction with a 
+stereoscopic display provides highly realistic visual feedback that 
+exploits the user’s natural hand-eye-coordination skills. 
+ 
+4.2.1 Implementation Details 
+The Kinect (and the PrimeSense design it is based on) consists 
+of a standard RGB camera, a laser-based projector that emits 
+infrared light in a known, static dot-pattern, and a monochrome 
+camera with an infrared pass filter that captures the reflection of 
+the dot-pattern from the scene. The device calculates a depth 
+image from the distortions observed in the reflected pattern. 
+We reviewed the methods used by other researchers to extract 
+useful tracking information from these depth images and found 
+that most suffer from a few shared limitations due to assumptions 
+or constraints in their image processing. Exact placement or 
+orientation of the depth camera relative to the display or user is 
+not necessary. The sensor does not need to actually view the 
+display surface; it only needs to see a finger-tip touching each 
+corner of the display surface. The optimal setup for tracking hands 
+interacting with a display is to place the sensor directly above the 
+workspace. 
+After calibration for a particular display surface, one then 
+defines an interaction volume in front of that display, within 
+which hands/touches are detected and segmented for processing as 
+touches or gestures. 
+The simplest method to construct an interaction volume is to 
+extrude the display screen into a cuboid. This can be done by 
+translating each of the corner points a set distance along the 
+screen’s normal vector. The choice of distance to translate/extrude 
+controls the depth of the interaction volume, and is directly 
+determined by the desired interaction one wishes to capture. 
+For example, if one wants to simply emulate a multi-touch 
+overlay on a display surface, and thus only wants to watch for 
+fingers entering the area directly in front of the display, one would 
+only need to extrude a small amount (~3cm). In order to capture 
+the entire hand, (e.g. to get pose information related to touch 
+points,) the screen should be extruded outward far more, ~30cm. 
+In these simple extrusion cases, the four original corners and 
+the four extruded corners are used to calculate six planes that 
+define the boundaries of the cuboid interaction volume. As data is 
+received from the camera, it is converted to a 3D point cloud and 
+the points are filtered using a common point-in-box clipping 
+algorithm. This method of filtering points using is superior other 
+depth image processing methods such as depth thresholding and 
+background subtraction. The former can only filter against planes 
+parallel to the camera image plane and latter will fail if the 
+background changes--for instance if a coffee mug were placed on 
+the desk below the monitor. 
+4.3 Hi-Res Display for Change Detection and 
+Characterization  
+We developed an interactive visualization program for 
+detecting and exploring temporal surface changes and we 
+developed a data processing software pipeline for ingesting terrain 
+data from NOAA’s digital coast. This application uses the 
+common Windows-Icons-Menu-Pointer (WIMP) interface. 
+NOAA’s digital coast contains LIDAR surveys of the NC coast 
+from multiple dates and the surveys overlap in irregular ways. 
+These datasets are very high resolution, often with sub-foot 
+sample point spacing, leading to terabytes of storage that exceed a 
+workstation’s memory capacity. The individual survey files are in 
+multiple formats and organized in multiple space-dividing 
+schemes (e.g. gridded chunks, flight swaths, etc.)  To efficiently 
+visualize this heterogeneous collection, our software pipeline 
+standardizes the storage and organization. Our automated pipeline 
+sorts the multiple datasets sample points into an organized grid-
+based file structure. This provides an efficient mapping between 
+geographic area and original survey files. 
+ 
+ 
+Figure 3: Point cloud and extract change models as extruded 
+rasters. 
+Charlotte Visualization Center   Technical Report CVC-UNCC-12-15 
+University of North Carolina at Charlotte  March 2012 
+ 
+Figure 4:  Extracted change models as polygon mesh (red). 
+ 
+Our 3D visualization program presents to the user the extents of 
+the LIDAR datasets available in the grid-based file structure.  The 
+user picks a region to focus on, and the software retrieves those 
+portions of the datasets from disk.  Using these retrieved point 
+sets, our software extracts terrain models for both visual 
+exploration and change detection.  The software displays a 
+number of different terrain model options, including the raw point 
+clouds (Figure 3), extruded rasters, and triangulated meshes 
+(Figure 4).  Overlapping regions that have been sampled during 
+multiple LIDAR surveys are automatically compared against each 
+other.  An image processing based algorithm identifies those areas 
+containing significant changes, and then the raw data points for 
+each these areas are utilized for reconstruction of a 3D change 
+model.  This change model object consists of two 3D models 
+showing the before and after physical structures of the change, as 
+well as measurements and characteristics extracted from the data. 
+These measurements and characteristics are then employed within 
+the application to classify and filter changes  
+We significantly increased the speed of our change detection 
+algorithm by adopting image processing based operations using 
+OpenCV.  Previously we pre-processed our datasets to extract 
+changes geometrically before interactive analysis [3] .  The new 
+algorithm provides results quickly enough (within a few seconds) 
+to be done during run-time.  This allows the user to not only see 
+the results of change detection, but to interactively adjust the 
+change-detection parameters and quickly see the effects of their 
+adjustments. This facilitates detecting and extracting challenging 
+subtle features, as well as facilitating consistent detection across 
+datasets of varying quality. In Figure 3, the green and blue dots 
+are the LIDAR point cloud (green is above sea-level and blue 
+below). The green extruded raster shapes are additive changes 
+detected by our raster change detection. These shapes correspond 
+to newly built houses. The red extruded raster shapes are 
+subtractive changes. By controlling the raster resolution, the user 
+can generate quicker, more approximate change detection, and 
+then zoom in to inspect the original LIDAR points that cover the 
+extent of the raster change objects. We are applying our probe 
+based interfaces [3]  to our new change detection software (Figure 
+3). Each probe window is associated with one change object and 
+displays information regarding the change object. 
+In addition to LIDAR derived terrain and change models, our 
+application imports vector data in standard Shapefile format.  We 
+include multiple representations of the NC border/coast and the 
+state’s transportation network (red in Figure 5A).  Any number of 
+other readily available GIS data can be easily imported.  This 
+could include data detailing the locations and attributes of critical 
+infrastructure, evacuation routes, etc. 
+ 
+A           B 
+  
+Figure 5: (A) Integrated simulation grid (B) Comparison of grids. 
+ 
+We also integrated the terrain/bathymetric data model utilized 
+in the storm-surge inundation simulation by our collaborators 
+(blue and green sample points in Figure 5 A). While this model’s 
+sampling rate grows denser along the coast, comparison of this 
+model the latest high-resolution LIDAR survey data proves 
+difficult. The resolution of the LIDAR data is orders of magnitude 
+higher than the inundation model. For instance, Figure 5 B shows 
+the inundation model samples compared to the extruded raster 
+version of the LIDAR based strip of beach. In Figure 3, this same 
+length of beach is shown, but the point cloud is from the LIDAR 
+data rather than the inundation model. The inundation model has 
+one sample point every 8-10 houses along a beach while the 
+LIDAR has hundreds of sample points covering each roof.  
+We discussed with our collaborators adding additional 
+statistical information to the inundation model during its 
+generation from its original higher resolution source data. This 
+information could make change detection between datasets of 
+otherwise vastly different resolutions more meaningful. Further, 
+such information might allow faster calculations of on the lower-
+resolution data while retaining greater accuracy. For instance, we 
+could calculate the minimum height that a storm surge would have 
+to reach in order to flow over/through a region associated with a 
+sparse sample point.  This might allow an approximate simulation 
+to run at interactive speeds while retaining some error 
+information.  
+We are also developing methods to extend our probe-based 
+interaction techniques into the domain of 3D, time-varying terrain 
+models [3].  We demonstrated usefulness of probes for 
+exploratory analysis in other applications and will extend them 
+with new techniques for the analysis of natural terrain features. 
+These features are more challenging to delineate, extract, and 
+select than urban features, such as buildings.  These feature based 
+probes should permit the user to interactively experiment with 
+different combinations of region-growing algorithms and shape 
+metrics in pursuit of developing better automatic feature 
+extraction criteria. This would then be applied to the entire coastal 
+catalog providing a “search by example” functionality. 
+4.4 Desktop VR Immersive Environment for Statistical 
+Feature Space Analytics and Interaction  
+Equally important to terrain change detection is characterizing 
+the terrain regions that were impacted by various coastal hazards 
+and predicting which terrain regions are most susceptible to 
+similar future impacts. These predictive models must ultimately 
+be physics based, not just geometry based. However, having a 
+fast, interactive exploratory tool for determining the statistical 
+geometric features of affected regions is an important step. Based 
+on our discussions with NOAA experts, current tools are limited 
+to a small set of geometric feature characteristics with which they 
+can interactively query and search the terrain data. The feature 
+characteristics are largely determined by isolated geometric 
+factors or pre-defined segmentation algorithms. Further, the user 
+Charlotte Visualization Center   Technical Report CVC-UNCC-12-15 
+University of North Carolina at Charlotte  March 2012 
+interface for creating feature descriptions and using them to 
+explore terrain data does not directly support time-varying terrain.  
+We have developed a tool to address these issues. The tool 
+supports interactive exploration of the rich statistical feature 
+spaces of LIDAR terrain data. It provides an integrated 
+environment for exploring terrain features using a concept called 
+linked feature spaces [9] that allow users to make regular, 
+conjunctive and disjunctive queries of the LIDAR data by 
+interacting with multi-dimensional scatter-plots. The goal for this 
+application is to integrate terrain feature space with our previous 
+terrain analysis system for detecting the terrain changes that are 
+the impacts of natural disasters (e.g., hurricane, storm surge, and 
+flooding).   
+Our software uses a semi-immersive, desktop VR system 
+[18][6][2]. The system uses a commodity stereoscopic display 
+with head-tracking plus a secondary monoscopic display and two 
+6 degree-of-freedom button-ball input devices. The standard 
+keyboard and mouse remain available. The user views a 3D model 
+of a patch of terrain and he navigates using the button-ball devices 
+using the scene-in-hand technique. The terrain patch is assumed to 
+be a height-field, tessellated using a non-uniform triangular mesh. 
+The height-field assumption simplifies the calculation of 
+geometric statistics such as average local slope, degree of 
+roughness, maximum local slope, etc. The button-balls each have 
+a virtual 3D cursor representation. The user can set an offset 
+between the physical location of the button-ball and the 3D cursor 
+in order to maintain a comfortable resting arm position [16]. 
+The user can add and delete multiple scatter-plots whose plot 
+points each correspond to a terrain point. Each plot point x-y 
+location is determined by a geometric characteristic of the 
+associated terrain point such as the terrain point’s average local 
+slope, local degree of roughness, etc. In other words, each original 
+terrain point has several additional geometric characteristics 
+associated with it and by creating scatter-plots along these 
+dimensions, the user can view the terrain in a different feature 
+space such as plotting local degree of roughness versus elevation. 
+Within user interface, the scatter-plots are 3D objects but are 
+constrained to view plane and can be repositioned manually or 
+automatically. They generally appear in front of the terrain patch 
+at the screen center. When a 3D cursor occludes the scatter-plot 
+boundary, icons along the x or y axes appear allowing selection of 
+which statistic will be plotted on the given axis. Various statistics 
+such as average gradient, maximum gradient, local standard 
+deviation can be selected. A KD-tree is used to accelerate finding 
+of neighbouring terrain points for these computations. 
+Users can brush points in the scatter-plot using the 3D cursor. 
+Brushing occurs by creating a rectangular selection region using 
+selection-by-occlusion. The selected points are highlighted on the 
+terrain surface using the color pre-assigned to the scatter-plot. 
+Users can optionally enable the display of lines connecting the 
+scatter-plot points and the terrain points. This gives a stronger 
+visual impression of how the brushed scatter-plot points are 
+spatially distributed on the terrain. (For performance, only a 
+randomly chosen subset of the connecting lines is drawn). 
+Understanding the spatial structure of this net of lines is greatly 
+enhanced by the stereoscopic display. It has some conceptual 
+similarities with traditional 2D parallel coordinates. Figure 6 A, 
+shows three scatter-plots with line nets connection their brushed 
+regions to the terrain points. In Figure 6 B, the scatter-plot in the 
+lower-left plots elevation versus local gradient. The brown 
+selection region is selecting for relatively low elevations with 
+minimal gradient. This causes mostly home roofs to be high-
+lighted in the terrain point cloud view. 
+ 
+             A 
+ 
+   B 
+ 
+C 
+ 
+Figure 6: (A) 3 scatter-plots with line nets (B) brush of scatter-
+plot selects roof tops (C) creation of Boolean query expression to 
+combine 4 selections. 
+ 
+After creating multiple scatter plots and brushing different 
+regions in each scatter plot, the user can construct a boolean 
+expression that combines the different selections. Only the terrain 
+points that satisfy the boolean expression are highlighted in the 
+terrain view. The secondary monitor shows the tree structure of 
+the Boolean expression.  Figure 6 C shows a logical expression of 
+(1 AND 2) XOR (3 OR 4). Numeric labels map elements of the 
+expression to the scatter plot. After saving the expression, an icon 
+appears on left top of the secondary monitor to record the 
+expression. Users can delete, select or modify prior saved 
+expression with the button-ball using selection-by-occlusion.  
+We refer to these expressions as features because they are 
+criteria that select particular subset of the terrain data. For 
+example an expression that selects a lower elevation range and 
+lower roughness characteristic will tend to select beaches. In our 
+system, the user can explore the terrain in either the feature space 
+or the terrain space, and can see the effects of the interaction and 
+selection on one space on the other. The goal is to allow the user 
+to find features of the terrain that correlate with significant events 
+such as flooding or erosion. Once determined these feature criteria 
+can be used to search for other terrain regions that match the same 
+criteria. These matching terrain regions would then be subject to 
+further expert evaluation to determine if they were at risk for 
+similar events.  
+As an example, exploration of a terrain data set might reveal 
+that empirically low-lying areas with certain roughness 
+characteristics were correlated with flash flooding during a 
+hurricane storm surge during a given storm event. The feature 
+characteristic could then be used to identify other similar areas of 
+terrain that might be prone to flooding in future storms.  
+Charlotte Visualization Center   Technical Report CVC-UNCC-12-15 
+University of North Carolina at Charlotte  March 2012 
+ 
+A       B 
+ 
+           C          
+ 
+Figure 7:   Time sequence of terrain from 1998 through 1999 with 
+same Boolean feature expression. 
+ 
+The application loads one point cloud tile from our data catalog 
+described in Section 4.1. The catalog includes data between 1996 
+and 2005. Users can switch between different years for the loaded 
+tile or the system can automatically cycle through the years. This 
+‘cycling’ function changes the dataset year every 5 seconds while 
+highlighting the terrain points based on the current active feature 
+expression. The image sequence in Figure 7 shows the same tile 
+across three scans: 1998 and two scans during 1999 after 
+hurricanes Dennis and Floyd. The scatter-plots’ axes are: average 
+gradient vs. neighborhood standard deviation (left), difference 
+from mean vs. elevation (top-right) and elevation vs. average 
+gradient (bottom-right). Note, the beach is on the right and the 
+third selection criterion is fairly stable at selecting the beach area. 
+Also note, the left edge of the terrain varies from year to year, but 
+this is only due to the limited extent of the LIDAR scans. We 
+demonstrated this software to CIM experts from NOAA and 
+collected an initial round of informal feedback.  
+4.5 Multi-Touch 3D Display for Ocean Current 
+Simulation Analytics  
+Equally important to CIM as terrain analysis is ocean and storm 
+surge analysis. The currents and flow patterns in a body of water 
+can vary significantly with depth.  Therefore, visualization of 
+these water bodies is best performed in 3D, as viewing any one 
+particular layer at a time causes the viewer to lose the overall 
+context.  Often, 3D flow visualizations will utilize large numbers 
+of small visual indictors to illustrate the currents and flows 
+present.  Due to issues of depth ambiguity, this can pose 
+significant confusion for the viewer, as it is hard to tell which 
+items are in front of, or behind others.  Stereoscopic displays can 
+overcome these issues by providing proper disparity-based depth 
+cues that ensure correct perception of the relative distances 
+between visual features. 
+For these types of 3D visualizations, there can be significant 
+burden on the user in terms of the complexity of interactions 
+needed to reposition their view of the model, select regions of 
+interest, and manipulate 3D tools within the data.  A standard 
+mouse interface, with only two degrees of freedom, begins to 
+show its limitations as geospatial applications move from 2D to 
+3D.  Dimensions must be adjusted iteratively, and the user often 
+must reposition their view to enable data items of interest to be 
+selected without being obscured by, or including other 
+surrounding items. 
+A multi-touch interface can address the need for higher degree 
+of freedom input, as well as offer potential advantages over true 
+3D positioning devices in some situations.  While each individual 
+touch has the same input dimensionality as a mouse, you get many 
+additional degrees of freedom when additional fingers are used for 
+a particular interaction.  For example, the “pantograph” technique 
+[5] requires only two fingers (thumb and index), but enables 
+smooth positioning in a 3D environment.  It does this by mapping 
+the x,y value of a 3D cursor to the midpoint of the two fingers, 
+and then mapping the z value (into the screen) to the separation of 
+the two fingers.  By pinching the fingers together the user brings 
+the cursor closer to themselves, by spreading their fingers apart, 
+the cursor can be moved away, into the screen.  A fourth degree of 
+freedom can be further extracted from this gesture, the angle or 
+“pose” of the hand.  By comparing the angle of the inter-finger 
+vector to vertical, a 4th value is determined.  This can be used, for 
+example, to set the desired speed when placing waypoints for a 
+planned underwater vehicle’s path, or to adjust the size of a 
+volumetric cursor for selection within a point cloud.   An 
+implementation of this particular technique can be seen in Figure 
+8. 
+ 
+ 
+Figure 8: Editing a planned underwater vehicle path using the 
+pantograph multi-touch technique to control a dynamically sized 
+volumetric cursor. 
+ 
+In contrast to many other high-DOF input devices, multi-touch 
+displays have no special space requirements or wired devices that 
+can encumber users.  This allows them to be immediately used by 
+anyone approaching them, making them ideal for heterogeneous 
+workspaces where analysts are likely to move between stations.  
+A further benefit over hand held devices is the steadying effect 
+gained by the physical contact with the display; it can be tiring to 
+hold one’s arms out in mid air for even relatively short periods of 
+time, and this can cause significant inaccuracies when precise and 
+steady positioning is desired. 
+Butkiewicz [5] use this combination of stereoscopic monitor 
+and multi-touch overlay to provide an environment for highly 
+interactive exploratory visual analysis of 4D ocean flow 
+simulation output.  Their system supports the loading of large 
+flow models in the common NetCDF format, from which it 
+produces a 3D terrain model.  The system uses a particle system 
+to illustrate flows.  As each particle traces out a path through the 
+flow model, it is visually represented by a pathlet.  The pathlet is 
+drawn as a line segment connecting recent positions and uses 
+opacity as an effective indicator of direction.  The speed of a 
+particle determines the length of the pathlet, and thus the visual 
+weighting.  Fast, major currents become dense, striated ribbons, 
+Charlotte Visualization Center   Technical Report CVC-UNCC-12-15 
+University of North Carolina at Charlotte  March 2012 
+while still waters appear sparse and shimmering as pathlets slowly 
+drift around. 
+ 
+ 
+ 
+Figure 9: Butkiewicz and Ware’s stereoscopic multi-touch system 
+being used to analyze an oil spill scenario in the Gulf of Mexico. 
+ 
+To provide overall context and give the user a starting point for 
+their analyses, the general flow patterns and major currents in a 
+model are illustrated by a collection of particles that are 
+continuously seeded at random throughout the model.  When the 
+user finds a region they wish to investigate, they can use a number 
+of tools provided to introduce special dye particles into the model.  
+These dye particles all them to isolate and illustrate flow patterns 
+of interest. 
+The user can place point-source dye emitters, or dye-pots, either 
+temporarily for exploration, or anchored for sustained release.  A 
+more flexible dye release tool, the dye-pole, allows for dynamic 
+configurations of any number of particle emitters along a vertical 
+pole from the seabed to the surface.  Associated control panels 
+allow the user to add/remove/split emitters and change how and 
+where they release dye particles.  The particles emitted can be 
+customized in terms of both their visual characteristics and their 
+physics-based behaviors. 
+By allowing the user to configure particles properties, such as 
+density, lifetime, etc., their system allows for simulation of 
+scenarios such as marine pollutant releases.  For example, during 
+the 2010 Deepwater Horizon oil spill in the Gulf of Mexico, 
+scientists were struggling to locate the deep plume of oil that was 
+rising from the well-head.  This system can allow a user to predict 
+such a plume’s path by loading a flow model for that region and 
+time, creating a dye release point at the well head, and configuring 
+the properties of the particles being released to have a 
+density/temperature such that they will rise with respect to the 
+surrounding waters in a similar manner as the real life oil.  
+Through this process, a simulated plume can be illustrated, that 
+could be used to give scientists a better idea of where to take 
+measurements to confirm, and where responders should 
+concentrate their containment efforts. Due to the large number of 
+small swirling particles, the stereoscopic rendering is crucial in 
+overcoming depth ambiguity and ensuring correct perception of 
+the complex 3D shape of these types of plumes. 
+5 USAGE CASES: FLOOD WATER DRIVEN POLLUTION 
+Beyond the physically destructive forces of flooding, there is 
+also a serious danger posed by pollutants that are released by and 
+carried in the flood-waters.  For example, Hurricane Floyd (1999) 
+caused massive flooding in Eastern/coastal North Carolina.  Hog 
+farming is common in this region, with these farms using large 
+lagoons to store immense quantities of faces and other waste.  
+Floodwaters inundated these lagoons, carrying the toxic contents 
+into nearby waterways, and depositing the waste over large areas, 
+including residential neighborhoods.  In addition to farms, 
+municipal human sewage treatment plants, industrial sites, fuel 
+storage tanks, and chemical production facilities can also be 
+significant sources of flood water contamination. 
+While storm surge modelers primarily concentrate on the output 
+of water heights from their simulations, they could also include 
+flow vectors.  With this additional data, one could then apply 
+existing flow analysis software, that, while designed for analysis 
+of permanent water bodies (such as oceans or estuaries), can be 
+easily adapted to handle storm surge and other flooding scenarios. 
+For example, Butkiewicz [5] present a system for exploratory 
+analysis of large ocean flow models, which is designed to utilize 
+an interface consisting of a tightly integrated high-resolution 
+stereoscopic monitor and multi-touch overlay.  The stereoscopic 
+rendering provides the disparity based visual cues needed to 
+ensure proper perception of the 3D nature of the datasets, while 
+the multi-touch overlay enables quick, natural interaction and 
+direct manipulation of onscreen visualization tools.  The system 
+uses a particle system to illustrate flow patterns and provides 
+interactive tools that allow the user to introduce dye particle in 
+different ways, to explore and isolate specific flows and currents 
+of interest.   
+Similarly, this process could be applied to planning and 
+response for pollutant release and spread during storm surge and 
+flooding scenarios.  This would begin with placing large groups of 
+particles configured to represent different pollutants at known 
+storage locations, e.g. manure lagoons, sewage treatment plants, 
+etc.  A time-varying flow model of the floodwaters would be 
+applied, which could be either a forecast scenario for planning 
+purposes, or a now-cast model based on real-time observations for 
+emergency response.  When a storm surge inundates the particles, 
+they would be picked up and carried further inland.  Then, as 
+waters recede, the particles would move downstream, being 
+deposited across the region based on predefined precipitation 
+rates.  These deposition records could be used to identify at risk 
+regions and provide evidence for decision making regarding 
+existing and proposed storage facilities in low lying areas.  
+Finally, because the system was designed to run at interactive 
+speeds for exploratory analysis, tools could allow the user to 
+quickly experiment with adding flood control countermeasures, 
+such as sandbags or levees, around at-risk locations. 
+6 USER FEEDBACK AND FUTURE WORK 
+Thoroughly evaluating a tool set that runs across a heterogeneous 
+display environment has many additional challenges beyond 
+evaluating a tool set that executes on a single workstation.  This 
+evaluation process requires experts from multiple research 
+domains working on a collaborative task. Due to the limited 
+availability of domain experts, we have only sought feedback 
+from experts on the individual tools that we presented in this 
+paper. 
+In this section, we report user feedback from our interactions 
+with three groups of experts during DIEM annual meetings and 
+during on-site visits from our collaborators. During this outreach, 
+we demonstrated our systems to multiple users, including US 
+Coast Guard (2 experts), NOAA storm-surge managers (3 experts) 
+and storm-surge simulation experts (2 experts). These evaluations 
+were conducted to assess the functionality, affordability and 
+effectiveness of these interfaces in supporting the coastal 
+infrastructure management process, such as the individual use 
+cased presented earlier. 
+Charlotte Visualization Center   Technical Report CVC-UNCC-12-15 
+University of North Carolina at Charlotte  March 2012 
+While the evaluations were conducted informally, these 
+outreach activities allowed us to introduce the software tools 
+presented above and to gather expert feedback. First we presented 
+our system by demonstrating the investigative scenarios described 
+in the previous section. Then the experts were given some time to 
+ask questions regarding the system and the interface. Finally, we 
+asked for constructive feedback and comments. In general, the 
+expert feedback suggested that our methods of utilizing 
+heterogeneous displays could contribute to the coastal 
+infrastructure management process in the following respects. 
+6.1 The Benefit of Utilizing Heterogeneous Displays 
+One of the benefits that most of these experts see in our analysis 
+environment is its ability to depict the heterogeneous datasets 
+related to coastal infrastructure management. Especially to US 
+coast guards, who are responsible for monitoring overall 
+development of coastal changes on a daily basis, the capability to 
+identify and interactively examine their data is of great value. One 
+of the chief analysts mentioned that, “this analysis setup provides 
+new innovative approaches in monitoring the coastal 
+infrastructure changes.” He further commented that, “it would 
+provide the coast guards with an effective and efficient integration 
+to understand the oceanic development from multiple aspects.” 
+ 
+As one of the simulation experts pointed out, however, a 
+drawback that requires our development is on the extensibility and 
+scalability of our visualization tools and display setups. Given the 
+different granularity of domain simulations, the expert expressed 
+his concerns regarding our systems ability to connect multiple 
+simulation results. Such extensibility and scalability is certainly a 
+crucial future direction as we continue enriching our systems. 
+Collaborating with these experts, we are further investigating 
+methods to facilitate their analysis needs. 
+6.2 Feature Tracking Enriches CIM analysis 
+The Feature Tracking capability brings a unique analysis angle 
+when examining the coastal infrastructure domain. Many experts, 
+including NOAA managers, expressed their interests in utilizing 
+our approach with their more specific data. The ability for them to 
+look into ensembles of different geospatial data and hydrology 
+data is of great importance.  As one of the managers indicated 
+“the ability to isolate the dune structures along the coastal 
+shoreline and visually track its development before and after a 
+storm surge means great deal for planning.” One use case they 
+imagined our system being applied to is for proactive planning 
+scenarios, connecting their storm surge simulations with our 
+feature tracking analysis tool.  
+ 
+One of the terrain researchers suggested that topology based 
+feature extraction should be taken into consideration. In particular, 
+he is interested in learning how we could effectively combine both 
+geometry and topology feature extraction methods to enrich the 
+tracking analysis. We are working collaboratively on combining 
+both feature approaches into a hybrid method. 
+ 
+7 RELATED WORK 
+The concept of heterogeneous display environment is not new. 
+First, control systems for complex vehicles, such as aircraft, ships, 
+tanks, etc., and complex industrial systems, such as nuclear 
+reactors and power stations, all involve multiple displays with 
+multiple types of input devices. Hence these could be considered 
+heterogeneous display environments to some degree. However, 
+more typically, the heterogeneous display environment refers to 
+one in which the heterogeneous displays are display the same 
+dataset, or subsets of the same data, and where a single user can 
+smoothly switch between interacting on one display to interacting 
+with another co-located display to view the same data from a 
+different perspective or style of visualization. We do not attempt a 
+complete literature review here, but instead summarize a select 
+few related works. An early heterogeneous display environment 
+example is Donelson’s early Spatial Management System [7] that 
+integrated large and small screen displays, pen, joystick and touch 
+screen input and sound. Co-located collaboration is also typically 
+assumed or supported when discussing heterogeneous display 
+environments. UNC Chapel Hill’s “Office of the Future” concept 
+[8], used projectors to place pixels on every and any possible 
+display surface supporting 2D, 3D and stereoscopic 3D displays 
+within a single shared room. Various software architectures have 
+been developed to support integrating, co-located heterogeneous 
+displays. Roomware [11] describes a design framework, software 
+architecture and multiple deployed systems that allow 
+spontaneous integration of both mobile and non-mobile display 
+systems. Scape [12] is a software system that supports the idea of 
+putting pixels on every surface but uses a particular technology, 
+projected-head-mounted displays, to do so. Implicitly the system 
+can support displays of all shapes and sizes, mobile and non-
+mobile. Wigdor et al [13] describe a year long ethnographic study 
+of WeSpace, a system combining a multi-touch display, a tiled 
+display and laptops used by scientists. 
+8 CONCLUSION 
+In this paper, we presented our research in utilizing 
+heterogeneous displays to facilitate the analysis process in the 
+coastal infrastructure management domain. To capture the rich 
+insights of the widely used geo-spatial data, we developed a suite 
+of heterogeneous displays to facilitate data acquisition, data 
+cleaning and analytics, and interactive data visualization, and to 
+support the human decision-making process. Multiple 
+complementary display setups, such as a semi-immersive, 
+stereoscopic display, a high-resolution tiled display, and a multi-
+touch table, are utilized to create an interactive analytics 
+environment.  Our approach provides a powerful integration of 
+high quality stereoscopic 3D graphics, two-handed interaction, 
+and touch-based interaction, and further support analysis of terrain 
+height changes and ocean surges as well as feature-space analytics 
+that allow the user to discover structures within the data that are 
+not easily detectable using traditional visualization or feature 
+extraction methods.  
+ 
+ACKNOWLEDGEMENTS 
+The work at UNCC was supported in part by grants 
+W911NF0910241 (PN 55836MA) from The U.S. Army Research 
+Office and grant PN 5-36440 from Coastal Hazards Center of 
+Excellence at Chapel Hill (DHS, S&T). The work at CCOM UNH 
+was supported in part by NOAA grants NA05NOS4001153 and 
+NA10NOS4000073. 
+REFERENCES 
+[1] Benko, H. & Feiner, S. (2007), Balloon Selection: A Multi-Finger 
+Technique for Accurate Low-Fatigue 3D Selection, in '3D User 
+Interfaces, 2007. 3DUI '07. IEEE Symposium on'. 
+[2] Bowman, D. A.; Kruijff, E.; LaViola, J. J. & Poupyrev, I. (2005), 3D 
+User Interfaces: Theory and Practice, Addison Wesley. 
+Charlotte Visualization Center   Technical Report CVC-UNCC-12-15 
+University of North Carolina at Charlotte  March 2012 
+[3] Thomas Butkiewicz, Remco Chang, Zachary Wartell, William 
+Ribarsky (2008). "Visual Analysis and Semantic Exploration of 
+Urban LIDAR Change Detection," Computer Graphics Forum 
+(EuroVis 2008), vol. 27, num. 3, September 2008. 
+[4] Butkiewicz, T., Meentemeyer, R.K., Shoemaker, D.A., Chang, R., 
+Wartell, Z. & Ribarsky, W, Alleviating the Modifiable Areal Unit 
+Problem within Probe-Based Geospatial Analyses, Computer 
+Graphics Forum, Blackwell Publishing Ltd, 2010, Vol. 29(3), pp. 
+923-932. 
+[5] Butkiewicz, Thomas, (2011), Multi-touch 3D Exploratory Analysis 
+of Ocean Flow Models, Proceedings of OCEANS 2011 MTS/IEEE 
+Kona, Kona, HI, USA, September 19-22. Conference Proceeding. 
+[6] Michael Deering, High Resolution Virtual Reality, Computer 
+Graphics (SIGGRAPH 92 Conference Proceedings), vol. 26, July 
+1992, pg 195-202. 
+[7] Donelson, W. C. Spatial management of information.SIGGRAPH 
+'78: Proceedings of the 5th annual conference on Computer graphics 
+and interactive techniques, pp. 203-209, 1978. 
+[8] Hinckley, K.; Pausch, R.; Proffitt, D. & Kassell, N. F. (1998), 'Two-
+handed virtual manipulation', ACM Trans. Comput.-Hum. Interact. 
+5(3), 260--302. 
+[9] Maciejewski, R.; Insoo Woo; Wei Chen; Ebert, D.; , "Structuring 
+Feature Space: A Non-Parametric Method for Volumetric Transfer 
+Function Generation," Visualization and Computer Graphics, IEEE 
+Transactions on , vol.15, no.6, pp.1473-1480, Nov.-Dec. 2009. 
+[10] Ramesh Raskar, Greg Welch, Matt Cutts, Adam Lake, Lev Stesin, 
+and Henry Fuchs. 1998. The office of the future: a unified approach 
+to image-based modeling and spatially immersive displays. In 
+Proceedings of the 25th annual conference on Computer graphics 
+and interactive techniques (SIGGRAPH '98). ACM, New York, NY, 
+USA, 179-188. 
+[11] Thorsten Prante, Norbert Streitz, and Peter Tandler. 2004. 
+Roomware: Computers Disappear and Interaction Evolves. 
+Computer 37, 12 (December 2004), 47-54. 
+[12] Hua, H.; Brown, L. & Gao, C. (2004), 'Scape: supporting 
+stereoscopic collaboration in augmented and projective 
+environments', Computer Graphics and Applications, IEEE 24(1),  
+66-75. 
+[13] Daniel Wigdor, Hao Jiang, Clifton Forlines, Michelle Borkin, and 
+Chia Shen. 2009. WeSpace: the design development and deployment 
+of a walk-up and share multi-surface visual collaboration system. In 
+Proceedings of the 27th international conference on Human factors 
+in computing systems (CHI '09). ACM, New York, NY, USA, 1237-
+1246. 
+[14] Thomas Safford, Jennifer Thompson, Paul Scholz. STORM SURGE 
+TOOLS AND INFORMATION: A USER NEEDS ASSESSMENT. 
+NOAA Coastal Services Center, Technical Report. 
+[15] Sandin, D. J.; Margolis, T.; Ge, J.; Girado, J.; Peterka, T. & DeFanti, 
+T. A. (2005), 'The VarrierTM autostereoscopic virtual reality 
+display', ACM Trans. Graph. 24(3), 894--903. 
+[16] Shaw, C. & Green, M. Two-handed polygonal surface design. 
+Proceedings of the 7th annual ACM symposium on User interface 
+software and technology, pp. 205-212, 1994.  
+[17] Ulinski, A.; Zanbaka, C.; Wartell, Z.; Goolkasian, P. & Hodges, L. 
+F. Two Handed Selection Techniques for Volumetric Data. IEEE 
+Symposium on 3D User Interfaces, 2007. 
+[18] Colin Ware, Kevin Arthur and Kellogg S. Booth, Fish Tank Virtual 
+Reality, in proceedings of InterChi ’93, April 1993, pg 37-41. 
+[19] Ware, C. & Osborne, S. Exploration and virtual camera control in 
+virtual three dimensional environments. Proceedings of the 1990 
+symposium on Interactive 3D graphics , pp. 175-183, 1990. 
+[20] Ware, C. & Mitchell, P. (2005), Reevaluating stereo and motion cues 
+for visualizing graphs in three dimensions, in 'APGV '05: 
+Proceedings of the 2nd symposium on Applied perception in 
+graphics and visualization', ACM Press, New York, NY, USA, pp. 
+51--58. 
+[21] Zachary Wartell, Ernst Houtgast, Onno Pfeiffer, Chris D Shaw, 
+William Ribarsky, and Frits Post, Interaction Volume Management 
+in a Multi-scale Virtual Environment, Advances in Information & 
+Intelligent Systems, SCI 251, Z.W. Ras and W. Ribarsky Editors, 
+Springer-Verlag, Berlin, 2009, pp. 327-349. 
+ 
+

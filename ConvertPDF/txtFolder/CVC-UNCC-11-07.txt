@@ -1,0 +1,1149 @@
+ Astrojumper: Motivating Exercise with an 
+Immersive Virtual Reality Exergame 
+ 
+S. Finkelstein, A. Nickel, Z. Lipps, Z. Wartell, T. Barnes, E. Suma 
+ 
+Presence: Teleoperators and Virtual Environments 20(1), 78-92. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ This article must be cited as: 
+ 
+Finkelstein, S.; Nickel, A.; Lipps, Z.; Barnes, T.; Wartell, Z. & Suma, E. A. (2011), 
+'Astrojumper: Motivating Exercise with an Immersive Virtual Reality Exergame', 
+Presence: Teleoperators and Virtual Environments 20(1), 78-92. 
+ 
+ Copyright: 2011 Massachusetts Institute of Technology (MIT) 
+ 
+ Journal Home Page: http://www.mitpressjournals.org/loi/pres  
+ 
+ Bibtex Citation: 
+ 
+@ARTICLE{Finkelstein2011, 
+  author = {Finkelstein, Samantha and Nickel, Andrea and Lipps, Zachary and Barnes, 
+ Tiffany and Wartell, Zachary and Suma, Evan A.}, 
+  title = {Astrojumper: Motivating Exercise with an Immersive Virtual Reality 
+ Exergame}, 
+  journal = {Presence: Teleoperators and Virtual Environments}, 
+  year = {2011}, 
+  volume = {20}, 
+  pages = {78-92}, 
+  number = {1}, 
+  doi = {10.1162/pres_a_00036}, 
+  eprint = {http://www.mitpressjournals.org/doi/pdf/10.1162/pres_a_00036}, 
+  owner = {zwartell}, 
+  timestamp = {2011.06.21}, 
+  url = {http://www.mitpressjournals.org/doi/abs/10.1162/pres_a_00036}} 
+ 
+Samantha Finkelstein*
+Andrea Nickel
+Zachary Lipps
+Tiffany Barnes
+Zachary Wartell
+University of North Carolina
+at Charlotte
+Department of Computer Science
+Charlotte, North Carolina 28223
+Evan A. Suma
+Institute for Creative Technologies
+University of Southern California
+Pasadena, California
+Presence, Vol. 20, No. 1, February 2011, 78–92
+© 2011 by The Massachusetts Institute of Technology
+Astrojumper: Motivating Exercise
+with an Immersive Virtual Reality
+Exergame
+Abstract
+We present the design and evaluation of Astrojumper, an immersive virtual reality
+exergame developed to motivate players to engage in rigorous, full-body exercise.
+We performed a user study with 30 people between the ages of 6 and 50 who
+played the game for 15 min. Regardless of differences in age, gender, activity level,
+and video game experience, participants rated Astrojumper extremely positively and
+experienced a significant increase in heart rate after gameplay. Additionally, we found
+that participants’ ratings of perceived workout intensity positively correlated with
+their level of motivation. Overall, our results demonstrate that Astrojumper effec-
+tively motivates both children and adults to exercise through immersive virtual reality
+technology and a simple, yet engaging, game design.
+1 Introduction
+The use of video games in physical exercise, known as exergaming, has
+been increasing in attention and popularity in recent years (Sinclair, Hingston,
+& Masek, 2007). The release of commodity motion sensing devices, most
+notably the Nintendo Wii remote and Wii Fit balance board, has resulted in
+a large number of video games that use body motion as a game mechanic.
+While video games can be effective motivators, we believe that using immer-
+sive, stereoscopic virtual reality (VR) will provide an even greater incentive
+for physical activity. To this end, we developed Astrojumper, a virtual reality
+exergame that was designed to study the benefits of stereoscopy and immersion
+for motivating physical exercise in both children and adults (see Figure 1).
+The input devices used with commodity gaming platforms (e.g., balance
+boards, dance pads, and accelerometer-based controllers) are generally not
+capable of sensing motions with six DOF, which makes it difficult to measure
+whether a game engages the user’s entire body, including the head, torso, and
+limbs, in physical activity. Locomotion interfaces such as bicycles have also been
+used for exercise games (Mokka, Väätänen, Heinilä, & Välkkynen, 2003), but
+the interactions that can be performed with these devices are limited. In con-
+trast to these interfaces, Astrojumper tracks the user’s head, torso, and arms
+in 3D space, which allows us to support full-body activities such as dodging,
+ducking under, jumping over, and grabbing virtual stimuli.
+*Correspondence to sfinkel1@uncc.edu.
+78 PRESENCE: VOLUME 20, NUMBER 1
+Finkelstein et al. 79
+Figure 1. A user playing Astrojumper in our three-wall stereoscopic
+projected display. Gameplay requires rapid body movements to dodge
+planets and collect bonuses. During a UFO attack, the player can
+execute quick arm motions to throw green laser beams at the enemy
+spacecraft.
+As quickly as new input devices are created to facilitate
+exercise in games, players discover ways to win without
+actually exercising. For example, while the Nintendo
+Wii allows players to engage in realistic motions such
+as swinging a tennis racket, it does not require accu-
+rate and realistic behavior, as frustrated players observe
+when they are beat by an opponent moving only their
+wrists while sitting on the couch. One way to prevent
+players from finding workarounds is to immerse them
+in virtual reality and tie game performance to actual,
+full-body activity. Astrojumper was designed and devel-
+oped so that players must move not only their feet and
+legs, but must also engage their upper body to win the
+game. This is a key component to all games with a sec-
+ondary purpose: the purpose must be central to the core
+game mechanic, in other words, the activity that play-
+ers engage in more than any other. Balancing a game’s
+purpose with fun is challenging, requiring game design-
+ers to focus on how to achieve gameflow while engaging
+players in the main purpose of the game. Astrojumper
+achieves this balance by requiring full-body motion
+to play, which encourages exercise, while adapting the
+game to player performance, becoming more challeng-
+ing as players excel or slowing down as players make
+mistakes.
+In this paper, we report on a user study that was
+conducted to evaluate Astrojumper’s effectiveness in
+motivating players to exercise. In addition to inves-
+tigating whether Astrojumper is fun and effective in
+promoting exercise, we also intended to gather feedback
+for the design of immersive exergames. While the aver-
+age gamer does not yet have access to a virtual reality
+setup at home, recent technological advances may make
+this possible in the near future. For example, monitors,
+plasma displays, and projectors with refresh rates over
+120Hz are now available and can be combined with
+the NVIDIA 3D vision kit to provide stereoscopic 3D
+gaming on a desktop PC. Furthermore, the success of
+the Nintendo Wii has spurred innovation for commod-
+ity motion sensing devices across a variety of platforms.
+Given the increasing accessibility of immersive technol-
+ogy, we believe that it is important to study the benefits
+of using virtual reality for emerging applications such as
+exergaming.
+2 Related Work
+Though exergaming has seen a recent increase
+in popularity, few guidelines have been developed for
+the design of these applications. Furthermore, several
+evaluations of previously developed games have cited
+problems in finding the balance between engaging
+gameplay and appropriate levels of physical exertion.
+For example, Kick Ass Kung-Fu is a fitness game that
+was designed to engage adults involved in martial arts
+(Hämäläinen, Ilmonen, Höysniemi, Lindholm, & Nykä-
+nen, 2005). Participants were able to use their physical
+actions to move an avatar on a large projection display to
+fight virtual competitors. While the results of this study
+indicated that the game was effective for motivating
+martial arts and acrobatics training, users complained
+that the game design limited how they were able to
+interact with the system, and that they were not able
+to perform the moves they wanted. Luke et al. evalu-
+ated the Sony EyeToy, a full-body exertion interface,
+to analyze energy expenditure in a variety of exercise
+games (Luke, Coles, Anderson, & Gilbert, 2005). While
+he found that this system was engaging, he concluded
+80 PRESENCE: VOLUME 20, NUMBER 1
+that the system’s effectiveness was limited due to only
+small bursts of exercise followed by long pauses that did
+not allow the player’s heart rate to build. Similarly, in
+a personal analysis of three video game exertion inter-
+faces, Smith found similar problems with the Cateye
+GameBike, and noted that he was unable to main-
+tain his target heart rate due to the long load times
+between races (Smith, 2005). He also found that he was
+unable to get a full workout from just a single game,
+and concluded that exergames should consider in-game
+warm-ups and cooldowns, as well as dynamic difficulty
+adjustment.
+Over the past few years, children have been spend-
+ing more time engaging in screen-based activities such
+as watching television, playing video games, and using
+computers, possibly leading to an increase in childhood
+obesity (Marshall, Gorely, & Biddle, 2006). Because of
+this, exergames designed specifically for young children
+have been developed (Höysniemi, Hämäläinen, Turkki,
+& Rouvi, 2005; Bekker, van den Hoven, Peters, &
+Hemmink, 2007; Yannakakis, Hallam, & Lund, 2006).
+Research that evaluates game design specifications for
+this population indicate that children enjoy realistic
+fantasies and sportlike activities that require physical
+dexterity, balance, coordination, and strength (Acuff &
+Reiher, 1997). Additionally, work that specifically eval-
+uated exergame requirements for children suggested
+that these systems should provide robustness, respon-
+siveness, intuitiveness, and physical appropriateness to
+ensure the children would be able to effectively engage
+with the game (Höysniemi et al., 2005). These prin-
+ciples have since been put into practice in developed
+systems for children, such as in Bug-Smasher, devel-
+oped by Yannakakis et al. (2006). Bug-Smasher uses
+a 6 × 6 platform with randomly appearing colored
+lights to get children to jump around and smash the
+presented lights (or bugs). Children found the game
+quite enjoyable, and Yannakakis also reported that chil-
+dren who were able to project their own fantasies into
+the game world had higher levels of enjoyment. Bekker
+et al. developed two additional systems based on these
+presented game specifications: Flash Poles and Battle
+Bots (Bekker et al., 2007). Both of these game systems
+were designed to allow for more open-ended exergame
+play, with Flash Poles allowing the children to interact
+with physical poles that provided light feedback and
+Battle Bots allowing the children to control tanks with
+their body movements. Early user studies on elemen-
+tary school-aged children were performed on both of
+these systems, and though no quantitative informa-
+tion regarding exerted physical activity was reported,
+the children seemed to find the systems both engaging
+and effective at promoting social relationships between
+active participants. In addition to games employing plat-
+forms or physical props, Hoysniemi et al. developed a
+computer-vision based game that allows children to
+control a 2D dragon, QuiQui, on a screen using var-
+ious body movements (Höysniemi et al., 2005). The
+experimenters found that most of the movements were
+intuitive for the children to perform, and that this was an
+important aspect of game play. The authors also suggest
+that future exergaming work look into developing sys-
+tems that allow for more holistic full-body movements,
+such as jumping, which we took into consideration in
+the design of Astrojumper.
+Research has also been performed to evaluate the
+effectiveness of exergames at promoting social relation-
+ships, yielding positive results. For example, Mueller
+et al. describe three exergames designed to study social
+interaction (FlyGuy, Push N’ Pull, and Breakout for
+Two), and found that games involving physical activ-
+ity augmented social relationships better than traditional
+multiplayer computer games (F. Mueller, Agamanolis,
+& Picard, 2003; F. F. Mueller, Stevens, Thorogood,
+O’Brien, & Wulf, 2007). Additionally, Nautilus is a
+cooperative game requiring players to free a virtual
+dolphin through physical gestures such as clapping,
+stomping, and flapping (Strömberg, Väätänen, & Räty,
+2002). However, for these games, few considerations
+were given to promoting physical exertion, and instead
+focused on engaging cooperative play.
+Exercise technology has also been shown to be effec-
+tive in rehabilitation and training. Virtual reality exercise
+systems have been shown to improve cognitive func-
+tion in people with neurological injuries on a variety of
+memory and cognition tasks (Grealy, Johnson, & Rush-
+ton, 1999). In two case studies performed by Kizony
+et al., virtual reality technology was used to improve
+Finkelstein et al. 81
+balance and coordination of a patient in a wheelchair
+and a patient recovering from a right hemispheric stroke
+(Kizony, Katz, & Weiss, 2003). Because these VR sys-
+tems are typically quite expensive, research has been
+done to examine the effectiveness of low-cost rehabilita-
+tion systems. Pilot studies were performed by Rand et al.
+in 2004 to compare an expensive VR system to a Sony
+Eye Toy (Rand, Kizony, & Weiss, 2004). In healthy
+young adults, there was no difference in presence, enjoy-
+ment, or motivation between these two systems. In
+healthy older adults and older adults recovering from
+stroke, the results were unclear, as each of these mea-
+sures varied greatly based on the type of game played on
+each system. In 2008, these experimenters performed
+a similar study, concluding that the Sony Eye Toy may
+be an effective low-cost tool to engage patients recov-
+ering from a stroke in physical activity (Rand, Kizony,
+& Weiss, 2008). The authors note that there are cer-
+tain technological limitations in the Eye Toy, such as an
+inability to systematically report a user’s performance,
+which may make it difficult to use as a therapeutic tool.
+Regardless, the authors conclude that the Sony Eye Toy
+was easy to operate, was enjoyable, and generated a high
+sense of presence, making it effective overall. Morrow
+et al. replicated an expensive system for stroke reha-
+bilitation using a much more low-cost system as well,
+showing that it was possible to create similar applications
+with reasonable costs (Morrow, Docan, Burdea, & Meri-
+ans, 2003). However, the authors acknowledge their
+low-cost system has less functionality than the original,
+and suggest that user testing be performed to evaluate
+how this decrease in functionality affects the system’s
+effectiveness as a rehabilitation tool. In addition to reha-
+bilitation, virtual reality has also been used for training
+physical movements in virtual environments, such as tai
+chi (Chua et al., 2003). While these studies do indicate
+that VR is effective for engaging users in physical activ-
+ities, they focused primarily on achieving a specific task,
+with no emphasis on motivating game design factors.
+Overall, in studies that have compared the differences
+between VR-aided exercise and nonaided exercise, it has
+been shown that VR resulted in less intense physiolog-
+ical responses to pain due to extended physical activity
+(Chuang et al., 2003). Similar results were also found by
+Porcari et al., who evaluated the effects of virtual simula-
+tion on exercise motivation and intensity while pedaling
+an exercise bike (Porcari, Zedaker, & Maldari, 1998).
+The experimenters found that participants who were
+provided with a virtual environment had higher heart
+rates and burned more calories than the participants
+without this virtual simulation. The benefits of virtual
+reality exercise even extend to participants’ moods, with
+participants who participate in VR-aided exercise being
+significantly less tired and showing significantly more
+enjoyment than those who engage in standard exercise
+(Plante, Aldridge, Bogdan, & Hanelin, 2003). Addition-
+ally, previous research suggests that increased immersion
+(over less immersive virtual reality) is even more ben-
+eficial for enhancing a user’s motivation in exergames.
+For example, recent work by IJsselsteijn et al. shows
+that when the visual display appears to be more real-
+istic and immersion is higher, participants were more
+motivated to engage in exercise (IJsselsteijn, Kort, West-
+erink, Jager, & Bonants, 2006). These results also show
+that spatial presence, engagement, and ecological valid-
+ity were also higher for increased immersion. This work
+suggests that more immersive virtual environments will
+heighten the enjoyment the user is experiencing, and
+thus will have a beneficial effect on the user’s motivation
+to engage in exercise. Increased immersion can also be
+achieved through stereoscopic projection displays, with
+a foundation of work indicating that stereoscopy greatly
+increases presence (Hendrix & Barfield, 1995) as well as
+task performance (Gruchalla, 2005). To the best of our
+knowledge, Astrojumper is the first exergame using an
+immersive stereoscopic display to be formally evaluated.
+Given that many previous exergames may not provide
+the optimal balance between engaging gameplay and
+physical exertion, it is vital to consider a variety of game-
+play factors which may affect the player’s psychological
+and physiological responses. To outline the compo-
+nents of successful video games, Sweetser and Wyeth
+presented the gameflow model, which emphasizes the
+importance of the following criteria: concentration,
+challenge, player skills, control, clear goals, feedback,
+immersion, and social interaction (Sweetser & Wyeth,
+2005). Applying this general gameflow model specifi-
+cally to the design of exergames, Sinclair et al. suggested
+82 PRESENCE: VOLUME 20, NUMBER 1
+Figure 2. (a) When playing Astrojumper, the user needs to dodge planets that are speeding toward him or her. (b) The user can accumulate
+score multipliers by tapping gold suns that appear periodically.
+a dual-flow model that balances the psychological flow
+of gameplay (attractiveness) and the physiological
+flow of exercise (effectiveness) (Sinclair et al., 2007).
+Putting these models into practice, we carefully con-
+sidered Sweetser’s gameflow criteria during the design
+of Astrojumper. Additionally, to balance the dual flow
+of gameplay, Astrojumper adjusts the difficulty level
+dynamically based on the player’s performance. This
+gameplay mechanic ensures the exercise will be appro-
+priate for players of varying physical fitness, and also
+supports an individual player’s skill development over
+time.
+3 Astrojumper
+Astrojumper is an immersive virtual reality exercise
+game developed for use with a stereoscopic projection
+display and full upper-body motion tracking. In this
+section, we describe our gameplay design and the virtual
+reality setup used to evaluate the game.
+3.1 Game Design
+In Astrojumper, the user flies through an immer-
+sive, stereoscopic outer space environment in first-
+person perspective and must swerve around, duck under,
+and jump over the virtual planets that are speeding
+toward him or her (see Figure 2[a]). The user wears
+trackers on the forehead, wrists, and waist, which are
+used to calculate body collisions with the virtual objects.
+A base of one point is awarded per second, and the
+player can tap gold suns to gain bonus score multipliers
+which increase the amount of points earned per second
+(see Figure 2[b]). If any part of the users’ tracked body
+collides with a planet, their score is frozen for 2 s, with
+multiple planet collisions resulting in a score freeze for
+up to 15 s. Collisions also eliminate any score multipliers
+the user may have collected. If the player is currently in
+a score freeze, bonus objects will reduce the freeze by
+2 s; otherwise, the player will gain 30 points in addition
+to adding to the score multiplier. Periodically through-
+out the game, UFOs appear and begin shooting red laser
+beams at the location of the player’s head. The player
+needs to dodge these beams, and can shoot green lasers
+by making strong throwing motions with an arm until
+the UFO is defeated. Music was played throughout the
+game session, since this has been shown to be important
+for promoting the enjoyment of exercise (Winniger &
+Pargman, 2003).
+Because people are encouraged to engage in exercise
+multiple times per week (American College of Sports
+Medicine, 2000), replayability is an important factor in
+Finkelstein et al. 83
+the design of exergames. If too repetitive, exergames
+may run the risk of boring their users, or not provid-
+ing the necessary motivation for individuals to play
+the game often enough to result in appreciable health
+benefits. Additionally, the American College of Sports
+Medicine suggests engaging in cross-training activities
+which vary the type of physical motion performed dur-
+ing exercise. For both of these reasons, we embraced the
+idea of using laser beams and bonus planets in our game
+design. Without these features, the movements users are
+encouraged to perform would be somewhat limited to
+jumping side to side, ducking, and swerving to avoid
+the planets. However, the addition of bonus planets that
+were meant to be grabbed engaged the users’ bodies in
+more diverse ways, allowing for stretching and reaching.
+Allowing the player to periodically shoot laser beams by
+making throwing motions also increased the exercise
+diversity provided by Astrojumper, making it possible
+for the user to get an arm workout as well. While provid-
+ing a more diverse exercise environment, these features
+also diversify the game as a whole, perhaps improving
+the overall replayability. Though no formal data were
+collected during early testing studies, preliminary ver-
+sions of Astrojumper that did not include these features
+were criticized for being too repetitive. After the addi-
+tion of bonus planets and lasers, this criticism became
+significantly less common.
+Providing feedback to the player was an important
+focus in the design of Astrojumper. Following Sweetser’s
+gameflow model, we provided clear notification of
+events such as collisions and bonuses using colored text,
+sound, and particle effects. Pop-up text notified partic-
+ipants of which body part had collided with a planet,
+allowing them to be more conscious of the positions of
+their limbs. More generally, the heads-up score display
+also changed color to reflect the participant’s current
+performance, with a score printed in green indicating
+the player was doing well, and a score printed in red
+meaning the player is currently frozen.
+Following the American College of Sports Medicine’s
+guidelines for exercise (American College of Sports
+Medicine, 2000), a complete game session of Astro-
+jumper follows three phases: warm-up (15%), exertion
+(70%), and cooldown (15%). During the warm-up
+session, the planets move very slowly and gradually build
+up to a more challenging speed during the exertion
+phase. The speed slows down again for the cooldown
+phase, allowing for a gradual decrease in physical effort.
+Though game sessions may last any amount of time,
+for our evaluation in this paper, we used a total game
+time of 15min (2.25min warm-up, 10.5min exertion,
+2.25min cooldown).
+Putting Sinclair’s dual-flow exergame model into
+practice and following the suggestion of Smith et al.
+(2005), Astrojumper’s difficulty level adjusted dynam-
+ically throughout the game. To make sure that Astro-
+jumper would be playable for users at all levels of
+physical fitness, Astrojumper begins very slowly, pro-
+viding all users with a warm-up phase. After this phase
+is complete, planets will begin to gradually come out at
+a slightly faster rate. If the player is successfully able to
+avoid these planets, the speed will continue to increase.
+If the player starts to collide with the planets, their speed
+will reduce. This back-and-forth adjustment finds a
+speed where the player can successfully avoid almost all
+of the planets, and will continuously update throughout
+the game. To calculate this within our game, we collect
+information about how well the player is doing every
+3 s as a percentage that indicates how many planets they
+avoided out of all presented planets. If this calculated
+percentage gets lower each time it is calculated, it indi-
+cates that the game is too difficult, and the stimuli will
+slow. If the percentage stays the same or gets higher,
+the planets will increase in speed. This design is in line
+with the dual-flow model, which suggests that gameflow
+needs to be balanced between too easy (boring) and too
+difficult (frustrating).
+3.2 VR Setup
+We deployed Astrojumper on a three-sided immer-
+sive projection display with 8? ×6? rear-projected screens.
+Two Barco Gemini stereoscopic projectors were used for
+each screen, and circular polarized glasses were worn on
+the user’s head. A Polhemus Fastrak electromagnetic
+tracker was attached to the user’s glasses, and two track-
+ers were enclosed within sweatbands on the user’s wrists
+(see Figure 3). The users wore a small backpack to guide
+84 PRESENCE: VOLUME 20, NUMBER 1
+Figure 3. Users wore a small backpack to guide the tracker wires around the body, allowing them to move freely without without getting tangled.
+the tracker wires to each tracked portion of the body,
+allowing the user to move freely without getting tan-
+gled. A fourth tracker was attached to the bottom of the
+backpack to track the user’s waist.
+Astrojumper was run on a single Intel Core i7
+3.33GHz PC running Windows 7 64-bit with 12GB
+of RAM and three NVIDIA GTX 260 graphics cards,
+each of which provided output for a single projector.
+The game was implemented using the osgVirtualEnvi-
+ronment engine, which is an open-source engine built
+on top of OpenSceneGraph 2.8.0. Graphics were mod-
+eled in 3D Studio Max, and were rendered in stereo
+at 60 frames per second. Audio was provided through
+OpenAL, and tracker communication was accomplished
+using the virtual reality peripheral network (Taylor
+et al., 2001). Astrojumper’s engine is dynamically con-
+figurable, which allows us the capability of deploying
+the game on different hardware on the fly (e.g., head-
+mounted displays, stereo plasma displays, portable
+projection-based setups, etc.).
+4 Evaluation
+Thirty people participated in the study (19
+male, 11 female) ranging in age from 6 to 50 (M =
+21.17, SD = 9.53). Ten participants were children (ages
+6–17) and 20 were adults (ages 18–50). Participants
+were recruited primarily via word of mouth and were
+not limited to university students. All participants were
+told the study would require exercise, and that they were
+not eligible to participate if they had a medical condition
+which prohibited voluntary physical exertion.
+4.1 Procedure
+4.1.1 Stage 1: Preexperiment. Participants
+were invited to come to the UNC Charlotte Visualiza-
+tion Center one at a time for a total of 45min. First,
+they were asked to read and sign an informed consent
+form and were given the opportunity to ask questions
+about the VR equipment and the study. We explained
+that we were evaluating how people interacted with an
+exercise game, though to reduce demand characteris-
+tics, the participants were not told we were specifically
+looking at motivating factors. After the consent form
+was signed, we attached a HeartMath emWave Desktop
+heart rate monitor to the participant’s earlobe to obtain
+their resting heart rate. We allowed the system to cali-
+brate for 30 s, and then calculated the average heart rate
+over 2min. Participants were then given a prequestion-
+naire to gather demographic information, activity level,
+exercise motivation, and video game habits.
+4.1.2 Stage 2: Astrojumper. Participants were
+led to the immersive display and were shown how to
+Finkelstein et al. 85
+put on the backpack and trackers. Astrojumper’s virtual
+world was displayed on the walls, allowing the partic-
+ipants some time to adjust to the 3D stimuli before
+the game started. At this point, we explained the rules
+of the game to the players and showed them how to
+react to the various types of virtual objects they would
+encounter. We allowed participants to ask any ques-
+tions they had, and then started the 15min game session
+when the players were ready. During the game, we held
+the wires approximately 6 ft behind the participants to
+ensure they would not trip, and did not communicate
+with them unless they asked us a question about the
+game.
+4.1.3 Stage 3: Postexperiment. After the ses-
+sion was finished, we instructed participants to remove
+the backpack, and then calculated their exerted heart
+rate as was done previously. Next, the participants were
+asked to fill out a postquestionnaire which included free-
+response questions and questions related to workout
+intensity, motivation, and gameflow. After completing
+the questionnaire, participants were debriefed and the
+experiment was concluded.
+4.2 Measures
+4.2.1 Heart Rate. True resting heart rate is typ-
+ically measured by taking a heart rate reading for several
+mornings in a row before a person gets up from bed.
+However, since collecting this rate was infeasible for this
+study, we used a proxy measure for resting heart rate
+at the beginning of our study. We used a HeartMath
+emWave Desktop heart rate monitor to measure the
+subject’s resting heart rate (in beats per minute) before
+game play and exerted heart rate immediately after
+the Astrojumper game session. We also calculated the
+exerted heart rate as a percentage of each participant’s
+estimated maximum heart rate, which is frequently
+used for estimating the target heart rate recommended
+to receive the benefits of physical exercise (American
+Heart Association: Target Heart Rates, 2010). We esti-
+mated the maximum heart rate using the following
+formulas based on the participant’s age and gender:
+205.8 ? 0.685 × age for males (Robergs & Landwehr,
+2002) and 206.0 ? 0.88 × age for females (Gulati et al.,
+2010). It should be noted that since the gameplay ses-
+sion included a cooldown phase, the heart rate after
+the session would have dropped from the peak levels
+that occurred during gameplay. We attempted to collect
+heart rate information during the exertion phase, but we
+were unable to obtain valid readings using this monitor
+due to participants’ rapid physical movements. Regard-
+less, the differences in percentage of maximum heart
+rate before and after gameplay still gives us an objective,
+albeit conservative, measurement of participants’ phys-
+iological reactions to the physical activity required to
+play Astrojumper. While a significant rise in heart rate
+would imply that they had engaged in strenuous exer-
+cise, no change in heart rate would indicate that either
+Astrojumper gameplay did not require enough exertion
+or that participants were not sufficiently motivated to
+engage in physical activity.
+4.2.2 Workout Intensity,Motivation, and
+Gameflow Evaluation. Participants were asked
+to subjectively rate their workout intensity on a
+7-point Likert scale (1 = “not at all intense” to
+7 = “extremely intense”). This was done to assess the
+perceived level of intensity of their exercise during the
+game session.
+To gauge the motivation potential of Astrojumper,
+participants were asked to complete eight questions
+pertaining to their level of motivation. This series of
+statements were evaluated using 7-point Likert scales
+(1 = “strongly disagree” to 7 = “strongly agree”).
+Some questions on this survey included “I would rather
+do game-based exercise over typical exercise,” “I put
+more effort into my movements than I would have
+if there wasn’t any virtual simulation,” and “I would
+exercise more if I could play Astrojumper whenever I
+wanted.” The ratings from individual questions were
+averaged together to calculate the motivation score.
+To assess Astrojumper’s gameflow, participants were
+also presented with eight gameflow components from
+Sweetser’s model and asked to rate (1) how present
+these characteristics were in Astrojumper, and (2) how
+present these characteristics should be in exercise games
+in general. Ratings were collected using a 5-point scale
+86 PRESENCE: VOLUME 20, NUMBER 1
+of importance (1 = “not at all,” 2 = “somewhat,”
+3 = “moderately,” 4 = “mostly,” 5 = “completely”).
+For each gameflow component, we calculated a game-
+flow score by dividing the Astrojumper rating by the
+ideal exercise game rating. The resulting percentage
+represents the degree to which Astrojumper met par-
+ticipants’ gameflow expectations for exercise games. It
+should be noted that a score may be over 100% if Astro-
+jumper were rated higher in a particular category than
+the general exercise rating. To produce an overall game-
+flow evaluation score that represents the degree to which
+Astrojumper fell short of participants’ gameflow expec-
+tations, we capped the individual gameflow component
+scores at 100% and then averaged them. By considering
+only the differences where Astrojumper was rated lower
+than the ideal exergame, we avoided an aggregated score
+that was potentially misleading.
+4.2.3 Video Game and Exercise Habits. We
+provided participants with a preexperiment question-
+naire that gathered their basic demographics, video
+game experience, and exercise habits. For video game
+experience, participants were asked to rate the degree to
+which they enjoy playing video games on a 7-point Lik-
+ert scale, with higher numbers corresponding to greater
+video game enjoyment. Participants were also asked to
+classify themselves in one of four gaming categories
+(“nongamer,” “casual gamer,” “moderate gamer,”
+“hardcore gamer”).
+To gather how active our participants were, we used
+the Godin Leisure-Time Exercise Questionnaire, a short
+survey that collects how many times in a typical week
+the subject engages in mild, moderate, and strenu-
+ous physical activity, with a greater weight applied to
+more strenuous exercise (Godin & Shephard, 1997).
+As described by Godin and Shephard, these three com-
+ponents were then combined to calculate an overall
+score that indicated how active our participants were,
+with higher numbers corresponding to greater amounts
+of overall physical activity. We also administered the
+motives for physical activity measure to gauge our par-
+ticipants’ motivations for choosing to exercise (Ryan,
+Frederick, Lepes, Rubio, & Sheldon, 1997). Partici-
+pants were provided questions regarding five distinct
+possible reasons for exercising: interest in a particular
+sport, wanting to gain skill or competence at an activity,
+desire to improve fitness or health, desire to appear more
+attractive, and desire to achieve benefits of social inter-
+action, such as playing a sport with a friend. Participants
+were presented six statements relating to each of these
+five components, and were asked to rate their agree-
+ment with the statement on a scale from 1 (“strongly
+disagree”) to 5 (“strongly agree”). Overall motivation
+for each component was calculated by averaging the
+scores for the six related statements within each cate-
+gory. These two exercise questionnaires allowed us to
+gauge not only the frequency of our participants’ exer-
+cise, but also the underlying motivations behind their
+reasons for engaging in physical activities.
+4.2.4 Qualitative Feedback. After playing
+Astrojumper, participants were asked to discuss their
+favorite and least favorite aspects of the game in free-
+response boxes. They were also given an opportunity to
+provide general feedback and comments.
+4.3 Results
+All statistical results reported in this paper use a
+significance value of ? = .05.
+4.3.1 Heart Rate. Participants’ heart rates (in
+beats per minute) were treated with a 2 × 2 mixed anal-
+ysis of variance (ANOVA), testing the between-subjects
+effects of gender and the within-subjects effect of time
+(resting or exerted). Participants’ exerted heart rates
+after the cooldown phase (M = 106.67, SD = 13.75)
+were significantly higher than their resting heart rates
+(M = 77.07, SD = 13.15), F (1, 28) = 98.31, p < .01,
+?2p = .78. There was an overall main effect for gender
+regardless of the time of measurement, with males expe-
+riencing a slower heart rate than females. However, this
+is a well-known physiological difference between gen-
+ders (Umetani, Singer, McCraty, & Atkinson, 1998).
+The interaction effect between time and gender was not
+significant, p = .94.
+Table 1 shows a chart of the participants’ heart rates
+before and after exertion, as well as the exerted rate
+calculated as a percentage of maximum heart rate.
+Finkelstein et al. 87
+Table 1. Resting and Exerted Heart Rates
+Heart rates Heart rates
+Resting Exerted Exerted Resting Exerted Exerted
+Age Sex (bpm) (bpm) (% max) Age Sex (bpm) (bpm) (% max)
+6 F 81 100 50 20 F 85 122 65
+8 F 75 111 56 20 F 89 106 56
+9 M 67 75 38 22 F 67 102 55
+12 M 65 102 52 22 M 82 100 52
+14 M 64 95 48 23 M 92 115 61
+14 M 80 110 56 24 M 82 109 58
+14 F 118 119 61 24 F 92 118 64
+15 M 72 121 62 25 M 62 114 60
+15 M 79 91 46 26 F 63 129 70
+16 M 73 113 58 27 M 57 120 64
+18 M 65 87 45 28 M 94 118 63
+19 F 67 100 53 30 M 60 70 38
+19 M 86 95 49 31 M 65 103 56
+19 F 87 115 61 45 F 84 105 63
+20 M 77 119 62 50 M 82 116 67
+NOTE. Resting and exerted heart rates were measured immediately before and after the game session, which included
+a cooldown stage. Playing Astrojumper resulted in an average heart rate increase of 29.6 beats per minute. Additionally,
+24 out of 30 participants had exerted heart rates that were within the American Heart Association’s target heart rate
+range for physical exercise (between 50–85% of maximum heart rate) even after this cooldown.
+To receive the benefits of physical activity, the Amer-
+ican Heart Association recommends a target heart
+rate between 50–85% of the estimated maximum
+heart rate (American Heart Association: Target Heart
+Rates, 2010). Even though exerted heart rates were
+measured after the cooldown phase, allowing then to
+drop from the peak levels achieved during exercise,
+24 out of 30 participants were within this target zone
+(M = 56.31%, SD = 8.05%). Additionally, participants’
+exerted percentage of maximum heart rates were signif-
+icantly correlated with age, r(30) = +.44, p = .02,
+indicating that older participants tended to experience
+higher heart rates, even though the heart rate maximum
+formula had already accounted for age differences.
+4.3.2 Workout Intensity,Motivation, and
+Gameflow Evaluation. The subjective workout
+intensity ratings (1–7) indicated that participants felt
+Astrojumper provided a moderate to high level of phys-
+ical exercise (M = 5.07, SD = 1.44). Additionally,
+participants’ motivation scores (1–7) indicated that
+Astrojumper successfully motivated them to exercise
+(M = 5.69, SD = 1.10). We excluded two partici-
+pants from the gameflow analysis because they did not
+understand the instructions, both of whom were young
+children (ages 6 and 9). The overall average gameflow
+score also indicated that Astrojumper came close to
+completely fulfilling participants’ expectations for the
+ideal exercise game on a variety of gameflow character-
+istics (M = 90.59%, SD = 7.13%). Figure 4 shows the
+breakdown of the gameflow rating scores for each of the
+eight categories.
+The relationship between age, motivation, work-
+out intensity, and overall gameflow evaluation score
+was assessed using Pearson correlation coefficients.
+There was a significant positive relationship between
+88 PRESENCE: VOLUME 20, NUMBER 1
+motivation and workout intensity, r(30) = +.49,
+p < .01. The gameflow evaluation score was positively
+correlated with both workout intensity, r(28) = +.45,
+p = .02, and motivation, r(28) = +.41, p = .03. None
+of the correlations with age were significant. These
+results suggest that to design exercise games that pro-
+vide an effective workout, participants’ gameflow
+expectations and their level of motivation should be
+considered.
+4.3.3 Video Game and Exercise Habits. Our
+participant pool consisted of seven nongamers, 15
+casual gamers, five moderate gamers, and three hard-
+core gamers. For video game enjoyment ratings (1–7),
+most participants indicated they enjoyed playing video
+games (M = 5.17, SD = 1.15). Responses on the
+Godin Leisure-Time activity scale indicated that partic-
+ipants tended to engage in moderate levels of exercise
+(M = 53.97, SD = 31.84), though this varied
+greatly among participants. The motives for physical
+activity measure (1–5) rated most important by our
+participants was fitness (M = 4.19, SD = 0.82),
+followed by interest (M = 3.49, SD = 0.84), appear-
+ance (M = 3.33, SD = 1.28), and competence
+(M = 3.28, SD = 1.05). Social motivations were rated
+as least important (M = 2.87, SD = 1.23).
+To assess the potential impact on video game and
+exercise habits on exercise game design, we computed
+Pearson correlation coefficients between the subjec-
+tive ratings of motivation and workout intensity and our
+measures of video game enjoyment, Godin Leisure-Time
+activity, and the motives for physical activity. However,
+none of these factors significantly correlated with the
+degree of motivation to play Astrojumper or the level
+of workout experienced by participants. Additionally,
+none of the video game or exercise habit measures were
+significantly correlated with age.
+4.3.4 Qualitative Feedback. In general, we
+received extremely positive feedback, and participants
+cited a variety of reasons for their motivation to play the
+game. Three of our younger participants said that the
+game allowed them to pretend they were various super-
+heroes or cartoon characters, with a 12-year-old male
+Figure 4. Participant gameflow evaluation scores were calculated
+by dividing Astrojumper’s rating by the general rating of importance
+in exergames for each gameflow category. Thus, the percentages
+represent to the degree to which Astrojumper satisfied participants’
+gameflow expectations.
+participant citing that he enjoyed inventing different
+“move styles” to change character roles. Two partic-
+ipants mentioned that they most enjoyed the quick
+thinking and strategy that was required to maximize the
+score, and an additional four described how much they
+enjoyed engaging in full-body interaction. Three par-
+ticipants directly compared Astrojumper to the Wii Fit,
+saying that full-body exercise was much more motivating
+and effective, one stating it was “much more than the
+Wii could ever offer.”
+Most participants mentioned specific gameplay
+aspects of Astrojumper. For example, a 19-year-old male
+participant wrote:
+My favorite part of Astrojumper was the fact that it
+didn’t really feel like exercise—I wasn’t focused on my
+heart rate or trying to “push” myself. I just played the
+game. It wasn’t until afterwards it had felt like I had
+done any exercise.
+Additionally, a 22-year-old male mentioned:
+I most enjoyed the amount of quick, snap decision
+movements that were required. It incorporated both
+top and bottom movements, and this basic sort of
+game could hone some very sharp coordination skills.
+Finkelstein et al. 89
+The negative feedback we received was much less var-
+ied: out of 30 participants, 17 either left this question
+blank or wrote that they had no complaints or nega-
+tive comments. Five participants complained that there
+were times when they had been penalized for hitting
+a planet when they felt they were out of its way. This
+was unavoidable, and was due to inconsistent tracking
+data that occurred when the electromagnetic track-
+ers were out of range of the emitter. Since the emitter
+was mounted from the ceiling, this sometimes occurred
+when participants dropped to the floor to duck under a
+planet. Three participants said they would have preferred
+a larger tracking area so they would have some more
+room to move around, and the other five simply offered
+suggestions for ways to make the game more fun, such
+as adding boss fights, additional enemies, or making it
+easier to beat the UFO.
+Finally, we received many positive accolades in the
+free-comment section. Some responses included: “it
+was amazing, it should be a real video game I could play
+whenever I want,” “I loved all of it, and would recom-
+mend it to anybody,” and “This was one of the best
+games I’ve ever played. I actually enjoyed exercise!”
+Additionally, many participants (over half) requested
+to play the game a second time, and we received many
+requests from friends of participants who heard about
+the game, even after the study was over.
+4.4 Discussion
+As Sinclair’s dual-flow model suggests, our results
+indicated there is an important relationship between
+gameplay attractiveness (measured by our gameflow
+evalation) and exercise effectiveness (measured by rat-
+ings of workout intensity). These results reinforce the
+claim that exergames need to be fun and engaging in
+order to maximize their effectiveness as an exercise tool.
+Additionally, the relationship we found between moti-
+vation and workout intensity supports the basic premise
+that games can be used to motivate physical activity.
+In order to better understand the design of
+exergames, we investigated the potential influence of
+personal factors such as video game experience, exer-
+cise habits, and reasons for engaging in exercise on
+participants’ motivation and perceived workout. How-
+ever, regardless of these criteria, Astrojumper received
+overwhelmingly positive ratings. While we were not
+able to develop any specific design guidelines, this is a
+very interesting result, since it suggests that virtual real-
+ity exergames may have broad appeal for a wide variety
+of users. Though participants were strongly motivated
+regardless of gender or age, we noticed qualitative dif-
+ferences in comments from children and adults. For
+example, free-response comments from the children
+in our study frequently mentioned getting “lost” in
+their fantasy world. This is consistent with a previous
+exergame study which found that an increase in fan-
+tasy level correlated strongly with children’s levels of
+enjoyment (Yannakakis et al., 2006). However, feed-
+back from the adult participants often mentioned being
+compelled by the challenge and skill required to play
+the game. Though participants may perceive the game
+differently, we conclude that immersive virtual reality
+exergames have strong potential to motivate physical
+activity in both children and adults, regardless of their
+video game and exercise habits.
+Astrojumper was designed to be rated “E for every-
+one,” in that we chose to design a game atmosphere,
+outer space, which we felt was both gender and age neu-
+tral. The consistently high levels of motivation across
+all of our participants may be attributed to this design
+choice, as it showed no subculture preference to any
+subset of our users. Additionally, because Astrojumper’s
+mechanics were not very complex, we had no issues
+with very young users not understanding the directions,
+allowing them to enjoy the game as much as older users.
+To this end, we believe that with careful consideration
+to game design, it is possible to design exergames that
+are enjoyable for all users. To ensure that participants
+would not get bored by repetitive actions, we included
+opportunities to collect bonuses, gain point multipliers,
+and designed alternate interaction possibilities within
+the game. For example, the user can throw an arm for-
+ward with a punching motion to shoot a green laser
+beam at periodically appearing UFOs. This not only
+kept the game engaging by changing the types of actions
+the users were performing, but also allowed users to
+engage more of the body in physical activity, providing
+90 PRESENCE: VOLUME 20, NUMBER 1
+an exercise environment which promoted cross-training
+fitness. Some participants reported that throwing laser
+beams was one of the most enjoyable aspects of the
+game, and of the participants who suggested game
+improvements, many involved ways that these alternate
+interactions could be expanded in future versions of the
+game. Some of these suggestions included the UFOs
+getting increasingly hard to kill, more UFOs coming
+at the player at once, or enemies that were aliens. The
+addition of these features in future versions of the game
+would add some variety to game play, and may increase
+the replayability of the game. Though Astrojumper can
+be set to last an arbitrary amount of time, for this study,
+we knew we would be evaluating player interaction over
+a relatively short game play interval. For this reason,
+additional ways to keep players motivated to play over
+an extended period of time, such as alternate levels or
+some of the ideas the participants suggested, were not
+implemented in this version of Astrojumper. However,
+in future versions of this game that will be evaluated over
+extended periods of time, features that will keep players
+coming back will be included.
+Participants perceived that they had experienced a
+workout, and these subjective reports were corroborated
+by the physiological measure of heart rate. However,
+since we included a cooldown phase at the end of the
+game session, by the time we measured participants’
+exerted heart rates, they had time to drop from the
+peak levels reached during exercise. Despite that fact, we
+observed an increase of 29.6 beats per minute (38%) on
+average even after the cooldown phase. We were encour-
+aged by these results, and by our qualitative observations
+that participants often did, quite literally, work up a
+sweat. The talk test is a common self-test used to mea-
+sure whether a person is exercising in his or her target
+heart rate zone; if you find it hard to talk, you are in the
+zone. We observed that most players were unable to talk
+just after playing Astrojumper. In future studies we will
+ask participants to report on this.
+From our observations, the dynamic difficulty adjust-
+ment worked well as a game mechanic, since participants
+made no negative comments on our feedback questions
+about the difficulty. We did not observe any cases where
+participants appeared either bored or frustrated. We
+are interested in further exploring this technique, and
+possibly introducing more sophisticated approaches,
+such as scaling the difficulty based on direct measure-
+ments of heart rate (Stach, Graham, Yim, & Rhodes,
+2009).
+From the qualitative comments, it is clear that stere-
+oscopy was a motivating factor for participants, as some
+specifically mentioned stereoscopy (which many referred
+to simply as “3D”) as one of the most exciting parts of
+the game. Almost all participants expressed excitement
+when they first put on the stereoscopic glasses and saw
+the game environment, such as laughing or exclaiming
+sentiments such as “it’s like the planet is right in front
+of me!” Further analysis needs to be done to see how
+much of the participants’ enjoyment of the game can
+be attributed to the stereoscopic factor. While many
+participants expressed the idea that they felt immersed
+in the game, it was not clear whether this was due to
+the stereoscopic 3D or the three-screened CAVE envi-
+ronment. Future studies are planned to isolate these
+factors.
+5 Conclusion and Future Work
+In this paper, we presented Astrojumper, a vir-
+tual reality exergame designed to engage the user in
+immersive, full-body exercise. The results of our user
+study were promising, and demonstrate that stereo-
+scopic virtual reality exergames have strong potential
+to motivate physical activity in both children and adults.
+In future studies, we plan to directly compare the ben-
+efits of virtual reality with less immersive exergame
+platforms that do not employ stereoscopy, such as the
+Wii Fit. Additionally, it may be possible to increase
+accessibility for a wider audience by using commod-
+ity wireless motion tracking instead of electromagnetic
+trackers, and by deploying Astrojumper on a less expen-
+sive portable stereoscopic projector or 3D television.
+Finally, we are also very interested in studying different
+user populations to further investigate design issues for
+exergaming.
+We acknowledge that since virtual reality technology
+is not yet widely accessible, some of our participants’
+positive reactions may have been due to a novelty factor.
+Finkelstein et al. 91
+In the future, we plan to perform longitudinal studies
+to examine the long-term effectiveness and motivation
+potential of Astrojumper. To maintain interest after
+repeated exposure, we intend to implement additional
+levels and themes, boss fights, and alternate interaction
+possibilities, such as new gestures and game mechanics.
+References
+Acuff, D. S., & Reiher, R. H. (1997). What kids buy and why:
+The psychology of marketing to kids. New York: Free Press.
+American College of Sports Medicine (2000). ACSM’s guide-
+lines for exercise testing and prescription (6th ed.). Baltimore,
+MD: Lippincott, Williams, & Williams.
+American Heart Association: Target heart rates. (2010).
+Retrieved from http://www.americanheart.org/presenter.
+jhtml?identifier=4736.
+Bekker, M., Hoven, E. van den, Peters, P., & Hemmink,
+B. K. (2007). Stimulating children’s physical play through
+interactive games: Two exploratory case studies. In IDC
+’07: Proceedings of the 6th International Conference on
+Interaction Design and Children, 163–164.
+Chua, P. T., Crivella, R., Daly, B., Hu, N., Schaaf, R., Ven-
+tura, D., et al. (2003). Training for physical tasks in virtual
+environments: Tai chi. In VR ’03: Proceedings of IEEE
+Virtual Reality 2003, 87.
+Chuang, T., Chen, C., Chang, H., Lee, H., Chou, C., &
+Doong, J. (2003). Virtual reality serves as a support
+technology in cardiopulmonary exercise testing. Pres-
+ence: Teleoperators and Virtual Environments, 12(3),
+326–331.
+Godin, G., & Shephard, R. J. (1997). Godin leisure-time
+exercise questionnaire. Medicine and Science in Sports and
+Exercise, 29(6), S36–S38.
+Grealy, M. A., Johnson, D. A., & Rushton, S. K. (1999).
+Improving cognitive function after brain injury: The
+use of exercise and virtual reality. Physical Medicine and
+Rehabilitation, 80(6), 661–667.
+Gruchalla, K. (2005). Immersive well-path editing: Investi-
+gating the added value of immersion. IEEE Virtual Reality,
+157–164.
+Gulati, M., Shaw, L. J., Thisted, R. A., Black, H. R.,
+Bairey Merz, C. N., & Arnsdorf, M. F. (2010). Heart rate
+response to exercise stress testing in asymptomatic women:
+The St. James Women Take Heart Project. Circulation,
+122(2), 130–137.
+Hämäläinen, P., Ilmonen, T., Höysniemi, J., Lindholm, M.,
+& Nykänen, A. (2005). Martial arts in artificial reality. In
+CHI ’05: Proceedings of the SIGCHI Conference on Human
+Factors in Computing Systems, 781–790.
+Hendrix, C., & Barfield, W. (1995). Presence in virtual envi-
+ronments as a function of visual and auditory cues. In
+Virtual Reality Annual International Symposium, 74.
+Höysniemi, J., Hämäläinen, P., Turkki, L., & Rouvi, T.
+(2005). Children’s intuitive gestures in vision-based action
+games. Communications of the ACM, 48(1), 44–50.
+IJsselsteijn, W. A., de Kort, Y. A. W., Westerink, J., de Jager,
+M., & Bonants, R. (2006). Virtual fitness: Stimulating
+exercise behavior through media technology. Presence:
+Teleoperators and Virtual Environments, 15(6), 688–698.
+Kizony, R., Katz, N., & Weiss, P. (2003). Adapting an immer-
+sive virtual reality system for rehabilitation. The Journal of
+Visualization and Computer Animation, 14, 261–268.
+Luke, R. C., Coles, M. G., Anderson, T. A., & Gilbert, J. N.
+(2005). Oxygen cost and heart rate response during inter-
+active whole body video gaming. Medicine and Science in
+Sports and Exercise, 37(5), S329.
+Marshall, S.J., Gorely, T., & Biddle, S. J. H. (2006). A
+descriptive epidemiology of screen-based media use in
+youth: A review and critique. Journal of Adolescence, 29(3),
+333–349.
+Mokka, S., Väätänen, A., Heinilä, J., & Välkkynen, P.
+(2003). Fitness computer game with a bodily user inter-
+face. In ICEC ’03: Proceedings of the Second International
+Conference on Entertainment Computing, 1–3.
+Morrow, K., Docan, C., Burdea, G., & Merians, A. (2003).
+Low-cost virtual rehabilitation of the hand for patients post-
+stroke. In International Workshop on Virtual Rehabilitation,
+6–10.
+Mueller, F., Agamanolis, S., & Picard, R. (2003). Exertion
+interfaces: Sports over a distance for social bonding and
+fun. In CHI ’03: Proceedings of the SIGCHI Conference on
+Human Factors in Computing Systems, 561–568.
+Mueller, F. F., Stevens, G., Thorogood, A., O’Brien, S., &
+Wulf, V. (2007). Sports over a distance. Personal Ubiquitous
+Computing, 11(8), 633–645.
+Plante, T., Aldridge, A., Bogdan, R., & Hanelin, C. (2003).
+Might virtual reality promote the mood benefits of exercise?
+Journal of Community Psychology, 19(4), 495–509.
+Porcari, J. P., Zedaker, M. S., & Maldari, M. S. (1998,
+December). Virtual motivation. Fitness Management,
+48–51.
+Rand, D., Kizony, R., & Weiss, P. L. (2004). Virtual reality
+rehabilitation for all: Vivid GX versus Sony Playstation II
+EyeToy.
+92 PRESENCE: VOLUME 20, NUMBER 1
+Rand, D., Kizony, R., & Weiss, P. L. (2008). The Sony
+Playstation II EyeToy: Low-cost virtual reality for use in
+rehabilitation. Journal of Neurologic Physical Therapy, 32(4),
+155–163.
+Robergs, R., & Landwehr, R. (2002). The surprising history
+of the “HRmax = 220 ? age” equation. Journal of Exercise
+Physiology, 5(2), 1–10.
+Ryan, R. M., Frederick, C. M., Lepes, D., Rubio, N., &
+Sheldon, K. M. (1997). Intrinsic motivation and exercise
+adherence. International Journal of Sport Psychology, 28,
+335–354.
+Sinclair, J., Hingston, P., & Masek, M. (2007). Consider-
+ations for the design of exergames. In GRAPHITE ’07:
+Proceedings of the 5th International Conference on Com-
+puter Graphics and Interactive Techniques in Australia and
+Southeast Asia, 289–295.
+Smith, B. K. (2005). Physical fitness in virtual worlds.
+Computer, 38, 101–103.
+Stach, T., Graham, T. C. N., Yim, J., & Rhodes, R. E.
+(2009). Heart rate control of exercise video games.
+In GI ’09: Proceedings of Graphics Interface 2009,
+125–132.
+Strömberg, H., Väätänen, A., & Räty, V.-P. (2002). A group
+game played in interactive virtual space: Design and eval-
+uation. In DIS ’02: Proceedings of the 4th Conference on
+Designing Interactive Systems, 56–63.
+Sweetser, P., & Wyeth, P. (2005). Gameflow: A model for
+evaluating player enjoyment in games. Computers in Enter-
+tainment (CIE), 3(3). doi: 10.1145/1077246.1077253.
+Taylor, R. M., Hudson, T. C., Seeger, A., Weber, H., Juliano,
+J., & Helser, A. T. (2001). VRPN: A device-independent,
+network-transparent VR peripheral system. In ACM Virtual
+Reality Software & Technology, 55–61.
+Umetani, K., Singer, D. H., McCraty, R., & Atkinson, M.
+(1998). Twenty-four hour time domain heart rate variabil-
+ity and heart rate: Relations to age and gender over nine
+decades. Journal of the American College of Cardiology,
+31(3), 593–601.
+Winniger, S., & Pargman, D. (2003). Assessment of fac-
+tors associated with exercise enjoyment. Journal of Music
+Therapy, 40, 50–73.
+Yannakakis, G. N., Hallam, J., & Lund, H. H. (2006).
+Comparative fun analysis in the innovative playware game
+platform. In Proceedings of the 1st World Conference for Fun
+’n Games, 64–70.
+

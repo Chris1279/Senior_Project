@@ -1,0 +1,790 @@
+Towards a Visual Analytics Framework for Handling Complex Business
+Processes
+William Ribarsky
+Department of Computer Science
+University of North Carolina at Charlotte
+9201 University City Blvd, Charlotte, NC, 28262
+ribarsky@uncc.edu
+Derek Xiaoyu Wang
+Department of Computer Science
+University of North Carolina at Charlotte
+xiaoyu.wang@uncc.edu
+Wenwen Dou
+Department of Computer Science
+University of North Carolina at Charlotte
+wdou1@uncc.edu
+William J. Tolone
+Department of Software and Information Systems
+University of North Carolina at Charlotte
+William.Tolone@uncc.edu
+Abstract
+Organizing data that can come from anywhere in the
+complex business process in a variety of types is a challeng-
+ing task. To tackle the challenge, we introduce the concepts
+of virtual sensors and process events. In addition, a visual
+interface is presented in this paper to aid deploying the vir-
+tual sensors and analyzing process events information. The
+virtual sensors permit collection from the streams of data at
+any point in the process and transmission of the data in a
+form ready to be analyzed by the central analytics engine.
+Process events provide a uniform expression of data of dif-
+ferent types in a form that can be automatically prioritized
+and that is readily meaningful to the users. Through the
+visual interface, the user can place the virtual sensors, in-
+teract with and group the process events, and delve into the
+details of the process at any point. The visual interface pro-
+vides a multiview investigative environment for sensemak-
+ing and decisive action by the user.
+1. Introduction
+The idea of “just in time (JIT) manufacturing” has been
+around for some time and has been implemented in large
+scale production environments. Lately there has been the
+need for dynamic just in time manufacturing where the dis-
+tribution and even types of products produced may change
+fairly quickly, often in response to a previously unforeseen
+need. This is the case for some large government entities
+that must supply materiel in support of changing missions
+and for some large manufacturers.
+In this paper we describe a framework we have devel-
+oped in cooperation with a partner engaged in dynamic
+manufacturing. A major issue is that the business process
+(in this case manufacture and delivery of a variety of sys-
+tems, which could be complex themselves or components
+of even larger systems) is complex and changing. It can be
+across several parts of a large manufacturing and delivery
+organization and across many different suppliers. A disrup-
+tion at any point in the organization or among the suppliers
+could result in a failure to deliver full capabilities on time,
+which would be a serious problem.
+A main issue that can arise is shown in the following ex-
+ample, illustrated in Figure 1. Suppose the assembly of a
+system that must be deployed by a certain date is depen-
+dent on the availability of a component that is provided by
+an external supplier. Further the component is not installed
+till late in the assembly process. Since this is a dynamic
+manufacturing process where different systems with differ-
+ent externally supplied components are required to be pro-
+duced at different times, the organizational structure cannot
+be closely aligned with the manufacturing process. In this
+case the procurement and assembly components are in dif-
+ferent part of the organizational structure with different re-
+porting paths. In the illustration, a clue to the problem is
+given by unusual communication being opened up between
+the parts acquisition/preparation department and the qual-
+ity assurance manager. (This isn’t the only possible path;
+the communication between the production supervisor and
+the technical manager could possibly be due to the same
+or a related problem.) There may also be unusual activity
+within a department even without external communication.
+In Figure 1, this is picked up by a “virtual sensor” (dis-
+Figure 1. An organization structure for a production operation with unusual communication paths.
+cussed further below and in Sec. 5.) Unless there is appro-
+priate and timely communication across the structure and in
+particular to the operations manager (and above), the man-
+ufacturing process will break down. This is to be contrasted
+with a non-dynamic JIT process. In this case, the steps
+of the process are more fixed, permitting better organiza-
+tional alignment from the start and better communication.
+Furthermore, non-dynamic JIT permits predictive planning
+where a forecast model based on past production and other
+factors is imposed to predict inventory needs, among other
+needs [15]. Such predictive methods will be much harder
+to develop in dynamic JIT manufacturing. Finally, most JIT
+planning approaches have been applied to much more uni-
+form manufacturing processes (e.g., the production of a cer-
+tain car model) than are the case here, where quite different
+systems are produced at different times.
+The main contribution of this paper is the development
+of a framework to attack the above problem by apply-
+ing a visual analytics approach. Although there has been
+work in process-aware information systems (see Related
+Work), these approaches haven’t been applied to manufac-
+turing processes nor, more importantly, are they as compre-
+hensively data-driven as our approach. To enable our ap-
+proach, we have introduced two new concepts: virtual sen-
+sors and process events. Virtual sensors are software collec-
+tor/transmitters that can be placed at will anywhere in the
+data flow of the manufacturing or production process. They
+are meant to deal with a range of data from quantitative
+process information to communications among operators or
+managers. Since the virtual sensors monitor the stream of
+data over time, the visual analytics framework can identify
+process events, meaningful occurrences in time with respect
+to the process. We have shown how general event-based
+approaches can organize complex data histories in a semi-
+automatic way [14, 19]. What this means is that the visual
+analytics analysis can reveal the data process and through it
+the underlying business process. If, for example, the data
+process does not conform with the organizational model of
+the manufacturing business, this can signal problems that
+should be addressed.
+2. Related Work
+There is a history of business process visualization in the
+business industry [3, 13, 16, 20]. In the area of customer re-
+lations management, Azvine et al. presented a configurable
+business process analytics tool that constantly monitors the
+performance of a decision model on both overall and in-
+dividual levels with the goals of customer satisfaction and
+operational excellence [1]. Noting that existing business an-
+alytic applications are usually closed-loop decision making
+systems which only present output to operational managers,
+Azvine et al. incorporated visualization components into an
+intelligent business analytics system in order to put users
+in the loop and adjust business operations based on users’
+analyses in real time.
+In the domain of Process-Aware Information System
+(PAIS), which pertains to both administrative processes and
+cross-organizational processes, visualization techniques
+have been used to aid in the understanding of process
+schemas and their run-time behavior through simulation [7]
+and process mining [11]. For example, to improve business
+process models, Alast et al. combined process mining with
+visual analytics to incorporate human judgment into other-
+wise static business process models [11]. On the one hand,
+process mining supports automatic discovery of a business
+model and checking how a process model conforms to ac-
+tual process executions. On the other hand, visual analyt-
+ics combines automated analysis with interactive visualiza-
+tions to allow decision-makers to apply their flexibility, cre-
+ativity, and domain knowledge to come to an effective un-
+derstanding of situations in the context of large data sets.
+The authors noted that insights obtained from visualizations
+could be used to improve processes by removing inefficien-
+cies and addressing non-compliance. In addition to process
+mining, visualization techniques have also been applied to
+visualizing work items for an overall business process [12].
+Leoni et al. incorporated visualizations to support work as-
+signment in process-aware information systems. The visu-
+alizations enable users to better select work items to ensure
+the performance of the overall business process [12].
+3. Probing Dynamic Business Processes
+In collaboration with our partner, we have developed the
+following set of questions that must be effectively addressed
+in order to achieve a successful dynamic business process:
+• What are overall trends? Is the overall process on
+schedule?
+• What are the detailed trends for individual programs
+within the manufacturing and production process? (A
+program is the production of a particular system, usu-
+ally distinct from other systems that may also be pro-
+duced during the production process.)
+• What?s the cost-schedule performance over time?
+• What is the capacity of each part of the operation, in-
+cluding excess capacity?
+• Is something going wrong and where (including things
+that have not been fully recognized yet)?
+• Is resource re-allocation needed, and where?
+• If there is a problem, what expertise should be de-
+ployed to most quickly solve it?
+To have any chance of answering these questions, the
+production executives must have continuously available the
+latest information on the manufacturing process at the pro-
+gram and component levels. To this end, our partner has
+developed a “dashboard” that accepts data from all stages
+of the process for all programs. The dashboard system has
+both an interface and a data collector that provides a sum-
+mary analysis to determine where the process, at any stage,
+stands with respect to a few simple benchmarks. Impor-
+tantly, production managers can provide annotations and
+comments at any point in the process. They can also com-
+municate with each other or the executives via the dash-
+board. The dashboard displays comparative information on
+the production process for all components and programs. It
+shows some information on trends and when a component
+is falling behind schedule according to a simple milestone
+analysis. It has some drill-down capability so that the exec-
+utive can get more information about why a trend is occur-
+ring.
+Although this sort of analysis is necessary, our partner
+has found it is not sufficient for enabling a dynamic business
+process without interruptions or missed deadlines. In par-
+ticular, the dashboard does not have a way to effectively or-
+ganize and use all the information it collects, especially the
+annotations and comments that are critical to understanding
+the production process. In addition, disruptions in different
+parts of the organization may affect downstream production
+in unexpected ways. Further, there may be no direct line of
+communication between the parts of the organization that
+will be affected (although there could be informal commu-
+nication). Neither of these aspects are readily apparent to
+the manager in the dashboard setup. Finally, since unex-
+pected disruptions will arise, it is only possible to know of
+them after the fact and often with incomplete information
+as to cause. Thus it is difficult to put into place predictive
+or even prospective monitoring and response, nor to pursue
+some of the questions above such as those having to do with
+re-allocating resources and expertise as an event is unfold-
+ing. In the next sections, we discuss how visual analytics
+can be applied to address these issues and produce more
+successful outcomes for dynamic business processes.
+4. Visual Analytics Framework
+Visual analytics is the science of analytic reasoning fa-
+cilitated by interactive visual interfaces [9]. It is meant to
+support exploratory analysis leading to discoveries since it
+is frequently applied to complex real world problems with
+large amounts of data. These problems are often open-
+ended with no clear path to solutions [9], and, as a result,
+it is often unclear what pertinent knowledge the data may
+contain [9]. Thus the analysis needs to be exploratory to
+support discovery of hidden relations, patterns, and trends.
+Figure 2. Overall visual analytics framework for complex business processes.
+Once discovered, these aspects should be investigated in
+detail, by referring back to original data and gathering ad-
+ditional evidence to confirm or refute hypotheses that are
+formed. A comprehensive visual analytics approach would
+support all these aspects. In this paper we apply such a
+comprehensive approach, employing visual analytics meth-
+ods for both automated analyses and user-led exploration
+through the interactive visual interface.
+Our first step is to embed the dashboard system in a vi-
+sual analytics framework. This is depicted schematically in
+Figure 2. The repository of data sources (lower left) will
+inevitably contain both structured and unstructured data.
+Since a range of sources will be involved, the repository
+will be heterogeneous. Since useful information could be
+found anywhere (including perhaps outside the business)
+and, once found, should be used, some of these sources
+could be incomplete or fragmentary. Analytic tools must
+thus be flexible, able to handle different kinds of data, in-
+cluding incomplete data, yet producing results that con-
+tribute to a “common picture” that will be meaningful to
+the user.
+Inevitably some of the data in a business process will be
+textual, containing comments, annotations, descriptions, re-
+ports, human communications, and so on. These texts will
+tend to be partly or mostly unstructured. Therefore we ap-
+ply methods we have developed for extracting topics and
+topic-based events over time from unstructured texts [9].
+These results are combined with named entity extraction for
+people’s names, dates including future dates, and locations
+(if desired). The analysis can be applied, with approxima-
+tions, either to streaming data [9] with results in a couple of
+minutes or less, or more slowly and accurately to histories
+over a period of time. These methods are quite flexible and
+have been applied to many different types of texts including
+reports, research papers, patent data, twitter streams, online
+news, and customer messages [15, 19, 18]. To these tex-
+tual analyses, we add methods for exploring categorical data
+and numerical data, including finding trends over time. The
+categorical methods, for example, reveal relationships be-
+tween multiple categories at selected times or time ranges,
+which are related to specific events in the topical event anal-
+ysis. For all these methods plus the embedded dashboard,
+we develop a new interactive visual interface, as described
+in Sec. 6.
+The analytic methods apply not only to the data reposi-
+tory but also to the business processes embedded in the mid-
+dle of Figure 2 and, indeed, even to the model repository at
+the lower right. The business processes produce new infor-
+mation themselves and thus must be included to produce a
+most useful and comprehensive common picture. (This is
+indicated by thickening red lines that cross the middle of
+the figure.) In fact, as we have seen above, it is quite im-
+portant to analyze information created during the business
+process since that will produce direct knowledge of the ca-
+pabilities and capacities of different parts of the process as
+well as signal when things are going wrong and what parts
+of the process are affected.
+A general definition of a physical event is “a meaning-
+ful occurrence in space and time” [14]. For the purposes
+of this framework, we modify this definition to focus on
+“process events”, which we define as “meaningful occur-
+rences in time with respect to the process”. In both cases,
+time is central. For this framework, bursts of activity over
+a relatively short time scale, unexpected trends or relation-
+ships (that appear in a short time span), or outliers could all
+qualify as process events. We have shown that events can
+be automatically found and organized (including putting
+them in a hierarchical structure) for social media such as
+Twitter [16]. This work, involving topic modeling, also
+demonstrates how users can quickly attach meanings to the
+events. The hierarchical structure becomes significant when
+one deals with complex data for which one can have many
+events. As data grows in size and comprehensiveness, it will
+tend to get complex in this way. Certainly the complex man-
+ufacturing and production processes considered here will
+benefit from hierarchical structuring, which will give them
+high level meaning and make the overall processes easier to
+understand.
+5. Virtual Sensors
+We now have the mechanisms we need to build the ef-
+fective framework illustrated in Figure 2. The main idea is
+to instrument the whole business process (acquisition, pro-
+duction, deployment, etc.) with “virtual sensors”. These
+sensors are flexible so that they can access any data stream
+(e.g., unstructured text, categorical data, numerical data,
+model outputs) anywhere, such as in the data repository, in
+the business processes themselves, or in the models. Typ-
+ically sensors are placed at a set of general points that are
+effective for monitoring many different types of production.
+Then they are placed at additional points that are useful for
+a specific type of business process. Finally they can quickly
+be placed at other points by the manager, often to under-
+stand some abnormality in the process. This set of net-
+worked sensors then report to the visual analytics layer at
+the top of Figure 2. This layer provides a set of “sensemak-
+ing” capabilities to explore, understand, reason with, and
+test out hypotheses w.r.t. the sensor results. Since these re-
+sults are expressed in a common language of process events,
+they can be displayed together and manipulated in an inter-
+active visualization, though some details with respect to the
+events will be different depending on the underlying data or
+process. At any point, the manager can select one or more
+events and get at the underlying data.
+The structure of the virtual sensor is depicted in Figure 3.
+The bottom layer grabs data directly from the business pro-
+Figure 3. Virtual sensor structure.
+cess stream. In the case of the business partner mentioned
+above, the dashboard already collection points that can be
+used to insert the sensors at several places. The middle layer
+converts these data to a standard internal format recognized
+by the analysis framework in Figure 2. It also attaches what-
+ever metadata or labels are available (time range and time
+stamps, data descriptors, data units, etc.). The top layer
+transmits the data and metadata to the analysis framework.
+Full analysis is performed by an analytics engine in
+the analysis framework, depending on the type of data.
+For instance, the analytics engine applies topic model-
+ing and topic-based event extraction to unstructured text
+messages [19]. It applies temporal signal processing and
+anomaly detection to streams of numerical data to pull out
+both events and anomalies. It performs categorical and mul-
+tidimensional analysis to categorical or attribute data. It
+performs relational and other statistical analyses to con-
+nect events across different types of data and to find sim-
+ilar signatures. These analyses are automated and all re-
+sults are in a common event-based format regardless of the
+original input format (using the process event definition in
+Sec. 4.). Thus, for example, alignments of events from the
+text messages with events from categorical or numerical
+data streams would be readily spotted in the embedded vi-
+sual interface described in the next section and then delved
+for deeper relationships. The common event-based format
+has the capacity for depicting additional “decorations” of
+the events stemming from details of the different types of
+original streaming data.
+6. The Embedded Visual Interface
+The visual interface is designed to support sensemaking
+in the business processes. More specifically, the visual in-
+terface incorporates 4 different views that highlight tempo-
+ral, geospatial, and topical summaries using both the infor-
+mation available a priori (such as knowledge of the organi-
+zation hierarchy) and information collected in real time by
+Figure 4. Embedded visual interface with labels to indicate functions.
+the virtual sensors.
+At the heart of the visual interface is the embedding into
+the external automatic and real-time sensory data repository
+and analyzer. The visual interface is set up to run on a single
+user’s computer with intimate access to the external repos-
+itory; it captures information flows to and from that user
+around office documents, calendars, emails, organizational
+charts, and Web pages, etc. Depending on the user analysis
+needs, the visual interface utilizes various meta-information
+that comes along with the virtual sensor results. In particu-
+lar, it collects information about which documents, emails,
+and web pages were read for that user, and how long they
+were open. It also collects document metadata, such as in-
+formation about the senders and recipients of email mes-
+sages.
+All this heterogeneous data is stored in a unified NoSQL
+external data repository for future analysis. On the fact col-
+lection level, tools like UpLib [8], can be utilized to ex-
+tract information from and about each data input, including
+its title and authors, its text, the people and other entities
+that it mentions, its paragraphs and its images. All of the
+captured information is indexed and grouped with its re-
+lated documents. On the event level, our signal processing
+then performs event analysis, time series analysis, cluster-
+ing, and narrative reconstruction based on the collected or-
+ganizational facts. All this is then interactively presented to
+the user through the embedded visualization interface.
+6.1. Visual Components
+Instead of presenting the diverse analyzed event struc-
+tures through a keyword search interface, our framework
+embeds the investigative retrieval cues (e.g., who, when,
+where, what) into a coordinated multilevel visualization
+system.
+At a high level, our visual interface encodes the four cues
+with a set of four visualizations, each of which presents a
+particular aspect of the organizational and business process
+activity. To provide a lower level detailed view, our inter-
+face also presents a visualization that integrates related ac-
+tivity information for a single worker or a sensor. Using this
+multi-level structure, the interface helps users to cohesively
+find the specific details they need.
+Organizational Hierarchy View To give an overview of
+the complex operational environment, we designed an Or-
+ganizational Hierarchy view that gives a cohesive overview
+while encapsulating organizational knowledge. Therefore,
+a user can start the analysis process by recalling event ac-
+tivities beginning from any retrieval cue that they remem-
+ber (e.g., the department that mostly likely to initiated the
+process), or they can focus on events or cross-organization
+communication links that the automated analysis has identi-
+fied as important. (See the application example in Sec. 7 for
+an illustration of the latter.) Interaction in any view cause
+updates in coordinated views so that the maximum associ-
+ated information is provided permitting the user to converge
+on the desired conclusion quickly.
+The Where: Geospatial view In the geospatial view, lo-
+cations involved in the overall business process are high-
+lighted in an interactive map. The importance of the loca-
+tion is represented by the size of the circles and could be
+determined by user-selected criteria. The numbering on the
+circle indicates the sequence of the manufacturing or deliv-
+ering process. The color of the circles is used to denote
+main/alternative supply or manufacturing locations. The
+map supports standard user interactions such as zooming
+and panning. The map is coordinated with other views in
+that selections within the map will filter to events related to
+the chosen locations.
+The When: Activity Heatmap View To facilitate multi-
+scale temporal analysis, we developed an Activity Heatmap
+view that allows analysts to monitor events in both retro-
+spective and future time frames. This view shows how a
+business process unfolds over time. It presents both the
+number of organizational activities (e.g. message exchange)
+that have interacted with business process, and the types of
+that business and its key personnel. This view is created as
+an interactive calendar for ease of interaction and it shows
+the temporal trends and patterns of organizational activities.
+Each cell in Figure 4C represents aggregated mentions of
+that date in all the existing business processes; dates that
+have been mentioned more frequently appear in a darker
+shade of blue. For example, we can quickly see that there
+are multiple delivery events that happen on the July 30th of
+this year.
+Using this view, a manager can highlight a time range to
+select a subset of data (e.g., an hour to a day or months) to
+be analyzed retrospectively. Besides showing general trends
+and patterns, the temporal view also allows the user to drill
+down into time periods. When the user selects a time period
+on the horizontal axis in the center of the view, our visual
+interface will zoom into that period of time and present the
+most relevant business information.
+The Who: Communication Activities between partici-
+pating parties To help corporate managers and decision
+makers efficiently retrieve specific events of interest, we de-
+signed the Communication activities view to aggregate both
+the documents and the people that a user has interacted with
+during a particular period of time. Like Lee et al. [10], our
+activities view allows the user to filter and sort information
+based on automatically-extracted data facets, including dif-
+ferent communication types and format. The user can visu-
+ally depict the relationships between the extracted organi-
+zational facts with selected business projects. For example,
+the user can choose to see or hide activities with email, with
+office documents, with Web pages, or with people. Each of
+these facets can be turned on or off by pressing an associ-
+ated button.
+In order to fit the activity information into a reasonable
+guided exploration, our visual interface sorts events by im-
+portance, and displays the most important documents at the
+top and with the most salient presentation by computing
+the importance value centered around the relevance to its
+core business process. As described in Sec. ??, the orga-
+nizational hierarchy view is also important in highlighting
+which events should be followed. In addition, to enable
+fast exploration, a summarized information panel (see Fig-
+ure 4(D) right) is shown when the mouse hovers over a vi-
+sual element representing an activity. Like the Document
+Card [17], this panel includes a readable thumbnail and ag-
+gregated information about that visual element. If the user
+needs more details, the user can double click on the visual
+element to bring up a specific detail view.
+The What: Communication Summary by Topics To
+support the analysis of communications among different
+teams and parties during the overall business process, we
+designed the Communication Summary view, which pro-
+vides an overview and permits analysis based on streaming
+or accumulated communication data. The analysis enables
+users to discover pressing issues that need to be addressed
+in order to keep the entire business process on track.
+We assume most of the communication data are unstruc-
+tured texts sent between communicating parties or attached
+as annotation to the stages of the business process. The vir-
+tual sensors collect all communications and put all the re-
+ceived communications into a database. The attribute in the
+database contains sender, receiver, time stamp, communica-
+tion content, and other available information. All collected
+texts are then summarized into semantically meaningful
+topics using state-of-the-art topic models [2] as shown in
+Figure 4B. The topic summary presents individual topics
+to summarize what the communications are about. Cou-
+pling with the temporal trend of the topics shown in Fig-
+ure 4A, one can quickly discover when a burst of communi-
+cations has occurred and what issues were discussed. Other
+forms of data that are collected and analyzed are discussed
+in Sec. 7.
+We now have complete support for the sensemaking pro-
+cess depicted at the top of Figure 2. The foraging stage
+is supported by the distribution of virtual sensors and their
+outputs. The encoding is supported by the conversion
+to a common event-based format in the analytics engine.
+The reasoning (including hypothesis-building and testing)
+is supported by the exploratory visual interface, which in-
+cludes placement of virtual sensors where needed, and re-
+view of original data. All these stages are iterative and inter-
+connected through the visual interface. In the next section
+we will discuss how this sensemaking can be applied.
+7. An Application Example
+Figure 5. Illustration of virtual sensors de-
+ployed in manufacturing process. Four vir-
+tual sensors are labeled V.S. in the diagram.
+In this section, we will build on the example given in
+the Introduction and illustrated in Figure 1. A real world
+manufacturing operation of any size will have a bigger or-
+ganizational structure than depicted in Figure 1 and will
+have a layer of senior management (C-level: CEO, CIO,
+CTO, CFO, etc.).above the production manager. Because
+of complexity, the changing nature of dynamic JIT manu-
+facturing and production, and the fact that signals of inter-
+est can come from unexpected places, our approach must
+be exploratory, bringing information from disparate sources
+into a common picture for evaluation and action. However,
+it is also data-driven, and since the initial data analytics es-
+pecially are automated, there will be some tension between
+automated and user-directed processes. The visual analytics
+framework and the interactive visual interface are designed
+to minimize this tension and to make these processes work
+together in support of effective user actions.
+A main aspect of the data-driven analysis is to identify
+process events (defined in Sec. 4) and to arrange them so
+that they tell a meaningful story when interpreted by the
+user. In the case of the dashboard used by our business
+partner, process events can be derived from numerical and
+categorical data collected at each stage of the dynamic man-
+ufacturing process, status reports indicating whether each
+stage or component of the process is on, behind, or ahead of
+schedule at that point, and individual annotation including
+comments by managers or engineers for that stage. There
+is also a mechanism for communication among managers,
+engineers, operators, and supervisors across the organiza-
+tion. The dashboard thus provides comprehensive data that
+we use in the above implementation of the visual analyt-
+ics framework. However, though it provides comprehensive
+data, we have heard from the executive in charge that the
+dashboard is not sufficient to fulfill the need for on-time dy-
+namic processing with minimum disruptiontoo many real or
+potentials points for breakdown can be overlooked; likewise
+too many opportunities for improvement and efficiency can
+be missed.
+Thus we instrument the dashboard data and annota-
+tion collection points throughout the manufacturing pro-
+cess with virtual sensors, as illustrated in Figure 5. Process
+events are then identified in multiple ways. One way of
+doing so is by identifying bursts of activity over relatively
+short time scales in the topics derived from the textual an-
+notations and communications. There could also be a trend
+in the numerical data that is unexpected compared to the
+normal manufacturing process. In the example here of not
+having a particular part when needed farther along in the
+manufacturing process, the burst of activity centers around
+one or more topics derived from both the annotations and
+the communications among workers indicating the part, the
+component system it goes into, and the supplier. An ap-
+propriate scale for this burst of activity is a few days. (In
+other words, text messages on the same topic accumulate in
+a burst over a few days.) Named entity extraction is also
+applied to the texts to indicate what sections of the organi-
+zation (and individuals) are communicating, the names of
+parts, systems, and suppliers, and dates mentioned in the
+texts (either past or future). In addition, analysis of the in-
+ventory signal can indicate a drop in the supply of the cru-
+cial part over time that becomes significant enough to gen-
+erate another event. The importance of the process events
+from the topic analysis is further raised because communi-
+cation occurs across organizational boundaries between the
+parts manager, the quality assurance manager, and the tech-
+nical manager (and their teams). The organizational knowl-
+edge of what is and is not unusual communication across
+the organizational hierarchy is encoded in the visual analyt-
+ics framework. We have shown that such temporal bursts
+of topical activity can be automatically identified and that
+they can be connected to real events with high probability.
+We have successfully done this event analysis for streaming
+Twitter data (e.g., events during the development of the Oc-
+cupy Wall Street movement over a year’s time) [5] and col-
+lections of research proposal abstracts and full-text research
+papers [6] where the events are often connected with new
+programs started by funding agencies. These quite different
+text collections and quite different time scales demonstrate
+that the topical event-identification methods are general.
+Up to this point the analysis is all automatic, but the pro-
+cess event results based on both statistical techniques (e.g.,
+signal processing) and process and organization knowledge
+permits highlighting of events, anywhere in the process or
+organizational structure, that are likely to be of interest to
+the high-level manager. The manager starts to interact with
+these results via the visual interface in Figure 4. Through
+the central organization hierarchy view, he sees highlighted
+links between the parts group and the quality manager and
+technical management groups that he knows are unusual.
+A check of the communication activity view shows when
+these bursts of communication occurred. The problem has
+not yet shown up in the calendar view (i.e., the affected pro-
+cess components are not yet falling behind schedule). He
+can then dig down to the actual texts of topical messages
+and can filter for geographical distributions of both suppli-
+ers and the finished systems, which will be displayed in the
+geographical view. He can set a new virtual sensor to watch
+the inventory stream (and to collect historical data). If there
+is a more complex problem, there may be several relevant
+topics. In this case, the hierarchical topic view (commu-
+nication summary view) is useful. The view shows which
+topics are related and can be grouped and also permits re-
+grouping by the manager. The data associated with the top-
+ics, including text messages and other data, are reorganized
+as well. In summary, the manager can quickly find issues
+that should concern him and then effectively analyze them,
+moving towards making key decisions.
+The visual analytics framework has other useful at-
+tributes. The process of investigation by the manager that
+leads to a conclusion and a plan of action is itself captured in
+terms of selected process events, topics, the manager’s own
+annotations, and interactions with the views in the visual in-
+terface. We have found in our studies of bank fraud analysts
+that an interface such as this can reveal high level strategies
+and its own meaningful story of how an expert reaches a
+decision [4]. This story can be shared with other managers,
+giving a rich argument for a course of action. In addition,
+like the fraud analysts, the managers in this dynamic man-
+ufacturing process have expertise developed through expe-
+rience that is not easy to share. However in the case of our
+partner, the problem is exacerbated because, due to the na-
+ture of the business, there is some flow of managers into and
+out of their positions and thus a knowledge and experience
+gap. Use of the visual interface and underlying analytics by
+experts for a variety of situations can be captured and made
+available as training modules for these new managers, giv-
+ing them insights that would be hard to obtain without long
+experience.
+8. Conclusion
+We have presented a visual analytics framework for han-
+dling complex business processes. It is applied to dynamic
+just in time manufacturing, but it is applicable to a range of
+agile business processes.
+In order to organize data that can come from anywhere
+in the complex business process and can be in a variety of
+types, we have introduced the concepts of virtual sensors
+and process events. The virtual sensors permit collection
+from the streams of data at any point in the process and
+transmission of the data in a form ready to be analyzed by
+the central analytics engine. Process events provide a uni-
+form expression of data of different types in a form that
+can be automatically prioritized and that is readily mean-
+ingful to the users. Through the visual interface, the user
+can place the virtual sensors, interact with and group the
+process events, and delve into the details of the process at
+any point. The visual interface provides a multiview inves-
+tigative environment for sensemaking and decisive action
+by the user.
+We have shown that with this visual analytics environ-
+ment, the user can answer the major questions that must be
+addressed in order to achieve a successful dynamic produc-
+tion environment. These include finding overall trends and
+then detailed specific trends in the production process; de-
+termining, as early as possible, what may be going wrong
+and where in the process; determining what the capacities
+of various parts of the process are and what resource re-
+allocation is needed; and determining what expertise should
+be deployed to most quickly solve a problem.
+We are now working on detailed set up and evaluation
+of this framework. The response to the initial design and
+implementation by our partner is quite positive. The event-
+and process-based analysis presented here is of particular
+interest because it will bring data from multiple streams (es-
+pecially textual annotations and comments) into a common
+view for analysis and decision-making. These are new ca-
+pabilities for the partner. We are now embarking on a full
+project to use these capabilities in detail. This will lead to
+improvements and to the reporting of concrete case studies.
+References
+[1] B. Azvine, D. D. Nauck, C. Ho, K. Broszat, and J. Lim. In-
+telligent process analytics for crm. BT Technology Journal,
+24(1):60–69, Jan. 2006.
+[2] D. M. Blei, A. Y. Ng, and M. I. Jordan. Latent dirichlet
+allocation. J. Mach. Learn. Res., 3:993–1022, Mar. 2003.
+[3] R. Bobrik, M. Reichert, and T. Bauer. View-based process
+visualization. In Proceedings of the 5th international con-
+ference on Business process management, BPM’07, pages
+88–95, Berlin, Heidelberg, 2007. Springer-Verlag.
+[4] R. Chang, M. Ghoniem, R. Kosara, W. Ribarsky, J. Yang,
+E. Suma, C. Ziemkiewicz, D. Kern, and A. Sudjianto. Wire-
+vis: Visualization of categorical, time-varying data from fi-
+nancial transactions. In Proceedings of the 2007 IEEE Sym-
+posium on Visual Analytics Science and Technology, VAST
+’07, pages 155–162, Washington, DC, USA, 2007. IEEE
+Computer Society.
+[5] W. Dou, D. Wang, Z. Ma, and W. Ribarsky. Discover
+diamonds-in-the-rough using interactive visual analytics
+system-tweets as a collective diary of the occupy movement,
+2013.
+[6] W. Dou, X. Wang, R. Chang, and W. Ribarsky. Paral-
+leltopics: A probabilistic approach to exploring document
+collections. In Visual Analytics Science and Technology
+(VAST), 2011 IEEE Conference on, pages 231–240, 2011.
+[7] G. Hansen. Automated Business Process Reengineering:
+Using the Power of Visual Simulation Strategies to Improve
+Performance and Profit. Prentice-Hall, Englewood Cliffs,
+1997.
+[8] W. C. Janssen. The uplib personal digital library system. In
+Proceedings of the 5th ACM/IEEE-CS joint conference on
+Digital libraries, JCDL ’05, pages 410–410, New York, NY,
+USA, 2005. ACM.
+[9] T. Kraft, X. Wang, J. Delawder, D. W., L. Yu, and W. Rib-
+arsky. Less after the fact: Investigative visual analysis of
+events from streaming twitter. In IEEE symposium on large
+data analysis and visualization, 2013.
+[10] B. Lee, G. Smith, G. G. Robertson, M. Czerwinski, and D. S.
+Tan. Facetlens: exposing trends and relationships to sup-
+port sensemaking within faceted datasets. In Proceedings
+of the SIGCHI Conference on Human Factors in Computing
+Systems, CHI ’09, pages 1293–1302, New York, NY, USA,
+2009. ACM.
+[11] A. Leoni, M. de, W. van der, and A. t. Hofstede. Process
+mining and visual analytics: Breathing life into business
+process models. BPM Center Report BPM-11-16, 31pp,
+2011.
+[12] M. Leoni, W. Aalst, and A. Hofstede. Visual support for
+work assignment in process-aware information systems. In
+M. Dumas, M. Reichert, and M.-C. Shan, editors, Busi-
+ness Process Management, volume 5240 of Lecture Notes
+in Computer Science, pages 67–83. Springer Berlin Heidel-
+berg, 2008.
+[13] P. Oude Luttighuis, M. Lankhorst, R. Van De Wetering,
+R. Bal, and H. Van Den Berg. Visualising business pro-
+cesses. Comput. Lang., 27(1-3):39–59, Apr. 2001.
+[14] W. Ribarsky, E. Sauda, J. Balmer, and Z. Wartell. The whole
+story: Building the computer history of a place. In Hawaii
+International Conference on Systems Science (HICSS 2012,
+2012.
+[15] S. A. Ruffa. Going lean: How the best companies apply lean
+manufacturing principles to shatter uncertainty, drive inno-
+vation, and maximize profits. AMACOM (American Man-
+agement Association), 2008.
+[16] A. Streit, B. Pham, and R. Brown. Visualization support for
+managing large business process specifications. In W. Aalst,
+B. Benatallah, F. Casati, and F. Curbera, editors, Business
+Process Management, volume 3649 of Lecture Notes in
+Computer Science, pages 205–219. Springer Berlin Heidel-
+berg, 2005.
+[17] J. Teevan, C. Alvarado, M. S. Ackerman, and D. R. Karger.
+The perfect search engine is not enough: a study of orien-
+teering behavior in directed search. In Proceedings of the
+SIGCHI Conference on Human Factors in Computing Sys-
+tems, CHI ’04, pages 415–422, New York, NY, USA, 2004.
+ACM.
+[18] X. Wang, W. Dou, Z. Ma, J. Villalobos, Y. Chen, T. Kraft,
+and W. Ribarsky. I-si: Scalable architecture for analyzing la-
+tent topical-level information from social media data. Comp.
+Graph. Forum, 31(3pt4):1275–1284, June 2012.
+[19] X. Wang, W. Dou, W. Ribarsky, D. Skau, and M. X. Zhou.
+Leadline: Interactive visual analysis of text data through
+event identification and exploration. In Proceedings of the
+2012 IEEE Conference on Visual Analytics Science and
+Technology (VAST), VAST ’12, pages 93–102, Washington,
+DC, USA, 2012. IEEE Computer Society.
+[20] W. Wright. Business visualization adds value. Computer
+Graphics and Applications, IEEE, 18(4):39–, 1998.
+

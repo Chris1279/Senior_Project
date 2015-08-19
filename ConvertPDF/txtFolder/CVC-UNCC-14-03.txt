@@ -1,0 +1,426 @@
+ STO-MP-IST-116 9 - 1 
+UNCLASSIFIED 
+UNCLASSIFIED 
+Making Sense of the Operational Environment through Interactive, 
+Exploratory Visual Analysis 
+Dr. William J. Tolone / Dr. Xiaoyu Wang / Dr. William Ribarsky  
+College of Computing and Informatics 
+University of North Carolina at Charlotte 
+9201 University City Boulevard 
+Charlotte, NC 28223 
+UNITED STATES OF AMERICA 
+email: William.Tolone@uncc.edu / Xiaoyu.Wang@uncc.edu / ribarsky@uncc.edu 
+ABSTRACT  
+The success of defense and security operations depends on the ability to make sense the operational environment 
+and to anticipate those factors that influence operations both negatively and positively. In this paper, we present 
+a framework for interactive, exploratory visual analysis as a means for making sense of the operational 
+environment. This framework is grounded in the sensemaking process and characterized by three essential 
+dimensions: information retrieval/fusion, interactive visualizations and modeling and simulation. The framework 
+reveals several important research gaps that must be filled to provide full benefit to the task of understanding the 
+operational environment. The paper highlights two such gaps: identifying emerging topics and trends, and 
+making sense of integrated modeling and simulation. 
+1.0 INTRODUCTION 
+It is widely recognized that effective interaction with local populations is essential to the success of defense and 
+security operations. Effective interaction, however, depends on the ability to make sense the operational 
+environment and to anticipate those factors that influence defense and security operations both negatively and 
+positively. Unfortunately, the structure and behavior of the systems that commonly comprise these factors 
+suggest that making sense of operational environments is a “wicked problem” [1].  
+Wicked problems are high-stakes, complex problems that are without definitive formulations; they are problems 
+with open solution spaces where solutions have relative quality; and they are problems that are arguably unique 
+in each instance. Given these characteristics, managing wicked problems presents both a difficult and daunting 
+challenge. Fortunately, exploratory capabilities offer a promising approach to managing wicked problems as 
+they provide the foundation for competitive analyses and the study of alternative hypotheses [2].  
+In this paper, we present a framework for interactive, exploratory visual analysis as a means for making sense of 
+the operational environment. This framework is grounded in the sensemaking process [3] and characterized by 
+three essential dimensions: information retrieval/fusion, interactive visualizations and modeling and simulation. 
+While connecting these three dimensions, the framework reveals several important research gaps that must be 
+filled in order to provide full benefit to the task of understanding the operational environment and those factors 
+that influence the outcomes of defense and security operations. In this paper we describe two of these research 
+gaps and illustrate two applications where sensemaking is enabled by interactive, exploratory visual analysis. We 
+conclude this paper by connecting these applications to the framework and decision cycle by illustrating: i) how 
+the identification of emerging topics and trends can inform modeling and simulation; and ii) how these same 
+techniques can build further understanding when applied to data farming enabled by through modeling and 
+simulation. 
+Making Sense of the Operational Environment through Interactive, Exploratory Visual Analysis 
+9 - 2 STO-MP-IST-116 
+UNCLASSIFIED 
+UNCLASSIFIED 
+2.0 SENSEMAKING AND THE OPERATIONAL ENVIRONMENT 
+In order to appreciate the “wickedness” associated with the challenge of making sense of the operational 
+environment, it is useful to highlight the characteristics that commonly comprise the operational environment 
+and explore how those characteristics are aligned with military doctrine.  
+Within U.S. military doctrine, the operational environment is define to be “[a] composite of the conditions, 
+circumstances, and influences that affect the employment of military forces and bear on the decisions of the unit 
+commander” ([4], p. xi). Examining this definition more closely reveals several important insights. First, the 
+operational environment exists in the context of a mission – i.e., the employment (or potential employment) of 
+military forces. In other words, mission requirements are integral to defining the bounds of the operational 
+environment. Second, the operational environment is both situated and dynamic. The operational environment is 
+situated along multiple dimensions – e.g., temporal, geospatial, cultural, etc. – and these dimensions are what 
+give meaning to actions or events within the environment. The operational environment is dynamic as a 
+reflection of changes in conditions, circumstances and influences within the environment. Third, the operational 
+environment is relational, suggesting that there are meaningful patterns and causalities that underlie and explain 
+observable behaviors and changes within the environment. 
+Under recent U.S. military doctrine, the operational environment is frequently characterized as a combination of 
+the political, military, economic, social, infrastructure, information, physical environment and time (PMESII-PT) 
+factors (identified as operational variables), and their interdependencies, that affect military operations [5]. Each 
+of these factors itself is a complex system exhibiting emergent, nonlinear behavior. In fact, understanding the 
+structure and behavior of any one of these factors is arguably a wicked problem in its own right. Collectively, 
+these dimensions challenge analysts and decision makers, and further stretch analytical thought.  
+Characterization of the operational environment is often a key element of military doctrine. The Joint 
+Intelligence Preparation of the Operational Environment (JIPOE) [4] is a prime example. JIPOE is a four-step 
+process designed to provide analytical support to decision-making in a joint operational context (see Figure 1). 
+Table 1 summarizes the tasks associated with each step. It is easily observed that central to each step is the 
+construction and maintenance of an understanding of the operational environment, initiated in Step 1 and 
+explored in subsequent steps.  
+ 
+Figure 1 - Joint Intelligence Preparation for the Operational Environment [4] 
+Making Sense of the Operational Environment through Interactive, Exploratory Visual Analysis 
+STO-MP-IST-116 9 - 3 
+UNCLASSIFIED 
+UNCLASSIFIED 
+Table 1 - JIPOE Tasks [4] 
+Step 1 Step 2 
+• Identify the joint force’s operational area 
+• Analyze the mission and joint force 
+commander’s intent 
+• Determine the significant characteristics of the 
+operational environment 
+• Establish the limits of the joint force’s areas of 
+interest 
+• Determine the level of detail required and 
+feasible within the time available 
+• Determine intelligence and information gaps, 
+shortfalls, and priorities 
+• Collect material and submit requests for 
+information to support further analysis 
+• Develop a geospatial perspective of the 
+operational environment 
+• Develop a systems perspective of the operational 
+environment 
+• Describe the impact of the operational 
+environment on adversary and friendly 
+capabilities and broad courses of action 
+Step 3 Step 4 
+• Update or create adversary models 
+• Determine the current adversary situation 
+• Identify adversary capabilities and 
+vulnerabilities 
+• Identify adversary centers of gravity 
+• Identify the adversary’s likely objectives and 
+desired end states 
+• Identify the full set of adversary courses of 
+action 
+• Evaluate and prioritize each course of action 
+• Develop each course of action in the amount of 
+detail time allows 
+• Identify initial collection requirements 
+We argue that the process of building a proper understanding of the operational environment as characterized by 
+the complex PMESII-PT variables and described in military doctrine such as JIPOE is largely a sensemaking 
+process. Sensemaking has been described in numerous ways. Duffy [6] states that sensemaking is “how people 
+make sense out of their experience in the world.” The final report from the 2001 Sensemaking Symposium [7] 
+describes sensemaking “as the process of creating situation awareness in situations of uncertainty.” Klein et al. 
+[8] describe sensemaking as, “a motivated, continuous effort to understand connections…in order to anticipate 
+their trajectories and act effectively.”  
+Collectively, these descriptions of sensemaking share many common characteristics. First, each characterizes 
+sensemaking as an iterative process with numerous feedback loops – c.f., [3]. Second, each argues that 
+sensemaking involves several activities including foraging, encoding and reasoning. Central to these activities is 
+the iterative construction and refinement of representations, i.e., models – a process that Klein et al. refer to as 
+the framing process [8]. Russell et al. capture this characteristic in their notion of the Learning Loop Complex 
+[9]. In the Learning Loop Complex, people search for a good representation; and, then, instantiate the 
+representation – i.e., encode the data – based of the data available – i.e., data that have been foraged. Those data, 
+called residual data, that do not “fit” the representation lead to the selection, construction or refinement of the 
+representation – i.e., reframing. Third, sensemaking is largely a human-centric activity where judgment and 
+critical thinking play essential roles. This suggests one must abandon the notion that outcomes (e.g., decisions or 
+courses of action) are the output of computational tools; rather, tools should enable the exploration possible 
+outcomes, facilitate human judgment and help to evaluate plausible futures.  
+Making Sense of the Operational Environment through Interactive, Exploratory Visual Analysis 
+9 - 4 STO-MP-IST-116 
+UNCLASSIFIED 
+UNCLASSIFIED 
+Figure 2 is the sensemaking representation that we adopt for the work reported here. In this representation, the 
+progression of data to information, information to knowledge and knowledge to understanding is clearly visible. 
+Information, foraged from data and placed in analytical context, provides the foundational evidences to the 
+analytical question(s). Knowledge, as representations encoded from information, emerges from relationships 
+among concepts [10]. Understanding is synthesized from knowledge through reasoning and critical thought. This 
+progression, however, is not necessary linear and often highly iterative. 
+ 
+ 
+Figure 2 – The Sensemaking Loop 
+3.0 A FRAMEWORK FOR INTERACTIVE, EXPLORATORY VISUAL ANALYSIS 
+We contend that exploratory visual analysis offers important affordances to the sensemaking process. In support 
+of this contention, we have developed a framework for interactive, exploratory visual analysis as a means for 
+making sense of the operational environment. The sensemaking process is central to our framework (see Figure 
+3) with its foraging, encoding and reasoning loops serving as the core analytical activities. The utility of the 
+framework is found in the direction it offers to tool and method research and development in relation to the 
+ability to characterize operational environments quickly and accurately – relative to mission requirements. We 
+believe that the volume, velocity and variety of data that describe the operational environment – e.g., political, 
+economic, military, social, infrastructure, environmental systems, etc. – as well as the complexity of the systems 
+they represent necessitate both knowledge-driven and data-driven approaches to analysis. This accounts for the 
+trifold dimensions of information retrieval/fusion, interactive visualizations and modeling and simulation 
+forming the foundation of the framework. 
+Knowledge-driven approaches emphasize the application and adaption of existing representations, both 
+cognitive and digital, in support of the sensemaking process by enabling the ongoing reframing of representation 
+as a reflection of current understanding. Modeling and simulation, particularly integrated modeling and 
+simulation (i.e., coupling models representing the various PMESII-PT variables), offer an especially promising 
+research direction as applied to the challenge of making sense of the operational environment,. Data-driven 
+approaches, on the other hand, emphasize the construction of new representations from raw data and the 
+situating of those representations within current understanding – revealing as new frames the hidden structure in 
+large corpora of data. Here, techniques such as automated topic-modeling offer a promising research direction in 
+support of the sensemaking challenge.  
+Making Sense of the Operational Environment through Interactive, Exploratory Visual Analysis 
+STO-MP-IST-116 9 - 5 
+UNCLASSIFIED 
+UNCLASSIFIED 
+A further contribution of this framework, however, is its emphasis on the essential role of exploratory visual 
+analysis in relation to both knowledge and data-driven approaches (as well as the dynamic interplay between 
+them) as interactive visualizations provide the vocabulary for analytical dialogue between the human and the 
+computer when facing wicked problems, in this case giving the human access: i) to enhance and direct 
+information retrieval/fusion as well as modeling and simulation; and ii) to explore their results and other relevant 
+data.  
+Unifying all three dimensions of the framework are the processes associated with operational planning. The 
+embedded representation of operational planning in our framework suggests that the analytical methods and 
+tools be applied not only to mission data and knowledge, but also to data and knowledge that are both a 
+representation and product of the planning process (indicated by thickening red arrows). In other words, 
+operational planning is an exploratory process that produces both data and knowledge. We contend that there is 
+hidden structure and meaning in these products that can offer valuable insights to the decision making process. 
+For example, these products can reveal: i) the limitations of the employed tools and methods; ii) the provenance 
+of the underlying inputs to the characterization of the operational environment; and iii) the processes (and their 
+embedded intuitions as well as biases) that led to the constructed understanding of the operational environment. 
+ 
+Figure 3 – Exploratory Framework for Interactive Visual Analysis 
+There are several research gaps suggested by our framework that must be filled in order to provide full benefit to 
+exploratory analysis of wicked problems – in particular, to the process of making sense of operational 
+environments and the factors that influence the outcomes of defense and security operations. The first research 
+gap highlights the challenge of revealing and leveraging hidden structure within large corpora of data as a means 
+of making sense of those data. The second research gap highlights the challenge of understanding the structure 
+and behavior of integrated models, and simulations they produce, as reflections of the systems they represent. 
+With both gaps, we emphasize the value of exploratory visual analysis as an essential affordance to meeting 
+these challenges.  
+Making Sense of the Operational Environment through Interactive, Exploratory Visual Analysis 
+9 - 6 STO-MP-IST-116 
+UNCLASSIFIED 
+UNCLASSIFIED 
+4.0 GAP 1: IDENTIFYING EMERGING TOPICS AND TRENDS 
+The first gap and application illustrates data-driven methods for identifying emerging topics and trends from 
+structured and unstructured data sources. Digital textual content is being generated at a daunting scale, much 
+larger than we can ever comprehend. Vast amounts of content are accumulated from various sources, diverse 
+populations, and different times and locations. For example, 1.35 million scholarly articles were published in 
+2006 alone. With an average annual growth rate of 2.5%, research articles are currently being published at the 
+pace of approximately 4400 titles per day. In the social media world, people are contributing to the accumulation 
+at an even faster pace. By June 2012, Twitter is seeing 400 million tweets per day. Meanwhile, 900 million 
+active Facebook users have been busy sending 1 million messages every 20 minutes. It is generally agreed in 
+government and industry that valuable but latent information is hidden in the vast amount of digital textual 
+content, information that can provide insights into proper characterization of operational environments. For 
+instance for emergency response agencies, sifting through massive amount of social media data could help them 
+monitor and track the development of and response to natural disasters, as illustrated in the use of Twitter to 
+reach victims from hurricanes. 
+With all this activity, a large and growing problem is how analysts and decision makers can gain an 
+understanding of the ideas and connections being expressed in media, and the trends, relationships, events, and 
+social connections indicated or implied in this activity. Once a particular event or activity is identified, one can 
+use search and organizational capabilities to gain more information about it, but this leaves out the majority of 
+events that may be of interest but have not fully bloomed yet and, thus, are not known. In this case, one is 
+overwhelmed with the noise of unrelated events and activity; even in the situation where analysts have an idea 
+what they are looking for, they still are faced with actually examining too large a corpus of data messages in 
+order to get a good understanding of how topics develop, intertwine and change.  
+To meet these challenges, we have developed interactive visual analytics system that aims to provide 
+sophisticated visual interfaces and verifiable analytics results to augment the analytics capability to detect and 
+validate events from heterogeneous, unstructured data sources. We illustrate our research results through its 
+application to the detection and validation of social events from heterogeneous social media sources. Though a 
+specific example, one can easily see how these results can benefit sensemaking process focused on the 
+operational environment. 
+ 
+Figure 4--- Bursty Event Structure.  
+H indicates the volume of documents (e.g., tweets) associated in this event. W suggests the duration of the event. 
+The fundamental component of our visual analytics system is the Event, which we define as a “meaningful 
+occurrence in space and time.” Events are bursts of activity over a relatively short time period, the time scale 
+depending on the category of the temporal data. For example, with streaming Twitter data, a typical single event 
+burst lasts one to two days; major events can be longer lasting, but they usually can be divided into sub-events. 
+In this paper, events are associated with a particular topic (as shown in Figure 4) so that an event occurs for a 
+Making Sense of the Operational Environment through Interactive, Exploratory Visual Analysis 
+STO-MP-IST-116 9 - 7 
+UNCLASSIFIED 
+UNCLASSIFIED 
+particular topic, time, and set of extracted entities (e.g., location, indicated past or future times, names of people, 
+etc. extracted from the social media texts). Thus, in the case of the interactive interface we have developed for 
+Twitter data, a selection of an event chooses only those tweets for the given topic and for the part of the event 
+burst time range selected. As discussed below, events provide a great focus and together make up an 
+interpretable narrative; thus this selection is a powerful filtering tool. 
+ 
+ 
+Figure 5 --- Overview of the Occupy Wallstreet Movement (OWM) in our VA System.  
+A: Occupy hotspots over time. B: Three stages of the OWM divided based on the rise and fall of the overall activities.  C: 
+Visual summary of the Occupy activities. The x-axis represents time; each color-coded ribbon represents a topic extracted 
+from the tweets. Event detection is performed on individual topic to identify bursts as indicators of events. D: Sample 
+events labeled with corresponding keywords.  E: Evidence [Evid.X] mentioned in the paper. For more detail refer to [11]. 
+To identify emerging topics and trends, we perform one more analysis step on our event structure. We label as 
+events only those bursty structures that have a motivating event (see Figure 4). A motivating event is an 
+occurrence, either described in the event burst tweets themselves (usually at the beginning) or external to this set 
+of tweets that has motivated the bursty response. Most if not all event bursts of this type are responses to the 
+initial motivating event. For example, the main topical events on September 17, 2011 were clearly associated 
+with the launch of Occupy Wall Street (OWS) on that date at Zucotti Park in New York City, but most of the 
+associated tweets, from individuals and from online news, were in response to this event. In fact, OWS was large 
+enough that there were several topics with their associated events on that date.  
+We have found that by just analyzing the shape, size, and duration of the burst, we can automatically identify 
+events that will have clear motivating events. Thus, we have a mechanism for automatically identifying 
+meaningful events that we have tested successfully on multiple categories of data, not just streaming social 
+media. This is not to say that there are no other, unmarked bursts that are meaningful. Nor is it to say that the 
+meaning is immediately clear from this analysis. Input from a human-in-the-loop is necessary to resolve these 
+Making Sense of the Operational Environment through Interactive, Exploratory Visual Analysis 
+9 - 8 STO-MP-IST-116 
+UNCLASSIFIED 
+UNCLASSIFIED 
+questions. But this identification of meaningful events is still a boon for exploratory analysis since we have 
+found it identifies most of the major events and also directs the user's attention. We have applied our visual 
+analytics system to tell the complete story of OWS from precursor discussion before the launch till now. As 
+shown in Figure 5, this shows how a comprehensive, rich narrative can be built efficiently [11]. 
+5.0 GAP 2: MAKING SENSE OF INTEGRATED MODELING AND SIMULATION 
+The second research gap highlights the challenge of understanding the structure and behavior of integrated 
+models, and the simulations they produce, as a means for making sense of the operational environment. As 
+defined by U.S. military doctrine, the operational environment is a “composite of the conditions, circumstances, 
+and influences that affect the employment of military forces and bear on the decisions of the unit commander” 
+[4]. These “conditions, circumstances, and influences” are understood in terms of operational variables (e.g., 
+PMESII-PT) that characterize the operational environment. Integrated modeling and simulation offers a 
+promising approach to this sensemaking challenge as models representing each of the operational variables are 
+composed, or coupled, to represent an interdependent system of systems within the operational environment. 
+To illustrate, consider the Vu architecture depicted in Figure 6. A product of our previous research results 
+[12],[13],[15], Vu is a knowledge-driven approach to integrated modeling and simulation of complex systems of 
+systems. As a knowledge-driven approach, the architecture supports the adaptation, or reframing, of models to 
+produce an integrated representation of specified operational environment. It also enables the exploration of 
+alternative hypotheses, a useful strategy to managing wicked problems (c.f., Roberts [2]). 
+ 
+Figure 6 – Architecture for Integrated Modeling and Simulation 
+While the architecture [14] presents a novel approach to integrated modeling and simulation, its utility depends 
+directly on the essential role of exploratory visual analysis. The Vu user experience (see Figure 7) consists of 
+temporally situated, geospatially-oriented, interactive visualizations of interdependent models as they respond to 
+disruption or reconstitution events with cascading effects. More specifically, the Vu environment provides 
+numerous interactive visualizations that enable users to identify and understand quickly: i) emerging, cascading 
+effects; ii) chains of causality and their underlying interdependencies; and iii) plausible futures of potential 
+courses of action. Furthermore, the exploratory interfaces help users to identify key events in sequence in order 
+to turn these identified events, their behaviors and relationships, into actionable plans or courses of action, 
+augmented with alternative scenarios. The interactive visualizations also play an essential function in model 
+verification and validation by increasing transparency of model projections. 
+Making Sense of the Operational Environment through Interactive, Exploratory Visual Analysis 
+STO-MP-IST-116 9 - 9 
+UNCLASSIFIED 
+UNCLASSIFIED 
+ 
+Figure 7 – The Vu User Experience 
+The second gap and application also illustrate data-driven and knowledge-driven methods working in concert to 
+understand better the properties of knowledge representations. More specifically, the planning process produces 
+numerous knowledge artifacts including models of the operational environment, potential courses of action and 
+simulation traces representing plausible futures. The application of data-driven methods supported by 
+exploratory interfaces to these knowledge artifacts can reveal important insights about the representations 
+themselves and the complex space of simulations they produce. Figure 8 offers two illustrations of this 
+affordance. Both allow visual exploration of a suite of Vu simulations produced using data farming techniques. 
+The visualization on the left is aggregate sustainability analysis of simulation outcomes for an integrated urban 
+model. The visualization on the right is aggregate temporal analysis of integrated infrastructure resiliency in the 
+face of majorly disruptive weather events (e.g., hurricanes). Each visualization reveals hidden structure within 
+the integrated modeling and simulation data – thus, providing further insight about the respective operational 
+environment. 
+Making Sense of the Operational Environment through Interactive, Exploratory Visual Analysis 
+9 - 10 STO-MP-IST-116 
+UNCLASSIFIED 
+UNCLASSIFIED 
+         
+Figure 8 – Visual Analysis of the Space of Simulations. 
+6.0 CLOSING THE LOOP 
+We conclude this paper by connecting framework dimensions – i.e., information retrieval/fusion, interactive 
+visualizations and modeling and simulation – to the sensemaking process in general, and the process of making 
+sense of the operational environment more specifically. 
+As demonstrated by our discussion of the illustrative gaps, exploratory visual analysis can benefit all aspects of 
+the sensemaking process – i.e., foraging, encoding and reasoning. In particular, exploratory visual analysis can 
+facilitate the efficiency and efficacy of the foraging loop, including the organization of collected data and the 
+identifications of key evidence. As illustrated by Gap 1, data-driven tools and methods offer important utility to 
+this process, as there is often hidden structure and meaning within collected data. Connecting exploratory visual 
+analysis capabilities to these data-driven tools and methods also enables the encoding loop as evidences are 
+organized into relevant representations. These activities become the initial, though powerful, forays into the 
+reasoning loop. 
+As illustrated by Gap 2, extending exploratory visual analysis capabilities to knowledge-driven tools and 
+methods can further facilitate the reasoning loop. Exploratory visual analysis enables users not only to 
+understand better the modeled phenomenon, but also the limitations of the models as reflected in identified 
+uncertainties, biases, inaccuracies and/or missing evidences. Exploratory visual analysis also can help users 
+understand better the range of potential representations and plausible futures in the face of recognized 
+uncertainty. Paul and Elder stress the importance of such exploration in their discussion of the elements of 
+reason and the articulation of assumptions, evidences, inferences and consequences [16]. Exploring the range of 
+plausible futures (rather than just the predicted future) is especially important in the face of wicked problems, 
+Making Sense of the Operational Environment through Interactive, Exploratory Visual Analysis 
+STO-MP-IST-116 9 - 11 
+UNCLASSIFIED 
+UNCLASSIFIED 
+such as making sense of the operational environment. In particular, Roberts highlights the value of competing 
+analyses as a promising method for managing wicked problems [2]. 
+Connecting data-driven approaches with knowledge-driven approaches, however, can further empower the 
+sensemaking process – not only through collective support but also through synergy between the approaches. In 
+particular, data-driven approaches (associated with information retrieval/fusion) can be connected to knowledge-
+driven approaches (associated with modeling and simulation) through the encoding loop. Here, military doctrine 
+regarding the desired characterization of the operational environment (e.g., PMESII-PT) frames the encoding 
+process. Exploratory visual interfaces are essential to this activity as they help modelers identify which 
+evidences to encode and which representations to employ. As illustrated in our discussion of Gap 2, these 
+capabilities in particular can help modelers develop new models, adapt existing models and configure models for 
+exploration and analysis.  
+7.0 SUMMARY 
+Making sense of the operational environment is arguably a wicked problem. We believe that interactive 
+exploratory visual analysis can offer important affordances to the sensemaking process in this context. To that 
+end, this paper presents a framework for interactive, exploratory visual analysis. This framework is grounded in 
+the sensemaking process and characterized by three essential dimensions: information retrieval/fusion, 
+interactive visualizations and modeling and simulation. The utility of the framework is found in the direction it 
+offers to tool and method research and development in relation to the ability to characterize operational 
+environments quickly and accurately – relative to mission requirements. Furthermore, we believe that the 
+volume, velocity and variety of data that describe the operational environment as well as the complexity of the 
+systems they represent necessitate both knowledge-driven and data-driven approaches to analysis. To support 
+our contentions, we present to research gaps and associated applications. The first gap and associated application 
+illustrates the benefit of exploratory visual analysis to a data-driven approach to the identification of emerging 
+topics and trends within large corpora of unstructured data. Such support can offer important affordances to 
+characterizing operational environments. The second gap and associated application illustrates the benefit of 
+exploratory visual analysis to integrated modeling and simulation. Integrated modeling and simulation can 
+provide multi-dimensional (e.g., PMESII-PT) representations of the operational environment in support of the 
+sensemaking process. The second gap and application also illustrate data-driven and knowledge-driven methods 
+working in concert to understand better the properties of these integrated representations. 
+8.0 REFERENCES 
+[1] H. Rittel, M. Webber. “Dilemmas in a General Theory of Planning,” Policy Sciences 4: 155-159, 1973. 
+[2] N. Roberts. “Wicked Problems and Network Approaches to Resolution,” The International Public 
+Management Review, 1.1: 1-19, 2000. 
+[3] P. Pirolli, S.K. Card. “The Sensemaking Process and Leverage Points for Analyst Technology as Identified 
+through Cognitive Task Analysis, Proceedings of the International Conference on Intelligence Analysis, 
+2005. 
+[4] Joint Publication 2-01.3. Joint Intelligence Preparation of the Operational Environment, June 2009. 
+[5] Field Manual 3-0. Operations. Department of the Army, February 2008. 
+Making Sense of the Operational Environment through Interactive, Exploratory Visual Analysis 
+9 - 12 STO-MP-IST-116 
+UNCLASSIFIED 
+UNCLASSIFIED 
+[6] M. Duffy. “Sensemaking in Classroom Conversations,” Openness in Research: The Tension between Self 
+and Other, ed. by I. Maso et al.,Van Gorcu, 1995. 
+[7] D.K. Leedom, Sensemaking Symposium: Final Report, Command and Control Research Program, Office 
+of the Assistant Secretary of Defense for Command, Control, Communications and Intelligence, 2001. 
+[8] G. Klein, B. Moon, R.R. Hoffman. “Making Sense of Sensemaking 1: Alternative Perspectives,” IEEE 
+Intelligent Systems, July/August 2006. 
+[9] D.M. Russell, M.J. Stefik, P. Pirolli, S.K. Card. “The Cost Structure of Sensemaking,” Proceedings of 
+InterCHI, 1993. 
+[10] J. Locke. An Essay Concerning Human Understanding, 1690. 
+[11] X. Wang, W. Dou, Z. Ma, W. Ribarsky. “Discover Diamonds-in-the-rough Using Interactive Visual 
+Analytics System: Tweets as a Collective Diary of the Occupy Movement.” In the 7th International AAAI 
+Conference on Weblogs and Social Media 2013 (ICWSM 2013). 
+[12] W.J. Tolone. “Making Sense of Complex Systems through Integrated Modeling and Simulation.” 
+Advances in Information and Intelligent Systems. Ras, Z. and Ribarsky, W., eds., pp. 21-40, Studies in 
+Computational Intelligence, Volume 251, 2009. 
+[13] W.J. Tolone, M. Armstrong. “Integrated Analytics: Understanding Critical Infrastructure Behaviors for 
+Resilience Analysis.” The Homeland Security Review. Vol. 5(3): 241-258, California University of 
+Pennsylvania, 2011. 
+[14] W.J. Tolone, E.W. Johnson, S.W. Lee, W.N. Xiang, L. Marsh, C. Yeager, J. Blackwell. “Enabling System 
+of Systems Analysis of Critical Infrastructure Behaviors.” In Proceedings of the 3rd International 
+Workshop on Critical Information Infrastructure Security (CRITIS 2008). Lecture Notes in Computer 
+Science #5508, Setola, R., Geretshuber, S., eds., pp. 24 – 35, Springer, 2009. 
+[15] W.J. Tolone, S.W. Lee, W.N. Xiang, J. Blackwell, C. Yeager, A. Schumpert, E.W. Johnson. “An 
+Integrated Methodology for Critical Infrastructure Modeling and Simulation.” In IFIP International 
+Federation for Information Processing, Volume 290; Critical Infrastructure Protection II, 2nd Edition, 
+Goetz, E. and Shenoi, S. eds., pp. 257 – 268, Springer, 2008. 
+[16] R. Paul, L. Elder. The Miniature Guide to Critical Thinking: Concepts and Tools. The Foundation for 
+Critical Thinking, 2006. 
+Making Sense of the Operational Environment through Interactive, Exploratory Visual Analysis 
+STO-MP-IST-116 9 - 13 
+UNCLASSIFIED 
+UNCLASSIFIED 
+ 
+ 
+

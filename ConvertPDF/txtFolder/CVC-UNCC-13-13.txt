@@ -1,0 +1,625 @@
+  
+ 
+ 
+ 
+ 
+ 
+HyFinBall: A Two-Handed, Hybrid 2D/3D Desktop VR Interface  
+for Multi-Dimensional Visualization 
+ 
+(Technical Report: CVC-UNCC-14-13) 
+ 
+ 
+Isaac Cho, Xiaoyu Wang, and Zachary Wartell 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+The original publication is available at http://www.spie.org.  
+ 
+Cho, I.; Wang, X.; Wartell, Z.; " HyFinBall: A Two-Handed, Hybrid 2D/3D Desktop VR Interface 
+for Multi-Dimensional Visualization," Visualization and Data Analysis (VDA 2014), IS&T / SPIE 
+Electronic Imaging 2014,  February, 2014.  
+ HyFinBall: A Two-Handed, Hybrid 2D/3D Desktop VR Interface for 
+Multi-Dimensional Visualization 
+ 
+Isaac Cho, Xiaoyu Wang, Zachary J. Wartell 
+Charlotte Visualization Center, University of North Carolina at Charlotte, Charlotte, NC, USA 
+28213-0001 
+ABSTRACT 
+This paper presents the concept, working prototype and design space of a two-handed, hybrid spatial user interface for 
+minimally immersive desktop VR targeted at multi-dimensional visualizations. The user interface supports dual button 
+balls (6DOF isotonic controllers with multiple buttons) which automatically switch between 6DOF mode (xyz + 
+yaw,pitch,roll) and planar-3DOF mode (xy + yaw) upon contacting the desktop. The mode switch automatically switches 
+a button ball?s visual representation between a 3D cursor and a mouse-like 2D cursor while also switching the available 
+user interaction techniques (ITs) between 3D and 2D ITs. Further, the small form factor of the button ball allows the user 
+to engage in 2D multi-touch or 3D gestures without releasing and re-acquiring the device. We call the device and hybrid 
+interface the HyFinBall interface which is an abbreviation for „Hybrid Finger Ball.? We describe the user interface 
+(hardware and software), the design space, as well as preliminary results of a formal user study. This is done in the 
+context of a rich, visual analytics interface containing coordinated views with 2D and 3D visualizations and interactions 
+Keywords: stereoscopic display, virtual reality, user interface, two-handed interface, hybrid user interface, multi-touch, 
+gesture, finger-tracking 
+1. INTRODUCTION  
+ 
+      (A)                                           (B)                                            (C)                                            (D) 
+Figure 1: The HyFinBall UI supports 6DOF isotonic input (A), planar-3DOF input (B), 3D hand and finger tracking and 
+gesture (C) and multi-touch (D). Note, the horizontal, multi-touch display is projected and disabled in this image, but 
+see Figure 2. 
+The ubiquitous Windows-Icon-Menu-Pointer (WIMP) user interface and its 2D mouse user interface techniques began 
+with Xerox Parc?s and other?s seminal work. Similar to 2D interaction techniques (ITs [1]), 3D ITs often require physical 
+devices (e.g. ChordGloves or pinch gloves [2], a bat [3], Cubic Mouse [4]) to provide a full six degrees of freedom 
+(DOF) interaction. Furthermore, HCI research has explored direct inputs by human modalities, such as voice, gaze, and 
+gestures, for more natural ITs than those offered by physical input devices. Researchers have placed a particular 
+emphasis on the study of natural human hand modalities like multi-touch direct input, and 3D hand gestures. These 
+techniques allow direct user interactions with minimal learning.  
+ In this paper we present a minimally immersive, desktop VR [5] interface for a visual analytic application that provides 
+two-handed bat (3D mouse) input, two-handed 2D mouse input, multi-touch and 3D gesture. The primary devices are 
+two 6DOF button balls. We used these previously [6], borrowing from the bat, the FingerBall [7], and the button-
+enhanced bat [8]. This paper presents the HyFinBall (“hybrid-finger-ball”) user interface described below: 
+? HyFinBall: The HyFinBall interface starts with a pair 6DOF tracked balls with multiple buttons. Each ball is 
+4.5 cm in diameter roughly the size of a ping-pong ball. The software user interface has the following properties. 
+When a button ball is held in the air (Figure 1A), a 3D cursor is displayed and 6DOF (xyz+yaw,pitch,roll) 
+interactions are active. When a button ball is placed on the desktop, the UI automatically switches from treating 
+button ball as 6DOF isotonic device to treating it as a planar-3DOF input device (xy-position + yaw) and the 3D 
+cursor is replaced by a 2D cursor in the plane of the screen. Each button ball independently switches between a 
+6DOF and planar-3DOF mode. During this switch, the user interface techniques available for the button ball 
+switch from 3D ITs to 2D ITs. There is a translational offset between the physical location of the HyFinBall and 
+its displayed 2D and 3D cursors. 6DOF mode uses an elbow-resting posture [8] while planar-3DOF mode uses a 
+palm-resting posture. Strong consideration is given to stereoscopic display issues in the desktop VR 
+environment when displaying the cursors. In particular, certain planar-3DOF ITs use projected 3D cursors.  
+? HyFinBall + Finger-Tracking: The HyFinBall is small enough to hold in a precision grasp [7] and small 
+enough to be held with only the pinky, ring finger and palm in an average adult hand. This leaves the thumb, 
+forefinger and (possibly) middle finger free. The free fingers can either:  
+interact on a horizontal 2D, multi-touch desktop display 
+OR 
+perform three finger 3D interaction and gestures when in 6DOF mode. 
+By design, these 2D and 3D finger-tracking modes can be engaged without incurring an acquisition time 
+penalty, i.e. the user does not drop and pick-up the button ball to engage and disengage these finger interaction 
+modes.  
+The concept of using a single device that switches automatically between 6DOF mode and planar 3DOF mode, while not 
+new (such the VideoMouse [9], and Logitech 2D/6D Mouse [10]) has not, to our knowledge, been integrated into any 
+rich application that requires both 3D interaction and 2D interaction across coordinated views. The design space implied 
+by the HyFinBall interface has not been explored with respect to desktop VR environments (in particular its stereoscopic 
+3D component) and this type of interface been not been studied for one-handed UIs, let alone two-handed UIs. To our 
+knowledge, there has been no demonstration of a hybrid user interface (HUI) where the user uses a small form factor 
+6DOF held-device with a precision grip that can be continuously held while allowing the free fingers can engage in 2D 
+multi-touch and/or 3D gesture interaction. 
+ A user study is in progress focusing on the core HyFinBall concept comparing it to a mouse, the planar-3DOF-only 
+mode and 6DOF-only mode across a variety of 2D and 3D combination tasks. In this paper, we present the HyFinBall 
+and HyFinBall+Finger-Tracking concept and prototype (hardware and software). We present our anecdotal observations 
+and describe the design space of the resulting hybrid interaction techniques. Finally, we present some preliminary 
+findings of the aforementioned user study. This is done in the context of a rich, visual analytics interface containing 
+coordinated views with 2D and 3D visualizations and with strong consideration of stereoscopic display issues in desktop 
+VR.  
+2. BACKGROUND AND RELATED WORK 
+Many researchers have introduced 3D UI techniques for VEs. Bowman et al. [1] conducted many of the most recent, 
+broad reviews of 3D UIs and ITs and have reviewed and evaluated a number of 2D and 3D ITs. They also have 
+identified specifications of ITs that will improve the usability of 3D interactions in real-world applications and have 
+proposed guidelines for future ITs [11]. Liu et al. explored modern ITs for 3D desktop personal computers (PCs) [12]. A 
+number of other articles also include review of physical input devices for 3D UIs [13,14], and ITs for large displays [15]. 
+Bimanual interaction enriches interaction because humans often use two hands to accomplish tasks in the real world. A 
+significant amount of research shows the advantages of bimanual interactions [16,17,18] based on Guiard?s Kinetic 
+Chain theory that classifies different categories of bimanual actions [19]. 
+ Several taxonomy?s of spatial input technologies (hardware) [20] have been created as well as taxonomies of 3D spatial 
+user interaction techniques (software) [21]. Here, we use the following coarse categorization of spatial input hardware: 
+• 2D vs. 3D input 
+• held-devices vs. body-tracking 
+ 
+Our operational definitions are as follows. A 2D input device only tracks within a physical plane. 3D input tracks motion 
+in 3-dimensions (at least 3DOF position and up to 6DOF). Held-devices are spatial input devices held by the user, while 
+body-tracking tracks the body (such as hands and fingers). Body-tracking never requires the user to grasp a prop, but it 
+may require some encumbering mechanism (gloves, fiducial markers, etc.). 
+A traditional mouse is a 2D held-device with 2 position DOFs. A 2D mouse with the ability to yaw perpendicular to the 
+motion plane [21] is referred to here as a planar-3DOF device. Multi-touch is a body-tracking, 2D input with roughly 20 
+DOFs (10 fingers × 2 position DOFs). VIDEOPLACE was an early body-tracked 2D interface [22]. Notably the user 
+was completely unencumbered (i.e. requiring no worn apparatus of any kind, not even fiducial markers).  
+3D input interacts in a 3D space. The bat [3] is an isotonic, 3D held-device with 6DOF pose (position and orientation). A 
+bending-sensing data glove with a 6DOF tracker attached is categorized as 3D body-tracking , not a held-device. The 
+ideal implementation of body-tracking, of course, is a completely unencumbered system. Wang et al [23]demonstrate 
+unencumbered hand plus finger-tracking. Our operational definition of body-tracking treats encumbered and 
+unencumbered implementations as sub-categories. 
+Various researchers have demonstrated [7,24,25] that having a 3D held-device grasped in the hand is beneficial due to 
+the tactile feedback (passive haptics) it provides for 3D manipulation. Such feedback does not exist in hand or finger-
+tracked 3D UIs, but does exist in 2D multi-touch UI?s or 3D systems augmented with haptics. 
+When considering a held input device, a device is held in either a precision grasp or power grasp. For some applications, 
+such as a VR system for training a user to use a real-world tool, a power grasped prop is ideal—assuming the real-world 
+tool requires a power-grasp. However, a precision grip allows finer control due the larger “bandwidth of the fingers”. 
+Physically the HyFinBall device follows Zhai et al.?s FingerBall which had a single button activated by squeezing [7]. 
+Our HyFinBall interface uses multiple buttons and is two-handed following Shaw and Green [8]. (We use these button 
+balls in Ulinski et al. [6] but that system does not contain any of the HyFinBall hybrid UI concepts). As a general 
+purpose input device for desktop VR applications, we follow the above authors and promote using a pair of generic 
+shaped devices that remain in the user?s hands for relatively long durations to minimize device acquisition time penalties. 
+This is opposed to using multiple, specially shaped 3D held-devices that must be put down and picked up repeatedly. We 
+suggest that for data visualization applications (as opposed to VR training applications) a pair of generic devices (or 
+perhaps a few devices of different but generic shapes [26]) will be superior. 
+Early tangible user interfaces [27] were 2D held-devices that were planar-3DOF. Tangible interfaces were unique in that 
+the user had a multitude of different held-devices available on a horizontal display surface and the held-devices were 
+untethered and required no power (an external camera tracks their 2D pose). 
+Most user interface devices and corresponding user interface techniques that provide spatial manipulation use either 
+held-devices or body-tracking, but not both. There are some exceptions. For example, the touch mouse contains a multi-
+touch surface on the top of the mouse [28]. However, to our knowledge, there has been relatively little development and 
+experimentation with user interfaces that support 2D and 3D held-devices while simultaneously enabling 2D/3D hand 
+plus finger-tracking. The goal of the HyFinBall+Finger-Tracking interface is to explore this design space 
+Ideally the HyFinBall button ball would be untethered allowing full 360 degree rotations without an encumbering, 
+entangling cord. Bradley and Roth demonstrate untethered computer vision tracking of a fist-sized ball [29], but 
+occlusion remains a problem, especially for a two-handed scenario. Current battery and sensor technology still precludes 
+constructing an accurate, small-form factor wireless 6DOF ball, but this area of engineering is very active [30]. Finally, 
+non-isomorphic rotation techniques [1] can ameliorate cord entanglement during rotation operations. 
+Mapes and Moshel [2] use an HMD with 6DOF tracked pinch gloves and a physical surface at a 45 degree angle. A pair 
+of 3D cursors is positioned roughly corresponding to the position of the user?s hands. When the hands rest on the surface 
+they are supported and the pair of pinch-gloves essentially acts like a pair of 3 button mice. However, the display of the 
+3D cursors remains the same regardless of hand position. In contrast, in the HyFinBall planar-3DOF mode, if the user 
+rests the button ball on the desk it changes both the cursor display and the interaction techniques available. This 
+ difference is motivated in part, due to the display system difference, i.e. HMD in Mapes and Moshel vs. desktop VR 
+here. In the HyFinBall planar-3DOF mode, the 2D cursors are within the plane of the vertical display screen while the 
+button balls remain on the desktop surface. This is designed specifically to mimic mouse usage and to place the 2D 
+cursors at zero-screen parallax to simplify stereo viewing issues when interacting with the 2D GUI elements. 
+The term hybrid user interface (HUI) refers to a UI with multiple methods for spatial input, frequently supporting both 
+bimanual or unimanual interaction and 2D and 3D interaction. Benko et al. [31] combine a multi-touch 2D surface with 
+hand and finger 3D gestures and 3D interaction in an augmented reality system. They coin the terms HUI and cross-
+dimensional gestures. 
+Some earlier devices support a similar notion of cross-dimensional interaction. The VideoMouse [9] and the Logitech 
+2D/6D Mouse [10] are a single device that support both 6DOF mode and planar-3DOF mode. However, in neither 
+system was this concept extensively developed into a hybrid 2D/3D UI nor was two-handed interaction supported. The 
+utility of confining the motion of 6DOF device to a physical plane, such as a held tablet, to reduce the physically 
+manipulated DOF?s has been demonstrated [1]. However, these prior works do not use a significant displacement 
+between the physical device and its representative 2D or 3D cursor (as in [8]) and neither of these works? UI?s 
+implement the 6DOF to planar-3DOF mode switching found in the HyFinBall interface. 
+Massink et al. introduced HyNet, an HUI system for desktop-based navigation [32]. This work uses a traditional mouse 
+for navigating the 3D world with a conventional desktop system. However, the system only uses 2D GUIs with 2D UIs 
+and does not provide a solution for 3D visualizations and VE systems. The authors also introduce a programming 
+abstraction for the HUI, with traditional desktop-based systems that used conventional mouse and keyboard inputs. The 
+HUI addresses both theoretical abstraction and 3D input modalities.  
+Alencar et al. present HybridDesk that combines 2D and 3D interactions with a tracked Wiimote and WIMP interface for 
+an oil platform visualization [33]. There are three UIs in HybridDesk used to evaluate their HUI techniques: VR-Nav for 
+navigation and selection, VR-Manip for manipulation, and the traditional WIMP UI. More recently, Magic Desk [28] 
+utilizes multi-touch input, a mouse, and a keyboard within a traditional desktop environment for unimanual and bimanual 
+interactions. The authors explore suitable physical positions of multi-touch input relative to the user during the 
+experiment. Althoff et al. present a multimodal interface for navigation in arbitrary virtual VRML worlds [34], which 
+uses a mouse, keyboard, joystick, and multi-touch input. However, their environment was limited to 2D visualizations 
+and 2D interactions. The Slice WIM interface, which uses a multi-touch table with a head-tracked, stereoscopic wall 
+screen display for a medical imaging volumetric dataset [35], allows multi-touch interaction on the table to control 3D 
+data using two widgets. 
+Multimodal user interfaces (MUI) generally use more than just spatial input; for instance they combine voice and gesture 
+[36,37]. Bolt introduces a system called “put-that-there,” which uses voice and gaze inputs [38]. Within GIS systems, 
+voice and gaze inputs also are popular interaction methods in MUIs [39,40]. The main advantage of natural human input 
+modes is that they do not require any held-device and users need less training. 
+HUIs and MUIs can be combined with augmented reality as well. ICARE is an example of such a mixed environment 
+[41]. Bianchi et al. developed a hybrid AR system, which used a hybrid external optical tracker for the user?s head pose 
+and a subsequent visual landmark-based refinement of the pose estimation [42] that uses AR?s overlaying of virtual 
+objects on the user?s real environment [43]. Other previous works include medical volumetric datasets designed for use 
+by surgeons [44,45]. 
+Many HUI and MUI systems incorporate hand-held, mobile devices. Song et al. introduce an application called what-
+you-see-is-what-you-feel that uses a mobile device for input and a wall-mounted display for medical imaging volumetric 
+data visualization [46]. Users employ 2D multi-touch input on the handheld device to manipulate the 3D medical volume 
+data on the large wall-mounted display through the wireless network.  
+Researchers also can use HUIs and MUIs in collaborative systems. Each user can handle a different system employing 
+heterogeneous displays with various techniques to share the visualization or data with other colleagues. Schmalstieg et 
+al. introduced a mixed reality environment that combines AR, ubiquitous computing, and a desktop metaphor for a 
+collaborative system used with medical volume data [45]. 
+ 3. THE HYFINBALL INTERFACE OVERVIEW 
+ 
+Figure 2: HyFinBall UI: Head-tracked stereoscopic vertical display, projected multi-touch table using PQLab?s frame, dual 
+button balls, and dual Kinects for 3D hand and finger-tracking.  
+    
+(A)                                                                                               (B) 
+Figure 3: Scatter-plots with selected regions and interactive (A), and Boolean expression tree (B). 
+We present the HyFinBall UI in the context of a rich multi-dimensional application called DIEM-VR. DIEM-VR is a 
+tool for analyzing terrain meshes from 10 years of LIDAR scans of the North Carolina Coast from the NOAA Digital 
+Coast database. We extend a linked feature space interface from our prior work [47] that integrates multi-dimensional, 
+feature space 2D views with 3D terrain views. In the HyFinBall system, the user sits at dual screen, desktop VR system. 
+It uses Nvidia 3D vision glasses and a Polhemus Fastak for head-tracking and for tracking the HyFinBall devices. Two 
+Windows Kinects view the desk space running 3Gear?s finger-tracking software [48]. A PQ Labs multi-touch screen [49] 
+is placed on the horizontal desktop with an overhead projector (Figure 2). A pure 2D display and direct 2D manipulation 
+is performed on the multi-touch horizontal display while 3D content as well as limited 2D content appears on the vertical 
+display. For the DIEM-VR application, the images in the vertical and horizontal screens in Figure 2 are reproduced as a 
+screen captures Figure 3A and B. The vertical screen displays a 3D terrain patch as well as feature space 2D scatter plots. 
+The horizontal display shows a interactive boolean expression tree that controls selection of terrain mesh points using a 
+boolean combination of the highlighted selections in the 2D scatter plots. 
+  
+(A)                                  (B)                                   (C)                                  (D)                                   (E) 
+Figure 4: Hand off table, 6DOF mode (A). Hand on table, planar-3DOF mode (B). Dual fingers 3D gesture (C). Fingers on 
+table, multi-touch (side view) (D). Fingers on table, multi-touch (top x-ray view showing held and hidden button ball) 
+(E). 
+As discussed in the introduction, the HyFinBall user-interface takes particular advantage of the small formfactor of the 
+button ball to enable a number of 3D and 2D interactions paradigms without having to drop and reacquire the input 
+device. In the DIEM-VR application 3D navigation and volumetric selection of the 3D terrain occurs using one or both 
+of the button balls held in the air, but with the elbows resting. This 6DOF button ball interaction mode is shown in Figure 
+1A and Figure 4A. Next, interaction with 2D objects on the vertical screen, such as the scatter plots in DIEM-VR, occurs 
+with one or both of the button balls placed on the desk surface (Figure 1B and Figure 4B) in which case planar-3DOF 
+interaction mode is enabled. Third, when the user tucks the button ball in his palm (Figure 1D and Figure 4D and E), the 
+free fingers such as the thumb and pointer finger interact with the 2D graphics on the horizontal display using multi-
+touch. In DIEM-VR, this multi-touch mode controls the Boolean expression tree mentioned earlier and elaborated upon 
+in Section 4.4. Finally, although only experimentally implemented in our DIEM-VR application (due to tracking 
+limitations), when the user tucks a button ball in his palm and makes 3D pointing gestures (Figure 1C and Figure 4C), 
+3D hand and finger tracking enables a ray-based 3D selection within DIEM-VR. 
+Before delving further into the how DIEM-VR leverages the HyFinBall interface, we mentioned a few caveats about the 
+hardware setup. The PQLab?s touch detection is robust and we integrate into the DIEM-VR Boolean expression display. 
+We, however, anecdotally found the 3Gear 3D finger tracking and gesture recognition less robust in its current iteration. 
+In particular, we find a relatively high-number of false negatives during gesture recognition and find it?s tracking range 
+more limited than that of the Fastrak used for the HyFinBalls. However, the 3Gear system is relatively new and these 
+issues vary with the variety of ways the Kinect?s can be physically arranged. Therefore, we have only loosely integrated 
+a ray-based 3D selection in DIEM-VR using 3D pointing gestures. 
+The touch surface is a PQLab 24” multi-touch frame lying horizontally on the desk. A projector projects an image down 
+onto the surface. A projector is needed instead of a flat panel display because when the button balls are used in planar-
+3DOF mode a horizontal LCD panel would ruin the EM tracking. Ideally a rear projected horizontal display would be 
+used to avoid shadows, but in practice in this top-down configuration, the hands tend to cast projector shadows over 
+nearly the same areas that are occluded from the user?s viewpoint. 
+4. HYFINBALL AND DIEM-VR DETAILS 
+This section discusses the details of the 6DOF, planar-3DOF, and finger-tracking interactions within DIEM-VR and how 
+DIEM-VR demonstrates the 6DOF/3DOF auto-mode switch.  
+Shaw and Green [8] advocate adding a user adjusted translational offset between the 6DOF button device and the 3D 
+cursor in their two-handed system. This allows the user to keep her elbows resting in her lap, or on the desk or chair arm 
+to combat the common arm fatigue problems in VR interfaces. This offset is part of the 6DOF mode in our system. 
+However, in our prior experimental work with two-handed 6DOF input [6] and in our formative evaluation of the 
+presented HyFinBall interface, we found that while keeping elbows resting on a surface reduces fatigue compared to the 
+naïve „arm?s outstretched? approach of early VR systems, this interface is still more fatiguing than using a mouse. With a 
+mouse, the hand and palm--not just the elbow--rests on a surface. Rich data visualizations involve coordinated views of 
+both 2D and 3D components such as in DIEM-VR. Therefore we developed the HyFinBall UI with auto-mode switching 
+between 6DOF and planar-3DOF mode to allow the user to perform one (or two-handed) 3D interactions as well as 2D 
+ interactions with the vertical screen while keeping her palm(s) resting on the desk. As we shall explain, in DIEM-VR the 
+2D scatter plots are intimately tied to the 3D terrain therefore we present these 2D elements on the vertical screen with 
+the 3D terrain while the purely 2D Boolean expression tree remains on the horizontal multi-touch surface. This is a 
+general concept of the HyFinBall UI: pure 2D interactions occur on the horizontal display while 3D interactive graphics 
+and, any 2D interactive graphics intimately tied to the 3D graphics appear on the vertical display. 
+On the vertical screen, DIEM-VR displays a single patch of terrain which can be optionally color-coded by height or 
+displayed as a wireframe mesh or point-cloud. A series of 2D menu buttons appears on the left of the primary screen. 
+These implement a horizontal, pull-“right” menu. All 2D menu items are displayed at zero screen parallax. The user can 
+add and delete multiple scatter-plots whose plot points each correspond to a terrain point. Each plot point's x-y location 
+is determined by a geometric characteristic of the associated terrain point such as the terrain point's average local slope, 
+local degree of roughness, etc. In other words, each original terrain point has several additional geometric characteristics 
+associated with it and by creating scatter-plots along these dimensions, the user can view the terrain in a different feature 
+space such as plotting local roughness versus elevation. The scatter-plots are constrained to the zero-parallax plane.  
+  
+(A)                                                                                (B) 
+Figure 5: Points selection (A) 3D selection box of terrain as point cloud (B) Selection of LIDAR points in scatter-plot high-
+lights house roofs. 
+4.1 6DOF 3D Cursors 
+In its 6DOF mode, the left HyFinBall implements a scene-in-hand metaphor [3] for camera pose manipulation plus 
+separate 3D cursor centered view scaling [50]. In 6DOF mode the left HyFinBall?s virtual representation is a transparent, 
+blue sphere with a user adjustable translational offset [8]. When the left HyFinBall is placed on the desk, planar-3DOF 
+mode is enabled. Now, the HyFinBall?s cursor is replaced by a transparent, 2D blue disc that always remains at zero 
+screen parallax. This cursor interacts like a standard 2D mouse cursor for selecting the menu bar on the left. From our 
+anecdotal observation and several pilot study participants, in the stereo display the switch from the 3D sphere cursor to 
+the 2D disc cursor is immediately apparent. 
+The right HyFinBall?s 6DOF mode?s 3D cursor is a transparent, orange sphere with a user adjustable translational offset.  
+This 3D cursor implements and initiates 3D selection box creation (Figure 5A). The selection box is used to select points 
+on the 3D terrain. LIDAR scans have multiple returns and are hence multi-planar (not strict height-fields). There are 
+situations where one may want to select points not only within a certain foot-print but also within a limited height range. 
+For example, the user might want to select tree top returns and not the lower layer returns from the underlying ground. 
+While selection in these situations is not as complicated as selection within true volumetric data [51], we provide a 
+general 3D selection box interface. Further, this general capability for volume selection will be necessary when 
+integrating true volumetric data into the terrain systems as we did in [51]. The 3D selection box can be created, moved, 
+rotated and resized using a technique that is a combination of the two-handed technique of Ulinski et al. [6] and a 3D 
+widget [11]. 
+4.2 Planar-3DOF 2D Cursors 
+When the right HyFinBall is placed on the desk, the 3D cursor is replaced by a transparent, 2D orange disc that remains 
+at zero screen parallax. In this mode, the orange disc acts like a 2D mouse cursor for interacting with any created scatter-
+plots. When a 2D cursor hovers over a scatter-plot boundary, icons along the x or y axes appear allowing selection of the 
+ statistic that will be plotted on the given axis. Various statistics such as average gradient, maximum gradient, local 
+standard deviation can be selected. The user can move the plot or switch the plot data axis using a button, Button A. The 
+user can select a rectangular region of scatter plot points with Button B. With the 2D cursor, the user can brush points in 
+the scatter-plot. Brushing occurs by creating a rectangular selection region. The selected points are highlighted on the 
+terrain surface using a color pre-assigned to the scatter-plot. In Figure 5B, the scatter-plot in the lower-left plots elevation 
+versus local gradient. The brown selection region is selecting for relatively low elevations with minimal gradient. This 
+causes mostly house roofs to be highlighted in the terrain view. 
+The user can optionally enable the display of lines connecting the scatter-plot points and the terrain points. This gives a 
+strong visual impression of how the brushed scatter-plot points are spatially distributed on the terrain. (For performance, 
+only a randomly chosen subset of the connecting lines is drawn). Understanding the spatial structure of this “line net” is 
+greatly enhanced by the stereoscopic display. It has some conceptual similarities with traditional 2D parallel coordinates. 
+Figure 6A shows three scatter-plots with line nets connecting their brushed regions to the terrain points. These line nets 
+intimately visually tie the 2D scatter-plots to the 3D terrain and hence keeping these 2D graphics on the same vertical 
+display as the 3D terrain is important.  
+   
+(A)                                                                              (B) 
+Figure 6: Point-cloud rendering of terrain patch and interactive, coordinated scatter-plot representations of LIDAR points 
+(A), and 2D Lasso Selection (B) 
+We assume that during above described 2D interactions with the 2D menu or scatter plots that the user?s eyes fixate on 
+geometry with zero parallax and that the user is not attempting to fixate on geometry with non-zero parallax. (The latter 
+is the condition under which the naïve display of desktop 2D cursor in a stereo 3D system creates problems). Our 
+anecdotal experience indicates this is the case, but future experimentation using an eye tracker is needed. We render the 
+2D cursors as slightly transparent discs so the user can see through them to any farther 3D geometry. In Figure 6A the 
+left buttonball disc is transparent blue and the right is purple.  
+When displaying these 2D cursors, we automatically reduce the eye separation. If one HyFinBall is in planar-3DOF 
+mode and is performing 2D interaction, then the modeled eye separation is cut in half. If both HyFinBalls are in planar-
+3DOF mode and performing 2D interactions, eye separation is set to zero. The eye separation changes are animated over 
+a 2s time period recommended by Ware et al [52]. This reduction is again predicated on the assumption that if the user 
+enters planar-3DOF mode they are interacting with the 2D zero-parallax objects and hence fixating at the zero-parallax 
+depth. 
+We also experimented with enabling a simulation of depth-of-field image blur of the 3D geometry during planar-3DOF 
+2D interactions. The design space includes the presence/absence of the enabling of depth-of-field simulation and the 
+tradeoff between the fidelity of the depth-of-field rendering and its reduction on frame-rate.  
+Overall design space issues include presence/absence of the eye separation adjustment, the degree of adjustment, the rate 
+of adjustment, the conditions of adjustment and interaction with depth-of-field implementation. In general, our anecdotal 
+results indicate eye separation reduction is useful when the user is performing planar-3DOF 2D interactions.  
+4.3 Planar-3DOF Projected Cursors 
+In its planar-3DOF mode, the right HyFinBall can also be used for 2D lasso selection of the terrain points. In this mode, 
+the orange disc is replaced by a different 3D cursor whose 3D position is the intersection of a ray cast from the cyclopean 
+ eye through the 2D cursor?s computed position on the frustum projection window. In prior work, we used a similar 
+technique where we replaced the display of the desktop 2D mouse cursor with projected 3D cursor. This enabled a 
+mouse controlled travel technique option in our exo-centric, travel technique on stereoscopic virtual workbench [53]. 
+The projected 3D cursor can appear at any screen parallax depending on the location of the intersected terrain under the 
+GUI cursor position. This approach is sometimes referred as geometry-sliding [54].  
+We chose for the planar-3DOF mode to perform the lasso operation rather than using a 6DOF mode image-plane 
+technique based on the hypothesis the latter would induce greater arm fatigue. During 2D lasso selection we assume the 
+user is fixating on the terrain surface location under the 3D cursor so the eye separation is set to its default setting. Our 
+anecdotal experience indicates this assumed fixation point is correct. An experimental evaluation with an eye tracker 
+could confirm this. If the user needs to select a restricted height range, a 3D selection box can be created as described in 
+Section 4.1. 
+Finally, there is an individual terrain triangle selection mode. In this mode the terrain triangle underneath the projected 
+2D cursor is selected and all other terrain triangles within a range of similar height values are also selected. As the 2D 
+cursor is dragged this selection is continuously highlighted. (Other criteria for selecting „similar? terrain polygons are, of 
+course, possible).  
+All these terrain region selections and scatter-plot selections use brushing-and-linking across these coordinated views 
+that are updated in real-time.  
+4.4 Multi-Touch and Finger-tracking  
+As discussed earlier, when the user tucks the button ball in his palm (Figure 1D and Figure 4D and E), the free fingers 
+such as the thumb and pointer finger can interact with the horizontal multi-touch surface or trigger 3D gestures. 
+DIEM-VR uses the multi-touch display for the Boolean expression tree once the user creates multiple scatter plots and 
+brushes different regions in each scatter plot. The Boolean expression combines the different selections in various ways 
+to make a final selection where only the terrain points that satisfy the Boolean expression are highlighted in the terrain 
+view. The horizontal multi-touch display shows the tree structure of the Boolean expression (visible in Figure 2 and 
+reproduced in Figure 3B). For example, in Figure 3B, the Boolean expression shows a logical expression of (1 OR 2) 
+XOR (3 AND 4). Numeric labels map elements of the expression to the scatter plot. The user can save the current 
+expression by the (+) menu icon on the right top and an icon is added on the left top. Users can delete, select or modify 
+prior saved expressions. All changes are immediately reflected in the terrain vertex highlighting, the line net display and 
+the scatter plot highlighting. 
+We specifically chose to touch enable the horizontal display rather than the vertical one, to maintain a palms-resting 
+posture during the multi-touch interaction rather than requiring an outstretched-arm posture that is known in VR to 
+generate user complaints of shoulder fatigue. Further, within the DIEM-VR application the Boolean expression UI is a 
+separate, purely 2D interface unlike the scatter-plots whose line-nets are visually tied to the 3D terrain. Therefore, the 
+Boolean expression UI is highly suited to 2D interaction afforded by the horizontal multi-touch surface. 
+Again, we can demonstrate hand+finger-tracking while still holding the buttonball using 3Gears Kinect based tracking 
+and we integrated a ray-based 3D selection in DIEM-VR using 3D pointing gestures. However, we found the current 
+tracking range and error rate of the hand+finger-tracking to be prohibitively restrictive when trying to pilot test a user 
+study that integrates them with the rest of the HyFinBall UI. For instance, the Polhemus?s EM tracking of the 
+HyFinBall?s never drops out the way it can with the Kinect based tracking and the “error rate” of detecting mechanical 
+button presses is essentially zero. This discrepancy led pilot test participants to want to use the buttonballs instead of 3D 
+finger-tracking for any practical 3D user task such as object selection or manipulation. Nonetheless, because the concept 
+of enabling 3D hand+finger tracking while still holding the buttonballs is at least demonstrable, we present it as part of 
+the overall HyFinBall UI. 
+5. DESIGN MOTIVATIONS AND EMPIRCAL QUESTIONS 
+This section discusses several of the key design considerations and motivations for the HyFinBall interface and as well a 
+number of interesting questions that will require empirical study. In an in-progress user study we are testing several of 
+our design motivations as experimental hypothesis. It helps our discussion of these motivations and hypothesis if we 
+ briefly describe the conditions in our experiment. The study focuses only on the 6DOF and planar-3DOF combination. 
+The four devices device conditions are: 
+I. the auto-switching HyFinBall UI 
+II. dual planar-3DOF mode only UI 
+III. dual 6DOF mode only UI 
+ 
+This comparison is done across a variety of 2D and 3D tasks in different sequential combinations. This study does not 
+use the horizontal multi-touch display and the tasks involve 3D terrain manipulation and selection and 2D menu and 
+scatter plot manipulation. The goal is to determine to what degree each of the four device conditions is better suited to 
+pure 2D tasks, pure 3D tasks and to combination 2D and 3D tasks. 
+5.1 Fatigue – Elbows-Resting vs. Palms-Resting 
+As stated earlier, using the planar-3DOF mode for 2D interactions on the vertical display is motivated by the desire to 
+avoid arm fatigue issues that would arise if the user had to instead use image-plane techniques with the 6DOF mode. 
+Image-plane techniques would require hovering the 3D cursor over the image of the 2D menus or scatter plots to 
+manipulate them. Our experiment tests this hypothesis by comparing user subjective reports of fatigue when doing 
+purely 2D tasks using condition III, 6DOF image-plane techniques, and condition II, planar-3DOF mode. When the user 
+task is a mix of 2D and 3D tasks, we also expect condition III to be more fatiguing than condition I, the auto-switching 
+HyFinBall mode, because the auto-switching mode allows the 2D operations to be performed with resting palms. Of 
+course, there is a trade-off with condition I, since the user must switch between a palm-resting posture and an elbow-only 
+resting posture in order to switch between 2D and 3D operations. 
+The overall effectiveness of the 6DOF/planar-3DOF auto-switching will undoubtedly ultimately depend on the balance 
+between the 2D and 3D interaction operations used in a given application and the temporal sequencing and durations of 
+planar-3DOF interactions and 6DOF interactions. Our in-progress experiment is a first step in exploring this. Our 
+anecdotal observations, indicate that users perform better and very much prefer condition I or III over II or IV when the 
+task includes 3D navigation and 3D manipulation of a 3D selection box. 
+5.2 Auto-switching 2D and 3D cursors 
+Section 4 described how the HyFinBall UI uses 3D cursors and several types of 2D cursors within a stereoscopic 
+environment. There has been a fair amount of prior work in desktop 2D GUI?s regarding having the 2D image of the 
+cursors change to indicate different application states or interaction modes. There has been interesting work in cursors 
+for 3D selection such as Ware and Lowther?s One-Eyed cursor [55]. Teather and Stuerzlinger compared 4 cursor 
+selection techniques in a [56], and more recently Bruder et al [57] explore different offset techniques on a virtual 
+workbench. The HyFinBall raises additional questions because the cursor automatically switches between a 6DOF 3D 
+cursor, a 2D zero-parallax cursor, and a projected 3D cursor (as in HyFinBall 2D lasso mode). 
+5.3 Multi-Touch and Finger-Tracking 
+Our current implementation of the HyFinBall UI demonstrates the possibility of leveraging the buttonball form factor to 
+allow multi-touch and hand+finger tracking interaction without dropping the device. The multi-touch UI is robust 
+enough to consider formal user studies, but the tracking range limitations and 3D gesture error rates of the Kinect-based 
+tracking still need improvement.  
+At the moment we can only speculate about design issues and questions that could be investigated with more robust 3D 
+hand+finger tracking. If the 3D finger tracking and gesture recognition were as robust as the simpler EM tracking and 
+buttons, it would be interesting to explore what interactions 3D are best performed with hand+finger tracking and what 
+are best performed with the 6DOF buttonballs. Moehring and Froehlich performed a study using very robust and 
+accurate hand and finger tracking (with Vicon [58] marked gloves) and compared this with a 6DOF held-device (a 
+Flystick) for a series of 3D manipulation tasks [26]. Users preferred the naturalness of finger tracking. However, users of 
+the Flystick performed significantly faster than “bare” finger tracking. Adding pinch-sensitive finger tracking improved 
+task performance times to be within 10-20% of the Flystick condition. This suggests that manipulating a physical object 
+(such as a buttonball) may prove advantageous for some 3D object manipulation tasks over 3D hand+finger tracking 
+within our demonstrated HyFinBall interface. From a practical standpoint it is a bit challenging to test this because the 
+systems that provide robust hand+finger tracking require wearing gloves or thimbles with fiducial markers which may 
+make simultaneously handling a buttonball cumbersome. 
+ 6. CONCLUSION AND FUTURE WORK 
+This paper presents our two-handed hybrid user interface, HyFinBall, for interaction with rich, multi-dimensional 
+visualizations that require coordinated 3D and 2D views in a semi-immersive VE. The HyFinBall concept is 
+implemented within a specific visualization tool called DIEM-VR for analyzing terrain meshes. These interaction 
+techniques can be used with not only geospatial data but also with other scientific or medical datasets such as volume 
+datasets with 2D interactive transfer functions or feature spaces representations. Potentially more abstract, less physically 
+based 5-dimensional datasets could be explored by separating the dimensions to into various linked 3D and 2D 
+visualizations. We suggest the HyFinBall user interface could be a useful UI approach for multi-dimensional 
+visualizations whose component data dimensions are each best visualized using a different display plus input hardware 
+combination suggesting a cross-dimensional approach.  
+As described in the earlier section, a study is underway that compares the following: auto-switching HyFinBall UI, dual 
+planar-3DOF mode, dual 6DOF mode and a single mouse. A participant performs a variety of 2D tasks, 3D tasks, and 
+combination 2D followed by 3D tasks using DIEM-VR. The mouse mode uses projected 3D cursors for all 3D 
+interactions and is our base-line condition. Our hypothesis is that after a training period, the auto-switching UI will 
+perform better (faster) at the combined 2D+3D tasks than all other UIs and equal to the planar-3DOF only mode and 
+mouse for 2D only tasks and equal to the 6DOF mode for 3D only tasks. We expect the 6DOF-only mode to be generally 
+worse for 2D tasks and more fatiguing.  
+HyFinBall with multi-touch works robustly, but we have yet to formulate user studies. HyFinBall with 3D hand/finger 
+tracking is not yet robust enough to formally evaluate. Future multi-Kinect configurations may solve the problems with 
+gesture recognition error rate and limited tracking range. Alternatively robust marker based hand and finger tracking 
+could be employed. We are currently adding a dual camera Vicon system to our hardware ensemble. We believe there is 
+an interesting design space to be explored when combining the HyFinBall button balls with robust 3D finger tracking. 
+Finally, based on the ALCOVE [59] and our work in [53], we are in the process of configuring our system into a more 
+seamless L-shaped display that also displays stereo 3D on the horizontal surface. Several of the prior works mentioned in 
+Section 2 have begun exploring stereo plus multi-touch, but to our knowledge prior work is limited.  
+REFERENCES 
+[1] Bowman, D. A., Kruijff, E., LaViola, J. J., and Poupyrev, I., 3D User Interfaces: Theory and Practice: Addison 
+Wesley (2005). 
+[2] Mapes, D. P. and Moshell, J. M., "A two-handed interface for object manipulation in virtual environments," 
+Presence: Teleoperators and Virtual Environments, vol. 4, no. 4, 403-416 (1995). 
+[3] Ware, C. and Jessome, D. R., "Using the bat: a six-dimensional mouse for object placement," Computer Graphics 
+and Applications, IEEE, vol. 8, no. 6, 65-70 (1988). 
+[4] Frohlich, B., Plate, J., Wind, J., Wesche, G., and Gobel, M., "Cubic-Mouse-based interaction in virtual 
+environments," Computer Graphics and Applications, IEEE, vol. 20, no. 4, 12-15 (2000). 
+[5] Deering, M., "High resolution virtual reality," Proceedings of the 19th annual conference on Computer graphics and 
+interactive techniques, New York, NY, USA, pp. 195-202 (1992). 
+[6] Ulinski, A., Zanbaka, C., Wartell, Z., Goolkasian, P., and Hodges, L. F., "Two handed selection techniques for 
+volumetric data," 3D User Interfaces, 2007. 3DUI'07. IEEE Symposium on (2007). 
+[7] Zhai, S., Milgram, P., and Buxton, W., "The influence of muscle groups on performance of multiple degree-of-
+freedom input," Proceedings of the SIGCHI Conference on Human Factors in Computing Systems, New York, NY, 
+USA, pp. 308-315 (1996). 
+[8] Shaw, C. and Green, M., "Two-handed polygonal surface design," Proceedings of the 7th annual ACM symposium 
+on User interface software and technology, New York, NY, USA, pp. 205-212 (1994). 
+[9] Hinckley, K., Sinclair, M., Hanson, E., Szeliski, R., and Conway, M., "The VideoMouse: a camera-based multi-
+degree-of-freedom input device," Proceedings of the 12th annual ACM symposium on User interface software and 
+technology, New York, NY, USA, pp. 103-112 (1999). 
+[10] Logitech, "2D/6D Mouse technical reference manual," (1991). 
+ [11] Bowman, D. A. et al., "3D User Interfaces: New Directions and Perspectives," Computer Graphics and 
+Applications, IEEE, vol. 28, no. 6, 20-36 (2008). 
+[12] Liu, J., Pastoor, S., Seifert, K., and Hurtienne, J., "Three-dimensional PC: toward novel forms of human-computer 
+interaction," In Three-Dimensional Video and Display Devices and Systems SPIE, pp. 5-8 (2000). 
+[13] Hinckley, K., "Input technologies and techniques," The human-computer interaction handbook: fundamentals, 
+evolving technologies and emerging applications, 151-168 (2002). 
+[14] Kruijff, E., "Unconventional 3D User Interfaces for Virtual Environments," Graz University of Technology, 
+Institute for Computer Graphics and Vision, Ph.D. dissertation (2006). 
+[15] Grossman, T. et al., "Interaction techniques for 3D modeling on large displays," Proceedings of the 2001 
+symposium on Interactive 3D graphics, New York, NY, USA, pp. 17-23 (2001). 
+[16] Buxton, W. and Myers, B., "A study in two-handed input," Proceedings of the SIGCHI Conference on Human 
+Factors in Computing Systems, New York, NY, USA, pp. 321-326 (1986). 
+[17] Balakrishnan, R. and Hinckley, K., "Symmetric bimanual interaction," Proceedings of the SIGCHI conference on 
+Human Factors in Computing Systems, New York, NY, USA, pp. 33-40 (2000). 
+[18] Balakrishnan, R. and Kurtenbach, G., "Exploring bimanual camera control and object manipulation in 3D graphics 
+interfaces," Proceedings of the SIGCHI conference on Human Factors in Computing Systems, New York, NY, 
+USA, pp. 56-62 (1999). 
+[19] Guiard, Y., "Asymmetric Division of Labor in Human Skilled Bimanual Action: The Kinematic Chain as a Model," 
+(1987). 
+[20] Buxton, W., "Lexical and pragmatic considerations of input structures," SIGGRAPH Comput. Graph., vol. 17, no. 
+1, 31-37 (1983). 
+[21] Mackinlay, J. D., Card, S. K., and Robertson, G. G., "A Semantic Analysis of the Design Space of Input Devices," 
+Human-Computer Interaction, vol. 5, 145-190 (1990). 
+[22] MacKenzie, I. S., Soukoreff, R. W., and Pal, C., "A two-ball mouse affords three degrees of freedom," CHI '97 
+Extended Abstracts on Human Factors in Computing Systems, New York, NY, USA, pp. 303-304 (1997). 
+[23] Wang, R., Paris, S., and Popovi\', "6D hands: markerless hand-tracking for computer aided design," Proceedings of 
+the 24th annual ACM symposium on User interface software and technology, New York, NY, USA, pp. 549-558 
+(2011). 
+[24] Krueger, M. W., Gionfriddo, T., and Hinrichsen, K., "VIDEOPLACE-an artificial reality," Proceedings of the 
+SIGCHI Conference on Human Factors in Computing Systems, New York, NY, USA, pp. 35-40 (1985). 
+[25] Hinckley, K., Pausch, R., Goble, J. C., and Kassell, N. F., "Passive real-world interface props for neurosurgical 
+visualization," Proceedings of the SIGCHI conference on Human factors in computing systems: celebrating 
+interdependence, pp. 452-458 (1994). 
+[26] Moehring, M. and Froehlich, B., "Effective manipulation of virtual objects within arm's reach," Virtual Reality 
+Conference (VR), 2011 IEEE, pp. 131-138 (2011). 
+[27] Ishii, H. and Ullmer, B., "Tangible bits: towards seamless interfaces between people, bits and atoms," Proceedings 
+of the ACM SIGCHI Conference on Human factors in computing systems, New York, NY, USA, pp. 234-241 
+(1997). 
+[28] Bi, X., Grossman, T., Matejka, J., and Fitzmaurice, G., "Magic desk: bringing multi-touch surfaces into desktop 
+work," Proceedings of the SIGCHI Conference on Human Factors in Computing Systems, New York, NY, USA, 
+pp. 2511-2520 (2011). 
+[29] Brandl, P., Forlines, C., Wigdor, D., Haller, M., and Shen, C., "Combining and measuring the benefits of bimanual 
+pen and direct-touch interaction on horizontal interfaces," Proceedings of the working conference on Advanced 
+visual interfaces, pp. 154-161 (2008). 
+[30] Welch, G. and Foxlin, E., "Motion tracking: no silver bullet, but a respectable arsenal," Computer Graphics and 
+Applications, IEEE, vol. 22, no. 6, 24-38 (2002). 
+[31] Benko, H., Ishak, E. W., and Feiner, S., "Cross-dimensional gestural interaction techniques for hybrid immersive 
+environments," Virtual Reality, 2005. Proceedings. VR 2005. IEEE, pp. 209-216 (2005). 
+ [32] Massink, M., Duke, D., Smith, S., and Maria, V. S., "Towards Hybrid Interface Specification for Virtual 
+Environments," (1999). 
+[33] Alencar, M. F. C., Raposo, A. B., and Barbosa, S. D. J., "Composition of HCI evaluation methods for hybrid virtual 
+environments," Proceedings of the 2011 ACM Symposium on Applied Computing, New York, NY, USA, pp. 1237-
+1244 (2011). 
+[34] Althoff, F., McGlaun, G., Schuller, B., Morguet, P., and Lang, M., "Using multimodal interaction to navigate in 
+arbitrary virtual VRML worlds," Proceedings of the 2001 workshop on Perceptive user interfaces, New York, NY, 
+USA, pp. 1-8 (2001). 
+[35] Coffey, D. et al., "Slice WIM: a multi-surface, multi-touch interface for overview+detail exploration of volume 
+datasets in virtual reality," Symposium on Interactive 3D Graphics and Games, New York, NY, USA, pp. 191-198 
+(2011). 
+[36] Cohen, P. et al., "Multimodal interaction for 2D and 3D environments [virtual reality]," Computer Graphics and 
+Applications, IEEE, vol. 19, no. 4, 10-13 (1999). 
+[37] Holzapfel, H., Nickel, K., and Stiefelhagen, R., "Implementation and evaluation of a constraint-based multimodal 
+fusion system for speech and 3D pointing gestures," Proceedings of the 6th international conference on Multimodal 
+interfaces, New York, NY, USA, pp. 175-182 (2004). 
+[38] Bolt, R. A., "“Put-that-there”: Voice and gesture at the graphics interface," Proceedings of the 7th annual 
+conference on Computer graphics and interactive techniques, New York, NY, USA, pp. 262-270 (1980). 
+[39] Agrawal, P. et al., "Multimodal interface platform for geographical information systems (GeoMIP) in crisis 
+management," Proceedings of the 6th international conference on Multimodal interfaces, New York, NY, USA, pp. 
+339-340 (2004). 
+[40] Rauschert, I. et al., "Designing a human-centered, multimodal GIS interface to support emergency management," 
+Proceedings of the 10th ACM international symposium on Advances in geographic information systems, New 
+York, NY, USA, pp. 119-124 (2002). 
+[41] Bouchet, J. and Nigay, L., "ICARE: a component-based approach for the design and development of multimodal 
+interfaces," CHI '04 Extended Abstracts on Human Factors in Computing Systems, New York, NY, USA, pp. 1325-
+1328 (2004). 
+[42] Bianchi, G., Jung, C., Knoerlein, B., Szekely, G., and Harders, M., "High-fidelity visuo-haptic interaction with 
+virtual objects in multi-modal AR systems," Mixed and Augmented Reality, 2006. ISMAR 2006. IEEE/ACM 
+International Symposium on, pp. 187-196 (2006). 
+[43] Azuma, R. et al., "Recent advances in augmented reality," Computer Graphics and Applications, IEEE, vol. 21, no. 
+6, 34-47 (2001). 
+[44] Pirchheim, C., Schmalstieg, D., and Bornik, A., "Visual Programming for Hybrid User Interfaces," Proc 2nd 
+International Workshop on Mixed Reality User Interfaces (2007). 
+[45] Schmalstieg, D. et al., "The studierstube augmented reality project," Presence: Teleoper. Virtual Environ., vol. 11, 
+no. 1, 33-54 (2002). 
+[46] Song, P., Goh, W. B., Fu, C. W., Meng, Q., and Heng, P. A., "WYSIWYF: exploring and annotating volume data 
+with a tangible handheld device," Proceedings of the SIGCHI Conference on Human Factors in Computing 
+Systems, New York, NY, USA, pp. 1333-1342 (2011). 
+[47] Harrison, L., Butkiewicz, T., Wang, X., Ribarsky, W., and Chang, R., "A linked feature space approach to exploring 
+lidar data," Society of Photo-Optical Instrumentation Engineers (SPIE) Conference Series, vol. 7709 (2010). 
+[48] 3Gear System. http://www.threegear.com/ 
+[49] PQ Labs. http://multitouch.com/ 
+[50] Butkiewicz, T., Chang, R., Ribarsky, W., and Wartell, Z., , Kathleen S. Hornsby, Ed., CRC Press/Taylor and 
+Francis, ch. Visual Analysis of Urban Terrain Dynamics (2007). 
+[51] Ulinski, A. C., Wartell, Z., Goolkasian, P., Suma, E. A., and Hodges, L. F., "Selection performance based on classes 
+of bimanual actions," 3D User Interfaces, 2009. 3DUI 2009. IEEE Symposium on, pp. 51-58 (2009). 
+[52] Ware, C., Gobrecht, C., and Paton, M. A., "Dynamic adjustment of stereo display parameters," Systems, Man and 
+Cybernetics, Part A: Systems and Humans, IEEE Transactions on, vol. 28, no. 1, 56-65 (1998). 
+ [53] Houtgast, E., Pfeiffer, O., Wartell, Z., Ribarsky, W., and Post1, F., "Navigation and Interaction in a Multi-Scale 
+Stereoscopic Environment," , pp. 275-276 (2005). 
+[54] Zeleznik, R. C., Forsberg, A. S., and Strauss, P. S., "Two pointer input for 3D interaction," Proceedings of the 1997 
+symposium on Interactive 3D graphics, pp. 115-120 (1997). 
+[55] Ware, C. and Lowther, K., "Selection using a one-eyed cursor in a fish tank VR environment," ACM Trans. 
+Comput.-Hum. Interact., vol. 4, no. 4, 309-322 (1997). 
+[56] Teather, R. J. and Stuerzlinger, W., "Pointing at 3D targets in a stereo head-tracked virtual environment," , pp. 87-
+94 (2011). 
+[57] Bruder, G., Steinicke, F., and St, "Effects of Visual Conflicts on 3D Selection Task Performance in Stereoscopic 
+Display Environments," IEEE Symposium on 3D User Interfaces (2013). 
+[58] Vicon. http://www.vicon.com/. 
+[59] Meyer, M. and Barr, A., "ALCOVE: design and implementation of an object-centric virtual environment," , pp. 46-
+52 (1999). 
+[60] Robinett, W. and Holloway, R., "Implementation of flying, scaling and grabbing in virtual worlds," Proceedings of 
+the 1992 symposium on Interactive 3D graphics, New York, NY, USA, pp. 189-192 (1992). 
+[61] Wartell, Z., Hodges, L., and Ribarsky, W., "Third-Person Navigation of Whole-Planet Terrain in a Head-Tracked 
+Stereoscopic Environment," , pp. 141-148 (1999). 
+[62] Wartell, Z. J., "Stereoscopic head-tracked displays: Analysis and development of display algorithms," Ph.D. 
+dissertation (2002). 
+[63] Sandin, D. J. et al., "The VarrierTM autostereoscopic virtual reality display," ACM Trans. Graph., vol. 24, no. 3, 
+894-903 (2005). 
+[64] Vicon. http://www.vicon.com/ 
+ 
+
